@@ -1,0 +1,7 @@
+etc/dbus-1/system.d/fsogsmd.conf
+etc/freesmartphone/conf/*/*
+etc/freesmartphone/conf/openmoko_gta/* etc/freesmartphone/conf/GTA02
+usr/sbin/*
+usr/lib/libfsogsm.so.0*
+usr/lib/cornucopia/modules/fsogsm/*.so
+usr/share/dbus-1/system-services/org.freesmartphone.ogsmd.service
