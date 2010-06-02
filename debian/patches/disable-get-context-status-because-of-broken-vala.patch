@@ -1,17 +1,13 @@
 diff -Nur -x '*.orig' -x '*~' fso-gsmd//src/plugins/dbus_service/plugin.vala fso-gsmd.new//src/plugins/dbus_service/plugin.vala
 --- fso-gsmd//src/plugins/dbus_service/plugin.vala	2010-06-02 21:07:46.000000000 +0200
-+++ fso-gsmd.new//src/plugins/dbus_service/plugin.vala	2010-06-02 21:37:35.000000000 +0200
-@@ -749,10 +749,11 @@
-         yield m.run();
-     }
- 
--    public async void get_context_status( out FreeSmartphone.GSM.ContextStatus status, out GLib.HashTable<string,GLib.Value?> properties ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
-+    public async void get_context_status( out string status, out GLib.HashTable<string,GLib.Value?> properties ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
++++ fso-gsmd.new//src/plugins/dbus_service/plugin.vala	2010-06-02 21:48:42.000000000 +0200
+@@ -752,7 +752,8 @@
+     public async void get_context_status( out FreeSmartphone.GSM.ContextStatus status, out GLib.HashTable<string,GLib.Value?> properties ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
      {
          checkAvailability();
 -        status = modem.pdphandler.status;
 +		throw new FreeSmartphone.Error.INTERNAL_ERROR( "Disabled by Debian Maintainer because of broken Vala 0.8.1" );
-+        status = modem.pdphandler.status.to_string();
++        //status = modem.pdphandler.status;
          properties = modem.pdphandler.properties;
      }
  
