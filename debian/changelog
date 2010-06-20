@@ -1,5 +1,5 @@
 fso-gsmd (0.5.0+git20100602-1) experimental; urgency=low
 
-  * Initial release
+  * Initial release (Closes: #586588)
 
  -- Sebastian Reichel <elektranox@gmail.com>  Wed, 02 Jun 2010 08:26:48 +0200

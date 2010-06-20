@@ -31,7 +31,7 @@ Vcs-Browser: http://git.debian.org/?p=pkg-fso/fso-gsmd.git;a=summary
 Package: fso-gsmd
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: freesmartphone.org gsm daemon
+Description: freesmartphone.org GSM daemon
  This daemon implements the freesmartphone.org GSM API
  .
  This package is part of the freesmartphone.org software stack
