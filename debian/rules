@@ -20,3 +20,7 @@ DEB_AUTO_UPDATE_AUTOMAKE = 1.11
 DEB_AUTO_UPDATE_ACLOCAL = 1.11
 DEB_AUTO_UPDATE_AUTOCONF = 2.65
 DEB_AUTO_UPDATE_AUTOHEADER = 2.65
+
+binary-install/fso-gsmd::
+	# remove empty changelog
+	rm debian/fso-gsmd/usr/share/doc/fso-gsmd/changelog
