@@ -19,7 +19,7 @@ Build-Depends: automake,
                libgsm0710-dev,
                libgsm0710mux-dev (>= 0.3.4),
                libtool,
-               libvala-dev (>= 0.8.1),
+               libvala-dev (>= 0.9.1),
                pkg-config,
                ppp-dev,
                valac (>= 0.9.1)
