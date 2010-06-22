@@ -24,3 +24,6 @@ DEB_AUTO_UPDATE_AUTOHEADER = 2.65
 binary-install/fso-gsmd::
 	# remove empty changelog
 	rm debian/fso-gsmd/usr/share/doc/fso-gsmd/changelog
+
+clean::
+	rm -f ltmain.sh
