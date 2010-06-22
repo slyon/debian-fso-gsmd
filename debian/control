@@ -32,7 +32,7 @@ Package: fso-gsmd
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: freesmartphone.org GSM daemon
- This daemon implements the freesmartphone.org GSM API
+ This daemon implements the freesmartphone.org GSM API.
  .
  This package is part of the freesmartphone.org software stack
  and is targeted for smartphones.
