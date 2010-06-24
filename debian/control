@@ -22,7 +22,7 @@ Build-Depends: automake,
                libvala-dev (>= 0.9.1),
                pkg-config,
                ppp-dev,
-               valac (>= 0.9.1)
+               valac (>= 0.9.2-2)
 Standards-Version: 3.8.4
 Homepage: http://freesmartphone.org/
 Vcs-Git: git://git.debian.org/git/pkg-fso/fso-gsmd.git
