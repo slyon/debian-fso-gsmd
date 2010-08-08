@@ -72,7 +72,9 @@ public abstract class FsoGsm.AbstractAtCommand : GLib.Object, FsoGsm.AtCommandQu
 
     ~AbstractAtCommand()
     {
+#if DEBUG
         warning( "DESTRUCT %s", Type.from_instance( this ).name() );
+#endif
     }
 
     public string encodeString( string str )
@@ -648,6 +650,21 @@ public class FsoGsm.TwoParamsAtCommand<T1,T2> : FsoGsm.AbstractAtCommand
 
 }
 
+/**
+ * @class FsoGsm.CustomAtCommand
+ *
+ * Instances of CustomAtCommand can be used, when you have to wrap a command
+ * that does not require special parsing or is cheap expensive to (re)create.
+ * These classes must not be added to the common command table, hence can not
+ * be created by the atCommandFactory() method in the base modem class.
+ **/
 public class FsoGsm.CustomAtCommand : FsoGsm.AbstractAtCommand
 {
+    public CustomAtCommand( string name = "", bool prefixoptional = false )
+    {
+        if ( !prefixoptional )
+        {
+            prefix = { name + ": " };
+        }
+    }
 }

@@ -132,6 +132,10 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
         public string supportsPDP;
         public string supportsFAX;
 
+        // Contents of SIM elementary files
+        public GLib.HashTable<string,string> simOperatorbook;
+        public string simIssuer;
+
         // PDP
         public string pppCommand;
         public string pppPort;
@@ -317,7 +321,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         registerAtCommands();
         createChannels();
 
-        var configuration = @"configured for $modem_transport:$modem_port@$modem_speed";
+        var configuration = @"$modem_transport:$modem_port@$modem_speed";
         if ( data_config != "" )
         {
             configuration += @" / $data_transport:$data_port@$data_speed";
@@ -339,6 +343,9 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
 
         switch ( lowleveltype )
         {
+            case "motorola_ezx":
+                typename = "LowLevelMotorolaEZX";
+                break;
             case "openmoko":
                 typename = "LowLevelOpenmoko";
                 break;
@@ -580,18 +587,18 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
     {
         return new GenericWatchDog();
     }
-    
+
     /**
-     * Override this to power on external components before the maintransport 
+     * Override this to power on external components before the maintransport
      * will be opened
      **/
     protected virtual bool powerOn()
     {
         return true;
     }
-    
+
     /**
-     * Override this to power off external components before the maintransport 
+     * Override this to power off external components before the maintransport
      * will be closed
      **/
     protected virtual void powerOff()
@@ -622,14 +629,13 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
     //
     public virtual async bool open()
     {
-        assert( logger.debug( "Powering up the device..." ) );
-
+        assert( logger.debug( "Opening the modem device..." ) );
 
         if ( !lowlevel.poweron() )
         {
             return false;
         }
-        
+
         if ( !powerOn() )
         {
             return false;
@@ -673,7 +679,17 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
 
     public virtual async void close()
     {
+        if ( status() == Modem.Status.CLOSED )
+        {
+            return;
+        }
+        assert( logger.debug( "Closing the modem device..." ) );
+
         advanceToState( Modem.Status.CLOSING );
+
+        // give channels a chance to perform their closing commands
+        GLib.Timeout.add_seconds( 3, close.callback );
+        yield;
 
         // close all channels
         var channels = this.channels.values;
@@ -683,10 +699,12 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         }
 
         lowlevel.poweroff();
-        
+
         powerOff();
 
         advanceToState( Modem.Status.CLOSED, true ); // force wraparound
+
+        initData();
     }
 
     public virtual async bool suspend()
@@ -699,8 +717,10 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         var channels = this.channels.values;
         foreach( var channel in channels )
         {
-            channel.suspend();
+            yield channel.suspend();
         }
+
+        lowlevel.suspend();
 
         advanceToState( Modem.Status.SUSPENDED );
 
@@ -709,13 +729,15 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
 
     public virtual async bool resume()
     {
+        lowlevel.resume();
+
         advanceToState( Modem.Status.RESUMING );
 
         // resume all channels
         var channels = this.channels.values;
         foreach( var channel in channels )
         {
-            channel.resume();
+            yield channel.resume();
         }
 
         advanceToState( modem_status_before_suspend, true ); // force
@@ -889,9 +911,17 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
      **/
     public void advanceToState( Modem.Status next, bool force = false )
     {
-        // do nothing, if we're already in the requested state or beyond
-        if ( !force && ( next <= modem_status ) )
+        // do nothing, if we are already in the requested state
+        if ( next == modem_status )
         {
+            logger.debug( @"Already in status $next, not advancing" );
+            return;
+        }
+
+        // unless forced, do nothing if we are beyond the requested state
+        if ( !force && ( next < modem_status ) )
+        {
+            logger.debug( @"Already beyond status $next, not advancing" );
             return;
         }
 

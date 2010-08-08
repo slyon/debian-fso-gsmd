@@ -415,6 +415,14 @@ public class PlusCHLD : AbstractAtCommand
     }
 }
 
+public class PlusCIEV : TwoParamsAtCommand<int,int>
+{
+    public PlusCIEV()
+    {
+        base( "+CIEV" );
+    }
+}
+
 public class PlusCIMI : SimpleAtCommand<string>
 {
     public PlusCIMI()
@@ -471,6 +479,11 @@ public class PlusCLCC : AbstractAtCommand
     public string execute()
     {
         return "+CLCC";
+    }
+
+    public string query()
+    {
+        return "+CLCC?";
     }
 }
 
@@ -655,7 +668,7 @@ public class PlusCMGS : AbstractAtCommand
     {
         try
         {
-            re = new Regex( """\+CMGS: (?P<id>\d)(?:,"(?P<name>[0-9ABCDEF]*)")?""" );
+            re = new Regex( """\+CMGS: (?P<id>\d+)(?:,"(?P<name>[0-9ABCDEF]*)")?""" );
         }
         catch ( GLib.RegexError e )
         {
@@ -681,6 +694,8 @@ public class PlusCMGS : AbstractAtCommand
 
 public class PlusCMGW : AbstractAtCommand
 {
+    public int memory_index;
+
     public PlusCMGW()
     {
         try
@@ -694,12 +709,16 @@ public class PlusCMGW : AbstractAtCommand
         prefix = { "+CMGW: " };
     }
 
-    /*
-    public string issue( ShortMessage.HexPdu hexpdu )
+    public string issue( WrapHexPdu pdu )
     {
-        return "AT+CMGW=%d\r\n%s%c".printf( hexpdu.tpdulen, hexpdu.pdu, '\x1A' );
+        return "AT+CMGW=%u\r\n%s%c".printf( pdu.tpdulen, pdu.hexpdu, '\x1A' );
     }
-    */
+
+    public override void parse( string response ) throws AtCommandError
+    {
+        base.parse( response );
+        memory_index = to_int( "id" );
+    }
 
     public override string get_prefix() { return ""; }
     public override string get_postfix() { return ""; }
@@ -710,6 +729,35 @@ public class PlusCMICKEY : SimpleAtCommand<int>
     public PlusCMICKEY()
     {
         base( "+CMICKEY" );
+    }
+}
+
+public class PlusCMSS : AbstractAtCommand
+{
+    public int refnum;
+
+    public PlusCMSS()
+    {
+        try
+        {
+            re = new Regex( """\+CMSS: (?P<id>\d)(?:,"(?P<name>[0-9ABCDEF]*)")?""" );
+        }
+        catch ( GLib.RegexError e )
+        {
+            assert_not_reached(); // fail here if Regex is broken
+        }
+        prefix = { "+CMSS: " };
+    }
+
+    public override void parse( string response ) throws AtCommandError
+    {
+        base.parse( response );
+        refnum = to_int( "id" );
+    }
+
+    public string issue( int index )
+    {
+        return @"+CMSS=$index";
     }
 }
 
@@ -830,6 +878,42 @@ public class PlusCNMI : AbstractAtCommand
     public string issue( int mode, int mt, int bm, int ds, int bfr )
     {
         return "+CNMI=%d,%d,%d,%d,%d".printf( mode, mt, bm, ds, bfr );
+    }
+}
+
+public class PlusCOPN : AbstractAtCommand
+{
+    public GLib.HashTable<string,string> operators;
+
+    public PlusCOPN()
+    {
+        try
+        {
+            re = new Regex( """\+COPN: "(?P<mccmnc>[^"]*)","(?P<name>[^"]*)"""" );
+        }
+        catch ( GLib.RegexError e )
+        {
+            assert_not_reached(); // fail here if Regex is broken
+        }
+        prefix = { "+COPN: " };
+    }
+
+    public override void parseMulti( string[] response ) throws AtCommandError
+    {
+        operators = new GLib.HashTable<string,string>( GLib.str_hash, GLib.str_equal );
+        foreach ( var line in response )
+        {
+            base.parse( line );
+            var mccmnc = to_string( "mccmnc" );
+            var name = decodeString( to_string( "name" ) );
+            message( @"adding operator $mccmnc = $name" );
+            operators.insert( to_string( "mccmnc" ), to_string( "name" ) );
+        }
+    }
+
+    public string execute()
+    {
+        return "+COPN";
     }
 }
 
@@ -1482,7 +1566,8 @@ public class V250D : V250terCommand
     public string issue( string number, bool voice = true )
     {
         var postfix = voice ? ";" : "";
-        return @"D$number$postfix";
+        var safenumber = Constants.instance().cleanPhoneNumber( number );
+        return @"D$safenumber$postfix";
     }
 }
 
@@ -1507,6 +1592,7 @@ public void registerGenericAtCommands( HashMap<string,AtCommand> table )
     table[ "+CGMR" ]             = new FsoGsm.PlusCGMR();
     table[ "+CGSN" ]             = new FsoGsm.PlusCGSN();
     table[ "+CIMI" ]             = new FsoGsm.PlusCIMI();
+    table[ "+COPN" ]             = new FsoGsm.PlusCOPN();
     table[ "+FCLASS" ]           = new FsoGsm.PlusFCLASS();
     table[ "+GCAP" ]             = new FsoGsm.PlusGCAP();
 
@@ -1515,7 +1601,8 @@ public void registerGenericAtCommands( HashMap<string,AtCommand> table )
     table[ "+CPIN" ]             = new FsoGsm.PlusCPIN();
     table[ "+CPWD" ]             = new FsoGsm.PlusCPWD();
 
-    // URC
+    // URC only
+    table[ "+CIEV" ]             = new FsoGsm.PlusCIEV();
     table[ "+CNMI" ]             = new FsoGsm.PlusCNMI();
 
     // device and peripheral control
@@ -1558,7 +1645,9 @@ public void registerGenericAtCommands( HashMap<string,AtCommand> table )
     table[ "+CMGL" ]             = new FsoGsm.PlusCMGL();
     table[ "+CMGR" ]             = new FsoGsm.PlusCMGR();
     table[ "+CMGS" ]             = new FsoGsm.PlusCMGS();
+    table[ "+CMGW" ]             = new FsoGsm.PlusCMGW();
     table[ "+CMMS" ]             = new FsoGsm.PlusCMMS();
+    table[ "+CMSS" ]             = new FsoGsm.PlusCMSS();
     table[ "+CMT" ]              = new FsoGsm.PlusCMT();
     table[ "+CMTI" ]             = new FsoGsm.PlusCMTI();
     table[ "+CNMA" ]             = new FsoGsm.PlusCNMA();
@@ -1576,7 +1665,6 @@ public void registerGenericAtCommands( HashMap<string,AtCommand> table )
 
     // misc
     table[ "+CMICKEY" ]          = new FsoGsm.PlusCMICKEY();
-    table[ "CUSTOM" ]            = new FsoGsm.CustomAtCommand();
 }
 
 } /* namespace FsoGsm */

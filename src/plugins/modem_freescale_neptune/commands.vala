@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2010  Antonio Ospite <ospite@studenti.unina.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,13 +17,32 @@
  *
  */
 
-using GLib;
+using FsoGsm;
+using Gee;
 
-public interface FsoGsm.Channel : FsoFramework.CommandQueue
+namespace FreescaleNeptune
 {
-    public abstract void injectResponse( string response );
-    public abstract async bool suspend();
-    public abstract async bool resume();
 
-    public signal void hangup();
+/**
+ * Modem violating GSM 07.07 here.
+ *
+ * Format seems to be +CPIN=<number>,"<PIN>", where 1 is PIN1, 2 may be PIN2 or PUK1
+ **/
+public class NeptunePlusCPIN : PlusCPIN
+{
+    public new string issue( int pin_type, string pin)
+    {
+        return "+CPIN=%d,\"%s\"".printf( pin_type, pin );
+    }
 }
+
+
+/**
+ * Register all custom commands
+ **/
+public void registerCustomAtCommands( HashMap<string,AtCommand> table )
+{
+    table[ "+CPIN" ]              = new NeptunePlusCPIN();
+}
+
+} /* namespace FreescaleNeptune */

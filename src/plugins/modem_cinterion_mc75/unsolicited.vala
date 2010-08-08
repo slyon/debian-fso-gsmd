@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@ public class CinterionMc75.UnsolicitedResponseHandler : FsoGsm.AtUnsolicitedResp
     public UnsolicitedResponseHandler()
     {
         registerUrc( "^SSIM READY", dachSSIM_READY );
+        registerUrc( "^SIND", dachSIND );
     }
 
     public virtual void dachSSIM_READY( string prefix, string rhs )
@@ -33,10 +34,21 @@ public class CinterionMc75.UnsolicitedResponseHandler : FsoGsm.AtUnsolicitedResp
         theModem.advanceToState( FsoGsm.Modem.Status.ALIVE_SIM_READY );
     }
 
+    public virtual void dachSIND( string prefix, string rhs )
+    {
+        // FIXME: Handle
+    }
+
     public override void plusCIEV( string prefix, string rhs )
     {
-        // give base class a chance to handle the indicators it knows about
-        base.plusCIEV( prefix, rhs );
-        // handle proprietary indicators
+        var ciev = theModem.createAtCommand<CinterionPlusCIEV>( "+CIEV" );
+        if ( ciev.validateUrc( @"$prefix: $rhs" ) == Constants.AtResponse.VALID )
+        {
+            logger.warning( "Received unhandled +CIEV %s, %d".printf( ciev.value1, ciev.value2 ) );
+        }
+        else
+        {
+            logger.warning( @"Received invalid +CIEV message $rhs. Please report" );
+        }
     }
 }

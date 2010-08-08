@@ -40,7 +40,7 @@ internal void throwAppropriateError( Constants.AtResponse code, string detail ) 
 /**
  * Throws an error if response is not OK
  **/
-internal void checkResponseOk( FsoGsm.AtCommand command, string[] response ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+public void checkResponseOk( FsoGsm.AtCommand command, string[] response ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
 {
     var code = command.validateOk( response );
     if ( code == Constants.AtResponse.OK )
@@ -58,7 +58,7 @@ internal void checkResponseOk( FsoGsm.AtCommand command, string[] response ) thr
  *
  * @returns the (expected) AT error code
  **/
-internal Constants.AtResponse checkResponseExpected( FsoGsm.AtCommand command,
+public Constants.AtResponse checkResponseExpected( FsoGsm.AtCommand command,
                                      string[] response,
                                      Constants.AtResponse[] expected
                                    ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
@@ -152,6 +152,26 @@ internal void validatePhoneNumber( string number ) throws FreeSmartphone.Error
 /**
  * Modem facilities helpers
  **/
+public async void gatherSimOperators() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+{
+    /*
+    var data = theModem.data();
+    if ( data.simOperatorbook == null );
+    {
+        var copn = theModem.createAtCommand<PlusCOPN>( "+COPN" );
+        var response = yield theModem.processAtCommandAsync( copn, copn.execute() );
+        if ( copn.validateMulti( response ) == Constants.AtResponse.VALID )
+        {
+            data.simOperatorbook = copn.operators;
+        }
+        else
+        {
+            data.simOperatorbook = new GLib.HashTable<string,string>( GLib.str_hash, GLib.str_equal );
+        }
+    }
+    */
+}
+
 public async void gatherSpeakerVolumeRange() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
 {
     var data = theModem.data();
@@ -173,8 +193,20 @@ public async void gatherSpeakerVolumeRange() throws FreeSmartphone.GSM.Error, Fr
     }
 }
 
+static bool inGatherSimStatusAndUpdate;
+static bool inTriggerUpdateNetworkStatus;
+
 public async void gatherSimStatusAndUpdate() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
 {
+    if ( inGatherSimStatusAndUpdate )
+    {
+        assert( theModem.logger.debug( "already gathering sim status... ignoring additional trigger" ) );
+        return;
+    }
+    inGatherSimStatusAndUpdate = true;
+
+    yield gatherSimOperators();
+
     var data = theModem.data();
 
     var cmd = theModem.createAtCommand<PlusCPIN>( "+CPIN" );
@@ -194,15 +226,15 @@ public async void gatherSimStatusAndUpdate() throws FreeSmartphone.GSM.Error, Fr
 
             // advance global modem state
             var modemStatus = theModem.status();
-            if ( modemStatus == Modem.Status.INITIALIZING )
+            if ( modemStatus >= Modem.Status.INITIALIZING && modemStatus <= Modem.Status.ALIVE_REGISTERED )
             {
                 if ( cmd.status == FreeSmartphone.GSM.SIMAuthStatus.READY )
                 {
-                    theModem.advanceToState( Modem.Status.ALIVE_SIM_UNLOCKED );
+                    theModem.advanceToState( Modem.Status.ALIVE_SIM_UNLOCKED, true );
                 }
                 else
                 {
-                    theModem.advanceToState( Modem.Status.ALIVE_SIM_LOCKED );
+                    theModem.advanceToState( Modem.Status.ALIVE_SIM_LOCKED, true );
                 }
             }
         }
@@ -217,16 +249,26 @@ public async void gatherSimStatusAndUpdate() throws FreeSmartphone.GSM.Error, Fr
     {
         theModem.logger.warning( "Unhandled error while querying SIM PIN status" );
     }
+
+    inGatherSimStatusAndUpdate = false;
 }
 
 public async void triggerUpdateNetworkStatus()
 {
+    if ( inTriggerUpdateNetworkStatus )
+    {
+        assert( theModem.logger.debug( "already gathering network status... ignoring additional trigger" ) );
+        return;
+    }
+    inTriggerUpdateNetworkStatus = true;
+
     var mstat = theModem.status();
 
     // ignore, if we don't have proper status to issue networking commands yet
     if ( mstat != Modem.Status.ALIVE_SIM_READY && mstat != Modem.Status.ALIVE_REGISTERED )
     {
         assert( theModem.logger.debug( @"triggerUpdateNetworkStatus() ignored while modem is in status $mstat" ) );
+        inTriggerUpdateNetworkStatus = false;
         return;
     }
 
@@ -239,22 +281,28 @@ public async void triggerUpdateNetworkStatus()
     catch ( GLib.Error e )
     {
         theModem.logger.warning( @"Can't query networking status: $(e.message)" );
+        inTriggerUpdateNetworkStatus = false;
         return;
     }
 
     // advance modem status, if necessary
     var status = m.status.lookup( "registration" ).get_string();
-
     assert( theModem.logger.debug( @"triggerUpdateNetworkStatus() status = $status" ) );
 
     if ( status == "home" || status == "roaming" )
     {
         theModem.advanceToState( Modem.Status.ALIVE_REGISTERED );
     }
+    else
+    {
+        theModem.advanceToState( Modem.Status.ALIVE_SIM_READY, true );
+    }
 
     // send dbus signal
     var obj = theModem.theDevice<FreeSmartphone.GSM.Network>();
     obj.status( m.status );
+
+    inTriggerUpdateNetworkStatus = false;
 }
 
 /**
@@ -264,7 +312,7 @@ public class AtDebugCommand : DebugCommand
 {
     public override async void run( string command, string category ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var cmd = theModem.createAtCommand<CustomAtCommand>( "CUSTOM" );
+        var cmd = new CustomAtCommand( command );
 
         AtChannel channel = theModem.channel( category ) as AtChannel;
         //FIXME: assert channel is really an At channel
@@ -641,13 +689,11 @@ public class AtDeviceSetFunctionality : DeviceSetFunctionality
         }
         var data = theModem.data();
         data.keepRegistration = autoregister;
-        data.simPin = pin;
-
         if ( pin != "" )
         {
+            data.simPin = pin;
             theModem.watchdog.resetUnlockMarker();
         }
-
         yield gatherSimStatusAndUpdate();
     }
 }
@@ -773,6 +819,8 @@ public class AtSimGetInformation : SimGetInformation
             info.insert( "imsi", "unknown" );
         }
 
+        /* SIM Issuer */
+        info.insert( "issuer", "unknown" );
         var crsm = theModem.createAtCommand<PlusCRSM>( "+CRSM" );
         response = yield theModem.processAtCommandAsync( crsm, crsm.issue(
                 Constants.SimFilesystemCommand.READ_BINARY,
@@ -783,11 +831,23 @@ public class AtSimGetInformation : SimGetInformation
             value = issuer != "" ? issuer : "unknown";
             info.insert( "issuer", value );
         }
-        else
-        {
-            info.insert( "issuer", "unknown" );
-        }
 
+        if ( value.get_string() == "unknown" )
+        {
+            crsm = theModem.createAtCommand<PlusCRSM>( "+CRSM" );
+            response = yield theModem.processAtCommandAsync( crsm, crsm.issue(
+                Constants.SimFilesystemCommand.READ_BINARY,
+                Constants.instance().simFilesystemEntryNameToCode( "EF_SPN_CPHS" ), 0, 0, 10 ) );
+            if ( crsm.validate( response ) == Constants.AtResponse.VALID )
+            {
+                var issuer2 = Codec.hexToString( crsm.payload );
+                value = issuer2 != "" ? issuer2 : "unknown";
+                info.insert( "issuer", value );
+            }
+        }
+        theModem.data().simIssuer = value.get_string();
+
+        /* Phonebooks */
         var cpbs = theModem.createAtCommand<PlusCPBS>( "+CPBS" );
         response = yield theModem.processAtCommandAsync( cpbs, cpbs.test() );
         var pbnames = "";
@@ -801,6 +861,7 @@ public class AtSimGetInformation : SimGetInformation
         }
         info.insert( "phonebooks", pbnames.strip() );
 
+        /* Messages */
         var cpms = theModem.createAtCommand<PlusCPMS>( "+CPMS" );
         response = yield theModem.processAtCommandAsync( cpms, cpms.query() );
         if ( cpms.validate( response ) == Constants.AtResponse.VALID )
@@ -838,6 +899,14 @@ public class AtSimGetServiceCenterNumber : SimGetServiceCenterNumber
         var response = yield theModem.processAtCommandAsync( cmd, cmd.query() );
         checkResponseValid( cmd, response );
         number = cmd.number;
+    }
+}
+
+public class AtSimGetUnlockCounters : SimGetUnlockCounters
+{
+    public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+        throw new FreeSmartphone.Error.INTERNAL_ERROR( "Not yet implemented" );
     }
 }
 
@@ -896,8 +965,27 @@ public class AtSimSendAuthCode : SimSendAuthCode
         {
             throw new FreeSmartphone.GSM.Error.SIM_AUTH_FAILED( @"PIN $pin not accepted" );
         }
-
+        else
+        {
+            // PIN seems known good, save for later
+            theModem.data().simPin = pin;
+        }
+        //FIXME: Was it intended to do this in background? (i.e. not yielding)
         gatherSimStatusAndUpdate();
+    }
+}
+
+public class AtSimSendStoredMessage : SimSendStoredMessage
+{
+    public override async void run( int index ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+        var cmd = theModem.createAtCommand<PlusCMSS>( "+CMSS" );
+        var response = yield theModem.processAtCommandAsync( cmd, cmd.issue( index ) );
+        checkResponseValid( cmd, response );
+        transaction_index = cmd.refnum;
+
+        //FIXME: What should we do with that?
+        timestamp = "now";
     }
 }
 
@@ -909,6 +997,30 @@ public class AtSimSetServiceCenterNumber : SimSetServiceCenterNumber
         var cmd = theModem.createAtCommand<PlusCSCA>( "+CSCA" );
         var response = yield theModem.processAtCommandAsync( cmd, cmd.issue( number ) );
         checkResponseOk( cmd, response );
+    }
+}
+
+public class AtSimStoreMessage : SimStoreMessage
+{
+    public override async void run( string recipient_number, string contents, bool want_report ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+        validatePhoneNumber( recipient_number );
+
+        var hexpdus = theModem.smshandler.formatTextMessage( recipient_number, contents, want_report );
+
+        if ( hexpdus.size != 1 )
+        {
+            throw new FreeSmartphone.Error.INVALID_PARAMETER( @"Message does not fit in one slot, would rather take $(hexpdus.size) slots" );
+        }
+
+        // send the SMS one after another
+        foreach( var hexpdu in hexpdus )
+        {
+            var cmd = theModem.createAtCommand<PlusCMGW>( "+CMGW" );
+            var response = yield theModem.processAtPduCommandAsync( cmd, cmd.issue( hexpdu ) );
+            checkResponseValid( cmd, response );
+            memory_index = cmd.memory_index;
+        }
     }
 }
 
@@ -984,13 +1096,20 @@ public class AtSmsSendTextMessage : SmsSendTextMessage
             var cmd = theModem.createAtCommand<PlusCMGS>( "+CMGS" );
             var response = yield theModem.processAtPduCommandAsync( cmd, cmd.issue( hexpdu ) );
             checkResponseValid( cmd, response );
-            transaction_index = cmd.refnum;
+            hexpdu.transaction_index = cmd.refnum;
         }
-        //FIXME: What should we do with that?
+        transaction_index = theModem.smshandler.lastReferenceNumber();
+        //FIXME: What about ACK PDUs?
         timestamp = "now";
 
         // signalize that we're done
         yield theModem.processAtCommandAsync( cmms, cmms.issue( 0 ) ); // not interested in the result
+
+        // remember transaction indizes for later
+        if ( want_report )
+        {
+            theModem.smshandler.storeTransactionIndizesForSentMessage( hexpdus );
+        }
     }
 }
 
@@ -1012,6 +1131,13 @@ public class AtNetworkGetStatus : NetworkGetStatus
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
+#if 0
+        if ( theModem.data().simIssuer == null )
+        {
+            var mediator = new AtSimGetInformation();
+            yield mediator.run();
+        }
+#endif
         status = new GLib.HashTable<string,Value?>( str_hash, str_equal );
         var strvalue = Value( typeof(string) );
         var intvalue = Value( typeof(int) );
@@ -1024,7 +1150,9 @@ public class AtNetworkGetStatus : NetworkGetStatus
             intvalue = csq.signal;
             status.insert( "strength", intvalue );
         }
-
+#if 0
+        bool overrideProviderWithSimIssuer = false;
+#endif
         // query telephony registration status and lac/cid
         var creg = theModem.createAtCommand<PlusCREG>( "+CREG" );
         var cregResult = yield theModem.processAtCommandAsync( creg, creg.query() );
@@ -1039,6 +1167,9 @@ public class AtNetworkGetStatus : NetworkGetStatus
                 status.insert( "lac", strvalue );
                 strvalue = creg.cid;
                 status.insert( "cid", strvalue );
+#if 0
+                overrideProviderWithSimIssuer = ( theModem.data().simIssuer != null && creg.status == 1 /* home */ );
+#endif
             }
         }
 
@@ -1051,6 +1182,7 @@ public class AtNetworkGetStatus : NetworkGetStatus
             status.insert( "mode", strvalue );
             strvalue = cops.oper;
             status.insert( "provider", strvalue );
+            status.insert( "network", strvalue ); // base value
             status.insert( "display", strvalue ); // base value
             strvalue = cops.act;
             status.insert( "act", strvalue );
@@ -1069,9 +1201,16 @@ public class AtNetworkGetStatus : NetworkGetStatus
             {
                 strvalue = cops.oper;
                 status.insert( "display", strvalue );
+                status.insert( "network", strvalue );
             }
         }
-
+#if 0
+        // check whether we want to override display name with SIM issuer
+        if ( overrideProviderWithSimIssuer )
+        {
+            status.insert( "display", theModem.data().simIssuer );
+        }
+#endif
         // query operator code
         var copsResult3 = yield theModem.processAtCommandAsync( cops, cops.query( PlusCOPS.Format.NUMERIC ) );
         if ( cops.validate( copsResult3 ) == Constants.AtResponse.VALID )
@@ -1116,6 +1255,16 @@ public class AtNetworkRegister : NetworkRegister
     {
         var cmd = theModem.createAtCommand<PlusCOPS>( "+COPS" );
         var response = yield theModem.processAtCommandAsync( cmd, cmd.issue( PlusCOPS.Action.REGISTER_WITH_BEST_PROVIDER ) );
+        checkResponseOk( cmd, response );
+    }
+}
+
+public class AtNetworkUnregister : NetworkUnregister
+{
+    public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+        var cmd = theModem.createAtCommand<PlusCOPS>( "+COPS" );
+        var response = yield theModem.processAtCommandAsync( cmd, cmd.issue( PlusCOPS.Action.UNREGISTER ) );
         checkResponseOk( cmd, response );
     }
 }
@@ -1328,6 +1477,25 @@ public class AtMonitorGetNeighbourCellInformation : MonitorGetNeighbourCellInfor
 }
 
 /**
+ * Voice Mailbox Mediators
+ **/
+public class AtVoiceMailboxGetNumber : VoiceMailboxGetNumber
+{
+    public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+        throw new FreeSmartphone.Error.UNSUPPORTED( "Not implemented" );
+    }
+}
+
+public class AtVoiceMailboxSetNumber : VoiceMailboxSetNumber
+{
+    public override async void run( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+        throw new FreeSmartphone.Error.UNSUPPORTED( "Not implemented" );
+    }
+}
+
+/**
  * Register all mediators
  **/
 public void registerGenericAtMediators( HashMap<Type,Type> table )
@@ -1359,11 +1527,14 @@ public void registerGenericAtMediators( HashMap<Type,Type> table )
     table[ typeof(SimGetServiceCenterNumber) ]    = typeof( AtSimGetServiceCenterNumber );
     table[ typeof(SimGetInformation) ]            = typeof( AtSimGetInformation );
     table[ typeof(SimGetPhonebookInfo) ]          = typeof( AtSimGetPhonebookInfo );
+    table[ typeof(SimGetUnlockCounters) ]         = typeof( AtSimGetUnlockCounters );
     table[ typeof(SimRetrieveMessage) ]           = typeof( AtSimRetrieveMessage );
     table[ typeof(SimRetrievePhonebook) ]         = typeof( AtSimRetrievePhonebook );
-    table[ typeof(SimSetAuthCodeRequired) ]       = typeof( AtSimSetAuthCodeRequired );
     table[ typeof(SimSendAuthCode) ]              = typeof( AtSimSendAuthCode );
+    table[ typeof(SimSendStoredMessage) ]         = typeof( AtSimSendStoredMessage );
+    table[ typeof(SimSetAuthCodeRequired) ]       = typeof( AtSimSetAuthCodeRequired );
     table[ typeof(SimSetServiceCenterNumber) ]    = typeof( AtSimSetServiceCenterNumber );
+    table[ typeof(SimStoreMessage) ]              = typeof( AtSimStoreMessage );
     table[ typeof(SimWriteEntry) ]                = typeof( AtSimWriteEntry );
     table[ typeof(SimUnlock) ]                    = typeof( AtSimUnlock );
 
@@ -1375,6 +1546,7 @@ public void registerGenericAtMediators( HashMap<Type,Type> table )
     table[ typeof(NetworkGetStatus) ]             = typeof( AtNetworkGetStatus );
     table[ typeof(NetworkListProviders) ]         = typeof( AtNetworkListProviders );
     table[ typeof(NetworkRegister) ]              = typeof( AtNetworkRegister );
+    table[ typeof(NetworkUnregister) ]            = typeof( AtNetworkUnregister );
     table[ typeof(NetworkSendUssdRequest) ]       = typeof( AtNetworkSendUssdRequest );
     table[ typeof(NetworkGetCallingId) ]          = typeof( AtNetworkGetCallingId );
     table[ typeof(NetworkSetCallingId) ]          = typeof( AtNetworkSetCallingId );
@@ -1398,6 +1570,8 @@ public void registerGenericAtMediators( HashMap<Type,Type> table )
     table[ typeof(MonitorGetServingCellInformation) ] = typeof( AtMonitorGetServingCellInformation );
     table[ typeof(MonitorGetNeighbourCellInformation) ] = typeof( AtMonitorGetNeighbourCellInformation );
 
+    table[ typeof(VoiceMailboxGetNumber) ]        = typeof( AtVoiceMailboxGetNumber );
+    table[ typeof(VoiceMailboxSetNumber) ]        = typeof( AtVoiceMailboxSetNumber );
 }
 
 } // namespace FsoGsm

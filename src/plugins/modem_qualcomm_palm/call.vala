@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2010 Simon Busch <morphis@gravedo.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,12 +19,12 @@
 
 using Gee;
 
-internal const int CALL_STATUS_REFRESH_TIMEOUT = 3; // in seconds
-
 /**
  * @class FsoGsm.GenericAtCallHandler
  */
-public class FsoGsm.GenericAtCallHandler : FsoGsm.AbstractCallHandler
+
+#if 0
+public class MsmCallHandler : FsoGsm.AbstractCallHandler
 {
     private bool inSyncCallStatus;
     protected uint timeout;
@@ -326,3 +326,6 @@ public class FsoGsm.GenericAtCallHandler : FsoGsm.AbstractCallHandler
         // no checkResponseOk, this call will always succeed
     }
 }
+#endif
+
+

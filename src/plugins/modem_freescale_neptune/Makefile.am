@@ -2,9 +2,10 @@ include $(top_srcdir)/Makefile.decl
 
 NULL =
 
-AM_CPPFLAGS = \
+AM_CFLAGS = \
 	-I$(top_srcdir)/src/lib \
 	-I$(top_srcdir)/src/3rdparty \
+	$(PALM_CFLAGS) \
 	$(FSO_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(GEE_CFLAGS) \
@@ -14,6 +15,7 @@ AM_CPPFLAGS = \
 noinst_PROGRAMS = $(TEST_PROGS)
 
 progs_ldadd = \
+	$(PALM_LIBS) \
 	$(FSO_LIBS) \
 	$(GLIB_LIBS) \
 	$(GEE_LIBS) \
@@ -28,24 +30,28 @@ VALAC_ARGS = \
 	--pkg gee-1.0 \
 	--pkg dbus-glib-1 \
 	--pkg fso-glib-1.0 \
-	--pkg gsm0710mux-1.0 \
 	--pkg fsoframework-2.0 \
 	--pkg fsotransport-2.0 \
 	--pkg fsogsm-2.0
+
+if WANT_DEBUG
+VALAC_ARGS += -g -D DEBUG
+AM_CFLAGS += -ggdb -O0
+endif
 
 #
 # plugin
 #
 modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
-modlibexec_LTLIBRARIES = modem_cinterion_mc75.la
-modem_cinterion_mc75_la_SOURCES = commands.c unsolicited.c plugin.c
-modem_cinterion_mc75_la_VALASOURCES = commands.vala unsolicited.vala plugin.vala
-$(modem_cinterion_mc75_la_SOURCES): $(modem_cinterion_mc75_la_VALASOURCES)
+modlibexec_LTLIBRARIES = modem_freescale_neptune.la
+modem_freescale_neptune_la_SOURCES = plugin.c commands.c mediators.c unsolicited.c
+modem_freescale_neptune_la_VALASOURCES = plugin.vala commands.vala mediators.vala unsolicited.vala
+$(modem_freescale_neptune_la_SOURCES): $(modem_freescale_neptune_la_VALASOURCES)
 	$(VALAC) -C $(VALAC_ARGS) $^
 	touch $@
-modem_cinterion_mc75_la_LIBADD = $(progs_ldadd)
-modem_cinterion_mc75_la_LDFLAGS = -no-undefined -module -avoid-version
-modem_cinterion_mc75_la_LIBTOOLFLAGS = --tag=disable-static
+modem_freescale_neptune_la_LIBADD = $(progs_ldadd)
+modem_freescale_neptune_la_LDFLAGS = -no-undefined -module -avoid-version
+modem_freescale_neptune_la_LIBTOOLFLAGS = --tag=disable-static
 
 CLEANFILES = \
     *.c \

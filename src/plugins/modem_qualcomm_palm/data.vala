@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2010 Simon Busch <morphis@gravedo.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,13 +17,37 @@
  *
  */
 
-using GLib;
-
-public interface FsoGsm.Channel : FsoFramework.CommandQueue
+public class MsmData
 {
-    public abstract void injectResponse( string response );
-    public abstract async bool suspend();
-    public abstract async bool resume();
-
-    public signal void hangup();
+    private static MsmData _instance = null;
+    
+    public static MsmData instance 
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new MsmData();
+            }
+            return _instance;
+        }
+    }
+    
+    public enum SimPinStatus
+    {
+        DISABLED,
+        ENABLED,
+        BLOCKED,
+        PERM_BLOCKED,
+        CHANGED, // TODO: do we really need this state here?
+    }
+    
+    public SimPinStatus pin1_status { get; set; default = SimPinStatus.ENABLED; }
+    public SimPinStatus pin2_status { get; set; default = SimPinStatus.ENABLED; }
+    
+    private MsmData()
+    {
+        
+    }
 }
+
