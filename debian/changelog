@@ -1,3 +1,10 @@
+fso-gsmd (0.5.0+git20100807-1) experimental; urgency=low
+
+  * New git checkout
+  * New Debian Standards Version (3.9.1)
+
+ -- Sebastian Reichel <elektranox@gmail.com>  Sun, 08 Aug 2010 22:48:09 +0200
+
 fso-gsmd (0.5.0+git20100602-1) experimental; urgency=low
 
   * Initial release (Closes: #586588)
