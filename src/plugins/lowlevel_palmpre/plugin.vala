@@ -35,7 +35,7 @@ class LowLevel.PalmPre : FsoGsm.LowLevel, FsoFramework.AbstractObject
         powerOnNode = config.stringValue( MODULE_NAME, "power_on_node", "unknown" );
         wakeupModemNode = config.stringValue( MODULE_NAME, "wakeup_modem_node", "unknown" );
         bootModeNode = config.stringValue( MODULE_NAME, "boot_mode_node", "unknown" );
-        
+
         // modem
         modem = FsoGsm.theModem as FsoGsm.AbstractModem;
 
@@ -65,7 +65,7 @@ class LowLevel.PalmPre : FsoGsm.LowLevel, FsoFramework.AbstractObject
 
         FsoFramework.FileHandling.write( "1\n", powerOnNode );
         FsoFramework.FileHandling.write( "1\n", wakeupModemNode );
-        
+
         return true;
     }
 
@@ -74,6 +74,18 @@ class LowLevel.PalmPre : FsoGsm.LowLevel, FsoFramework.AbstractObject
         debug( "lowlevel_palmpre_poweroff()" );
         FsoFramework.FileHandling.write( "0\n", powerOnNode );
         FsoFramework.FileHandling.write( "0\n", bootModeNode );
+        return true;
+    }
+
+    public bool suspend()
+    {
+        debug( "lowlevel_palmpre_suspend()" );
+        return true;
+    }
+
+    public bool resume()
+    {
+        debug( "lowlevel_palmpre_resume()" );
         return true;
     }
 }

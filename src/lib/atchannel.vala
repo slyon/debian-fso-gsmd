@@ -21,6 +21,8 @@ using GLib;
 
 public class FsoGsm.AtChannel : FsoGsm.AtCommandQueue, FsoGsm.Channel
 {
+    private static bool isMainInitialized;
+
     protected string name;
     private bool isInitialized;
     private bool isMainChannel;
@@ -31,7 +33,7 @@ public class FsoGsm.AtChannel : FsoGsm.AtCommandQueue, FsoGsm.Channel
         this.name = name;
         theModem.registerChannel( name, this );
 
-        theModem.signalStatusChanged += onModemStatusChanged;
+        theModem.signalStatusChanged.connect( onModemStatusChanged );
 
         this.isMainChannel = ( name == "main" );
     }
@@ -63,6 +65,21 @@ public class FsoGsm.AtChannel : FsoGsm.AtCommandQueue, FsoGsm.Channel
         {
             var seq1 = theModem.atCommandSequence( "MODEM", "init" );
             yield seq1.performOnChannel( this );
+            isMainInitialized = true;
+        }
+
+        while ( !isMainInitialized )
+        {
+            // make sure that we still are initializing; if not, just return as
+            // we obviously have been requested to shutdown then
+            if ( theModem.status() == Modem.Status.CLOSING )
+            {
+                return;
+            }
+
+            theModem.logger.debug( "Main channel not initialized yet... waiting" );
+            Timeout.add_seconds( 1, initialize.callback );
+            yield;
         }
 
         var seq2 = theModem.atCommandSequence( "CHANNEL", "init" );

@@ -38,11 +38,12 @@ public class FsoGsm.AtCommandHandler : FsoFramework.AbstractCommandHandler
     private string request;
     public string[] response;
 
-    public AtCommandHandler( FsoGsm.AtCommandQueueCommand command, string request, int retries )
+    public AtCommandHandler( FsoGsm.AtCommandQueueCommand command, string request, uint retries = 0, uint timeout = 0 )
     {
         this.command = command;
         this.request = request;
-        this.retry = retries;
+        this.retry = retries > 0 ? retries : command.get_retry();
+        this.timeout = timeout > 0 ? timeout : command.get_timeout();
     }
 
     public override void writeToTransport( FsoFramework.Transport transport )
@@ -145,11 +146,11 @@ public class FsoGsm.AtCommandQueue : FsoFramework.AbstractCommandQueue
 
         if ( response.length == 1 ) // simple URCs
         {
-            urchandler( strings[0], strings[1].offset( 1 ) );
+            urchandler( strings[0], strings[1].strip() );
         }
         else if ( response.length == 2 ) // PDU URC
         {
-            urchandler( strings[0], strings[1].offset( 1 ), response[1] );
+            urchandler( strings[0], strings[1].strip(), response[1] );
         }
         else
         {
@@ -159,23 +160,25 @@ public class FsoGsm.AtCommandQueue : FsoFramework.AbstractCommandQueue
 
     protected void onSolicitedResponse( AtCommandHandler bundle, string[] response )
     {
+        resetTimeout();
+
         bundle.response = response;
         transport.logger.info( @"SRC: $bundle" );
         assert( bundle.callback != null );
         bundle.callback();
     }
 
-    protected void onResponseTimeout( AtCommandHandler bundle )
+    protected override void onResponseTimeout( FsoFramework.AbstractCommandHandler bundle )
     {
-        onSolicitedResponse( bundle, new string[] { "+EXT: ERROR 261271" } );
+        onSolicitedResponse( (AtCommandHandler) bundle, new string[] { @"+EXT: TIMEOUT $(bundle.timeout)" } );
     }
 
-    public async string[] enqueueAsync( FsoGsm.AtCommandQueueCommand command, string request, int retries = DEFAULT_RETRY )
+    public async string[] enqueueAsync( FsoGsm.AtCommandQueueCommand command, string request, int retries = 0, int timeout = 0 )
     {
 #if DEBUG
         debug( "enqueuing %s from AT command %s".printf( request, Type.from_instance( command ).name() ) );
 #endif
-        var handler = new AtCommandHandler( command, request, retries );
+        var handler = new AtCommandHandler( command, request, retries, timeout );
         handler.callback = enqueueAsync.callback;
         enqueueCommand( handler );
         yield;
@@ -207,9 +210,11 @@ public class FsoGsm.AtCommandSequence
     {
         foreach( var element in commands )
         {
-            var cmd = theModem.createAtCommand<CustomAtCommand>( "CUSTOM" );
-            yield channel.enqueueAsync( cmd, element );
-            // no error checks here
+            var components = element.split( "=" );
+
+            var cmd = new FsoGsm.CustomAtCommand( components[0] );
+            /* var result = */ yield channel.enqueueAsync( cmd, element );
+            // no error checks here as we don't care about the result
         }
     }
 }

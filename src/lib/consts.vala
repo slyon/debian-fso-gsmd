@@ -115,7 +115,7 @@ public class FsoGsm.Constants
         { 0x6FC5,        0x7F20,      "EFpnn" },           // 51.011
         { 0x6FC6,        0x7F20,      "EFopl" },           // 51.011
         { 0x6FC7,        0x7F20,      "EFmbdn" },          // 51.011
-        { 0x6FC8,        0x7F20,      "EFext6" },          // 51.011
+        { 0x6FC8,        0x7F20,      "EFext6" },          // Ext record for EFmbdn
         { 0x6FC9,        0x7F20,      "EFmbi" },           // 51.011
         { 0x6FCA,        0x7F20,      "EFmwis" },          // 51.011
         { 0x6FCB,        0x7F20,      "EFcfis" },          // 51.011
@@ -126,6 +126,13 @@ public class FsoGsm.Constants
         { 0x6FD0,        0x7F20,      "EFmmsicp" },        // 51.011
         { 0x6FD1,        0x7F20,      "EFmmsup" },         // 51.011
         { 0x6FD2,        0x7F20,      "EFmmsucp" },        // 51.011
+
+        { 0x6F17,        0x7F20,      "EF_MAILBOX_CPHS" },                  // CPHS phase 2
+        { 0x6F11,        0x7F20,      "EF_VOICE_MAIL_INDICATOR_CPHS" },     // CPHS phase 2
+        { 0x6F13,        0x7F20,      "EF_CFF_CPHS" },                      // CPHS phase 2
+        { 0x6f14,        0x7F20,      "EF_SPN_CPHS" },                      // CPHS phase 2
+        { 0x6f18,        0x7F20,      "EF_SPN_SHORT_CPHS" },                // CPHS phase 2
+        { 0x6f16,        0x7F20,      "EF_INFO_CPHS" },                     // CPHS phase 2
 
         { 0x5F30,        0x7F20,      "DFiridium" },
         { 0x5F31,        0x7F20,      "DFglobst" },
@@ -393,6 +400,11 @@ public class FsoGsm.Constants
         }
     }
 
+    public string cleanPhoneNumber( string number )
+    {
+        return FsoFramework.StringHandling.filterByAllowedCharacters( number, PHONE_DIGITS );
+    }
+
     public string devicePowerStatusToString( int code )
     {
         switch ( code )
@@ -620,11 +632,24 @@ public class FsoGsm.Constants
         }
     }
 
+    public int networkSignalIndicatorToPercentage( int sig )
+    {
+        var result = sig * 20;
+        if ( result < 0 )
+        {
+            return 0;
+        }
+        if ( result > 100 )
+        {
+            return 100;
+        }
+        return result;
+    }
+
     public int networkSignalToPercentage( int sig )
     {
         if ( sig <= 0 || sig > 31 )
         {
-            warning( @"networkSignalToPercentage(): Invalid signal strength $sig; returning 0" );
             return 0;
         }
         double dsig = sig;

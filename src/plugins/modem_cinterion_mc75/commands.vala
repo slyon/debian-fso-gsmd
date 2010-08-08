@@ -17,13 +17,29 @@
  *
  */
 
-using GLib;
+using FsoGsm;
+using Gee;
 
-public interface FsoGsm.Channel : FsoFramework.CommandQueue
+namespace CinterionMc75
 {
-    public abstract void injectResponse( string response );
-    public abstract async bool suspend();
-    public abstract async bool resume();
 
-    public signal void hangup();
+/**
+ * +CIEV: ciphcall,1
+ **/
+public class CinterionPlusCIEV : FsoGsm.TwoParamsAtCommand<string,int>
+{
+    public CinterionPlusCIEV()
+    {
+        base( "+CIEV" );
+    }
 }
+
+/**
+ * Register all custom commands
+ **/
+public void registerCustomAtCommands( HashMap<string,AtCommand> table )
+{
+    table[ "+CIEV" ]           = new CinterionPlusCIEV();
+}
+
+} /* namespace QualcommHtc */

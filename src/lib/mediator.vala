@@ -180,6 +180,12 @@ public abstract class FsoGsm.SimGetServiceCenterNumber : FsoGsm.AbstractMediator
     public abstract async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
 }
 
+public abstract class FsoGsm.SimGetUnlockCounters : FsoGsm.AbstractMediator
+{
+    public GLib.HashTable<string,Value?> counters { get; set; }
+    public abstract async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
 public abstract class FsoGsm.SimRetrievePhonebook : FsoGsm.AbstractMediator
 {
     public FreeSmartphone.GSM.SIMEntry[] phonebook { get; set; }
@@ -196,6 +202,13 @@ public abstract class FsoGsm.SimSendAuthCode : FsoGsm.AbstractMediator
     public abstract async void run( string pin ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
 }
 
+public abstract class FsoGsm.SimSendStoredMessage : FsoGsm.AbstractMediator
+{
+    public int transaction_index { get; set; }
+    public string timestamp { get; set; }
+    public abstract async void run( int index ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
 public abstract class FsoGsm.SimSetAuthCodeRequired : FsoGsm.AbstractMediator
 {
     public abstract async void run( bool required, string pin ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
@@ -204,6 +217,12 @@ public abstract class FsoGsm.SimSetAuthCodeRequired : FsoGsm.AbstractMediator
 public abstract class FsoGsm.SimSetServiceCenterNumber : FsoGsm.AbstractMediator
 {
     public abstract async void run( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+public abstract class FsoGsm.SimStoreMessage : FsoGsm.AbstractMediator
+{
+    public int memory_index { get; set; }
+    public abstract async void run( string recipient_number, string contents, bool want_report ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
 }
 
 public abstract class FsoGsm.SimWriteEntry : FsoGsm.AbstractMediator
@@ -386,4 +405,19 @@ public abstract class FsoGsm.MonitorGetNeighbourCellInformation : FsoGsm.Abstrac
     public GLib.HashTable<string,GLib.Value?>[] cells { get; set; }
 
     public abstract async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+//
+// org.freesmartphone.GSM.VoiceMail.*
+//
+public abstract class FsoGsm.VoiceMailboxGetNumber : FsoGsm.AbstractMediator
+{
+    public string number;
+
+    public abstract async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+public abstract class FsoGsm.VoiceMailboxSetNumber : FsoGsm.AbstractMediator
+{
+    public abstract async void run( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
 }

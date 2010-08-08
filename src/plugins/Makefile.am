@@ -1,7 +1,7 @@
 
 include $(top_srcdir)/Makefile.decl
 
-NULL = 
+NULL =
 
 AUTOMAKE_OPTIONS = subdir-objects
 
@@ -9,10 +9,12 @@ SUBDIRS = \
 	dbus_service \
 	\
 	lowlevel_openmoko \
+	lowlevel_motorola_ezx \
 	\
 	modem_dummy \
 	modem_singleline \
 	modem_qualcomm_htc \
+	modem_freescale_neptune \
 	\
 	pdp_qmi \
 	$(NULL)

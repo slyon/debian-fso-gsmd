@@ -86,6 +86,10 @@ class TiCalypso.Modem : FsoGsm.AbstractModem
             """+CSNS=0"""
         } ) );
 
+        // sequence for initializing main channel
+        registerAtCommandSequence( "main", "init", new AtCommandSequence( {
+            """+CFUN=1"""
+        } ) );
 
         // sequence for initializing the channel urc
         registerAtCommandSequence( "urc", "init", new AtCommandSequence( {
@@ -105,6 +109,7 @@ class TiCalypso.Modem : FsoGsm.AbstractModem
 
             """%CPI=3""",
             """%CPRI=1""",
+            """%CPVWI=1""", /* enable incoming voice mail URC */
             """%CNIV=1""",
             """%CSCN=1,2,1,2""",
             """%CSTAT=1""",
@@ -117,7 +122,8 @@ class TiCalypso.Modem : FsoGsm.AbstractModem
         // sequence for when the modem is registered
         registerAtCommandSequence( "urc", "registered", new AtCommandSequence( {
             cnmiCommand,
-            """+CCWA=1,1""" /* register for waiting call notifications */
+            """+CCWA=1,1""", /* register for waiting call notifications */
+            """%CPHS=1""" /* enable CPHS phase 2 */
         } ) );
 
         // sequence for suspending the channel urc
@@ -209,6 +215,10 @@ class TiCalypso.Modem : FsoGsm.AbstractModem
             return channels["call"];
         }
         if ( query.has_prefix( "%CHLD" ) )
+        {
+            return channels["call"];
+        }
+        if ( query.has_prefix( "+CLIR" ) )
         {
             return channels["call"];
         }

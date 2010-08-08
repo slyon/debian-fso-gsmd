@@ -56,6 +56,7 @@ public class MsmCommandQueue : FsoFramework.AbstractCommandQueue
 {
     public static Msmcomm.Context context;
     public static MsmUnsolicitedResponseHandler msmurchandler;
+    public uint32 current_index;
 
     // FIXME: This bypasses the generic URChandler idea in the base modem class,
     // however said URChandler is unfortunately not generic at all, but very
@@ -66,12 +67,35 @@ public class MsmCommandQueue : FsoFramework.AbstractCommandQueue
         context.readFromModem();
     }
 
+    private bool checkResponseForCommandHandler(Msmcomm.Message response, MsmCommandHandler bundle)
+    {
+        return response.index == bundle.command.index;
+    }
+
+    private uint32 nextValidMessageIndex()
+    {
+        if (current_index > uint32.MAX) {
+            current_index = 0;
+        }
+        else {
+            current_index++;
+        }
+        return current_index;
+    }
+
     protected void onSolicitedResponse( MsmCommandHandler bundle, Msmcomm.Message response )
     {
-        bundle.response = response;
-        transport.logger.info( @"SRC: $bundle" );
-        assert( bundle.callback != null );
-        bundle.callback();
+        if ( checkResponseForCommandHandler( response, bundle ) )
+        {
+            bundle.response = response;
+            transport.logger.info( @"SRC: $bundle" );
+            
+            bundle.callback();
+        }
+        else
+        {
+            transport.logger.error( @"got response for current command with wrong ref id!" );
+        }
     }
 
     protected void onUnsolicitedResponse( Msmcomm.EventType urctype, Msmcomm.Message urc )
@@ -79,13 +103,21 @@ public class MsmCommandQueue : FsoFramework.AbstractCommandQueue
         msmurchandler.dispatch( urctype, urc );
     }
 
-    public async unowned Msmcomm.Message enqueueAsync( owned Msmcomm.Message command, int retries = DEFAULT_RETRY )
+    public async unowned Msmcomm.Message enqueueAsync( owned Msmcomm.Message command, int retries = 0, int timeout = 0 )
     {
+        command.index = nextValidMessageIndex();
         var handler = new MsmCommandHandler( command, retries );
         handler.callback = enqueueAsync.callback;
         enqueueCommand( handler );
         yield;
         return handler.response;
+    }
+    
+    public void enqueueSync( owned Msmcomm.Message command, int retries = 0 )
+    {
+        command.index = nextValidMessageIndex();
+        var handler = new MsmCommandHandler( command, 0 );
+        enqueueCommand( handler );
     }
 
     public void onMsmcommShouldRead( void* data, int len )
@@ -98,40 +130,39 @@ public class MsmCommandQueue : FsoFramework.AbstractCommandQueue
         var bwritten = transport.write( data, len );
         assert( bwritten == len );
     }
+    
+    private async bool syncWithModem()
+    {
+        debug( "SENDING TEST ALIVE COMMAND" );
+        var cmd2 = new Msmcomm.Command.TestAlive();
+        unowned Msmcomm.Message response = yield enqueueAsync( (owned)cmd2 );
+        return false;
+    }
 
     public void onMsmcommGotEvent( int event, Msmcomm.Message message )
     {
-        // enable when glib bug for unknown types has been fixed
-        //assert( transport.logger.debug( @"$message" ) );
         var et = Msmcomm.eventTypeToString( event );
-        assert( et != null );
-        //transport.logger.debug( et );
-#if 0
-        //FIXME: This is wrong, but works for now... (treating every command as a response, if we got a pending one)
-        if ( current != null )
+        transport.logger.debug( et );
+
+        if ( message.type == Msmcomm.EventType.RESET_RADIO_IND )
         {
-            onSolicitedResponse( (MsmCommandHandler)current, message );
-            current = null;
-            Idle.add( checkRestartingQ );
+            /* Modem was reseted, we should do the same */
+            debug( "Modem was reseted, we should do the same ..." );
+            reset();
+            syncWithModem.begin();
         }
-        else
-        {
-            onUnsolicitedResponse( (Msmcomm.EventType) event, message );
-        }
-#else
-        // FIXME: We're treating some URCs as responses here :/
-        if ( et.has_prefix( "RESPONSE" ) || et.has_prefix( "URC_RESET_RADIO_IND" ) || et.has_prefix( "URC_OPERATION_MODE" ) )
+        
+        if ( message.message_type == Msmcomm.MessageType.RESPONSE )
         {
             assert( current != null );
             onSolicitedResponse( (MsmCommandHandler)current, message );
             current = null;
             Idle.add( checkRestartingQ );
         }
-        else
+        else if ( message.message_type == Msmcomm.MessageType.EVENT )
         {
             onUnsolicitedResponse( (Msmcomm.EventType) event, message );
         }
-#endif
     }
 
     //
@@ -140,28 +171,17 @@ public class MsmCommandQueue : FsoFramework.AbstractCommandQueue
     public MsmCommandQueue( FsoFramework.Transport transport )
     {
         base( transport );
+        current_index = 0;
         context = new Msmcomm.Context();
         msmurchandler = new MsmUnsolicitedResponseHandler();
     }
 
     public override async bool open()
     {
-        // FIXME: yield base.open() does not work in Vala atm.
-
-        // open transport
-        assert( !transport.isOpen() );
-        var opened = yield transport.openAsync();
-
-        if ( opened /* yield base.open() */ )
-        {
-            context.registerEventHandler( onMsmcommGotEvent );
-            context.registerReadHandler( onMsmcommShouldRead );
-            context.registerWriteHandler( onMsmcommShouldWrite );
-
-            return true;
-        }
-
-        return false;
+        context.registerEventHandler( onMsmcommGotEvent );
+        context.registerReadHandler( onMsmcommShouldRead );
+        context.registerWriteHandler( onMsmcommShouldWrite );
+        return true;
     }
 }
 

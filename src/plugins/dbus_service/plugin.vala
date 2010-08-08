@@ -37,6 +37,7 @@ class DBusService.Device :
     FreeSmartphone.GSM.CB,
     FreeSmartphone.GSM.HZ,
     FreeSmartphone.GSM.Monitor,
+    FreeSmartphone.GSM.VoiceMail,
     FsoFramework.AbstractObject
 {
     //FsoFramework.Subsystem subsystem;
@@ -107,12 +108,19 @@ class DBusService.Device :
 
         switch ( modem.status() )
         {
-            case FsoGsm.Modem.Status.SUSPENDING:
-            case FsoGsm.Modem.Status.RESUMING:
-            case FsoGsm.Modem.Status.SUSPENDED:
-            case FsoGsm.Modem.Status.CLOSING:
-            case FsoGsm.Modem.Status.CLOSED:
-            throw new FreeSmartphone.Error.UNAVAILABLE( @"This function is not available while modem is in state $(modem.status())" );
+            case FsoGsm.Modem.Status.ALIVE_NO_SIM:
+                break;
+            case FsoGsm.Modem.Status.ALIVE_SIM_LOCKED:
+                break;
+            case FsoGsm.Modem.Status.ALIVE_SIM_UNLOCKED:
+                break;
+            case FsoGsm.Modem.Status.ALIVE_SIM_READY:
+                break;
+            case FsoGsm.Modem.Status.ALIVE_REGISTERED:
+                break;
+            default:
+                throw new FreeSmartphone.Error.UNAVAILABLE( @"This function is not available while modem is in state $(modem.status())" );
+                break;
         }
     }
 
@@ -436,6 +444,7 @@ class DBusService.Device :
 
     public async string get_service_center_number() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
     {
+        checkAvailability();
         var m = modem.createMediator<FsoGsm.SimGetServiceCenterNumber>();
         yield m.run();
         return m.number;
@@ -447,6 +456,14 @@ class DBusService.Device :
         var m = modem.createMediator<FsoGsm.SimGetInformation>();
         yield m.run();
         return m.info;
+    }
+
+    public async GLib.HashTable<string,GLib.Value?> get_unlock_counters() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
+    {
+        checkAvailability();
+        var m = modem.createMediator<FsoGsm.SimGetUnlockCounters>();
+        yield m.run();
+        return m.counters;
     }
 
     public async void retrieve_message( int index, out string status, out string number, out string contents, out GLib.HashTable<string,GLib.Value?> properties ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
@@ -486,7 +503,10 @@ class DBusService.Device :
     public async void send_stored_message( int index, out int transaction_index, out string timestamp ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
     {
         checkAvailability();
-        throw new FreeSmartphone.Error.INTERNAL_ERROR( "Not yet implemented" );
+        var m = modem.createMediator<FsoGsm.SimSendStoredMessage>();
+        yield m.run( index );
+        transaction_index = m.transaction_index;
+        timestamp = m.timestamp;
     }
 
     public async void set_auth_code_required( bool check, string pin ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
@@ -513,7 +533,9 @@ class DBusService.Device :
     public async int store_message( string recipient_number, string contents, GLib.HashTable<string,GLib.Value?> properties ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
     {
         checkAvailability();
-        throw new FreeSmartphone.Error.INTERNAL_ERROR( "Not yet implemented" );
+        var m = modem.createMediator<FsoGsm.SimStoreMessage>();
+        yield m.run( recipient_number, contents, false );
+        return m.memory_index;
     }
 
     public async void unlock( string puk, string new_pin ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
@@ -645,7 +667,8 @@ class DBusService.Device :
     public async void unregister() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
     {
         checkAvailability();
-        throw new FreeSmartphone.Error.INTERNAL_ERROR( "Not yet implemented" );
+        var m = modem.createMediator<FsoGsm.NetworkUnregister>();
+        yield m.run();
     }
 
     //
@@ -829,6 +852,32 @@ class DBusService.Device :
         var m = modem.createMediator<FsoGsm.MonitorGetNeighbourCellInformation>();
         yield m.run();
         return m.cells;
+    }
+
+    //
+    // DBUS (org.freesmartphone.GSM.VoiceMail.*)
+    //
+    public async string get_voice_mailbox_number() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
+    {
+        checkAvailability();
+        var m = modem.createMediator<FsoGsm.VoiceMailboxGetNumber>();
+        yield m.run();
+        return m.number;
+    }
+
+    public async void set_voice_mailbox_number( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
+    {
+        checkAvailability();
+        var m = modem.createMediator<FsoGsm.VoiceMailboxSetNumber>();
+        yield m.run( number );
+    }
+
+    public async string[] get_stored_voice_mails() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBus.Error
+    {
+        checkAvailability();
+        throw new FreeSmartphone.Error.INTERNAL_ERROR( "Not yet implemented" );
+        //var m = modem.createMediator<FsoGsm.VoiceMailboxGetRecordings>();
+        //yield m.run( number );
     }
 }
 

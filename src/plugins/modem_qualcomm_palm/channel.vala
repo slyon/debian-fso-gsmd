@@ -30,7 +30,7 @@ public class MsmChannel : MsmCommandQueue, FsoGsm.Channel
         base( transport );
         this.name = name;
         theModem.registerChannel( name, this );
-        theModem.signalStatusChanged += onModemStatusChanged;
+        theModem.signalStatusChanged.connect( onModemStatusChanged );
     }
 
     public void injectResponse( string response )
@@ -54,7 +54,7 @@ public class MsmChannel : MsmCommandQueue, FsoGsm.Channel
         assert( !transport.isOpen() );
         var opened = yield transport.openAsync();
 
-        if ( !opened /* yield base.open() */ )
+        if ( !yield base.open() )
             return false;
 
         context.registerEventHandler( onMsmcommGotEvent );
@@ -68,11 +68,6 @@ public class MsmChannel : MsmCommandQueue, FsoGsm.Channel
         unowned Msmcomm.Message response = yield enqueueAsync( (owned)cmd1 );
 
         // FIXME: Should send test alive command until first URC has been received
-
-        debug( "SENDING TEST ALIVE COMMAND" );
-
-        var cmd2 = new Msmcomm.Command.TestAlive();
-        response = yield enqueueAsync( (owned)cmd2 );
 
         debug( "OK; MSM CHANNEL OPENED" );
 
