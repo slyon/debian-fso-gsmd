@@ -1,0 +1,6 @@
+add-maintainercleanfiles-plugins.patch
+add-maintainercleanfiles-src.patch
+pdp_ppp_internal-logging-dir.patch
+phonebook-storage-dir.patch
+remove-fsogsm.h.patch
+sms-storage-dir.patch

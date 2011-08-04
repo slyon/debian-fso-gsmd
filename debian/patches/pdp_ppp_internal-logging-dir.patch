@@ -1,0 +1,11 @@
+--- a/src/plugins/pdp_ppp_internal/plugin.vala
++++ b/src/plugins/pdp_ppp_internal/plugin.vala
+@@ -149,7 +149,7 @@
+ 
+         ppp = new ThirdParty.At.PPP( iochannel );
+         ppp.set_debug( onDebugFromAtPPP );
+-        ppp.set_recording( "/tmp/ppp.log" );
++        ppp.set_recording( "/var/log/ppp.log" );
+         ppp.set_credentials( data.contextParams.username, data.contextParams.password );
+         ppp.set_connect_function( onConnectFromAtPPPP );
+         ppp.set_disconnect_function( onDisconnectFromAtPPP );

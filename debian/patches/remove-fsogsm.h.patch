@@ -1,0 +1,8 @@
+--- a/src/lib/Makefile.am
++++ b/src/lib/Makefile.am
+@@ -141,4 +141,5 @@
+ 
+ MAINTAINERCLEANFILES = \
+ 	$(CLEANFILES) \
++	fsogsm.h \
+ 	Makefile.in

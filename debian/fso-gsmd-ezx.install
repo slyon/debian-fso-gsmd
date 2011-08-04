@@ -1,0 +1,4 @@
+etc/freesmartphone/conf/motorola_ezx/*
+usr/lib/cornucopia/modules/fsogsm/lowlevel_motorola_ezx.so
+usr/lib/cornucopia/modules/fsogsm/modem_freescale_neptune.so
+

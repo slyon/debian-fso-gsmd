@@ -1,9 +1,13 @@
-fso-gsmd (0.5.0+git20100807-1) experimental; urgency=low
+fso-gsmd (0.5.0+git20110708-1) unstable; urgency=low
 
-  * New git checkout
-  * New Debian Standards Version (3.9.1)
+  * New upstream snapshot
+  * fixed cleanfiles
+  * fixed lintian warnings
+  * moved pdp_ppp_internal logging dir to /var/log
+  * moved sms and phonebook to /var/lib/fsogsmd
+  * add Rico Rommel <rico@bierrommel.de> to uploaders
 
- -- Sebastian Reichel <elektranox@gmail.com>  Sun, 08 Aug 2010 22:48:09 +0200
+ -- Rico Rommel <rico@bierrommel.de>  Fri, 08 Jul 2011 16:17:08 +0200
 
 fso-gsmd (0.5.0+git20100602-1) experimental; urgency=low
 

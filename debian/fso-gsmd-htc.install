@@ -1,0 +1,4 @@
+etc/freesmartphone/conf/htc*/*
+usr/lib/cornucopia/modules/fsogsm/modem_singleline.so
+usr/lib/cornucopia/modules/fsogsm/modem_qualcomm_htc.so
+

@@ -2,7 +2,7 @@ Source: fso-gsmd
 Section: misc
 Priority: extra
 Maintainer: Debian FreeSmartphone.Org Team <pkg-fso-maint@lists.alioth.debian.org>
-Uploaders: Sebastian Reichel <elektranox@gmail.com>
+Uploaders: Sebastian Reichel <elektranox@gmail.com>, Rico Rommel <rico@bierrommel.de>
 DM-Upload-Allowed: yes
 Build-Depends: automake,
                autotools-dev,
@@ -10,20 +10,25 @@ Build-Depends: automake,
                debhelper (>= 7),
                libdbus-1-dev (>= 1.2.1),
                libdbus-glib-1-dev (>= 0.76),
-               libfso-glib-dev (>= 2010.07.28.1),
+               libfso-glib-dev (>= 2010.05.11.2),
                libfsoframework-dev (>= 0.2.3),
                libfsoresource-dev (>= 0.1.0),
                libfsotransport-dev (>= 0.9.5.9),
                libgee-dev (>= 0.5.0),
-               libglib2.0-dev (>= 2.18.0),
+               libglib2.0-dev (>= 2.26.0),
                libgsm0710-dev,
                libgsm0710mux-dev (>= 0.3.4),
                libtool,
-               libvala-dev (>= 0.9.1),
+               libvala-0.12-dev,
                pkg-config,
                ppp-dev,
-               valac (>= 0.9.2-2)
-Standards-Version: 3.9.1
+               valac-0.12,
+               connman-dev,
+               automake,
+               autoconf,
+               libtool,
+               quilt
+Standards-Version: 3.9.2
 Homepage: http://freesmartphone.org/
 Vcs-Git: git://git.debian.org/git/pkg-fso/fso-gsmd.git
 Vcs-Browser: http://git.debian.org/?p=pkg-fso/fso-gsmd.git;a=summary
@@ -36,3 +41,60 @@ Description: freesmartphone.org GSM daemon
  .
  This package is part of the freesmartphone.org software stack
  and is targeted for smartphones.
+
+Package: fso-gsmd-dbg
+Architecture: any
+Section: debug
+Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd-openmoko (= ${binary:Version}), fso-gsmd-ezx (= ${binary:Version}), fso-gsmd-htc (= ${binary:Version}), fso-gsmd (= ${binary:Version})
+Description: debugging symbols for freesmartphone.org GSM daemon
+ This package contains debugging symbols for fso-gsmd, fso-gsmd-openmoko, 
+ fso-gsmd-ezx and fso-gsmd-htc
+
+Package: fso-gsmd-openmoko
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-openmoko
+Description: freesmartphone.org GSM daemon for openmoko devices
+ This package contains configuration files and plugins needed by 
+ Openmoko GTA01 and GTA02
+ .
+ This package is part of the freesmartphone.org software stack
+ and is targeted for smartphones.
+
+Package: fso-gsmd-ezx
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-ezx
+Description: freesmartphone.org GSM daemon for motorola ezx devices
+ This package contains configuration files and plugins needed by 
+ Motorola EZX devices
+ .
+ This package is part of the freesmartphone.org software stack
+ and is targeted for smartphones.
+
+Package: fso-gsmd-htc
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-htc
+Description: freesmartphone.org GSM daemon for htc devices
+ This package contains configuration files and plugins needed by 
+ HTC devices
+ .
+ This package is part of the freesmartphone.org software stack
+ and is targeted for smartphones.
+
+#Package: fso-gsmd-n900
+#Architecture: any
+#Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-n900
+#Description: freesmartphone.org GSM daemon for Nokia N900
+# This daemon implements the freesmartphone.org GSM API.
+# .
+# This package is part of the freesmartphone.org software stack
+# and is targeted for smartphones.
+
+#Package: fso-gsmd-palmpre
+#Architecture: any
+#Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd, fso-deviced-palmpre
+#Description: freesmartphone.org GSM daemon for Palm Pre
+# This daemon implements the freesmartphone.org GSM API.
+# .
+# This package is part of the freesmartphone.org software stack
+# and is targeted for smartphones.
+
