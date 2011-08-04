@@ -9,7 +9,7 @@ AM_CFLAGS = \
 	$(FSO_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(GEE_CFLAGS) \
-	$(DBUS_CFLAGS) \
+	-DG_LOG_DOMAIN=\"fsogsm.modem_qualcomm_palm\" \
 	$(NULL)
 
 noinst_PROGRAMS = $(TEST_PROGS)
@@ -19,7 +19,6 @@ progs_ldadd = \
 	$(FSO_LIBS) \
 	$(GLIB_LIBS) \
 	$(GEE_LIBS) \
-	$(DBUS_LIBS) \
 	$(top_srcdir)/src/lib/libfsogsm.la
 
 VALAC_ARGS = \
@@ -27,13 +26,14 @@ VALAC_ARGS = \
 	--vapidir ../../lib \
 	--pkg posix \
 	--pkg glib-2.0 \
+	--pkg gio-2.0 \
 	--pkg gee-1.0 \
-	--pkg dbus-glib-1 \
 	--pkg fso-glib-1.0 \
 	--pkg fsoframework-2.0 \
 	--pkg fsotransport-2.0 \
 	--pkg fsogsm-2.0 \
-	--pkg msmcomm-1.0
+	--pkg msmcomm-specs-2.0 \
+	$(NULL)
 
 if WANT_DEBUG
 VALAC_ARGS += -g -D DEBUG
@@ -45,8 +45,33 @@ endif
 #
 modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
 modlibexec_LTLIBRARIES = modem_qualcomm_palm.la
-modem_qualcomm_palm_la_SOURCES = commandqueue.c channel.c mediators.c unsolicited.c plugin.c call.c data.c
-modem_qualcomm_palm_la_VALASOURCES = commandqueue.vala channel.vala mediators.vala unsolicited.vala plugin.vala call.vala data.vala
+
+modem_qualcomm_palm_la_VALASOURCES = \
+ channel.vala \
+ mediators.vala \
+ unsolicited.vala \
+ plugin.vala \
+ callhandler.vala \
+ data.vala \
+ phonebookhandler.vala \
+ sms.vala \
+ consts.vala \
+ mediatorhelpers.vala \
+ mediators_debug.vala \
+ mediators_device.vala \
+ mediators_sim.vala \
+ mediators_sms.vala \
+ mediators_network.vala \
+ mediators_call.vala \
+ mediators_cb.vala \
+ mediators_monitor.vala \
+ mediators_vm.vala \
+ mediators_pdp.vala \
+ utils.vala \
+ $(NULL)
+
+modem_qualcomm_palm_la_SOURCES = $(modem_qualcomm_palm_la_VALASOURCES:.vala=.c)
+
 $(modem_qualcomm_palm_la_SOURCES): $(modem_qualcomm_palm_la_VALASOURCES)
 	$(VALAC) -C $(VALAC_ARGS) $^
 	touch $@

@@ -1,18 +1,18 @@
 /*
  * Copyright (C) 2010  Antonio Ospite <ospite@studenti.unina.it>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -33,16 +33,17 @@ public class NeptuneDeviceGetInformation : DeviceGetInformation
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
+        var modem = theModem as FreescaleNeptune.Modem;
         /*
         var channel = theModem.channel( "main" ) as AtChannel;
         */
-        info = new GLib.HashTable<string,Value?>( str_hash, str_equal );
+        info = new GLib.HashTable<string,Variant>( str_hash, str_equal );
 
         info.insert( "manufacturer", "Motorola" );
         info.insert( "model", "Neptune Freescale Modem" );
 
-        /* FIXME: Use information from the +EBPV URC we get on modem init */
-        info.insert( "revision", "unknown" );
+        /* Use information from the +EBPV URC we got on modem init */
+        info.insert( "revision", modem.revision );
 
         /* "+CGSN" */
         var cgsn = theModem.createAtCommand<PlusCGSN>( "+CGSN" );
@@ -157,3 +158,5 @@ public void registerNeptuneMediators( HashMap<Type,Type> table )
 }
 
 } /* FreescaleNeptune */
+
+// vim:ts=4:sw=4:expandtab

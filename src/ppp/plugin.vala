@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  **/
@@ -20,10 +20,9 @@
 using GLib;
 using FsoFramework;
 
-DBus.Connection dbus_conn;
 FreeSmartphone.GSM.PDP fsogsmd_pdp;
 
-static async void fsogsmd_report_status( HashTable<string,Value?> properties )
+static async void fsogsmd_report_status( HashTable<string,Variant> properties )
 {
     try
     {
@@ -37,16 +36,20 @@ static async void fsogsmd_report_status( HashTable<string,Value?> properties )
     {
         PPPD.error( @"Can't report status to fsogsmd: $(e1.message)" );
     }
-    catch ( DBus.Error e2 )
+    catch ( DBusError e2 )
     {
         PPPD.error( @"Can't report status to fsogsmd: $(e2.message)" );
+    }
+    catch ( IOError e3 )
+    {
+        PPPD.error( @"Can't report status to fsogsmd: $(e3.message)" );
     }
 }
 
 static void fsogsmd_on_phase_change( int arg )
 {
     PPPD.info( @"on_phase_change: $arg" );
-    fsogsmd_report_status( new HashTable<string,Value?>( str_hash, str_equal ) );
+    fsogsmd_report_status( new HashTable<string,Variant>( str_hash, str_equal ) );
 }
 
 static void fsogsmd_on_ip_up( int arg )
@@ -61,7 +64,7 @@ static void fsogsmd_on_ip_up( int arg )
 
     string iface = (string) PPPD.ifname;
 
-    var properties = new HashTable<string,Value?>( str_hash, str_equal );
+    var properties = new HashTable<string,Variant>( str_hash, str_equal );
     properties.insert( "iface", iface );
     properties.insert( "local", ouraddr );
 
@@ -121,7 +124,7 @@ static int fsogsmd_get_pap_check()
     return 1; // we support PAP
 }
 
-static int fsogsmd_get_credentials( string username, string password )
+static int fsogsmd_get_credentials( string? username, string? password )
 {
     PPPD.info( "get_credentials" );
     if ( username != null && password == null )
@@ -152,16 +155,16 @@ static void plugin_init()
 
     try
     {
-
-        dbus_conn = DBus.Bus.get( DBus.BusType.SYSTEM );
-
-        fsogsmd_pdp = dbus_conn.get_object(
-            FsoFramework.GSM.ServiceDBusName,
-            FsoFramework.GSM.DeviceServicePath,
-            FsoFramework.GSM.ServiceFacePrefix + ".PDP" ) as FreeSmartphone.GSM.PDP;
+        fsogsmd_pdp = Bus.get_proxy_sync<FreeSmartphone.GSM.PDP>( BusType.SYSTEM, FsoFramework.GSM.ServiceDBusName, FsoFramework.GSM.DeviceServicePath );
     }
-    catch ( DBus.Error e )
+    catch ( DBusError e )
     {
-        PPPD.error( @"DBus Error while initializing plugin: $(e.message)" );
+        PPPD.error( @"DBusError while initializing plugin: $(e.message)" );
+    }
+    catch ( IOError e )
+    {
+        PPPD.error( @"IOError while initializing plugin: $(e.message)" );
     }
 }
+
+// vim:ts=4:sw=4:expandtab

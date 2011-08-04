@@ -1,18 +1,19 @@
 /*
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ *                         Simon Busch <morphis@gravedo.de>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -32,10 +33,6 @@ class QualcommPalm.Modem : FsoGsm.AbstractModem
 {
     private const string MSM_CHANNEL_NAME = "main";
 
-    construct
-    {
-    }
-
     public override string repr()
     {
         return "<>";
@@ -49,43 +46,43 @@ class QualcommPalm.Modem : FsoGsm.AbstractModem
     protected override void powerOff()
     {
     }
-    
+
     protected override UnsolicitedResponseHandler createUnsolicitedHandler()
     {
-        return null;
+        // NOTE: we define our base unsolicited handler in our commandqueue,
+        // as the base on is very AT command specific atm. Need to change
+        // this somewhere in the future ...
+        return (UnsolicitedResponseHandler) null;
     }
-    
+
     protected override CallHandler createCallHandler()
     {
-        return null;
+        return new MsmCallHandler();
     }
-    
+
     protected override SmsHandler createSmsHandler()
     {
-        return null;
+        return new MsmSmsHandler();
     }
-    
+
     protected override PhonebookHandler createPhonebookHandler()
     {
-        return null;
+        return new MsmPhonebookHandler();
     }
-    
+
     protected override WatchDog createWatchDog()
     {
-        return null;
+        return new FsoGsm.GenericWatchDog();
     }
 
     protected override void createChannels()
     {
-        // create MAIN channel
-        var maintransport = FsoFramework.Transport.create( modem_transport, modem_port, modem_speed );
-        if (maintransport != null)
-            new MsmChannel( MSM_CHANNEL_NAME, maintransport );
+        new MsmChannel( MSM_CHANNEL_NAME );
     }
 
     protected override FsoGsm.Channel channelForCommand( FsoGsm.AtCommand command, string query )
     {
-        return null;
+        assert_not_reached();
     }
 
     protected override void registerCustomMediators( HashMap<Type,Type> mediators )
@@ -124,3 +121,5 @@ public static void fso_register_function( TypeModule module )
     return (!ok);
 }
 */
+
+// vim:ts=4:sw=4:expandtab
