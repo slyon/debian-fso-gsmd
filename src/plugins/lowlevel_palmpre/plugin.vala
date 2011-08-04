@@ -1,18 +1,19 @@
-/**
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+/*
+ * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ *                         Simon Busch <morphis@gravedo.de>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -24,22 +25,27 @@ using FsoGsm;
 class LowLevel.PalmPre : FsoGsm.LowLevel, FsoFramework.AbstractObject
 {
     public const string MODULE_NAME = "fsogsm.lowlevel_palmpre";
-    private string powerOnNode;
-    private string wakeupModemNode;
-    private string bootModeNode;
     private FsoGsm.AbstractModem modem; // for access to modem properties
+    private string powernode;
+    private string bootnode;
+    private string wakeupnode;
+    private bool powered_on;
+
+    private const string DEFAULT_POWER_NODE  = "/sys/user_hw/pins/modem/power_on/level";
+    private const string DEFAULT_BOOT_NODE   = "/sys/user_hw/pins/modem/boot_mode/level";
+    private const string DEFAULT_WAKEUP_NODE = "/sys/user_hw/pins/modem/wakeup_modem/level";
+
 
     construct
     {
-        // power node
-        powerOnNode = config.stringValue( MODULE_NAME, "power_on_node", "unknown" );
-        wakeupModemNode = config.stringValue( MODULE_NAME, "wakeup_modem_node", "unknown" );
-        bootModeNode = config.stringValue( MODULE_NAME, "boot_mode_node", "unknown" );
-
-        // modem
         modem = FsoGsm.theModem as FsoGsm.AbstractModem;
+        powernode = config.stringValue( MODULE_NAME, "power_node", DEFAULT_POWER_NODE );
+        bootnode = config.stringValue( MODULE_NAME, "boot_node", DEFAULT_BOOT_NODE );
+        wakeupnode = config.stringValue( MODULE_NAME, "wakeup_node", DEFAULT_WAKEUP_NODE );
 
-        logger.info( "Registering palmpre low level poweron/poweroff handling" );
+        powered_on = false;
+
+        logger.info( "Registering Palm Pre low level poweron/poweroff handling" );
     }
 
     public override string repr()
@@ -51,20 +57,25 @@ class LowLevel.PalmPre : FsoGsm.LowLevel, FsoFramework.AbstractObject
     {
         debug( "lowlevel_palmpre_poweron()" );
 
-        if ( powerOnNode == "unknown" )
+        if ( powered_on )
         {
-            logger.error( "power_node not defined. Can't poweron." );
-            return false;
+            // Power off first
+            FsoFramework.FileHandling.write( "0", bootnode );
+            FsoFramework.FileHandling.write( "0", wakeupnode );
+            FsoFramework.FileHandling.write( "0", powernode );
+
+            Posix.sleep(2);
+
+            // Power on again
+            FsoFramework.FileHandling.write( "1", powernode );
+            FsoFramework.FileHandling.write( "1", wakeupnode );
+        }
+        else
+        {
+            FsoFramework.FileHandling.write( "1", powernode );
         }
 
-        // always turn off first
-        poweroff();
-        FsoFramework.FileHandling.write( "0\n", wakeupModemNode );
-
-        Thread.usleep( 1000 * 2000 );
-
-        FsoFramework.FileHandling.write( "1\n", powerOnNode );
-        FsoFramework.FileHandling.write( "1\n", wakeupModemNode );
+        powered_on = true;
 
         return true;
     }
@@ -72,8 +83,12 @@ class LowLevel.PalmPre : FsoGsm.LowLevel, FsoFramework.AbstractObject
     public bool poweroff()
     {
         debug( "lowlevel_palmpre_poweroff()" );
-        FsoFramework.FileHandling.write( "0\n", powerOnNode );
-        FsoFramework.FileHandling.write( "0\n", bootModeNode );
+
+        FsoFramework.FileHandling.write("0", bootnode);
+        FsoFramework.FileHandling.write("0", powernode);
+
+        powered_on = false;
+
         return true;
     }
 
@@ -107,3 +122,5 @@ public static void fso_register_function( TypeModule module )
 {
     // do not remove this function
 }
+
+// vim:ts=4:sw=4:expandtab

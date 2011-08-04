@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -153,12 +153,12 @@ public class FsoGsm.LibGsm0710muxTransport : FsoFramework.BaseTransport
             try
             {
                 manager.releaseChannel( channelinfo.consumer );
-                channelOpened = false;
             }
             catch ( Gsm0710mux.MuxerError e )
             {
                 logger.warning( @"Can't release channel #$(channelinfo.number) from MUX: $(e.message)" );
             }
+            channelOpened = false;
         }
     }
     //
@@ -174,7 +174,17 @@ public class FsoGsm.LibGsm0710muxTransport : FsoFramework.BaseTransport
 
     public void delegateClose( FsoFramework.Transport t )
     {
+#if DEBUG
         message( "FROM MODEM CLOSE REQ" );
+#endif
+        if ( hupfunc != null )
+        {
+            this.hupfunc( this ); // signalize that the modem has forced us to close the channel
+        }
+        else
+        {
+            logger.error( "Unexpected CLOSE Request from modem received with no HUP func in place to notify upper layers" );
+        }
     }
 
     public int delegateWrite( void* data, int length, FsoFramework.Transport t )
@@ -218,18 +228,24 @@ public class FsoGsm.LibGsm0710muxTransport : FsoFramework.BaseTransport
 
     public void delegateHup( FsoFramework.Transport t )
     {
+#if DEBUG
         message( "FROM MODEM HUP" );
+#endif
     }
 
     public int delegateFreeze( FsoFramework.Transport t )
     {
+#if DEBUG
         message( "FROM MODEM FREEZE REQ" );
+#endif
         return -1;
     }
 
     public void delegateThaw( FsoFramework.Transport t )
     {
+#if DEBUG
         message( "FROM MODEM THAW REQ" );
+#endif
     }
 
     //
@@ -277,3 +293,5 @@ public class FsoGsm.LibGsm0710muxTransport : FsoFramework.BaseTransport
         assert( bwritten == length );
     }
 }
+
+// vim:ts=4:sw=4:expandtab

@@ -1,18 +1,18 @@
 /*
  * Copyright (C) 2010  Antonio Ospite <ospite@studenti.unina.it>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -27,9 +27,9 @@ public class FreescaleNeptune.UnsolicitedResponseHandler : FsoGsm.AtUnsolicitedR
         registerUrc( "+MBAN", channelReady );
         registerUrc( "+CLIN", plusCLIN );
         registerUrc( "+CLIP", plusCLIP );
-        registerUrc( "+EBAD", dummy );
+        registerUrc( "+EBPV", plusEBPV );
+        registerUrc( "+EBAD", plusEBAD );
         registerUrc( "+EFLEX", dummy );
-        registerUrc( "+EBPV", dummy );
     }
 
     public virtual void channelReady( string prefix, string rhs )
@@ -89,7 +89,7 @@ public class FreescaleNeptune.UnsolicitedResponseHandler : FsoGsm.AtUnsolicitedR
      **/
     public void plusCLIN( string prefix, string rhs )
     {
-        theModem.callhandler.handleIncomingCall( "VOICE" );
+        theModem.callhandler.handleIncomingCall( new FsoGsm.CallInfo.with_ctype( "VOICE" ) );
     }
 
     /**
@@ -100,8 +100,39 @@ public class FreescaleNeptune.UnsolicitedResponseHandler : FsoGsm.AtUnsolicitedR
         assert( theModem.logger.debug( @"plusCLIP: not implemented on Neptune" ) );
     }
 
+
+    /**
+     * When the main channel is opened the BP shows its revision
+     * +EBPV: "R52_G_0D.C0.B1P","GCOA780XXXXXXXX","XXXXXXXX","Quad-Band GSM"
+     **/
+    public void plusEBPV( string prefix, string rhs )
+    {
+        var modem = theModem as FreescaleNeptune.Modem;
+        modem.revision = rhs;
+    }
+
+    /**
+     * +EBAD shows the bluetooth device address, with octets in decimal
+     * +EBAD:n,n,n,n,n,n
+     **/
+    public void plusEBAD( string prefix, string rhs )
+    {
+        var modem = theModem as FreescaleNeptune.Modem;
+
+        var octets = rhs.split( "," );
+        for (uint i = 0; i < octets.length; i++) {
+            modem.bdaddr[i] = (uint8) octets[i].to_int();
+        }
+
+        theModem.logger.debug( "bdaddr: %02X:%02X:%02X:%02X:%02X:%02X".printf(
+            modem.bdaddr[0], modem.bdaddr[1], modem.bdaddr[2],
+            modem.bdaddr[3], modem.bdaddr[4], modem.bdaddr[5] ) );
+    }
+
     public virtual void dummy( string prefix, string rhs )
     {
         assert( theModem.logger.debug( @"URC: $prefix not implemented on Neptune" ) );
     }
 }
+
+// vim:ts=4:sw=4:expandtab

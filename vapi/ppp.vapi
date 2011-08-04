@@ -1,20 +1,20 @@
 /*
  * ppp.vapi
  *
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -64,7 +64,7 @@ namespace PPPD
     [CCode (has_target = false)]
     public delegate void pap_logout_hook_func       ();
     [CCode (has_target = false)]
-    public delegate int  pap_passwd_hook_func       (string user, string passwd);
+    public delegate int  pap_passwd_hook_func       (string? user, string? passwd);
     [CCode (has_target = false)]
     public delegate int  allowed_address_hook_func  (uint32 addr);
     [CCode (has_target = false)]
@@ -76,7 +76,7 @@ namespace PPPD
     [CCode (has_target = false)]
     public delegate int  chap_check_hook_func       ();
     [CCode (has_target = false)]
-    public delegate int  chap_passwd_hook_func      (string user, string passwd);
+    public delegate int  chap_passwd_hook_func      (string? user, string? passwd);
     [CCode (has_target = false)]
     public delegate void multilink_join_hook_func   ();
     [CCode (has_target = false)]
@@ -223,3 +223,5 @@ namespace PPPD
     }
 
 }
+
+// vim:ts=4:sw=4:expandtab

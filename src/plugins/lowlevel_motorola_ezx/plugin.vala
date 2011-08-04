@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2010  Antonio Ospite <ospite@studenti.unina.it>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -22,7 +22,7 @@ using FsoGsm;
 
 class LowLevel.MotorolaEZX : FsoGsm.LowLevel, FsoFramework.AbstractObject
 {
-    private const string MODULE_NAME = "fsogsm.lowlevel_motorola_ezx";
+    public const string MODULE_NAME = "fsogsm.lowlevel_motorola_ezx";
     private FsoGsm.AbstractModem modem; // for access to modem properties
     private static bool initDone = false;
     private int muxfds[16];
@@ -105,18 +105,6 @@ class LowLevel.MotorolaEZX : FsoGsm.LowLevel, FsoFramework.AbstractObject
             return true;
 
         bool ret = modem_init();
-
-        // XXX: this could go into modem plugin "main" channel init.
-        var transport = FsoFramework.Transport.create( "serial", "/dev/mux1", 115200 );
-        transport.open();
-        GLib.assert( transport.isOpen() );
-        var buf = new char[512];
-        var bread = transport.writeAndRead( "AT+EPOM=1,0\r\n", 13, buf, 512, 0 );
-        bread = transport.writeAndRead( "AT+EAPF=12,1,0\r\n", 16, buf, 512, 0 );
-        transport.drain();
-        transport.flush();
-        transport.close();
-
         initDone = true;
         return ret;
     }
@@ -157,3 +145,5 @@ public static void fso_register_function( TypeModule module )
 {
     // do not remove this function
 }
+
+// vim:ts=4:sw=4:expandtab

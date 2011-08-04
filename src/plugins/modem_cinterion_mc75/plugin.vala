@@ -1,18 +1,18 @@
-/**
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+/*
+ * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -24,7 +24,7 @@ using FsoGsm;
 namespace CinterionMc75
 {
     const string MODULE_NAME = "fsogsm.modem_cinterion_mc75";
-    const string CHANNEL_NAMES[] = { "call", "data", "main" };
+    const string CHANNEL_NAMES[] = { "main", "data", "call" };
 }
 
 /**
@@ -43,6 +43,8 @@ namespace CinterionMc75
  **/
 class CinterionMc75.Modem : FsoGsm.AbstractModem
 {
+    private FsoFramework.NgsmBasicMuxTransport muxtransport;
+
     public override string repr()
     {
         return @"<$(channels.size)C>";
@@ -89,6 +91,12 @@ class CinterionMc75.Modem : FsoGsm.AbstractModem
         // modem-specific init sequences
         var seq = modem_data.cmdSequences;
 
+        // sequence for when the modem is registered
+        registerAtCommandSequence( "main", "registered", new AtCommandSequence( {
+            """+CSMS=1""", /* enable SMS phase 2 */
+            """+CNMI=3,3,3,2,1""" /* deliver SMS right away, don't buffer */
+        } ) );
+
         // modem-specific ppp options
         modem_data.pppOptions = config.stringListValue( CONFIG_SECTION, "ppp_options", {
             "115200",
@@ -113,8 +121,39 @@ class CinterionMc75.Modem : FsoGsm.AbstractModem
             "usepeerdns" } );
     }
 
+    public override async bool open()
+    {
+        if ( modem_transport.has_prefix( "ngsm" ) )
+        {
+            muxtransport = new FsoFramework.NgsmBasicMuxTransport( modem_port, modem_speed );
+            if ( !muxtransport.open() )
+            {
+                return false;
+            }
+        }
+        return yield base.open();
+    }
+
+    public override async void close()
+    {
+        yield base.close();
+
+        if ( muxtransport != null )
+        {
+            muxtransport.close();
+            muxtransport = null;
+        }
+    }
+
     protected override void createChannels()
     {
+        if ( modem_transport.has_prefix( "ngsm" ) )
+        {
+            new AtChannel( "main", new FsoFramework.SerialTransport( "/dev/ttygsm1", 115200 ), new FsoGsm.StateBasedAtParser() );
+            new AtChannel( "call", new FsoFramework.SerialTransport( "/dev/ttygsm3", 115200 ), new FsoGsm.StateBasedAtParser() );
+            return;
+        }
+
         for ( int i = 0; i < CHANNEL_NAMES.length; ++i )
         {
             var transport = new FsoGsm.LibGsm0710muxTransport( i+1 );
@@ -179,3 +218,5 @@ public static void fso_register_function( TypeModule module )
     return (!ok);
 }
 */
+
+// vim:ts=4:sw=4:expandtab

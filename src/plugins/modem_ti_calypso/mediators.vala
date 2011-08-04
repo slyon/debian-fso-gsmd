@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -34,7 +34,7 @@ public class AtMonitorGetServingCellInformation : MonitorGetServingCellInformati
         var response = yield theModem.processAtCommandAsync( cmd, cmd.query() );
         checkResponseValid( cmd, response );
 
-        cell = new GLib.HashTable<string,GLib.Value?>( GLib.str_hash, GLib.str_equal );
+        cell = new GLib.HashTable<string,GLib.Variant>( GLib.str_hash, GLib.str_equal );
 
         cell.insert( "arfcn", cmd.arfcn );
         cell.insert( "c1", cmd.c1 );
@@ -67,12 +67,12 @@ public class AtMonitorGetNeighbourCellInformation : MonitorGetNeighbourCellInfor
         var response = yield theModem.processAtCommandAsync( cmd, cmd.query() );
         checkMultiResponseValid( cmd, response );
 
-        //cells = new GLib.HashTable<string,GLib.Value?>[] {};
-        cells = new GLib.HashTable<string,GLib.Value?>[cmd.valid] {};
+        //cells = new GLib.HashTable<string,GLib.Variant>[] {};
+        cells = new GLib.HashTable<string,GLib.Variant>[cmd.valid] {};
 
         for ( int i = 0; i < cmd.valid; ++i )
         {
-            var cell = new GLib.HashTable<string,GLib.Value?>( GLib.str_hash, GLib.str_equal );
+            var cell = new GLib.HashTable<string,GLib.Variant>( GLib.str_hash, GLib.str_equal );
 
             cell.insert( "arfcn", cmd.arfcn[i] );
             cell.insert( "c1", cmd.c1[i] );
@@ -104,7 +104,7 @@ public class AtSimGetUnlockCounters : SimGetUnlockCounters
         var cmd = theModem.createAtCommand<PercentPVRF>( "%PVRF" );
         var response = yield theModem.processAtCommandAsync( cmd, cmd.query() );
         checkResponseValid( cmd, response );
-        counters = new GLib.HashTable<string,GLib.Value?>( GLib.str_hash, GLib.str_equal );
+        counters = new GLib.HashTable<string,GLib.Variant>( GLib.str_hash, GLib.str_equal );
         counters.insert( "SIM PIN", cmd.pin );
         counters.insert( "SIM PIN2", cmd.pin2 );
         counters.insert( "SIM PUK", cmd.puk );
@@ -135,3 +135,5 @@ public void registerCustomMediators( HashMap<Type,Type> table )
 }
 
 } /* namespace TiCalypso */
+
+// vim:ts=4:sw=4:expandtab

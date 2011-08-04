@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -24,6 +24,9 @@ namespace FsoGsm
     public FsoGsm.Modem theModem;
     public const string CONFIG_SECTION = "fsogsm";
     internal const string PPPD_DEFAULT_COMMAND = "/usr/sbin/pppd";
+
+    // This is used the let the plugins define the services dependencies.
+    public GLib.List<string> theServiceDependencies = new GLib.List<string>();
 }
 
 /**
@@ -201,7 +204,7 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
     public signal void signalStatusChanged( Modem.Status status );
 
     // Mediator API
-    public abstract T createMediator<T>();
+    public abstract T createMediator<T>() throws FreeSmartphone.Error;
     public abstract T createAtCommand<T>( string command );
     public abstract T theDevice<T>();
     public abstract Object parent { get; set; } // the DBus object
@@ -277,7 +280,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         channels = new HashMap<string,FsoGsm.Channel>();
 
         // gather modem access parameters
-        var modem_config = config.stringValue( CONFIG_SECTION, "modem_access", "" );
+        var modem_config = config.stringValue( CONFIG_SECTION, "modem_access", "invalid:invalid:-1" );
         if ( modem_config != "" )
         {
             var params = modem_config.split( ":" );
@@ -292,6 +295,10 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
             {
                 logger.warning( @"Configuration string 'modem_access' invalid; expected 3 parameters, got $(params.length)" );
             }
+        }
+        else
+        {
+            logger.warning( @"Configuration string 'modem_access' missing. This might not be what you want." );
         }
 
         // gather modem data access parameters
@@ -352,6 +359,9 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
             case "palmpre":
                 typename = "LowLevelPalmPre";
                 break;
+            case "nokia900":
+                typename = "LowLevelNokia900";
+                break;
             default:
                 logger.warning( @"Invalid lowlevel_type $lowleveltype; vendor specifics will NOT be available" );
                 lowlevel = new FsoGsm.NullLowLevel();
@@ -389,6 +399,12 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
                 break;
             case "qmi":
                 typename = "PdpQmi";
+                break;
+            case "ippp":
+                typename = "PdpPppInternal";
+                break;
+            case "nokia_isi":
+                typename = "PdpNokiaIsi";
                 break;
             default:
                 logger.warning( @"Invalid pdp_type $pdphandlertype; data connectivity will NOT be available" );
@@ -522,11 +538,54 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         modem_data.cmdSequences[ @"$channel-$purpose" ] = sequence;
     }
 
+    private async void checkChannelsForHangup()
+    {
+        // we need to find out which channel has a hangup as we need to react
+        // differently if it is the main channel or not
+        var mainchannel = channels[ "main" ];
+        if ( mainchannel.isActive() )
+        {
+            logger.error( "Detected main channel hangup; closing modem" );
+            close();
+            this.hangup();
+        }
+        else
+        {
+            // it was not the main channel which has a hangup so we restart the one
+            // with the hangup
+            foreach ( var cname in channels.keys )
+            {
+                if ( cname != "main" )
+                {
+                    var channel = channels[ cname ];
+                    if ( !channel.isActive() )
+                    {
+                        logger.info( @"Detected $cname channel hangup; reopening channel ..." );
+
+                        var ok = yield channel.open();
+                        if ( !ok )
+                        {
+                            logger.error( @"Could not reopen channel '$cname' after hangup!!!" );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void onChannelHangup()
     {
-        logger.error( "Detected channel hangup; closing modem" );
-        close();
-        this.hangup();
+        if ( modem_status == Modem.Status.CLOSING )
+        {
+            logger.warning( "Ignoring additional channel hangup while already closing the modem..." );
+        }
+        else
+        {
+            Idle.add( () => {
+                checkChannelsForHangup();
+                return false;
+            } );
+        }
     }
 
     //
@@ -798,17 +857,20 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         return null;
     }
 
-    public T createMediator<T>()
+    public T createMediator<T>() throws FreeSmartphone.Error
     {
         var typ = mediators[typeof(T)];
         assert( typ != typeof(T) ); // we do NOT want the interface, else things will go havoc
         if ( typ == Type.INVALID )
         {
-            logger.critical( @"Requested mediator $(typeof(T).name()) unknown" );
-            assert_not_reached();
+            logger.error( @"Requested mediator $(typeof(T).name()) not present for this modem" );
+            throw new FreeSmartphone.Error.INTERNAL_ERROR( @"Not implemented (yet) for this modem (M:$(typeof(T).name()))" );
         }
         T obj = Object.new( typ );
         assert( obj != null );
+
+        assert( logger.debug( @"Created mediator $(typeof(T).name())" ) );
+
         return obj;
     }
 
@@ -1014,3 +1076,5 @@ public abstract class FsoGsm.AbstractGsmModem : FsoGsm.AbstractModem
 public abstract class FsoGsm.AbstractCdmaModem : FsoGsm.AbstractModem
 {
 }
+
+// vim:ts=4:sw=4:expandtab

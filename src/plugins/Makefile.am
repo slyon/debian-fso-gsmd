@@ -20,7 +20,7 @@ SUBDIRS = \
 	$(NULL)
 
 if WANT_PPP
-SUBDIRS += pdp_ppp
+SUBDIRS += pdp_ppp pdp_ppp_internal
 if WANT_MUX
 SUBDIRS += pdp_ppp_mux
 endif
@@ -33,6 +33,13 @@ SUBDIRS += \
 endif
 
 if WANT_PALM
-SUBDIRS += modem_qualcomm_palm
-SUBDIRS += lowlevel_palmpre
+SUBDIRS += \
+	modem_qualcomm_palm \
+	lowlevel_palmpre
+endif
+
+if WANT_ISI
+SUBDIRS += \
+	modem_nokia_isi \
+	pdp_nokia_isi
 endif

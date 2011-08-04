@@ -1,18 +1,18 @@
 /*
  * Copyright (C) 2010  Antonio Ospite <ospite@studenti.unina.it>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
@@ -36,6 +36,9 @@ namespace FreescaleNeptune
  **/
 class FreescaleNeptune.Modem : FsoGsm.AbstractModem
 {
+    public string revision { get; set; default = "unknown"; }
+    public uint8[] bdaddr { get; set; default = {0, 0, 0, 0, 0, 0}; }
+
     construct
     {
         /* Init the modem */
@@ -56,6 +59,10 @@ class FreescaleNeptune.Modem : FsoGsm.AbstractModem
             """+EAPF=12,1,0""",
          *   so we put these commands in the lowlevel plugin
          */
+        registerAtCommandSequence( "MODEM", "init", new AtCommandSequence( {
+            """+EPOM=1,0""",
+            """+EAPF=12,1,0"""
+        } ) );
 
         // sequence for initializing the channel
         registerAtCommandSequence( "main", "init", new AtCommandSequence( {
@@ -90,20 +97,48 @@ class FreescaleNeptune.Modem : FsoGsm.AbstractModem
 
     protected override void createChannels()
     {
-        logger.info("Create Freescale Neptune channels");
+        logger.info( "Create Freescale Neptune channels" );
 
-        var muxnode_prefix = config.stringValue( MODULE_NAME, "muxnode_prefix");
+        if ( modem_transport == "serial" )
+        {
+            var muxnode_prefix = config.stringValue( MODULE_NAME, "muxnode_prefix" );
 
-        for ( int i = 0; i < CHANNEL_NAMES.length; ++i ) {
-            var channel = CHANNEL_NAMES[i];
-            var dlci = config.stringValue( MODULE_NAME, @"dlci_$(channel)" );
-            if ( dlci != "" ) {
-                var muxnode = @"$(muxnode_prefix)$(dlci)";
-                var transport = FsoFramework.Transport.create("serial", muxnode, 115200);
-                new AtChannel( channel, transport, new FsoGsm.StateBasedAtParser() );
-            } else {
-                logger.warning( @"No dlci for channel \"$(channel)\"" );
+            for ( int i = 0; i < CHANNEL_NAMES.length; ++i )
+            {
+                var channel = CHANNEL_NAMES[i];
+                var dlci = config.stringValue( MODULE_NAME, @"dlci_$(channel)" );
+                if ( dlci != "" )
+                {
+                    var muxnode = @"$(muxnode_prefix)$(dlci)";
+                    var transport = FsoFramework.Transport.create( modem_transport, muxnode, modem_speed );
+                    new AtChannel( channel, transport, new FsoGsm.StateBasedAtParser() );
+                }
+                else
+                {
+                    logger.warning( @"No dlci for channel '$(channel)'" );
+                }
             }
+        }
+        else if ( modem_transport == "tcp" )
+        {
+            for ( int i = 0; i < CHANNEL_NAMES.length; ++i )
+            {
+                var channel = CHANNEL_NAMES[i];
+                var dlci = config.intValue( MODULE_NAME, @"dlci_$(channel)" );
+                if ( dlci > 0 )
+                {
+                    var transport = FsoFramework.Transport.create( modem_transport, modem_port, modem_speed + dlci );
+                    new AtChannel( channel, transport, new FsoGsm.StateBasedAtParser() );
+                }
+                else
+                {
+                    logger.warning( @"No dlci for channel '$(channel)'" );
+                }
+            }
+        }
+        else
+        {
+            logger.error( "This modem only supports serial or TCP transports" );
         }
     }
 
@@ -155,3 +190,5 @@ public static void fso_register_function( TypeModule module )
     return (!ok);
 }
 */
+
+// vim:ts=4:sw=4:expandtab

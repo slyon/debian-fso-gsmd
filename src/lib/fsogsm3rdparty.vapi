@@ -1,21 +1,98 @@
 /*
- * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
 
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  */
+
+[CCode (cheader_filename = "gatppp.h", cprefix = "", lower_case_cprefix = "")]
+namespace ThirdParty
+{
+    [CCode (cname = "struct ring_buffer", cheader_filename = "ringbuffer.h")]
+    public struct RingBuffer
+    {
+    }
+
+    namespace At
+    {
+        [CCode (cname = "GAtDebugFunc", cheader_filename = "gat.h")]
+        public delegate void DebugFunc( string message );
+
+        [CCode (cname = "GAtDisconnectFunc", cheader_filename = "gat.h")]
+        public delegate void DisconnectFunc();
+
+        [CCode (cname = "GAtReceiveFunc", cheader_filename = "gat.h")]
+        public delegate void ReceiveFunc( uint8[] data );
+
+        [CCode (cname = "GAtIo", cprefix = "g_at_io_", destroy_function = "", cheader_filename = "gatio.h")]
+        public class Io
+        {
+            [CCode (cname = "GAtIOReadFunc", cheader_filename = "gatio.h")]
+            public delegate void ReadFunc( RingBuffer buffer );
+            [CCode (cname = "GAtIOWriteFunc", cheader_filename = "gatio.h")]
+            public delegate bool WriteFunc();
+
+            public Io( GLib.IOChannel channel );
+            public Io.blocking( GLib.IOChannel channel );
+
+            public GLib.IOChannel get_channel();
+            public bool set_read_handler( ReadFunc func );
+            public bool set_write_handler( WriteFunc func );
+            public size_t write( uint8[] data );
+            public bool set_disconnect_function( At.DisconnectFunc func );
+            public bool set_debug( At.DebugFunc func );
+        }
+
+        [CCode (cname = "GAtPPP", cprefix = "g_at_ppp_", destroy_function = "", cheader_filename = "gatppp.h")]
+        public class PPP
+        {
+            [CCode (cname = "GAtPPPDisconnectReason", cprefix = "G_AT_PPP_REASON_", has_type_id = false)]
+            public enum DisconnectReason
+            {
+                UNKNOWN,
+                AUTH_FAIL,      /* Failed to authenticate */
+                IPCP_FAIL,      /* Failed to negotiate IPCP */
+                NET_FAIL,       /* Failed to create tun */
+                PEER_CLOSED,    /* Peer initiated a close */
+                LINK_DEAD,      /* Link to the peer died */
+                LOCAL_CLOSE,    /* Normal user close */
+            }
+
+            [CCode (cname = "GAtPPPConnectFunc", cheader_filename = "gatppp.h")]
+            public delegate void ConnectFunc( string iface, string local, string peer, string dns1, string dns2 );
+            [CCode (cname = "GAtPPPDisconnectFunc", cheader_filename = "gatppp.h")]
+            public delegate void DisconnectFunc( DisconnectReason reason );
+
+            public PPP( GLib.IOChannel channel );
+            public PPP.new_from_io( Io io );
+            public PPP.server_new( GLib.IOChannel channel, string local );
+            public PPP.server_new_from_io( Io io, string local );
+
+            public void open();
+            public void set_connect_function( ConnectFunc func );
+            public void set_disconnect_function( DisconnectFunc func );
+            public void set_debug( At.DebugFunc func );
+            public void shutdown();
+            public bool set_credentials( string username, string password );
+            public string get_username();
+            public string get_password();
+            public void set_recording( string filename );
+            public void set_server_info( string remote_ip, string dns1, string dns2 );
+        }
+    }
+}
 
 [CCode (cheader_filename = "conversions.h,util.h", cprefix = "", lower_case_cprefix = "")]
 namespace Conversions
@@ -273,7 +350,7 @@ namespace Sms
     [CCode (cname = "struct sms_deliver", destroy_function = "", cheader_filename = "smsutil.h")]
     public struct Deliver
     {
-        public void addProperties( GLib.HashTable<string,GLib.Value?> props )
+        public void addProperties( GLib.HashTable<string,GLib.Variant> props )
         {
             props.insert( "mms", mms );
             props.insert( "sri", sri );
@@ -442,15 +519,15 @@ namespace Sms
 
             if ( !extract_concatenation( out ref_num, out max_msgs, out seq_num ) )
             {
-                // service center address, originating address, delivery timestamp
-                return @"$(sc_addr)_$(oaddr)_$(deliver.scts.to_epoch())_1".replace( "+", "" );
+                // originating address, delivery timestamp
+                return @"$(oaddr)_$(deliver.scts.to_epoch())_1".replace( "+", "" );
             }
             else
             {
-                // service center address, originating address, reference number, # of fragments
+                // originating address, reference number, # of fragments
                 //FIXME: This goes wrong (problem probably in sms_address_to_string)
                 //return @"$(sc_addr)_$(deliver.oaddr)_$(ref_num)_$(max_msgs)";
-                return @"$(sc_addr)_$(oaddr)_$(ref_num)_$(max_msgs)".replace( "+", "" );
+                return @"$(oaddr)_$(ref_num)_$(max_msgs)".replace( "+", "" );
             }
         }
 
@@ -465,9 +542,9 @@ namespace Sms
             }
         }
 
-        public GLib.HashTable<string,GLib.Value?> properties()
+        public GLib.HashTable<string,GLib.Variant> properties()
         {
-            var props = new GLib.HashTable<string,GLib.Value?>( GLib.str_hash, GLib.str_equal );
+            var props = new GLib.HashTable<string,GLib.Variant>( GLib.str_hash, GLib.str_equal );
 
             int dst;
             int src;
@@ -830,3 +907,5 @@ namespace Cb
     }
     */
 }
+
+// vim:ts=4:sw=4:expandtab

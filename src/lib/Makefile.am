@@ -8,29 +8,43 @@ THIRDPARTY_SOURCES = \
 	$(top_srcdir)/src/3rdparty/smsutil.c \
 	$(top_srcdir)/src/3rdparty/storage.c \
 	$(top_srcdir)/src/3rdparty/util.c \
+	\
+	$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c \
+	$(top_srcdir)/src/3rdparty/ppp/gathdlc.c \
+	$(top_srcdir)/src/3rdparty/ppp/gatio.c \
+	$(top_srcdir)/src/3rdparty/ppp/gatppp.c \
+	$(top_srcdir)/src/3rdparty/ppp/gatutil.c \
+	$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c \
+	$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c \
+	$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c \
+	$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c \
+	$(top_srcdir)/src/3rdparty/ppp/ppp_net.c \
+	$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c \
+	\
 	$(NULL)
 
 AM_CFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/src/3rdparty \
+	-I$(top_srcdir)/src/3rdparty/ppp \
 	$(FSO_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(GEE_CFLAGS) \
 	$(GSMMUX_CFLAGS) \
+	-DG_LOG_DOMAIN=\"fsogsm.lib\" \
 	$(NULL)
 
 VALAC_ARGS = \
 	--basedir $(top_srcdir) \
 	--vapidir $(top_srcdir)/vapi \
 	--vapidir $(top_srcdir)/src/lib \
-	--pkg dbus-glib-1 \
 	--pkg glib-2.0 \
-	--pkg fsogsm3rdparty \
 	--pkg gio-2.0 \
 	--pkg gee-1.0 \
 	--pkg fso-glib-1.0 \
 	--pkg fsoframework-2.0 \
 	--pkg fsotransport-2.0 \
+	--pkg fsogsm3rdparty \
 	--pkg config \
 	--header fsogsm.h \
 	--library fsogsm-2.0
@@ -47,16 +61,27 @@ lib_LTLIBRARIES = \
 	$(NULL)
 
 libfsogsm_la_VALASOURCES = \
-	atcall.vala \
-	atchannel.vala \
-	atcommand.vala \
-	atcommands.vala \
-	atcommandqueue.vala \
-	atmediators.vala \
-	atparser.vala \
-	atpdp.vala \
-	atsms.vala \
-	atunsolicited.vala \
+	at/atcall.vala \
+	at/atchannel.vala \
+	at/atcommand.vala \
+	at/atcommands.vala \
+	at/atcommandqueue.vala \
+	at/atcallmediators.vala \
+	at/atcbmediators.vala \
+	at/atdebugmediators.vala \
+	at/atdevicemediators.vala \
+	at/atmediatorhelpers.vala \
+	at/atmonitormediators.vala \
+	at/atnetworkmediators.vala \
+	at/atpdpmediators.vala \
+	at/atsimmediators.vala \
+	at/atsmsmediators.vala \
+	at/atvmmediators.vala \
+	at/atparser.vala \
+	at/atpdp.vala \
+	at/atsms.vala \
+	at/atunsolicited.vala \
+	\
 	call.vala \
 	codes.vala \
 	consts.vala \
