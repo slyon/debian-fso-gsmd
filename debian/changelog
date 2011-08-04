@@ -1,4 +1,4 @@
-fso-gsmd (0.5.0+git20110708-1) unstable; urgency=low
+fso-gsmd (0.5.0+git20110804-1) unstable; urgency=low
 
   * New upstream snapshot
   * fixed cleanfiles
@@ -7,7 +7,7 @@ fso-gsmd (0.5.0+git20110708-1) unstable; urgency=low
   * moved sms and phonebook to /var/lib/fsogsmd
   * add Rico Rommel <rico@bierrommel.de> to uploaders
 
- -- Rico Rommel <rico@bierrommel.de>  Fri, 08 Jul 2011 16:17:08 +0200
+ -- Rico Rommel <rico@bierrommel.de>  Fri, 04 Aug 2011 13:55:08 +0200
 
 fso-gsmd (0.5.0+git20100602-1) experimental; urgency=low
 
