@@ -1,3 +1,2 @@
 fso-gsmd: package-name-doesnt-match-sonames
-fso-gsmd: binary-without-manpage usr/sbin/fsogsmd
 fso-gsmd: non-dev-pkg-with-shlib-symlink usr/lib/libfsogsm.so.0.0.0 usr/lib/libfsogsm.so
