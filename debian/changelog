@@ -1,4 +1,4 @@
-fso-gsmd (0.5.0+git20110804-1) unstable; urgency=low
+fso-gsmd (0.5.0+git20110804-1) experimental; urgency=low
 
   * New upstream snapshot
   * fixed cleanfiles
