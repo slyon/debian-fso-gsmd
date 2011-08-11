@@ -1,8 +1,0 @@
---- a/src/plugins/Makefile.am
-+++ b/src/plugins/Makefile.am
-@@ -43,3 +43,5 @@
- 	modem_nokia_isi \
- 	pdp_nokia_isi
- endif
-+
-+MAINTAINERCLEANFILES = Makefile.in

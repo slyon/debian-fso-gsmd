@@ -1,8 +1,0 @@
---- a/src/Makefile.am
-+++ b/src/Makefile.am
-@@ -17,3 +17,5 @@
- if WANT_CONNMAN
- SUBDIRS += connman
- endif
-+
-+MAINTAINERCLEANFILES = Makefile.in

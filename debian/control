@@ -24,10 +24,8 @@ Build-Depends: automake,
                ppp-dev,
                valac-0.12,
                connman-dev,
-               automake,
-               autoconf,
-               libtool,
-               quilt
+               quilt,
+               dh-autoreconf
 Standards-Version: 3.9.2
 Homepage: http://freesmartphone.org/
 Vcs-Git: git://git.debian.org/git/pkg-fso/fso-gsmd.git

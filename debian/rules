@@ -3,6 +3,7 @@
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 include /usr/share/cdbs/1/rules/patchsys-quilt.mk
+include /usr/share/cdbs/1/rules/autoreconf.mk
 
 # build to tmp location even if it's a single package
 DEB_DESTDIR = $(CURDIR)/debian/tmp/
@@ -13,10 +14,4 @@ DEB_INSTALL_DOCS_ALL =
 # some additional configure parameters
 DEB_CONFIGURE_EXTRA_FLAGS := --enable-libgsm0710mux --enable-ppp-support --disable-connman-support --disable-modem-qualcomm-palm --disable-modem-nokia-isi
 
-DEB_MAKE_CLEAN_TARGET = maintainer-clean
-
-DEB_CONFIGURE_SCRIPT := ./autogen.sh
-
-clean::
-	rm -f config.guess config.sub config.status
 

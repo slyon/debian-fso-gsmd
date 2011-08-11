@@ -1,8 +1,10 @@
 --- a/src/lib/Makefile.am
 +++ b/src/lib/Makefile.am
-@@ -141,4 +141,5 @@
+@@ -137,6 +137,7 @@
+ CLEANFILES = \
+ 	$(BUILT_SOURCES) \
+         $(libfsogsm_la_VALASOURCES:.vala=.c) \
++	fsogsm.h \
+ 	$(NULL)
  
  MAINTAINERCLEANFILES = \
- 	$(CLEANFILES) \
-+	fsogsm.h \
- 	Makefile.in
