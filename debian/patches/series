@@ -1,3 +1,4 @@
+fix-libdir.patch
 restore-INSTALL.patch
 pdp_ppp_internal-logging-dir.patch
 phonebook-storage-dir.patch

@@ -33,6 +33,7 @@ Vcs-Browser: http://git.debian.org/?p=pkg-fso/fso-gsmd.git;a=summary
 Package: fso-gsmd
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: fso-gsmd-platform
 Description: freesmartphone.org GSM daemon
  This daemon implements the freesmartphone.org GSM API.
  .
@@ -50,6 +51,7 @@ Description: debugging symbols for freesmartphone.org GSM daemon
 Package: fso-gsmd-openmoko
 Architecture: armel
 Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-openmoko
+Provides: fso-gsmd-platform
 Description: freesmartphone.org GSM daemon for openmoko devices
  This package contains configuration files and plugins needed by 
  Openmoko GTA01 and GTA02
@@ -59,6 +61,7 @@ Description: freesmartphone.org GSM daemon for openmoko devices
 
 Package: fso-gsmd-ezx
 Architecture: armel
+Provides: fso-gsmd-platform
 Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-ezx
 Description: freesmartphone.org GSM daemon for motorola ezx devices
  This package contains configuration files and plugins needed by 
@@ -70,6 +73,7 @@ Description: freesmartphone.org GSM daemon for motorola ezx devices
 Package: fso-gsmd-htc
 Architecture: armel armhf
 Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-htc
+Provides: fso-gsmd-platform
 Description: freesmartphone.org GSM daemon for htc devices
  This package contains configuration files and plugins needed by 
  HTC devices
@@ -80,6 +84,7 @@ Description: freesmartphone.org GSM daemon for htc devices
 #Package: fso-gsmd-n900
 #Architecture: armel armhf
 #Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-n900
+#Provides: fso-gsmd-platform
 #Description: freesmartphone.org GSM daemon for Nokia N900
 # This daemon implements the freesmartphone.org GSM API.
 # .
@@ -89,6 +94,7 @@ Description: freesmartphone.org GSM daemon for htc devices
 #Package: fso-gsmd-palmpre
 #Architecture: any
 #Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd, fso-deviced-palmpre
+#Provides: fso-gsmd-platform
 #Description: freesmartphone.org GSM daemon for Palm Pre
 # This daemon implements the freesmartphone.org GSM API.
 # .
