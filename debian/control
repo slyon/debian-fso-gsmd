@@ -7,7 +7,9 @@ DM-Upload-Allowed: yes
 Build-Depends: automake,
                autotools-dev,
                cdbs,
+               connman-dev,
                debhelper (>= 7),
+               dh-autoreconf,
                libdbus-1-dev (>= 1.2.1),
                libdbus-glib-1-dev (>= 0.76),
                libfso-glib-dev (>= 2010.05.11.2),
@@ -18,14 +20,11 @@ Build-Depends: automake,
                libglib2.0-dev (>= 2.26.0),
                libgsm0710-dev,
                libgsm0710mux-dev (>= 0.3.4),
-               libtool,
                libvala-0.12-dev,
                pkg-config,
                ppp-dev,
-               valac-0.12,
-               connman-dev,
                quilt,
-               dh-autoreconf
+               valac-0.12
 Standards-Version: 3.9.2
 Homepage: http://freesmartphone.org/
 Vcs-Git: git://git.debian.org/git/pkg-fso/fso-gsmd.git
@@ -49,7 +48,7 @@ Description: debugging symbols for freesmartphone.org GSM daemon
  fso-gsmd-ezx and fso-gsmd-htc
 
 Package: fso-gsmd-openmoko
-Architecture: any
+Architecture: armel
 Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-openmoko
 Description: freesmartphone.org GSM daemon for openmoko devices
  This package contains configuration files and plugins needed by 
@@ -59,7 +58,7 @@ Description: freesmartphone.org GSM daemon for openmoko devices
  and is targeted for smartphones.
 
 Package: fso-gsmd-ezx
-Architecture: any
+Architecture: armel
 Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-ezx
 Description: freesmartphone.org GSM daemon for motorola ezx devices
  This package contains configuration files and plugins needed by 
@@ -69,7 +68,7 @@ Description: freesmartphone.org GSM daemon for motorola ezx devices
  and is targeted for smartphones.
 
 Package: fso-gsmd-htc
-Architecture: any
+Architecture: armel armhf
 Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-htc
 Description: freesmartphone.org GSM daemon for htc devices
  This package contains configuration files and plugins needed by 
@@ -79,7 +78,7 @@ Description: freesmartphone.org GSM daemon for htc devices
  and is targeted for smartphones.
 
 #Package: fso-gsmd-n900
-#Architecture: any
+#Architecture: armel armhf
 #Depends: ${shlibs:Depends}, ${misc:Depends}, fso-gsmd (= ${binary:Version}), fso-deviced-n900
 #Description: freesmartphone.org GSM daemon for Nokia N900
 # This daemon implements the freesmartphone.org GSM API.
