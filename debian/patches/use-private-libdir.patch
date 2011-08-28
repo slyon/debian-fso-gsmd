@@ -1,0 +1,17 @@
+Description: install fsogsm lib into private path
+ The library is only used by fsogsmd plugins. In Debian
+ it's installed to a private location, since we do not keep
+ track of the API compability.
+ This patch also automatically adds RPATH to the plugins.
+Author: Sebastian Reichel <sre@debian.org>
+--- a/src/lib/Makefile.am
++++ b/src/lib/Makefile.am
+@@ -2,6 +2,8 @@
+ 
+ NULL =
+ 
++libdir = @libdir@/cornucopia/libs/fsogsm
++
+ # third party
+ THIRDPARTY_SOURCES = \
+ 	$(top_srcdir)/src/3rdparty/conversions.c \
