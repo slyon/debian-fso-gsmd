@@ -11,8 +11,9 @@ fso-gsmd (0.5.0+git20110804-1) experimental; urgency=low
   [ Sebastian Reichel ]
   * update my mail address
   * update copyright information 
+  * prepare for multi-arch 
 
- -- Sebastian Reichel <sre@debian.org>  Sun, 28 Aug 2011 18:06:44 +0200
+ -- Sebastian Reichel <sre@debian.org>  Sun, 28 Aug 2011 19:07:51 +0200
 
 fso-gsmd (0.5.0+git20100602-1) experimental; urgency=low
 
