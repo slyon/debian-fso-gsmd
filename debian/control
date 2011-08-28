@@ -7,8 +7,6 @@ DM-Upload-Allowed: yes
 Build-Depends: connman-dev,
                debhelper (>= 8.1.3),
                dh-autoreconf,
-               libdbus-1-dev (>= 1.2.1),
-               libdbus-glib-1-dev (>= 0.76),
                libfso-glib-dev (>= 2011.06.01.1),
                libfsoframework-dev (>= 0.2.3),
                libfsoresource-dev (>= 0.1.0),
