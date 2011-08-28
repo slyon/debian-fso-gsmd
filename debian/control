@@ -4,9 +4,7 @@ Priority: extra
 Maintainer: Debian FreeSmartphone.Org Team <pkg-fso-maint@lists.alioth.debian.org>
 Uploaders: Sebastian Reichel <sre@debian.org>, Rico Rommel <rico@bierrommel.de>
 DM-Upload-Allowed: yes
-Build-Depends: automake,
-               autotools-dev,
-               cdbs,
+Build-Depends: cdbs,
                connman-dev,
                debhelper (>= 7),
                dh-autoreconf,
