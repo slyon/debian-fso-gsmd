@@ -1,3 +1,3 @@
 etc/freesmartphone/conf/openmoko_gta/*
-usr/lib/cornucopia/modules/fsogsm/lowlevel_openmoko.so
-usr/lib/cornucopia/modules/fsogsm/modem_ti_calypso.so
+usr/lib/*/cornucopia/modules/fsogsm/lowlevel_openmoko.so
+usr/lib/*/cornucopia/modules/fsogsm/modem_ti_calypso.so

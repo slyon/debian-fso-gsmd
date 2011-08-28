@@ -1,8 +1,8 @@
 etc/dbus-1/system.d/fsogsmd.conf
 usr/sbin/*
-usr/lib/cornucopia/*.so*
-usr/lib/cornucopia/modules/fsogsm/dbus_service.so
-usr/lib/cornucopia/modules/fsogsm/modem_dummy.so
-usr/lib/cornucopia/modules/fsogsm/pdp*.so
-usr/lib/cornucopia/modules/fsogsm/ppp2fsogsmd.so
+usr/lib/*/cornucopia/*.so*
+usr/lib/*/cornucopia/modules/fsogsm/dbus_service.so
+usr/lib/*/cornucopia/modules/fsogsm/modem_dummy.so
+usr/lib/*/cornucopia/modules/fsogsm/pdp*.so
+usr/lib/*/cornucopia/modules/fsogsm/ppp2fsogsmd.so
 usr/share/dbus-1/system-services/org.freesmartphone.ogsmd.service
