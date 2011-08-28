@@ -1,4 +1,4 @@
-fso-gsmd (0.5.0+git20110804-1) experimental; urgency=low
+fso-gsmd (0.5.0+git20110804-1) unstable; urgency=low
 
   [ Rico Rommel ]
   * new upstream snapshot
@@ -14,8 +14,9 @@ fso-gsmd (0.5.0+git20110804-1) experimental; urgency=low
   * prepare for multi-arch 
   * switch from cdbs to debhelper
   * remove libdbus* build-dependencies (upstream switched to gdbus)
+  * upload to unstable
 
- -- Sebastian Reichel <sre@debian.org>  Sun, 28 Aug 2011 19:11:22 +0200
+ -- Sebastian Reichel <sre@debian.org>  Sun, 28 Aug 2011 19:23:22 +0200
 
 fso-gsmd (0.5.0+git20100602-1) experimental; urgency=low
 
