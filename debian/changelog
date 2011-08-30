@@ -17,7 +17,7 @@ fso-gsmd (0.5.0+git20110804-1) unstable; urgency=low
   * upload to unstable
   * add manpage 
 
- -- Sebastian Reichel <sre@debian.org>  Tue, 30 Aug 2011 22:16:51 +0200
+ -- Sebastian Reichel <sre@debian.org>  Tue, 30 Aug 2011 22:54:23 +0200
 
 fso-gsmd (0.5.0+git20100602-1) experimental; urgency=low
 

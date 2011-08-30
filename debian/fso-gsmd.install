@@ -1,7 +1,7 @@
 etc/dbus-1/system.d/fsogsmd.conf
 etc/freesmartphone/conf/default/*
 usr/sbin/*
-usr/lib/*/cornucopia/libs/fsogsm/*.so*
+usr/lib/*/cornucopia/libs/fsogsm/libfsogsm.so.0*
 usr/lib/*/cornucopia/modules/fsogsm/dbus_service.so
 usr/lib/*/cornucopia/modules/fsogsm/modem_dummy.so
 usr/lib/*/cornucopia/modules/fsogsm/pdp*.so
