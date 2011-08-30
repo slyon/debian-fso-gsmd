@@ -1,3 +1,6 @@
+Description: Fix cleanup rule in Makefile
+ also remove fsogsm.h during make clean
+Author: Rico Rommel <rico@bierrommel.de>
 --- a/src/lib/Makefile.am
 +++ b/src/lib/Makefile.am
 @@ -137,6 +137,7 @@

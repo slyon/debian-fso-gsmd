@@ -1,3 +1,8 @@
+Description: store SMS in /var/lib/fsogsmd/sms
+ Use /var/lib/fsogsmd/sms to store SMS messages. Upstream's
+ default location may be flushed during the boot. The new
+ location complies with the FHS.
+Author: Rico Rommel <rico@bierrommel.de>
 --- a/conf/default/fsogsmd.conf
 +++ b/conf/default/fsogsmd.conf
 @@ -28,7 +28,7 @@

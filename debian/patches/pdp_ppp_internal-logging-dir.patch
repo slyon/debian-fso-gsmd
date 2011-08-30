@@ -1,3 +1,6 @@
+Description: log ppp into /var/log/ppp.log
+ Use /var/log for logging as described in the FHS.
+Author: Rico Rommel <rico@bierrommel.de>
 --- a/src/plugins/pdp_ppp_internal/plugin.vala
 +++ b/src/plugins/pdp_ppp_internal/plugin.vala
 @@ -149,7 +149,7 @@

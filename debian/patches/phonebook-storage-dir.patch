@@ -1,3 +1,8 @@
+Description: store phonebook in /var/lib/fsogsmd/pb
+ Use /var/lib/fsogsmd/pb to store the phonebook. Upstream's
+ default location may be flushed during the boot. The new
+ location complies with the FHS.
+Author: Rico Rommel <rico@bierrommel.de>
 --- a/src/lib/phonebook.vala
 +++ b/src/lib/phonebook.vala
 @@ -21,7 +21,7 @@
