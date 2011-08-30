@@ -42,7 +42,6 @@ Architecture: any
 Section: debug
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
-         ${shlibs:Depends},
          fso-gsmd (= ${binary:Version}),
          fso-gsmd-ezx (= ${binary:Version}),
          fso-gsmd-htc (= ${binary:Version}),
