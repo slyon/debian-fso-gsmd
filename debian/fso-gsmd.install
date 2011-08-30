@@ -1,4 +1,5 @@
 etc/dbus-1/system.d/fsogsmd.conf
+etc/freesmartphone/conf/default/*
 usr/sbin/*
 usr/lib/*/cornucopia/libs/fsogsm/*.so*
 usr/lib/*/cornucopia/modules/fsogsm/dbus_service.so
