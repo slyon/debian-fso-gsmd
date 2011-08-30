@@ -32,7 +32,12 @@ Depends: ${misc:Depends},
          ${shlibs:Depends}
 Recommends: fso-gsmd-platform
 Description: freesmartphone.org GSM daemon
- This daemon implements the freesmartphone.org GSM API.
+ fsogsmd implements the freesmartphone.org GSM API. It takes care
+ of all GSM related functions.
+ .
+ The different platforms (e.g. the Openmoko Freerunner) supported by
+ fso-gsmd have custom lowlevel plugins, which are available in
+ optional packages.
  .
  This package is part of the freesmartphone.org software stack
  and is targeted for smartphones.
@@ -47,8 +52,11 @@ Depends: ${misc:Depends},
          fso-gsmd-htc (= ${binary:Version}) [armel armhf],
          fso-gsmd-openmoko (= ${binary:Version}) [armel]
 Description: debugging symbols for freesmartphone.org GSM daemon
+ fsogsmd implements the freesmartphone.org GSM API. It takes care
+ of all GSM related functions.
+ .
  This package contains debugging symbols for fso-gsmd, fso-gsmd-openmoko, 
- fso-gsmd-ezx and fso-gsmd-htc
+ fso-gsmd-ezx and fso-gsmd-htc.
 
 Package: fso-gsmd-openmoko
 Architecture: armel
@@ -58,9 +66,13 @@ Depends: ${misc:Depends},
          fso-deviced-openmoko,
          fso-gsmd (= ${binary:Version})
 Provides: fso-gsmd-platform
-Description: freesmartphone.org GSM daemon for openmoko devices
- This package contains configuration files and plugins needed by 
- Openmoko GTA01 and GTA02
+Description: freesmartphone.org GSM daemon for Openmoko devices
+ fsogsmd implements the freesmartphone.org GSM API. It takes care
+ of all GSM related functions.
+ .
+ This package contains the configuration and plugins needed by
+ the Openmoko Freerunner (also known as GTA02) and its
+ predecessor GTA01.
  .
  This package is part of the freesmartphone.org software stack
  and is targeted for smartphones.
@@ -73,9 +85,12 @@ Depends: ${misc:Depends},
          fso-deviced-ezx,
          fso-gsmd (= ${binary:Version})
 Provides: fso-gsmd-platform
-Description: freesmartphone.org GSM daemon for motorola ezx devices
- This package contains configuration files and plugins needed by 
- Motorola EZX devices
+Description: freesmartphone.org GSM daemon for Motorola EZX devices
+ fsogsmd implements the freesmartphone.org GSM API. It takes care
+ of all GSM related functions.
+ .
+ This package contains configuration files and plugins needed by
+ Motorola EZX devices.
  .
  This package is part of the freesmartphone.org software stack
  and is targeted for smartphones.
@@ -88,9 +103,12 @@ Depends: ${misc:Depends},
          fso-deviced-htc,
          fso-gsmd (= ${binary:Version})
 Provides: fso-gsmd-platform
-Description: freesmartphone.org GSM daemon for htc devices
+Description: freesmartphone.org GSM daemon for HTC devices
+ fsogsmd implements the freesmartphone.org GSM API. It takes care
+ of all GSM related functions.
+ .
  This package contains configuration files and plugins needed by 
- HTC devices
+ HTC devices.
  .
  This package is part of the freesmartphone.org software stack
  and is targeted for smartphones.
@@ -104,7 +122,11 @@ Description: freesmartphone.org GSM daemon for htc devices
 #         fso-gsmd (= ${binary:Version})
 #Provides: fso-gsmd-platform
 #Description: freesmartphone.org GSM daemon for Nokia N900
-# This daemon implements the freesmartphone.org GSM API.
+# fsogsmd implements the freesmartphone.org GSM API. It takes care
+# of all GSM related functions.
+# .
+# This package contains configuration files and plugins needed by 
+# the Nokia N900.
 # .
 # This package is part of the freesmartphone.org software stack
 # and is targeted for smartphones.
@@ -118,7 +140,11 @@ Description: freesmartphone.org GSM daemon for htc devices
 #         fso-gsmd
 #Provides: fso-gsmd-platform
 #Description: freesmartphone.org GSM daemon for Palm Pre
-# This daemon implements the freesmartphone.org GSM API.
+# fsogsmd implements the freesmartphone.org GSM API. It takes care
+# of all GSM related functions.
+# .
+# This package contains configuration files and plugins needed by 
+# the Palm Pre.
 # .
 # This package is part of the freesmartphone.org software stack
 # and is targeted for smartphones.
