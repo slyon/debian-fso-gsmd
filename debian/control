@@ -43,9 +43,9 @@ Section: debug
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          fso-gsmd (= ${binary:Version}),
-         fso-gsmd-ezx (= ${binary:Version}),
-         fso-gsmd-htc (= ${binary:Version}),
-         fso-gsmd-openmoko (= ${binary:Version})
+         fso-gsmd-ezx (= ${binary:Version}) [armel],
+         fso-gsmd-htc (= ${binary:Version}) [armel armhf],
+         fso-gsmd-openmoko (= ${binary:Version}) [armel]
 Description: debugging symbols for freesmartphone.org GSM daemon
  This package contains debugging symbols for fso-gsmd, fso-gsmd-openmoko, 
  fso-gsmd-ezx and fso-gsmd-htc
