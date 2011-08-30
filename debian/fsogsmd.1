@@ -1,0 +1,45 @@
+.TH FSOGSMD 1 "AUGUST 30, 2011"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+fsogsmd \- FSO gsm daemon
+.SH SYNOPSIS
+.B fsogsmd
+.SH DESCRIPTION
+fsogsmd implements the FSO GSM DBus API. This API delivers a simple way to
+handle voice and data communication with GSM modems. More precisely it
+handles the following things:
+
+* GSM 07.10 Multiplexing
+.br
+* Device Inquiry
+.br
+* SIM Card Access
+.br
+* GSM Network Access
+.br
+* GSM Voice and Data Calls
+.br
+* Short Message Service (SMS)
+.br
+* Packet Data Protocol Connections
+.br
+* Cell Broadcast Service
+.br
+* GSM Network Monitoring
+.br
+* HomeZone Service
+
+fsogsmd loads its configuration from
+/etc/freesmartphone/conf/<platform>/fsogsmd.conf (platform is detected
+via /proc/cpuinfo). If this file can't be found it will fallback to
+/etc/freesmartphone/conf/default/fsogsmd.conf instead.
+
+The daemon will be started automatically by DBus, once a request is send
+to it, but can also be started manually.
+.SH OPTIONS
+fsogsmd takes no parameters.
+.SH AUTHOR
+fsogsmd was written by the FSO Team <smartphones-userland@linuxtogo.org>.
+.PP
+This manual page was written by Sebastian Reichel <sre@debian.org>,
+for the Debian project (but may be used by others).
