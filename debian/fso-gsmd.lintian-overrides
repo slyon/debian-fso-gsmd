@@ -1,0 +1,3 @@
+# this is a bug in debhelper (http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=204975)
+fso-gsmd: postinst-has-useless-call-to-ldconfig
+fso-gsmd: postrm-has-useless-call-to-ldconfig
