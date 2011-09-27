@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *                         Simon Busch <morphis@gravedo.de>
+ *                         Lukas Märdian <lukasmaerdian@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,6 +41,7 @@ public class MsmChannel : CommandQueue, Channel, AbstractObject
     public Msmcomm.Phonebook phonebook_service;
     public Msmcomm.Network network_service;
     public Msmcomm.Sound sound_service;
+    public Msmcomm.Sms sms_service;
 
     private async void onModemControlStatusChanged( Msmcomm.ModemStatus status )
     {
@@ -83,6 +85,33 @@ public class MsmChannel : CommandQueue, Channel, AbstractObject
         }
     }
 
+    private async void onIncomingMessage( Msmcomm.SmsMessage message )
+    {
+        string hexpdu = "";
+        int tpdulen = message.pdu.length;
+        uint8 nr = message.nr;
+
+        for ( int i = 0; i < tpdulen; i++ )
+        {
+            hexpdu += "%02x".printf (message.pdu[i]);
+        }
+
+        var sms_handler = new MsmSmsHandler();
+        sms_handler.handleIncomingSms(hexpdu, tpdulen);
+
+        var channel = theModem.channel( "main" ) as MsmChannel;
+        try
+        {  
+            yield channel.sms_service.acknowledge_message( nr );
+            logger.info( @"Acknowledged message nr: $(nr)" );
+        }
+        catch ( GLib.Error err0 )
+        {  
+            var msg0 = @"Could not process acknowledge_message, got: $(err0.message)";
+            throw new FreeSmartphone.Error.INTERNAL_ERROR( msg0 );
+        }
+    }
+
     private async bool requestModemResource()
     {
         try
@@ -108,6 +137,8 @@ public class MsmChannel : CommandQueue, Channel, AbstractObject
             management_service = Bus.get_proxy_sync<Msmcomm.Management>( BusType.SYSTEM, "org.msmcomm", "/org/msmcomm" );
             management_service.modem_status.connect( onModemControlStatusChanged );
             misc_service =  Bus.get_proxy_sync<Msmcomm.Misc>( BusType.SYSTEM, "org.msmcomm", "/org/msmcomm" );
+            sms_service = Bus.get_proxy_sync<Msmcomm.Sms>( BusType.SYSTEM, "org.msmcomm", "/org/msmcomm" );
+            sms_service.incomming_message.connect( onIncomingMessage );
             state_service =  Bus.get_proxy_sync<Msmcomm.State>( BusType.SYSTEM, "org.msmcomm", "/org/msmcomm" );
             sim_service = Bus.get_proxy_sync<Msmcomm.Sim>( BusType.SYSTEM, "org.msmcomm", "/org/msmcomm" );
             phonebook_service = Bus.get_proxy_sync<Msmcomm.Phonebook>( BusType.SYSTEM, "org.msmcomm", "/org/msmcomm" );

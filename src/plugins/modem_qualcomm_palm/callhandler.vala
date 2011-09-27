@@ -81,8 +81,7 @@ public class MsmCallHandler : FsoGsm.AbstractCallHandler
             }
             else
             {
-                // We already have an active call so hold it accept the new incomming call
-                yield channel.call_service.sups_call( Msmcomm.SupsAction.HOLD_ALL_AND_ACCEPT_WAITING_OR_HELD, 0 );
+                throw new FreeSmartphone.Error.UNSUPPORTED("Can't activate incoming while another call is active!");
             }
         }
         catch ( Error error )
@@ -153,7 +152,7 @@ public class MsmCallHandler : FsoGsm.AbstractCallHandler
                 throw new FreeSmartphone.GSM.Error.CALL_NOT_FOUND( "Call incoming. Can't hold active calls without activating" );
             }
  
-            yield channel.call_service.sups_call( 0, Msmcomm.SupsAction.HOLD_ALL_AND_ACCEPT_WAITING_OR_HELD );
+            throw new FreeSmartphone.Error.UNSUPPORTED("Putting an call in hold state is not supported yet!");
         }
         catch ( Error error )
         {
@@ -200,7 +199,7 @@ public class MsmCallHandler : FsoGsm.AbstractCallHandler
             }
             else
             {
-                yield channel.call_service.sups_call( id, Msmcomm.SupsAction.DROP_SPECIFIC_AND_ACCEPT_WAITING_OR_HELD );
+                yield channel.call_service.sups_call( id, Msmcomm.SupsAction.HANGUP_ACTIVE_CALL );
             }
         }
         catch ( Error error )
@@ -290,10 +289,23 @@ public class MsmCallHandler : FsoGsm.AbstractCallHandler
     {
         assert( logger.debug( @"Cancelling outgoing call with ID $id" ) );
 
+        if ( !calls.has_key( id ) )
+            throw new FreeSmartphone.Error.INVALID_PARAMETER( @"Unknown call id $(id)" );
+
+        var call = calls[id];
+
         try
         {
             var channel = theModem.channel( "main" ) as MsmChannel;
-            yield channel.call_service.end_call( id );
+
+            if ( call.detail.status == FreeSmartphone.GSM.CallStatus.ACTIVE )
+            {
+                yield channel.call_service.sups_call( id, Msmcomm.SupsAction.HANGUP_ACTIVE_CALL );
+            }
+            else if ( call.detail.status == FreeSmartphone.GSM.CallStatus.OUTGOING )
+            {
+                yield channel.call_service.end_call( id );
+            }
         }
         catch ( Error error )
         {
@@ -308,13 +320,12 @@ public class MsmCallHandler : FsoGsm.AbstractCallHandler
 
         var channel = theModem.channel( "main" ) as MsmChannel;
 
+        if ( !calls.has_key( id ) )
+            throw new FreeSmartphone.Error.INVALID_PARAMETER( @"Unknown call id $(id)" );
+
         try
         {
-            // NOTE currently we reject an incomming call by dropping all calls or send a busy
-            // signal when we have no active calls. Maybe there is another way in msmcomm
-            // to do reject an incomming call but we currently don't know about.
-            var cmd_type = Msmcomm.SupsAction.DROP_ALL_OR_SEND_BUSY;
-            yield channel.call_service.sups_call( 0, cmd_type );
+            yield channel.call_service.sups_call( id, Msmcomm.SupsAction.REJECT_INCOMING_CALL );
         }
         catch ( Error error )
         {
