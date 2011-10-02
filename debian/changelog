@@ -1,6 +1,7 @@
 fso-gsmd (0.5.0+git20110916-1) UNRELEASED; urgency=low
 
   * new upstream snapshot
+  * remove patch, which adds timestamps to SMS messages (applied upstream)
 
  -- Rico Rommel <rico@bierrommel.de>  Tue, 27 Sep 2011 13:03:02 +0200
 
