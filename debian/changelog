@@ -1,3 +1,9 @@
+fso-gsmd (0.5.0+git20110804-2) unstable; urgency=low
+
+  * new patch adding timestamps to SMS messages (Closes: #643100)
+
+ -- Sebastian Reichel <sre@debian.org>  Sun, 02 Oct 2011 15:51:45 +0200
+
 fso-gsmd (0.5.0+git20110804-1) unstable; urgency=low
 
   [ Rico Rommel ]
