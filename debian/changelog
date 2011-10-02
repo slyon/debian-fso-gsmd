@@ -1,3 +1,9 @@
+fso-gsmd (0.5.0+git20110916-1) UNRELEASED; urgency=low
+
+  * new upstream snapshot
+
+ -- Rico Rommel <rico@bierrommel.de>  Tue, 27 Sep 2011 13:03:02 +0200
+
 fso-gsmd (0.5.0+git20110804-2) unstable; urgency=low
 
   * new patch adding timestamps to SMS messages (Closes: #643100)
