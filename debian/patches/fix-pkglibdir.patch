@@ -1,0 +1,32 @@
+Description: search modules in multiarch path
+ The modules are installed correctly into the multiarch
+ path, but the code doesn't look for them in these
+ directories. This patch changes the module search path
+ to the correct multiarch path.
+Author: Sebastian Reichel <sre@debian.org>
+diff --git a/configure.ac b/configure.ac
+index 03677d1..6b01936 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -16,6 +16,10 @@ AC_SUBST(CFLAGS)
+ AC_SUBST(CPPFLAGS)
+ AC_SUBST(LDFLAGS)
+ 
++LIBDIR=`eval echo $libdir`
++LIBDIR=`eval echo $LIBDIR`
++AC_SUBST([LIBDIR])
++
+ ##############################################################################
+ # pkg-config requirements
+ PKG_PROG_PKG_CONFIG
+@@ -171,8 +175,8 @@ AC_DEFINE_UNQUOTED([PACKAGE_DATADIR], ["${PACKAGE_DATADIR}"], [Shared data direc
+ 
+ ##############################################################################
+ # gather libdir
+-if test "x$prefix" != "xNONE"; then
+-  pkglibdir='${prefix}/lib/cornucopia/modules/fsogsm'
++if test "x$LIBDIR" != "xNONE"; then
++  pkglibdir='${LIBDIR}/cornucopia/modules/fsogsm'
+ else
+   pkglibdir='/usr/local/lib/cornucopia/modules/fsogsm'
+ fi
