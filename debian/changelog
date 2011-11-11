@@ -1,3 +1,10 @@
+fso-gsmd (0.5.0+git20110916-2) unstable; urgency=low
+
+  * new patch: add some missing prototypes to src/3rdparty/conversions.h
+    (Closes: #648447)
+
+ -- Sebastian Reichel <sre@debian.org>  Fri, 11 Nov 2011 17:47:50 +0100
+
 fso-gsmd (0.5.0+git20110916-1) unstable; urgency=low
 
   [ Rico Rommel ]
