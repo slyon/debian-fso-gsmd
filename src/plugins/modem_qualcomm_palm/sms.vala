@@ -71,8 +71,7 @@ public class MsmSmsHandler : FsoGsm.SmsHandler, FsoFramework.AbstractObject
 
     public Gee.ArrayList<WrapHexPdu> formatTextMessage( string number, string contents, bool requestReport )
     {
-        //FIXME: nextReferenceNumber() isn't working, using inref = 0 -- for testing purposes only!
-        uint16 inref = 0;
+        uint16 inref = nextReferenceNumber();
 #if DEBUG
         debug( @"using reference number $inref" );
 #endif        
@@ -87,7 +86,6 @@ public class MsmSmsHandler : FsoGsm.SmsHandler, FsoFramework.AbstractObject
 
         smslist.foreach ( (element) => {
             unowned Sms.Message msgelement = (Sms.Message) element;
-            // FIXME: encode service center address?
             //msgelement.sc_addr.from_string( "+490000000" );
             // encode destination address
             msgelement.submit.daddr.from_string( number );
@@ -97,7 +95,6 @@ public class MsmSmsHandler : FsoGsm.SmsHandler, FsoFramework.AbstractObject
             var tpdulen = 0;
             var hexpdu = msgelement.toHexPdu( out tpdulen );
             assert( tpdulen > 0 );
-            stdout.printf("tpdulen: %i\n", tpdulen);
             hexpdus.add( new WrapHexPdu( hexpdu, tpdulen ) );
         } );
 #if DEBUG
@@ -113,19 +110,23 @@ public class MsmSmsHandler : FsoGsm.SmsHandler, FsoFramework.AbstractObject
 
     public async void syncWithSim()
     {
-#if 0
-        // gather IMSI
-        var cimi = theModem.createAtCommand<PlusCIMI>( "+CIMI" );
-        var response = yield theModem.processAtCommandAsync( cimi, cimi.execute() );
-        if ( cimi.validate( response ) != Constants.AtResponse.VALID )
+        var channel = theModem.channel( "main" ) as MsmChannel;
+        string imsi = "";
+
+        // gather IMSI number
+        try
         {
-            logger.warning( "Can't synchronize SMS storage with SIM" );
-            return;
+            var sim_field_info = yield channel.sim_service.read_field( Msmcomm.SimFieldType.IMSI );
+            imsi = sim_field_info.data;
+        }
+        catch ( GLib.Error err )
+        {
+            var msg = @"Could not gather IMSI number, got: $(err.message)";
+            throw new FreeSmartphone.Error.INTERNAL_ERROR( msg );
         }
 
-        // create Storage for current IMSI
-        storage = new SmsStorage( cimi.value );
-
+        storage = new SmsStorage( imsi );
+#if 0
         // read all messages
         var cmgl = theModem.createAtCommand<PlusCMGL>( "+CMGL" );
         var cmglresponse = yield theModem.processAtCommandAsync( cmgl, cmgl.issue( PlusCMGL.Mode.ALL ) );
@@ -159,21 +160,32 @@ public class MsmSmsHandler : FsoGsm.SmsHandler, FsoFramework.AbstractObject
 
     public async void handleIncomingSms( string hexpdu, int tpdulen )
     {
-        // Add 0-byte to the beginning, this way newFromHexPdu can parse it.
-        string pdu = "00"+hexpdu;
-        yield _handleIncomingSms( pdu, tpdulen );
+        var channel = theModem.channel( "main" ) as MsmChannel;
+
+        // acknowledge SMS
+        try
+        {
+            yield channel.sms_service.acknowledge_message();
+            logger.info( @"Acknowledged new SMS" );
+        }
+        catch ( GLib.Error err )
+        {
+            var msg = @"Can't acknowledge new SMS, got: $(err.message)";
+            throw new FreeSmartphone.Error.INTERNAL_ERROR( msg );
+        }
+        yield _handleIncomingSms( hexpdu, tpdulen );
     }
 
     public async void _handleIncomingSms( string hexpdu, int tpdulen )
     {
-        var sms = Sms.Message.newFromHexPdu( hexpdu, tpdulen );
+        // Add 0-byte to the beginning of hexpdu, this way newFromHexPdu can parse it.
+        var sms = Sms.Message.newFromHexPdu( "00"+hexpdu, tpdulen );
         if ( sms == null )
         {
             logger.warning( @"Can't parse incoming SMS" );
             return;
         }
 
-        /*
         var result = storage.addSms( sms );
         if ( result == SmsStorage.SMS_ALREADY_SEEN )
         {
@@ -192,12 +204,12 @@ public class MsmSmsHandler : FsoGsm.SmsHandler, FsoFramework.AbstractObject
             var obj = theModem.theDevice<FreeSmartphone.GSM.SMS>();
             obj.incoming_text_message( msg.number, msg.timestamp, msg.contents );
         }
-        */
-
+/*
         logger.info( @"Got new SMS from $(sms.number())" );
-        //var msg = storage.message( sms.hash() );
+        var msg = storage.message( sms.hash() );
         var obj = theModem.theDevice<FreeSmartphone.GSM.SMS>();
         obj.incoming_text_message( sms.number(), sms.timestamp(), sms.to_string() );
+*/
     }
 
     public void _handleIncomingSmsReport( Sms.Message sms )

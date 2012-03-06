@@ -75,6 +75,12 @@ class DBusService.Device :
             case "qualcomm_palm":
                 typename = "QualcommPalmModem";
                 break;
+            case "samsung":
+                typename = "SamsungModem";
+                break;
+            case "option_gtm601":
+                typename = "Gtm601Modem";
+                break;
             default:
                 logger.error( @"Unsupported modem_type $modemtype" );
                 return;
@@ -275,7 +281,7 @@ class DBusService.Device :
     //
     // DBUS (org.freesmartphone.Device.PowerSupply.*)
     //
-    public async FreeSmartphone.Device.PowerStatus get_power_status() throws DBusError, IOError
+    public async FreeSmartphone.Device.PowerStatus get_power_status() throws DBusError, IOError, FreeSmartphone.Error
     {
         checkAvailability();
         var m = modem.createMediator<FsoGsm.DeviceGetPowerStatus>();
@@ -290,7 +296,7 @@ class DBusService.Device :
         }
     }
 
-    public async int get_capacity() throws DBusError, IOError
+    public async int get_capacity() throws DBusError, IOError, FreeSmartphone.Error
     {
         checkAvailability();
         var m = modem.createMediator<FsoGsm.DeviceGetPowerStatus>();
@@ -791,6 +797,19 @@ class DBusService.Device :
         apn = m.apn;
         username = m.username;
         password = m.password;
+    }
+
+    public async bool get_roaming_allowed () throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, GLib.DBusError, GLib.IOError
+    {
+        checkAvailability();
+        return modem.data().roamingAllowed;
+    }
+
+    public async void set_roaming_allowed (bool state) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, GLib.DBusError, GLib.IOError
+    {
+        checkAvailability();
+        modem.data().roamingAllowed = state;
+        yield modem.pdphandler.syncStatus();
     }
 
     public async void internal_status_update( string status, GLib.HashTable<string,GLib.Variant> properties ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBusError, IOError

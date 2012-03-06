@@ -20,18 +20,21 @@ AC_SUBST(LDFLAGS)
 # pkg-config requirements
 PKG_PROG_PKG_CONFIG
 
-VALA_REQUIRED=0.12.1
+VALA_REQUIRED=0.14.2
 GLIB_REQUIRED=2.26.0
 GEE_REQUIRED=0.5.0
 XML_REQUIRED=2.7.3
 GSMMUX_REQUIRED=0.3.4
 GISICOMM_REQUIRED=0.0.0
 MSMCOMM_SPECS_REQUIRED=0.6.0
-FSO_GLIB_REQUIRED=2010.07.28.1
+FSO_GLIB_REQUIRED=2012.02.14.1
+FSO_SYSTEM_REQUIRED=0.1.0
 FSO_FRAMEWORK_REQUIRED=0.2.3
 FSO_TRANSPORT_REQUIRED=0.9.5.9
 FSO_RESOURCE_REQUIRED=0.1.0
+FSO_DATA_REQUIRED=0.2.0
 CONNMAN_REQUIRED=0.68
+SAMSUNG_IPC_REQUIRED=0.1
 
 ##############################################################################
 # vala
@@ -77,9 +80,11 @@ AC_SUBST(DBUS_SERVICE_DIR)
 # fso-glib and framework
 PKG_CHECK_MODULES(FSO,
   fso-glib-1.0 >= $FSO_GLIB_REQUIRED
+  fsosystem-2.0 >= $FSO_SYSTEM_REQUIRED
   fsoframework-2.0 >= $FSO_FRAMEWORK_REQUIRED
   fsotransport-2.0 >= $FSO_TRANSPORT_REQUIRED
-  fsoresource-2.0 >= $FSO_RESOURCE_REQUIRED)
+  fsoresource-2.0 >= $FSO_RESOURCE_REQUIRED
+  fsodata-2.0 >= $FSO_DATA_REQUIRED)
 AC_SUBST(FSO_CFLAGS)
 AC_SUBST(FSO_LIBS)
 
@@ -160,6 +165,23 @@ fi
 AM_CONDITIONAL( [WANT_ISI], [test x"$isi" = x"yes"])
 
 ##############################################################################
+# optional feature: Samsung modem support as found in Samsung Nexus S / H1
+AC_ARG_ENABLE(modem-samsung,
+  [  --enable-modem-samsung  Enable building the samsung plugin (default=disabled)],
+  [samsung=$enableval],
+  [samsung="no"])
+
+AM_CONDITIONAL( [WANT_SAMSUNG], [test x"$samsung" = x"yes"])
+
+if test x$samsung = "xyes"; then
+    PKG_CHECK_MODULES(SAMSUNG,
+      samsung-ipc-1.0 >= $SAMSUNG_IPC_REQUIRED)
+AC_SUBST(SAMSUNG_CFLAGS)
+AC_SUBST(SAMSUNG_LIBS)
+
+fi
+
+##############################################################################
 # datadir
 if test "x$prefix" != "xNONE"; then
   pkgdatadir='${prefix}/share/fsogsmd'
@@ -204,6 +226,8 @@ AC_CONFIG_FILES([
   conf/palm_pre/Makefile
   conf/nexusone/Makefile
   conf/nokia_n900/Makefile
+  conf/herring/Makefile
+  conf/GTA04/Makefile
   data/Makefile
   data/org.freesmartphone.ogsmd.service
   src/Makefile
@@ -214,6 +238,7 @@ AC_CONFIG_FILES([
   src/plugins/lowlevel_motorola_ezx/Makefile
   src/plugins/lowlevel_openmoko/Makefile
   src/plugins/lowlevel_palmpre/Makefile
+  src/plugins/lowlevel_samsung_crespo/Makefile
   src/plugins/modem_cinterion_mc75/Makefile
   src/plugins/modem_dummy/Makefile
   src/plugins/modem_freescale_neptune/Makefile
@@ -222,11 +247,14 @@ AC_CONFIG_FILES([
   src/plugins/modem_ti_calypso/Makefile
   src/plugins/modem_qualcomm_htc/Makefile
   src/plugins/modem_qualcomm_palm/Makefile
+  src/plugins/modem_samsung/Makefile
+  src/plugins/modem_option_gtm601/Makefile
   src/plugins/pdp_ppp/Makefile
   src/plugins/pdp_ppp_internal/Makefile
   src/plugins/pdp_ppp_mux/Makefile
   src/plugins/pdp_qmi/Makefile
   src/plugins/pdp_nokia_isi/Makefile
+  src/plugins/pdp_option_gtm601/Makefile
   src/ppp/Makefile
   src/connman/Makefile
   tests/Makefile
@@ -252,6 +280,7 @@ echo "  modem_ti_calypso........: $mux"
 echo "  modem_cinterion_mc75....: $mux"
 echo "  modem_qualcomm_palm.....: $palm"
 echo "  modem_nokia_isi.........: $isi"
+echo "  modem_samsung...........: $samsung"
 echo
 echo "  shared data directory...: $pkgdatadir"
 echo

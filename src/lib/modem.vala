@@ -144,6 +144,7 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
         public string pppPort;
         public string[] pppOptions;
         public ContextParams contextParams;
+        public bool roamingAllowed;
 
         // Common AT extensions
         public string? atCommandCancelOutgoing;
@@ -229,6 +230,7 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
     public abstract FreeSmartphone.GSM.DeviceStatus externalStatus();
     public abstract FsoGsm.Modem.Data data();
     public abstract void registerAtCommandSequence( string channel, string purpose, AtCommandSequence sequence );
+    public abstract bool isAlive();
 }
 
 /**
@@ -362,6 +364,9 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
             case "nokia900":
                 typename = "LowLevelNokia900";
                 break;
+            case "samsung_crespo":
+                typename = "LowLevelSamsungCrespo";
+                break;
             default:
                 logger.warning( @"Invalid lowlevel_type $lowleveltype; vendor specifics will NOT be available" );
                 lowlevel = new FsoGsm.NullLowLevel();
@@ -405,6 +410,12 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
                 break;
             case "nokia_isi":
                 typename = "PdpNokiaIsi";
+                break;
+            case "samsung_ipc":
+                typename = "SamsungPdpHandler";
+                break;
+            case "option_gtm601":
+                typename = "PdpOptionGtm601";
                 break;
             default:
                 logger.warning( @"Invalid pdp_type $pdphandlertype; data connectivity will NOT be available" );
@@ -483,6 +494,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
             "proxyarp",
             //"silent",     /* Wait for the modem to send the first LCP packet */
             "usepeerdns" } );
+        modem_data.roamingAllowed = false;
 
         // add some basic init/exit/suspend/resume sequences
         var seq = modem_data.cmdSequences;
@@ -749,6 +761,13 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         // give channels a chance to perform their closing commands
         GLib.Timeout.add_seconds( 3, close.callback );
         yield;
+
+        assert( logger.debug( @"Check wether we have to deactivate the PDP context ..." ) );
+        if ( pdphandler.status == FreeSmartphone.GSM.ContextStatus.ACTIVE ||
+             pdphandler.status == FreeSmartphone.GSM.ContextStatus.SUSPENDED )
+        {
+            yield pdphandler.deactivate();
+        }
 
         // close all channels
         var channels = this.channels.values;
@@ -1066,6 +1085,15 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
             default:
                 return FreeSmartphone.GSM.DeviceStatus.UNKNOWN;
         }
+    }
+
+    public bool isAlive()
+    {
+        return modem_status == Status.ALIVE_NO_SIM ||
+               modem_status == Status.ALIVE_SIM_LOCKED ||
+               modem_status == Status.ALIVE_SIM_UNLOCKED ||
+               modem_status == Status.ALIVE_SIM_READY ||
+               modem_status == Status.ALIVE_REGISTERED;
     }
 }
 

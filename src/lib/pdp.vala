@@ -18,6 +18,19 @@
  **/
 
 /**
+ * @class RouteInfo
+ **/
+public class FsoGsm.RouteInfo
+{
+    public string iface;
+    public string ipv4addr;
+    public string ipv4mask;
+    public string ipv4gateway;
+    public string dns1;
+    public string dns2;
+}
+
+/**
  * @interface PdpHandler
  **/
 public interface FsoGsm.IPdpHandler : FsoFramework.AbstractObject
@@ -27,7 +40,7 @@ public interface FsoGsm.IPdpHandler : FsoFramework.AbstractObject
 
     public async abstract void statusUpdate( string status, GLib.HashTable<string,Variant> properties );
 
-    public async abstract void connectedWithNewDefaultRoute( string iface, string ipv4addr, string ipv4mask, string ipv4gateway, string dns1, string dns2 );
+    public async abstract void connectedWithNewDefaultRoute( FsoGsm.RouteInfo route );
 
     public abstract void disconnected();
 }
@@ -37,6 +50,9 @@ public interface FsoGsm.IPdpHandler : FsoFramework.AbstractObject
  **/
 public abstract class FsoGsm.PdpHandler : IPdpHandler, FsoFramework.AbstractObject
 {
+    private string lastNetworkRegistrationStatus = "unknown";
+    private bool inSyncStatus = false;
+
     public FreeSmartphone.GSM.ContextStatus status { get; set; }
     public GLib.HashTable<string,Variant> properties { get; set; }
 
@@ -44,11 +60,22 @@ public abstract class FsoGsm.PdpHandler : IPdpHandler, FsoFramework.AbstractObje
     {
         status = FreeSmartphone.GSM.ContextStatus.RELEASED;
         properties = new GLib.HashTable<string,Variant>( str_hash, str_equal );
+
+        // defer registration for network status updates a little bit as modem device is
+        // not ready at this time (currently it's modem construction time).
+        Idle.add( () => {
+            var network = theModem.theDevice<FreeSmartphone.GSM.Network>();
+            network.status.connect( ( status ) => { syncStatus(); } );
+            var device = theModem.theDevice<FreeSmartphone.GSM.Device>();
+            device.device_status.connect( ( status ) => { syncStatus(); } );
+            return false;
+        } );
     }
 
     //
     // protected API
     //
+
     protected async virtual void sc_activate() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
     }
@@ -75,6 +102,7 @@ public abstract class FsoGsm.PdpHandler : IPdpHandler, FsoFramework.AbstractObje
     //
     // public API
     //
+
     public async void activate() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         if ( this.status != FreeSmartphone.GSM.ContextStatus.RELEASED )
@@ -82,7 +110,8 @@ public abstract class FsoGsm.PdpHandler : IPdpHandler, FsoFramework.AbstractObje
             throw new FreeSmartphone.Error.UNAVAILABLE( @"Can't activate context while in status $status" );
         }
 
-        updateStatus( FreeSmartphone.GSM.ContextStatus.OUTGOING, new GLib.HashTable<string,Variant>( GLib.str_hash, GLib.str_equal ) );
+        var status = new GLib.HashTable<string,Variant>( GLib.str_hash, GLib.str_equal );
+        updateStatus( FreeSmartphone.GSM.ContextStatus.OUTGOING, status );
 
         try
         {
@@ -90,53 +119,128 @@ public abstract class FsoGsm.PdpHandler : IPdpHandler, FsoFramework.AbstractObje
         }
         catch ( FreeSmartphone.GSM.Error e1 )
         {
-            updateStatus( FreeSmartphone.GSM.ContextStatus.RELEASED, new GLib.HashTable<string,Variant>( GLib.str_hash, GLib.str_equal ) );
+            updateStatus( FreeSmartphone.GSM.ContextStatus.RELEASED, status );
             throw e1;
         }
         catch ( FreeSmartphone.Error e2 )
         {
-            updateStatus( FreeSmartphone.GSM.ContextStatus.RELEASED, new GLib.HashTable<string,Variant>( GLib.str_hash, GLib.str_equal ) );
+            updateStatus( FreeSmartphone.GSM.ContextStatus.RELEASED, status );
             throw e2;
         }
     }
 
     public async void deactivate() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        if ( this.status != FreeSmartphone.GSM.ContextStatus.ACTIVE )
+        if ( this.status != FreeSmartphone.GSM.ContextStatus.ACTIVE &&
+             this.status != FreeSmartphone.GSM.ContextStatus.SUSPENDED )
         {
             throw new FreeSmartphone.Error.UNAVAILABLE( @"Can't deactivate context while in status $status" );
         }
 
         yield sc_deactivate();
 
-        updateStatus( FreeSmartphone.GSM.ContextStatus.RELEASED, new GLib.HashTable<string,Variant>( GLib.str_hash, GLib.str_equal ) );
+        var status = new GLib.HashTable<string,Variant>( GLib.str_hash, GLib.str_equal );
+        updateStatus( FreeSmartphone.GSM.ContextStatus.RELEASED, status );
     }
 
     public async abstract void statusUpdate( string status, GLib.HashTable<string,Variant> properties );
 
-    public async void connectedWithNewDefaultRoute( string iface, string ipv4addr, string ipv4mask, string ipv4gateway, string dns1, string dns2 )
+    public async void connectedWithNewDefaultRoute( FsoGsm.RouteInfo route )
     {
-        // FIXME: use libfsosystem
-        Posix.system( @"ifconfig $iface up" );
-
-        updateStatus( FreeSmartphone.GSM.ContextStatus.ACTIVE, new GLib.HashTable<string,Variant>( GLib.str_hash, GLib.str_equal ) );
-
         try
         {
-            // FIXME: change to async
-            var network = Bus.get_proxy_sync<FreeSmartphone.Network>( BusType.SYSTEM, FsoFramework.Network.ServiceDBusName, FsoFramework.Network.ServicePathPrefix );
-            yield network.offer_default_route( "cellular", iface, ipv4addr, ipv4mask, ipv4gateway, dns1, dns2 );
+            new FsoFramework.Network.Interface( route.iface ).up();
         }
-        catch ( GLib.Error e )
+        catch ( FsoFramework.Network.Error err )
         {
-            logger.error( @"Can't call offer_default_route on onetworkd: $(e.message)" );
+            logger.error( @"Could not activate network interface $(route.iface); " +
+                           "still setting context status to ACTIVE" );
+        }
+
+        var status = new GLib.HashTable<string,Variant>( GLib.str_hash, GLib.str_equal );
+        status.insert( "ipv4addr", route.ipv4addr );
+        status.insert( "ipv4mask", route.ipv4mask );
+        status.insert( "ipv4gateway", route.ipv4gateway );
+        status.insert( "dns1", route.dns1 );
+        status.insert( "dns2", route.dns2 );
+
+        updateStatus( FreeSmartphone.GSM.ContextStatus.ACTIVE, status );
+
+        var setupNetworkRoute = FsoFramework.theConfig.boolValue( "fsogsm", "pdp_setup_network_route", true );
+        if ( setupNetworkRoute )
+        {
+            try
+            {
+                // FIXME: change to async
+                var network = Bus.get_proxy_sync<FreeSmartphone.Network>( BusType.SYSTEM, FsoFramework.Network.ServiceDBusName,
+                    FsoFramework.Network.ServicePathPrefix );
+
+                yield network.offer_default_route( "cellular", route.iface, route.ipv4addr, route.ipv4mask,
+                    route.ipv4gateway, route.dns1, route.dns2 );
+            }
+            catch ( GLib.Error e )
+            {
+                logger.error( @"Can't call offer_default_route on onetworkd: $(e.message)" );
+            }
         }
     }
 
-    // FIXME: reason?
     public void disconnected()
     {
+        var status = new GLib.HashTable<string,Variant>( GLib.str_hash, GLib.str_equal );
         updateStatus( FreeSmartphone.GSM.ContextStatus.RELEASED, new GLib.HashTable<string,Variant>( GLib.str_hash, GLib.str_equal ) );
+    }
+
+    public async void syncStatus()
+    {
+        if ( inSyncStatus )
+            return;
+
+        inSyncStatus = true;
+
+        var networkRegistrationStatus = lastNetworkRegistrationStatus;
+        var roamingAllowed = theModem.data().roamingAllowed;
+        var nextContextStatus = status;
+
+        if ( !theModem.isAlive() || this.status == FreeSmartphone.GSM.ContextStatus.RELEASED )
+            return;
+
+        var network = theModem.theDevice<FreeSmartphone.GSM.Network>();
+        var networkStatus = yield network.get_status();
+
+        if ( ( networkRegistrationStatus = (string) networkStatus.lookup( "pdp.registration" ) ) == null &&
+             ( networkRegistrationStatus = (string) networkStatus.lookup( "registration" ) ) == null )
+             networkRegistrationStatus = lastNetworkRegistrationStatus;
+
+        var registered = ( networkRegistrationStatus == "registered" );
+
+        if ( registered || ( roamingAllowed && networkRegistrationStatus == "roaming" ) )
+        {
+            nextContextStatus = FreeSmartphone.GSM.ContextStatus.ACTIVE;
+        }
+        else if ( networkRegistrationStatus != "home" && networkRegistrationStatus != "roaming" )
+        {
+            nextContextStatus = FreeSmartphone.GSM.ContextStatus.SUSPENDED;
+        }
+
+        if ( nextContextStatus != status )
+        {
+            switch ( nextContextStatus )
+            {
+                case FreeSmartphone.GSM.ContextStatus.ACTIVE:
+                    activate();
+                    break;
+                case FreeSmartphone.GSM.ContextStatus.RELEASED:
+                    deactivate();
+                    break;
+                case FreeSmartphone.GSM.ContextStatus.SUSPENDED:
+                    updateStatus( nextContextStatus, this.properties );
+                    break;
+            }
+        }
+
+        lastNetworkRegistrationStatus = networkRegistrationStatus;
+        inSyncStatus = false;
     }
 }
 
