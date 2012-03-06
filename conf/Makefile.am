@@ -12,6 +12,8 @@ SUBDIRS = \
 	palm_pre \
 	nexusone \
 	nokia_n900 \
+	herring \
+	GTA04 \
 	$(NULL)
 
 MAINTAINERCLEANFILES = Makefile.in

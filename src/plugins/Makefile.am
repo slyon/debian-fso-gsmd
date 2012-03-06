@@ -14,9 +14,11 @@ SUBDIRS = \
 	modem_dummy \
 	modem_singleline \
 	modem_qualcomm_htc \
+	modem_option_gtm601 \
 	modem_freescale_neptune \
 	\
 	pdp_qmi \
+	pdp_option_gtm601 \
 	$(NULL)
 
 if WANT_PPP
@@ -42,4 +44,10 @@ if WANT_ISI
 SUBDIRS += \
 	modem_nokia_isi \
 	pdp_nokia_isi
+endif
+
+if WANT_SAMSUNG
+SUBDIRS += \
+	lowlevel_samsung_crespo \
+	modem_samsung
 endif
