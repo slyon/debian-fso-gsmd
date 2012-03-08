@@ -1,3 +1,11 @@
+fso-gsmd (0.5.0+git20120305-1) unstable; urgency=low
+
+  * new upstream snapshot
+  * update build dependencies
+  * remove missing-prototypes.patch
+  
+ -- Rico Rommel <rico@bierrommel.de>  Tue, 06 Mar 2012 13:08:34 +0100
+
 fso-gsmd (0.5.0+git20110916-2) unstable; urgency=low
 
   * new patch: add some missing prototypes to src/3rdparty/conversions.h
