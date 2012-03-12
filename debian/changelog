@@ -8,8 +8,9 @@ fso-gsmd (0.5.0+git20120305-1) unstable; urgency=low
   
   [ Sebastian Reichel ]
   * Update Debian Standards Version to 3.9.3
+  * Update debian/copyright to debian copyright format 1.0 
 
- -- Sebastian Reichel <sre@debian.org>  Mon, 12 Mar 2012 16:51:19 +0100
+ -- Sebastian Reichel <sre@debian.org>  Mon, 12 Mar 2012 16:52:49 +0100
 
 fso-gsmd (0.5.0+git20110916-2) unstable; urgency=low
 
