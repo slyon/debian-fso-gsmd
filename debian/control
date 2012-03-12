@@ -21,7 +21,7 @@ Build-Depends: connman-dev,
                ppp-dev,
                quilt,
                valac-0.14
-Standards-Version: 3.9.2
+Standards-Version: 3.9.3
 Homepage: http://freesmartphone.org/
 Vcs-Git: git://git.debian.org/git/pkg-fso/fso-gsmd.git
 Vcs-Browser: http://git.debian.org/?p=pkg-fso/fso-gsmd.git;a=summary
