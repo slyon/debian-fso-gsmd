@@ -1,1 +1,2 @@
-# there are no fsogsmd releases so far
+version=3
+http://downloads.freesmartphone.org/sources/cornucopia/([0-9\.]+)/fsogsmd-([0-9\.]+)\.tar\.bz2
