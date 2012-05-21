@@ -285,7 +285,8 @@ GTESTER_REPORT = gtester-report
 
 # initialize variables for unconditional += appending
 EXTRA_DIST = $(modem_samsung_la_VALASOURCES) \
-	$(modem_samsung_la_SOURCES) $(NULL)
+	$(modem_samsung_la_SOURCES) include/samsung_modem_ctl.h \
+	$(NULL)
 TEST_PROGS = 
 NULL = 
 AM_CFLAGS = -I$(top_srcdir)/src/lib -I$(top_srcdir)/src/3rdparty \
