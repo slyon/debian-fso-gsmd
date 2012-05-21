@@ -1,0 +1,3 @@
+etc/freesmartphone/conf/GTA04/*
+usr/lib/*/cornucopia/modules/fsogsm/modem_option_gtm601.so
+usr/lib/*/cornucopia/modules/fsogsm/lowlevel_gta04.so

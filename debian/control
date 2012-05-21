@@ -115,6 +115,23 @@ Description: freesmartphone.org GSM daemon for HTC devices
  This package is part of the freesmartphone.org software stack
  and is targeted for smartphones.
 
+Package: fso-gsmd-gta04
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         fso-gsmd (= ${binary:Version})
+Provides: fso-gsmd-platform
+Description: freesmartphone.org GSM daemon for the GTA04 device
+ fsogsmd implements the freesmartphone.org GSM API. It takes care
+ of all GSM related functions.
+ .
+ This package contains configuration files and plugins needed by
+ the GTA04 device.
+ .
+ This package is part of the freesmartphone.org software stack
+ and is targeted for smartphones.
+
 #Package: fso-gsmd-n900
 #Architecture: any
 #Pre-Depends: ${misc:Pre-Depends}
