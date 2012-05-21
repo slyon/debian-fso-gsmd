@@ -50,9 +50,9 @@ Section: debug
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          fso-gsmd (= ${binary:Version}),
-         fso-gsmd-ezx (= ${binary:Version}) [armel],
-         fso-gsmd-htc (= ${binary:Version}) [armel armhf],
-         fso-gsmd-openmoko (= ${binary:Version}) [armel]
+         fso-gsmd-ezx (= ${binary:Version}),
+         fso-gsmd-htc (= ${binary:Version}),
+         fso-gsmd-openmoko (= ${binary:Version})
 Description: debugging symbols for freesmartphone.org GSM daemon
  fsogsmd implements the freesmartphone.org GSM API. It takes care
  of all GSM related functions.
@@ -61,7 +61,7 @@ Description: debugging symbols for freesmartphone.org GSM daemon
  fso-gsmd-ezx and fso-gsmd-htc.
 
 Package: fso-gsmd-openmoko
-Architecture: armel
+Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          ${shlibs:Depends},
@@ -80,7 +80,7 @@ Description: freesmartphone.org GSM daemon for Openmoko devices
  and is targeted for smartphones.
 
 Package: fso-gsmd-ezx
-Architecture: armel
+Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          ${shlibs:Depends},
@@ -98,7 +98,7 @@ Description: freesmartphone.org GSM daemon for Motorola EZX devices
  and is targeted for smartphones.
 
 Package: fso-gsmd-htc
-Architecture: armel armhf
+Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
          ${shlibs:Depends},
@@ -116,7 +116,7 @@ Description: freesmartphone.org GSM daemon for HTC devices
  and is targeted for smartphones.
 
 #Package: fso-gsmd-n900
-#Architecture: armel armhf
+#Architecture: any
 #Pre-Depends: ${misc:Pre-Depends}
 #Depends: ${misc:Depends},
 #         ${shlibs:Depends},
@@ -134,7 +134,7 @@ Description: freesmartphone.org GSM daemon for HTC devices
 # and is targeted for smartphones.
 
 #Package: fso-gsmd-palmpre
-#Architecture: armel armhf
+#Architecture: any
 #Pre-Depends: ${misc:Pre-Depends}
 #Depends: ${misc:Depends},
 #         ${shlibs:Depends},
