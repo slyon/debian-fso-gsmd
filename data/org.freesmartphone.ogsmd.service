@@ -1,0 +1,5 @@
+[D-BUS Service]
+Name=org.freesmartphone.ogsmd
+Exec=/usr/local/sbin/fsogsmd
+User=root
+FSO-provides-resource=GSM
