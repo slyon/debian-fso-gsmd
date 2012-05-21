@@ -13,7 +13,7 @@ AM_CPPFLAGS = \
 noinst_PROGRAMS = $(TEST_PROGS)
 
 progs_ldadd = \
-	$(top_srcdir)/src/lib/libfsogsm.la \
+	$(top_builddir)/src/lib/libfsogsm.la \
 	$(FSO_LIBS) \
 	$(ISI_LIBS) \
 	$(NULL)
@@ -27,7 +27,7 @@ VALAC_ARGS = \
 	--pkg glib-2.0 \
 	--pkg fsoframework-2.0 \
 	--pkg fsogsm-2.0 \
-	--pkg gisicomm-0.0
+	--pkg gisicomm-1.0
 
 #
 # plugin
@@ -42,6 +42,11 @@ $(pdp_nokia_isi_la_SOURCES): $(pdp_nokia_isi_la_VALASOURCES)
 pdp_nokia_isi_la_LIBADD = $(progs_ldadd)
 pdp_nokia_isi_la_LDFLAGS = -no-undefined -module -avoid-version
 pdp_nokia_isi_la_LIBTOOLFLAGS = --tag=disable-static
+
+EXTRA_DIST += \
+    $(pdp_nokia_isi_la_VALASOURCES) \
+    $(pdp_nokia_isi_la_SOURCES) \
+    $(NULL)
 
 CLEANFILES = \
     plugin.c \
