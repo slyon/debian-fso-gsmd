@@ -1,5 +1,5 @@
 m4_define([fsogsmd_released], [1])
-m4_define([fsogsmd_base_version], [0.10.1])
+m4_define([fsogsmd_base_version], [0.10.2])
 m4_define([fsogsmd_maybe_gitrev], m4_if(fsogsmd_released, [1], [], [m4_esyscmd([git show-ref --hash=5 HEAD | tr -d '\n\r'])]))
 m4_define([fsogsmd_version], m4_if(fsogsmd_released, [1], [fsogsmd_base_version], [fsogsmd_base_version-fsogsmd_maybe_gitrev]))
 
@@ -298,6 +298,7 @@ AC_CONFIG_FILES([
   src/ppp/Makefile
   src/connman/Makefile
   tests/Makefile
+  vapi/Makefile
 ])
 AC_OUTPUT
 
