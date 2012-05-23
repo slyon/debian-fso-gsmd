@@ -8,9 +8,6 @@ override_dh_auto_configure:
 	--disable-connman-support --disable-modem-qualcomm-palm \
 	--disable-modem-nokia-isi --enable-vala
 
-override_dh_auto_test:
-	# test currently fails
-
 override_dh_strip:
 	dh_strip --dbg-package=fso-gsmd-dbg
 
