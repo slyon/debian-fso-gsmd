@@ -21,6 +21,7 @@ License: BSD
 
 Files: debian/*
 Copyright: 2010-2012 Sebastian Reichel <sre@debian.org>
+           2012 Simon Busch <morphis@gravedo.de>
 License: ISC
 
 License: GPL-2+
