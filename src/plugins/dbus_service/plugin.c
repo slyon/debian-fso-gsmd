@@ -1368,11 +1368,12 @@ struct _DbusServiceDeviceSendDtmfData {
 	GSimpleAsyncResult* _async_result;
 	DBusServiceDevice* self;
 	gchar* tones;
-	FsoGsmModem* _tmp0_;
-	gpointer _tmp1_;
+	const gchar* _tmp0_;
+	FsoGsmModem* _tmp1_;
+	gpointer _tmp2_;
 	FsoGsmCallSendDtmf* m;
-	FsoGsmCallSendDtmf* _tmp2_;
-	const gchar* _tmp3_;
+	FsoGsmCallSendDtmf* _tmp3_;
+	const gchar* _tmp4_;
 	GError * _inner_error_;
 };
 
@@ -1422,13 +1423,13 @@ struct _DbusServiceDeviceGetContextStatusData {
 	FreeSmartphoneGSMContextStatus status;
 	GHashTable* properties;
 	FsoGsmModem* _tmp0_;
-	FsoGsmPdpHandler* _tmp1_;
-	FsoGsmPdpHandler* _tmp2_;
+	FsoGsmIPdpHandler* _tmp1_;
+	FsoGsmIPdpHandler* _tmp2_;
 	FreeSmartphoneGSMContextStatus _tmp3_;
 	FreeSmartphoneGSMContextStatus _tmp4_;
 	FsoGsmModem* _tmp5_;
-	FsoGsmPdpHandler* _tmp6_;
-	FsoGsmPdpHandler* _tmp7_;
+	FsoGsmIPdpHandler* _tmp6_;
+	FsoGsmIPdpHandler* _tmp7_;
 	GHashTable* _tmp8_;
 	GHashTable* _tmp9_;
 	GHashTable* _tmp10_;
@@ -1490,8 +1491,8 @@ struct _DbusServiceDeviceSetRoamingAllowedData {
 	FsoGsmModemData* _tmp2_;
 	gboolean _tmp3_;
 	FsoGsmModem* _tmp4_;
-	FsoGsmPdpHandler* _tmp5_;
-	FsoGsmPdpHandler* _tmp6_;
+	FsoGsmIPdpHandler* _tmp5_;
+	FsoGsmIPdpHandler* _tmp6_;
 	GError * _inner_error_;
 };
 
@@ -1504,8 +1505,8 @@ struct _DbusServiceDeviceInternalStatusUpdateData {
 	gchar* status;
 	GHashTable* properties;
 	FsoGsmModem* _tmp0_;
-	FsoGsmPdpHandler* _tmp1_;
-	FsoGsmPdpHandler* _tmp2_;
+	FsoGsmIPdpHandler* _tmp1_;
+	FsoGsmIPdpHandler* _tmp2_;
 	const gchar* _tmp3_;
 	GHashTable* _tmp4_;
 	GError * _inner_error_;
@@ -2237,10 +2238,10 @@ DBusServiceDevice* dbus_service_device_construct (GType object_type, FsoFramewor
 	static GQuark _tmp4_label7 = 0;
 	static GQuark _tmp4_label8 = 0;
 	static GQuark _tmp4_label9 = 0;
-	const gchar* _tmp21_;
-	GType _tmp22_ = 0UL;
-	GType _tmp23_;
-	FsoFrameworkSubsystem* _tmp29_;
+	static GQuark _tmp4_label10 = 0;
+	const gchar* _tmp22_;
+	GType _tmp23_ = 0UL;
+	GType _tmp24_;
 	FsoFrameworkSubsystem* _tmp30_;
 	FsoFrameworkSubsystem* _tmp31_;
 	FsoFrameworkSubsystem* _tmp32_;
@@ -2254,16 +2255,17 @@ DBusServiceDevice* dbus_service_device_construct (GType object_type, FsoFramewor
 	FsoFrameworkSubsystem* _tmp40_;
 	FsoFrameworkSubsystem* _tmp41_;
 	FsoFrameworkSubsystem* _tmp42_;
-	GType _tmp43_;
-	GObject* _tmp44_ = NULL;
-	GObject* _tmp45_;
-	FsoGsmModem* _tmp46_;
+	FsoFrameworkSubsystem* _tmp43_;
+	GType _tmp44_;
+	GObject* _tmp45_ = NULL;
+	GObject* _tmp46_;
 	FsoGsmModem* _tmp47_;
-	FsoFrameworkLogger* _tmp48_;
-	const gchar* _tmp49_;
-	const gchar* _tmp50_ = NULL;
-	gchar* _tmp51_ = NULL;
-	gchar* _tmp52_;
+	FsoGsmModem* _tmp48_;
+	FsoFrameworkLogger* _tmp49_;
+	const gchar* _tmp50_;
+	const gchar* _tmp51_ = NULL;
+	gchar* _tmp52_ = NULL;
+	gchar* _tmp53_;
 	g_return_val_if_fail (subsystem != NULL, NULL);
 	self = (DBusServiceDevice*) fso_framework_abstract_object_construct (object_type);
 	_tmp0_ = ((FsoFrameworkAbstractObject*) self)->config;
@@ -2382,93 +2384,104 @@ DBusServiceDevice* dbus_service_device_construct (GType object_type, FsoFramewor
 				break;
 			}
 		}
+	} else if (_tmp5_ == ((0 != _tmp4_label10) ? _tmp4_label10 : (_tmp4_label10 = g_quark_from_static_string ("phonesim")))) {
+		switch (0) {
+			default:
+			{
+				gchar* _tmp16_;
+				_tmp16_ = g_strdup ("PhonesimModem");
+				_g_free0 (typename);
+				typename = _tmp16_;
+				break;
+			}
+		}
 	} else {
 		switch (0) {
 			default:
 			{
-				FsoFrameworkLogger* _tmp16_;
-				const gchar* _tmp17_;
-				const gchar* _tmp18_ = NULL;
-				gchar* _tmp19_ = NULL;
-				gchar* _tmp20_;
-				_tmp16_ = ((FsoFrameworkAbstractObject*) self)->logger;
-				_tmp17_ = modemtype;
-				_tmp18_ = string_to_string (_tmp17_);
-				_tmp19_ = g_strconcat ("Unsupported modem_type ", _tmp18_, NULL);
-				_tmp20_ = _tmp19_;
-				fso_framework_logger_error (_tmp16_, _tmp20_);
-				_g_free0 (_tmp20_);
+				FsoFrameworkLogger* _tmp17_;
+				const gchar* _tmp18_;
+				const gchar* _tmp19_ = NULL;
+				gchar* _tmp20_ = NULL;
+				gchar* _tmp21_;
+				_tmp17_ = ((FsoFrameworkAbstractObject*) self)->logger;
+				_tmp18_ = modemtype;
+				_tmp19_ = string_to_string (_tmp18_);
+				_tmp20_ = g_strconcat ("Unsupported modem_type ", _tmp19_, NULL);
+				_tmp21_ = _tmp20_;
+				fso_framework_logger_error (_tmp17_, _tmp21_);
+				_g_free0 (_tmp21_);
 				_g_free0 (typename);
 				_g_free0 (modemtype);
 				return self;
 			}
 		}
 	}
-	_tmp21_ = typename;
-	_tmp22_ = g_type_from_name (_tmp21_);
-	dbus_service_device_modemclass = _tmp22_;
-	_tmp23_ = dbus_service_device_modemclass;
-	if (_tmp23_ == G_TYPE_INVALID) {
-		FsoFrameworkLogger* _tmp24_;
-		const gchar* _tmp25_;
-		const gchar* _tmp26_ = NULL;
-		gchar* _tmp27_ = NULL;
-		gchar* _tmp28_;
-		_tmp24_ = ((FsoFrameworkAbstractObject*) self)->logger;
-		_tmp25_ = modemtype;
-		_tmp26_ = string_to_string (_tmp25_);
-		_tmp27_ = g_strconcat ("Can't find modem for modem_type ", _tmp26_, "; corresponding modem plugin loaded?", NULL);
-		_tmp28_ = _tmp27_;
-		fso_framework_logger_error (_tmp24_, _tmp28_);
-		_g_free0 (_tmp28_);
+	_tmp22_ = typename;
+	_tmp23_ = g_type_from_name (_tmp22_);
+	dbus_service_device_modemclass = _tmp23_;
+	_tmp24_ = dbus_service_device_modemclass;
+	if (_tmp24_ == G_TYPE_INVALID) {
+		FsoFrameworkLogger* _tmp25_;
+		const gchar* _tmp26_;
+		const gchar* _tmp27_ = NULL;
+		gchar* _tmp28_ = NULL;
+		gchar* _tmp29_;
+		_tmp25_ = ((FsoFrameworkAbstractObject*) self)->logger;
+		_tmp26_ = modemtype;
+		_tmp27_ = string_to_string (_tmp26_);
+		_tmp28_ = g_strconcat ("Can't find modem for modem_type ", _tmp27_, "; corresponding modem plugin loaded?", NULL);
+		_tmp29_ = _tmp28_;
+		fso_framework_logger_error (_tmp25_, _tmp29_);
+		_g_free0 (_tmp29_);
 		_g_free0 (typename);
 		_g_free0 (modemtype);
 		return self;
 	}
-	_tmp29_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp29_, FREE_SMARTPHONE_TYPE_INFO, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneInfo*) self);
 	_tmp30_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp30_, FREE_SMARTPHONE_DEVICE_TYPE_REALTIME_CLOCK, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneDeviceRealtimeClock*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp30_, FREE_SMARTPHONE_TYPE_INFO, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneInfo*) self);
 	_tmp31_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp31_, FREE_SMARTPHONE_DEVICE_TYPE_POWER_SUPPLY, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneDevicePowerSupply*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp31_, FREE_SMARTPHONE_DEVICE_TYPE_REALTIME_CLOCK, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneDeviceRealtimeClock*) self);
 	_tmp32_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp32_, FREE_SMARTPHONE_GSM_TYPE_DEBUG, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMDebug*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp32_, FREE_SMARTPHONE_DEVICE_TYPE_POWER_SUPPLY, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneDevicePowerSupply*) self);
 	_tmp33_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp33_, FREE_SMARTPHONE_GSM_TYPE_DEVICE, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMDevice*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp33_, FREE_SMARTPHONE_GSM_TYPE_DEBUG, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMDebug*) self);
 	_tmp34_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp34_, FREE_SMARTPHONE_GSM_TYPE_SIM, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMSIM*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp34_, FREE_SMARTPHONE_GSM_TYPE_DEVICE, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMDevice*) self);
 	_tmp35_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp35_, FREE_SMARTPHONE_GSM_TYPE_SMS, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMSMS*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp35_, FREE_SMARTPHONE_GSM_TYPE_SIM, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMSIM*) self);
 	_tmp36_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp36_, FREE_SMARTPHONE_GSM_TYPE_NETWORK, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMNetwork*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp36_, FREE_SMARTPHONE_GSM_TYPE_SMS, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMSMS*) self);
 	_tmp37_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp37_, FREE_SMARTPHONE_GSM_TYPE_CALL, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMCall*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp37_, FREE_SMARTPHONE_GSM_TYPE_NETWORK, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMNetwork*) self);
 	_tmp38_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp38_, FREE_SMARTPHONE_GSM_TYPE_PDP, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMPDP*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp38_, FREE_SMARTPHONE_GSM_TYPE_CALL, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMCall*) self);
 	_tmp39_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp39_, FREE_SMARTPHONE_GSM_TYPE_CB, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMCB*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp39_, FREE_SMARTPHONE_GSM_TYPE_PDP, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMPDP*) self);
 	_tmp40_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp40_, FREE_SMARTPHONE_GSM_TYPE_HZ, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMHZ*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp40_, FREE_SMARTPHONE_GSM_TYPE_CB, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMCB*) self);
 	_tmp41_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp41_, FREE_SMARTPHONE_GSM_TYPE_MONITOR, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMMonitor*) self);
+	fso_framework_subsystem_registerObjectForService (_tmp41_, FREE_SMARTPHONE_GSM_TYPE_HZ, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMHZ*) self);
 	_tmp42_ = subsystem;
-	fso_framework_subsystem_registerObjectForService (_tmp42_, FREE_SMARTPHONE_GSM_TYPE_VOICE_MAIL, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMVoiceMail*) self);
-	_tmp43_ = dbus_service_device_modemclass;
-	_tmp44_ = g_object_new (_tmp43_, NULL);
-	_tmp45_ = G_IS_INITIALLY_UNOWNED (_tmp44_) ? g_object_ref_sink (_tmp44_) : _tmp44_;
+	fso_framework_subsystem_registerObjectForService (_tmp42_, FREE_SMARTPHONE_GSM_TYPE_MONITOR, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMMonitor*) self);
+	_tmp43_ = subsystem;
+	fso_framework_subsystem_registerObjectForService (_tmp43_, FREE_SMARTPHONE_GSM_TYPE_VOICE_MAIL, (GBoxedCopyFunc) g_object_ref, g_object_unref, FSO_FRAMEWORK_GSM_ServiceDBusName, FSO_FRAMEWORK_GSM_DeviceServicePath, (FreeSmartphoneGSMVoiceMail*) self);
+	_tmp44_ = dbus_service_device_modemclass;
+	_tmp45_ = g_object_new (_tmp44_, NULL);
+	_tmp46_ = G_IS_INITIALLY_UNOWNED (_tmp45_) ? g_object_ref_sink (_tmp45_) : _tmp45_;
 	_g_object_unref0 (dbus_service_device_modem);
-	dbus_service_device_modem = FSO_GSM_MODEM (_tmp45_);
-	_tmp46_ = dbus_service_device_modem;
-	fso_gsm_modem_set_parent (_tmp46_, (GObject*) self);
+	dbus_service_device_modem = FSO_GSM_MODEM (_tmp46_);
 	_tmp47_ = dbus_service_device_modem;
-	g_signal_connect_object (_tmp47_, "hangup", (GCallback) _dbus_service_device_onModemHangup_fso_gsm_modem_hangup, self, 0);
-	_tmp48_ = ((FsoFrameworkAbstractObject*) self)->logger;
-	_tmp49_ = modemtype;
-	_tmp50_ = string_to_string (_tmp49_);
-	_tmp51_ = g_strconcat ("Ready. Configured for modem ", _tmp50_, NULL);
-	_tmp52_ = _tmp51_;
-	fso_framework_logger_info (_tmp48_, _tmp52_);
-	_g_free0 (_tmp52_);
+	fso_gsm_modem_set_parent (_tmp47_, (GObject*) self);
+	_tmp48_ = dbus_service_device_modem;
+	g_signal_connect_object (_tmp48_, "hangup", (GCallback) _dbus_service_device_onModemHangup_fso_gsm_modem_hangup, self, 0);
+	_tmp49_ = ((FsoFrameworkAbstractObject*) self)->logger;
+	_tmp50_ = modemtype;
+	_tmp51_ = string_to_string (_tmp50_);
+	_tmp52_ = g_strconcat ("Ready. Configured for modem ", _tmp51_, NULL);
+	_tmp53_ = _tmp52_;
+	fso_framework_logger_info (_tmp49_, _tmp53_);
+	_g_free0 (_tmp53_);
 	_g_free0 (typename);
 	_g_free0 (modemtype);
 	return self;
@@ -11790,10 +11803,8 @@ static gboolean dbus_service_device_real_send_dtmf_co (DbusServiceDeviceSendDtmf
 			return FALSE;
 		}
 	}
-	_data_->_tmp0_ = dbus_service_device_modem;
-	_data_->_tmp1_ = NULL;
-	_data_->_tmp1_ = fso_gsm_modem_createMediator (_data_->_tmp0_, FSO_GSM_TYPE_CALL_SEND_DTMF, (GBoxedCopyFunc) g_object_ref, g_object_unref, &_data_->_inner_error_);
-	_data_->m = (FsoGsmCallSendDtmf*) _data_->_tmp1_;
+	_data_->_tmp0_ = _data_->tones;
+	fso_gsm_validateDtmfTones (_data_->_tmp0_, &_data_->_inner_error_);
 	if (_data_->_inner_error_ != NULL) {
 		if ((((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) || (_data_->_inner_error_->domain == G_DBUS_ERROR)) || (_data_->_inner_error_->domain == G_IO_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
@@ -11811,13 +11822,34 @@ static gboolean dbus_service_device_real_send_dtmf_co (DbusServiceDeviceSendDtmf
 			return FALSE;
 		}
 	}
-	_data_->_tmp2_ = _data_->m;
-	_data_->_tmp3_ = _data_->tones;
+	_data_->_tmp1_ = dbus_service_device_modem;
+	_data_->_tmp2_ = NULL;
+	_data_->_tmp2_ = fso_gsm_modem_createMediator (_data_->_tmp1_, FSO_GSM_TYPE_CALL_SEND_DTMF, (GBoxedCopyFunc) g_object_ref, g_object_unref, &_data_->_inner_error_);
+	_data_->m = (FsoGsmCallSendDtmf*) _data_->_tmp2_;
+	if (_data_->_inner_error_ != NULL) {
+		if ((((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) || (_data_->_inner_error_->domain == G_DBUS_ERROR)) || (_data_->_inner_error_->domain == G_IO_ERROR)) {
+			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
+			g_error_free (_data_->_inner_error_);
+			if (_data_->_state_ == 0) {
+				g_simple_async_result_complete_in_idle (_data_->_async_result);
+			} else {
+				g_simple_async_result_complete (_data_->_async_result);
+			}
+			g_object_unref (_data_->_async_result);
+			return FALSE;
+		} else {
+			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
+			g_clear_error (&_data_->_inner_error_);
+			return FALSE;
+		}
+	}
+	_data_->_tmp3_ = _data_->m;
+	_data_->_tmp4_ = _data_->tones;
 	_data_->_state_ = 1;
-	fso_gsm_call_send_dtmf_run (_data_->_tmp2_, _data_->_tmp3_, dbus_service_device_send_dtmf_ready, _data_);
+	fso_gsm_call_send_dtmf_run (_data_->_tmp3_, _data_->_tmp4_, dbus_service_device_send_dtmf_ready, _data_);
 	return FALSE;
 	_state_1:
-	fso_gsm_call_send_dtmf_run_finish (_data_->_tmp2_, _data_->_res_, &_data_->_inner_error_);
+	fso_gsm_call_send_dtmf_run_finish (_data_->_tmp3_, _data_->_res_, &_data_->_inner_error_);
 	if (_data_->_inner_error_ != NULL) {
 		if ((((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) || (_data_->_inner_error_->domain == G_DBUS_ERROR)) || (_data_->_inner_error_->domain == G_IO_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
@@ -12257,13 +12289,13 @@ static gboolean dbus_service_device_real_get_context_status_co (DbusServiceDevic
 	_data_->_tmp0_ = dbus_service_device_modem;
 	_data_->_tmp1_ = fso_gsm_modem_get_pdphandler (_data_->_tmp0_);
 	_data_->_tmp2_ = _data_->_tmp1_;
-	_data_->_tmp3_ = fso_gsm_pdp_handler_get_status (_data_->_tmp2_);
+	_data_->_tmp3_ = fso_gsm_ipdp_handler_get_status (_data_->_tmp2_);
 	_data_->_tmp4_ = _data_->_tmp3_;
 	_data_->status = _data_->_tmp4_;
 	_data_->_tmp5_ = dbus_service_device_modem;
 	_data_->_tmp6_ = fso_gsm_modem_get_pdphandler (_data_->_tmp5_);
 	_data_->_tmp7_ = _data_->_tmp6_;
-	_data_->_tmp8_ = fso_gsm_pdp_handler_get_properties (_data_->_tmp7_);
+	_data_->_tmp8_ = fso_gsm_ipdp_handler_get_properties (_data_->_tmp7_);
 	_data_->_tmp9_ = _data_->_tmp8_;
 	_data_->_tmp10_ = _g_hash_table_ref0 (_data_->_tmp9_);
 	_g_hash_table_unref0 (_data_->properties);
@@ -12606,10 +12638,10 @@ static gboolean dbus_service_device_real_set_roaming_allowed_co (DbusServiceDevi
 	_data_->_tmp5_ = fso_gsm_modem_get_pdphandler (_data_->_tmp4_);
 	_data_->_tmp6_ = _data_->_tmp5_;
 	_data_->_state_ = 1;
-	fso_gsm_pdp_handler_syncStatus (_data_->_tmp6_, dbus_service_device_set_roaming_allowed_ready, _data_);
+	fso_gsm_ipdp_handler_syncStatus (_data_->_tmp6_, dbus_service_device_set_roaming_allowed_ready, _data_);
 	return FALSE;
 	_state_1:
-	fso_gsm_pdp_handler_syncStatus_finish (_data_->_tmp6_, _data_->_res_);
+	fso_gsm_ipdp_handler_syncStatus_finish (_data_->_tmp6_, _data_->_res_);
 	if (_data_->_state_ == 0) {
 		g_simple_async_result_complete_in_idle (_data_->_async_result);
 	} else {
@@ -12706,10 +12738,10 @@ static gboolean dbus_service_device_real_internal_status_update_co (DbusServiceD
 	_data_->_tmp3_ = _data_->status;
 	_data_->_tmp4_ = _data_->properties;
 	_data_->_state_ = 1;
-	fso_gsm_pdp_handler_statusUpdate (_data_->_tmp2_, _data_->_tmp3_, _data_->_tmp4_, dbus_service_device_internal_status_update_ready, _data_);
+	fso_gsm_ipdp_handler_statusUpdate (_data_->_tmp2_, _data_->_tmp3_, _data_->_tmp4_, dbus_service_device_internal_status_update_ready, _data_);
 	return FALSE;
 	_state_1:
-	fso_gsm_pdp_handler_statusUpdate_finish (_data_->_tmp2_, _data_->_res_);
+	fso_gsm_ipdp_handler_statusUpdate_finish (_data_->_tmp2_, _data_->_res_);
 	if (_data_->_state_ == 0) {
 		g_simple_async_result_complete_in_idle (_data_->_async_result);
 	} else {

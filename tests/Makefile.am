@@ -2,7 +2,7 @@ include $(top_srcdir)/Makefile.decl
 
 NULL =
 
-AM_CPPFLAGS = \
+AM_CFLAGS = \
 	-I$(top_srcdir)/src/lib \
 	-I$(top_srcdir)/src/3rdparty \
 	$(GLIB_CFLAGS) \
@@ -12,13 +12,13 @@ AM_CPPFLAGS = \
 
 noinst_PROGRAMS = $(TEST_PROGS)
 
-progs_ldadd = \
+LDADD = \
 	$(GLIB_LIBS) \
 	$(GEE_LIBS) \
 	$(FSO_LIBS) \
-	../src/lib/libfsogsm.la
+	$(top_builddir)/src/lib/libfsogsm.la
 
-VALAC_ARGS = \
+AM_VALAFLAGS = \
 	--basedir $(top_srcdir) \
 	--vapidir $(top_srcdir)/src/lib \
 	--pkg posix \
@@ -26,69 +26,42 @@ VALAC_ARGS = \
 	--pkg gio-2.0 \
 	--pkg gee-1.0 \
 	--pkg fsoframework-2.0 \
+	--pkg fsobasics-2.0 \
 	--pkg fsotransport-2.0 \
 	--pkg fsogsm-2.0 \
 	--pkg fsogsm3rdparty
 
 TEST_PROGS += testatcommand
-testatcommand_VALASOURCES = testatcommand.vala
-testatcommand_SOURCES = testatcommand.c
-$(testatcommand_SOURCES): $(testatcommand_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-testatcommand_LDADD = $(progs_ldadd)
-EXTRA_DIST += $(testatcommand_VALASOURCES)
+testatcommand_SOURCES = testatcommand.vala
 
 TEST_PROGS += testatparser
-testatparser_VALASOURCES = testatparser.vala
-testatparser_SOURCES = testatparser.c
-$(testatparser_SOURCES): $(testatparser_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-testatparser_LDADD = $(progs_ldadd)
-EXTRA_DIST += $(testatparser_VALASOURCES)
+testatparser_SOURCES = testatparser.vala
 
 TEST_PROGS += testcb
-testcb_VALASOURCES = testcb.vala
-testcb_SOURCES = testcb.c
-$(testcb_SOURCES): $(testcb_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-testcb_LDADD = $(progs_ldadd)
-EXTRA_DIST += $(testcb_VALASOURCES)
+testcb_SOURCES = testcb.vala
 
 TEST_PROGS += testconversions
-testconversions_VALASOURCES = testconversions.vala
-testconversions_SOURCES = testconversions.c
-$(testconversions_SOURCES): $(testconversions_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-testconversions_LDADD = $(progs_ldadd)
-EXTRA_DIST += $(testconversions_VALASOURCES)
+testconversions_SOURCES = testconversions.vala
 
 TEST_PROGS += testconst
-testconst_VALASOURCES = testconst.vala
-testconst_SOURCES = testconst.c
-$(testconst_SOURCES): $(testconst_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-testconst_LDADD = $(progs_ldadd)
-EXTRA_DIST += $(testconst_VALASOURCES)
+testconst_SOURCES = testconst.vala
 
 TEST_PROGS += testsms
-testsms_VALASOURCES = testsms.vala
-testsms_SOURCES = testsms.c
-$(testsms_SOURCES): $(testsms_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-testsms_LDADD = $(progs_ldadd)
-EXTRA_DIST += $(testsms_VALASOURCES)
+testsms_SOURCES = testsms.vala smsdata.vala
 
-CLEANFILES = \
-    $(TEST_PROGS) \
-    *.? \
-    $(NULL)
+TEST_PROGS += testsmsstorage
+testsmsstorage_SOURCES = testsmsstorage.vala smsdata.vala
 
+# TEST_PROGS += testoptiongtm601
+# FIXME adding the sources from the modem plugin itself to the list of sources for
+# compilation of this test is ugly, we should rather load the plugin and use it the common
+# way.
+# testoptiongtm601_SOURCES = \
+#	$(top_srcdir)/src/plugins/modem_option_gtm601/commands.vala \
+#	testoptiongtm601.vala \
+#	$(NULL)
+
+CLEANFILES =
 MAINTAINERCLEANFILES = \
-  Makefile.in \
-  $(NULL)
+	Makefile.in \
+	$(NULL)

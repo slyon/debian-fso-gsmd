@@ -3,6 +3,7 @@
 
 /*
  * Copyright (C) 2012 Lukas 'Slyon' Märdian <lukasmaerdian@gmail.com>
+ *               2012 Simon Busch <morphis@gravedo.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -53,6 +54,7 @@ struct _LowLevelGTA04Class {
 
 struct _LowLevelGTA04Private {
 	gchar* sysfs_modem_gpio;
+	gchar* modem_application_node;
 };
 
 
@@ -68,7 +70,8 @@ enum  {
 };
 #define LOW_LEVEL_GT_A04_MODULE_NAME "fsogsm.lowlevel_gta04"
 static gchar* low_level_gt_a04_real_repr (FsoFrameworkAbstractObject* base);
-gboolean low_level_gt_a04_toggle (LowLevelGTA04* self);
+gboolean low_level_gt_a04_is_powered (LowLevelGTA04* self);
+static gboolean low_level_gt_a04_toggle_modem_power_state (LowLevelGTA04* self, gboolean desired_power_state);
 static gboolean low_level_gt_a04_real_poweron (FsoGsmLowLevel* base);
 static gboolean low_level_gt_a04_real_poweroff (FsoGsmLowLevel* base);
 static gboolean low_level_gt_a04_real_suspend (FsoGsmLowLevel* base);
@@ -92,55 +95,213 @@ static gchar* low_level_gt_a04_real_repr (FsoFrameworkAbstractObject* base) {
 }
 
 
-gboolean low_level_gt_a04_toggle (LowLevelGTA04* self) {
+gboolean low_level_gt_a04_is_powered (LowLevelGTA04* self) {
 	gboolean result = FALSE;
 	const gchar* _tmp0_;
 	gboolean _tmp1_ = FALSE;
 	g_return_val_if_fail (self != NULL, FALSE);
-	_tmp0_ = self->priv->sysfs_modem_gpio;
+	_tmp0_ = self->priv->modem_application_node;
 	_tmp1_ = fso_framework_file_handling_isPresent (_tmp0_);
-	if (_tmp1_) {
-		const gchar* _tmp2_;
-		const gchar* _tmp3_;
-		const gchar* _tmp4_;
-		g_usleep ((gulong) (1000 * 100));
-		_tmp2_ = self->priv->sysfs_modem_gpio;
-		fso_framework_file_handling_write ("0\n", _tmp2_, FALSE);
-		g_usleep ((gulong) (1000 * 100));
-		_tmp3_ = self->priv->sysfs_modem_gpio;
-		fso_framework_file_handling_write ("1\n", _tmp3_, FALSE);
-		g_usleep ((gulong) (1000 * 100));
-		_tmp4_ = self->priv->sysfs_modem_gpio;
-		fso_framework_file_handling_write ("0\n", _tmp4_, FALSE);
-	}
-	sleep ((guint) 2);
-	result = TRUE;
+	result = _tmp1_;
 	return result;
 }
 
 
+static gboolean low_level_gt_a04_toggle_modem_power_state (LowLevelGTA04* self, gboolean desired_power_state) {
+	gboolean result = FALSE;
+	gint retries;
+	gint _tmp0_ = 0;
+	gboolean _tmp1_;
+	gint _tmp2_;
+	gint first_sleep;
+	gint _tmp3_ = 0;
+	gboolean _tmp4_;
+	gint _tmp5_;
+	gint second_sleep;
+	const gchar* _tmp6_;
+	gboolean _tmp7_ = FALSE;
+	gint _tmp36_;
+	g_return_val_if_fail (self != NULL, FALSE);
+	retries = 0;
+	_tmp1_ = desired_power_state;
+	if (_tmp1_) {
+		_tmp0_ = 200;
+	} else {
+		_tmp0_ = 100;
+	}
+	_tmp2_ = _tmp0_;
+	first_sleep = _tmp2_;
+	_tmp4_ = desired_power_state;
+	if (_tmp4_) {
+		_tmp3_ = 100;
+	} else {
+		_tmp3_ = 200;
+	}
+	_tmp5_ = _tmp3_;
+	second_sleep = _tmp5_;
+	_tmp6_ = self->priv->sysfs_modem_gpio;
+	_tmp7_ = fso_framework_file_handling_isPresent (_tmp6_);
+	if (_tmp7_) {
+		while (TRUE) {
+			gint _tmp8_;
+			const gchar* _tmp9_ = NULL;
+			gboolean _tmp10_;
+			FsoFrameworkLogger* _tmp11_;
+			const gchar* _tmp12_;
+			gchar* _tmp13_ = NULL;
+			gchar* _tmp14_;
+			gboolean _tmp15_ = FALSE;
+			const gchar* _tmp16_;
+			gint _tmp17_;
+			const gchar* _tmp18_;
+			gint _tmp19_;
+			const gchar* _tmp20_;
+			gboolean _tmp21_ = FALSE;
+			gboolean _tmp22_ = FALSE;
+			gboolean _tmp23_;
+			gboolean _tmp26_;
+			gboolean _tmp32_;
+			gint _tmp33_;
+			_tmp8_ = retries;
+			if (!(_tmp8_ < 10)) {
+				break;
+			}
+			_tmp10_ = desired_power_state;
+			if (_tmp10_) {
+				_tmp9_ = "on";
+			} else {
+				_tmp9_ = "off";
+			}
+			_tmp11_ = ((FsoFrameworkAbstractObject*) self)->logger;
+			_tmp12_ = _tmp9_;
+			_tmp13_ = g_strdup_printf ("Trying to power modem %s ...", _tmp12_);
+			_tmp14_ = _tmp13_;
+			_tmp15_ = fso_framework_logger_debug (_tmp11_, _tmp14_);
+			g_assert (_tmp15_);
+			_g_free0 (_tmp14_);
+			_tmp16_ = self->priv->sysfs_modem_gpio;
+			fso_framework_file_handling_write ("0\n", _tmp16_, FALSE);
+			_tmp17_ = first_sleep;
+			g_usleep ((gulong) (1000 * _tmp17_));
+			_tmp18_ = self->priv->sysfs_modem_gpio;
+			fso_framework_file_handling_write ("1\n", _tmp18_, FALSE);
+			_tmp19_ = second_sleep;
+			g_usleep ((gulong) (1000 * _tmp19_));
+			_tmp20_ = self->priv->sysfs_modem_gpio;
+			fso_framework_file_handling_write ("0\n", _tmp20_, FALSE);
+			sleep ((guint) 3);
+			_tmp23_ = desired_power_state;
+			if (_tmp23_) {
+				const gchar* _tmp24_;
+				gboolean _tmp25_ = FALSE;
+				_tmp24_ = self->priv->modem_application_node;
+				_tmp25_ = fso_framework_file_handling_isPresent (_tmp24_);
+				_tmp22_ = _tmp25_;
+			} else {
+				_tmp22_ = FALSE;
+			}
+			_tmp26_ = _tmp22_;
+			if (_tmp26_) {
+				_tmp21_ = TRUE;
+			} else {
+				gboolean _tmp27_ = FALSE;
+				gboolean _tmp28_;
+				gboolean _tmp31_;
+				_tmp28_ = desired_power_state;
+				if (!_tmp28_) {
+					const gchar* _tmp29_;
+					gboolean _tmp30_ = FALSE;
+					_tmp29_ = self->priv->modem_application_node;
+					_tmp30_ = fso_framework_file_handling_isPresent (_tmp29_);
+					_tmp27_ = !_tmp30_;
+				} else {
+					_tmp27_ = FALSE;
+				}
+				_tmp31_ = _tmp27_;
+				_tmp21_ = _tmp31_;
+			}
+			_tmp32_ = _tmp21_;
+			if (_tmp32_) {
+				break;
+			}
+			_tmp33_ = retries;
+			retries = _tmp33_ + 1;
+		}
+	} else {
+		FsoFrameworkLogger* _tmp34_;
+		gboolean _tmp35_ = FALSE;
+		_tmp34_ = ((FsoFrameworkAbstractObject*) self)->logger;
+		_tmp35_ = fso_framework_logger_debug (_tmp34_, "Skipping modem power on/off sequence. Seems as we're on a GTA04A3.");
+		g_assert (_tmp35_);
+	}
+	_tmp36_ = retries;
+	result = _tmp36_ < 5;
+	return result;
+}
+
+
+/**
+     * Power on the modem. After calling this the modem is ready to use.
+     * NOTE: Calling poweron() will probably block for some seconds until the
+     * modem is completely initialized.
+     **/
 static gboolean low_level_gt_a04_real_poweron (FsoGsmLowLevel* base) {
 	LowLevelGTA04 * self;
 	gboolean result = FALSE;
 	gboolean _tmp0_ = FALSE;
-	gboolean ret;
+	FsoFrameworkLogger* _tmp3_;
+	gboolean _tmp4_ = FALSE;
+	gboolean _tmp5_ = FALSE;
 	self = (LowLevelGTA04*) base;
-	_tmp0_ = low_level_gt_a04_toggle (self);
-	ret = _tmp0_;
-	result = ret;
+	_tmp0_ = fso_gsm_low_level_poweroff ((FsoGsmLowLevel*) self);
+	if (!_tmp0_) {
+		FsoFrameworkLogger* _tmp1_;
+		gboolean _tmp2_ = FALSE;
+		_tmp1_ = ((FsoFrameworkAbstractObject*) self)->logger;
+		_tmp2_ = fso_framework_logger_debug (_tmp1_, "Already active modem could not powered off!");
+		g_assert (_tmp2_);
+		result = FALSE;
+		return result;
+	}
+	_tmp3_ = ((FsoFrameworkAbstractObject*) self)->logger;
+	_tmp4_ = fso_framework_logger_debug (_tmp3_, "Powering modem on now ...");
+	g_assert (_tmp4_);
+	_tmp5_ = low_level_gt_a04_toggle_modem_power_state (self, TRUE);
+	result = _tmp5_;
 	return result;
 }
 
 
+/**
+     * Powering off the modem.
+     * NOTE: Calling poweroff() will probably block for some seconds until the
+     * modem is completely powered off.
+     **/
 static gboolean low_level_gt_a04_real_poweroff (FsoGsmLowLevel* base) {
 	LowLevelGTA04 * self;
 	gboolean result = FALSE;
+	gboolean _tmp0_ = FALSE;
+	gboolean _tmp3_ = FALSE;
 	self = (LowLevelGTA04*) base;
-	result = TRUE;
+	_tmp0_ = low_level_gt_a04_is_powered (self);
+	if (!_tmp0_) {
+		FsoFrameworkLogger* _tmp1_;
+		gboolean _tmp2_ = FALSE;
+		_tmp1_ = ((FsoFrameworkAbstractObject*) self)->logger;
+		_tmp2_ = fso_framework_logger_debug (_tmp1_, "Skipping poweroff as modem is already not powered");
+		g_assert (_tmp2_);
+		result = TRUE;
+		return result;
+	}
+	_tmp3_ = low_level_gt_a04_toggle_modem_power_state (self, FALSE);
+	result = _tmp3_;
 	return result;
 }
 
 
+/**
+     * Suspend the modem - UNIMPLEMENTED
+     **/
 static gboolean low_level_gt_a04_real_suspend (FsoGsmLowLevel* base) {
 	LowLevelGTA04 * self;
 	gboolean result = FALSE;
@@ -150,6 +311,9 @@ static gboolean low_level_gt_a04_real_suspend (FsoGsmLowLevel* base) {
 }
 
 
+/**
+     * Resume the modem - UNIMPLEMENTED
+     **/
 static gboolean low_level_gt_a04_real_resume (FsoGsmLowLevel* base) {
 	LowLevelGTA04 * self;
 	gboolean result = FALSE;
@@ -177,7 +341,9 @@ static GObject * low_level_gt_a04_constructor (GType type, guint n_construct_pro
 	LowLevelGTA04 * self;
 	FsoFrameworkSmartKeyFile* _tmp0_;
 	gchar* _tmp1_ = NULL;
-	FsoFrameworkLogger* _tmp2_;
+	FsoFrameworkSmartKeyFile* _tmp2_;
+	gchar* _tmp3_ = NULL;
+	FsoFrameworkLogger* _tmp4_;
 	parent_class = G_OBJECT_CLASS (low_level_gt_a04_parent_class);
 	obj = parent_class->constructor (type, n_construct_properties, construct_properties);
 	self = LOW_LEVEL_GT_A04 (obj);
@@ -185,8 +351,12 @@ static GObject * low_level_gt_a04_constructor (GType type, guint n_construct_pro
 	_tmp1_ = fso_framework_smart_key_file_stringValue (_tmp0_, LOW_LEVEL_GT_A04_MODULE_NAME, "modem_toggle", "/sys/class/gpio/gpio186/value");
 	_g_free0 (self->priv->sysfs_modem_gpio);
 	self->priv->sysfs_modem_gpio = _tmp1_;
-	_tmp2_ = ((FsoFrameworkAbstractObject*) self)->logger;
-	fso_framework_logger_info (_tmp2_, "Registering gta04 low level modem toggle");
+	_tmp2_ = ((FsoFrameworkAbstractObject*) self)->config;
+	_tmp3_ = fso_framework_smart_key_file_stringValue (_tmp2_, LOW_LEVEL_GT_A04_MODULE_NAME, "modem_application_node", "/dev/ttyHS_Application");
+	_g_free0 (self->priv->modem_application_node);
+	self->priv->modem_application_node = _tmp3_;
+	_tmp4_ = ((FsoFrameworkAbstractObject*) self)->logger;
+	fso_framework_logger_info (_tmp4_, "Registering gta04 low level modem toggle");
 	return obj;
 }
 
@@ -218,6 +388,7 @@ static void low_level_gt_a04_finalize (GObject* obj) {
 	LowLevelGTA04 * self;
 	self = LOW_LEVEL_GT_A04 (obj);
 	_g_free0 (self->priv->sysfs_modem_gpio);
+	_g_free0 (self->priv->modem_application_node);
 	G_OBJECT_CLASS (low_level_gt_a04_parent_class)->finalize (obj);
 }
 

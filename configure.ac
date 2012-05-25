@@ -1,5 +1,5 @@
 m4_define([fsogsmd_released], [1])
-m4_define([fsogsmd_base_version], [0.10.2])
+m4_define([fsogsmd_base_version], [0.11.0])
 m4_define([fsogsmd_maybe_gitrev], m4_if(fsogsmd_released, [1], [], [m4_esyscmd([git show-ref --hash=5 HEAD | tr -d '\n\r'])]))
 m4_define([fsogsmd_version], m4_if(fsogsmd_released, [1], [fsogsmd_base_version], [fsogsmd_base_version-fsogsmd_maybe_gitrev]))
 
@@ -9,7 +9,7 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_PREREQ([2.65])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
-AM_INIT_AUTOMAKE([dist-bzip2 no-dist-gzip])
+AM_INIT_AUTOMAKE([dist-bzip2 no-dist-gzip tar-ustar])
 AM_MAINTAINER_MODE([enable])
 
 AC_PROG_CC
@@ -34,7 +34,7 @@ AC_ARG_ENABLE([vala], AS_HELP_STRING([--enable-vala],[Enable building from Vala 
               [enable_vala=$enableval], [enable_vala=no])
 
 # Force Vala for non-release builds
-m4_if(fsosystem_released, [1], [],
+m4_if(fsogsmd_released, [1], [],
       [
         enable_vala=yes
         echo "Vala compiler required for non-release builds; requiring Vala..."
@@ -59,10 +59,9 @@ GEE_REQUIRED=0.5.0
 XML_REQUIRED=2.7.3
 GSMMUX_REQUIRED=0.3.4
 GISICOMM_REQUIRED=0.1.0
-MSMCOMM_SPECS_REQUIRED=0.6.0
-FSO_GLIB_REQUIRED=2012.04.18.1
-FSO_REQUIRED=0.10.0
-CONNMAN_REQUIRED=0.68
+MSMCOMM_SPECS_REQUIRED=0.10.0
+FSO_GLIB_REQUIRED=2012.05.24.1
+FSO_REQUIRED=0.11.0
 SAMSUNG_IPC_REQUIRED=0.1
 
 PKG_CHECK_MODULES(GLIB,
@@ -82,8 +81,7 @@ PKG_CHECK_MODULES(FSO,
   fsosystem-2.0 >= $FSO_REQUIRED
   fsoframework-2.0 >= $FSO_REQUIRED
   fsotransport-2.0 >= $FSO_REQUIRED
-  fsoresource-2.0 >= $FSO_REQUIRED
-  fsodata-2.0 >= $FSO_REQUIRED)
+  fsoresource-2.0 >= $FSO_REQUIRED)
 AC_SUBST(FSO_CFLAGS)
 AC_SUBST(FSO_LIBS)
 
@@ -91,11 +89,13 @@ AC_SUBST(FSO_LIBS)
 # dbus conf directory
 #########################################################################################
 
-DBUS_DIR="`$PKG_CONFIG --variable=sysconfdir dbus-1`"
-if (test -z "{DBUS_DIR}"); then
+AC_ARG_WITH(dbusconfdir, AC_HELP_STRING([--with-dbusconfdir=PATH], [path to D-Bus config directory]),
+			[path_dbusconf=${withval}], [path_dbusconf="`$PKG_CONFIG --variable=sysconfdir dbus-1`"])
+
+if (test -z "${path_dbusconf}"); then
   DBUS_DIR="${sysconfdir}/dbus-1"
 else
-  DBUS_DIR="$DBUS_DIR/dbus-1"
+  DBUS_DIR="${path_dbusconf}/dbus-1"
 fi
 AC_SUBST(DBUS_DIR)
 
@@ -103,9 +103,13 @@ AC_SUBST(DBUS_DIR)
 # dbus service directory
 #########################################################################################
 
-DBUS_SERVICE_DIR="`$PKG_CONFIG --variable=session_bus_services_dir dbus-1`"
-if (test -z "{DBUS_SERVICE_DIR}"); then
-  DBUS_SERVICE_DIR="${datadir}/dbus-1/services"
+AC_ARG_WITH(dbusservicedir, AC_HELP_STRING([--with-dbusdatadir=PATH], [path to D-Bus data directory]),
+			[path_dbusdata=${withval}], [path_dbusdata="`$PKG_CONFIG --variable=datadir dbus-1`"])
+
+if (test -z "${path_dbusdata}"); then
+	DBUS_SERVICE_DIR="${datadir}/dbus-1/system-services"
+else
+	DBUS_SERVICE_DIR="${path_dbusdata}/dbus-1/system-services"
 fi
 AC_SUBST(DBUS_SERVICE_DIR)
 
@@ -124,22 +128,6 @@ if test "x$ppp" = "xyes"; then
       [AC_MSG_ERROR([Could not find pppd.h. pppd development headers are required to build the ppp plugin.])])
 fi
 AM_CONDITIONAL( [WANT_PPP], [test x"$ppp" = x"yes"])
-
-#########################################################################################
-# optional feature: connman
-#########################################################################################
-
-AC_ARG_ENABLE(connman-support,
-  [  --disable-connman-support   Disable building connman support (default=enabled)],
-  [connman=$enableval],
-  [connman="yes"])
-
-if test "x$connman" = "xyes"; then
-    PKG_CHECK_MODULES(CONNMAN, connman >= $CONNMAN_REQUIRED)
-    AC_SUBST(CONNMAN_CFLAGS)
-    AC_SUBST(CONNMAN_LIBS)
-fi
-AM_CONDITIONAL( [WANT_CONNMAN], [test x"$connman" = x"yes"])
 
 #########################################################################################
 # optional feature: libgsm0710mux support
@@ -248,6 +236,15 @@ AC_ARG_ENABLE(debug,
 AM_CONDITIONAL( [WANT_DEBUG], [test x"$enable_debug" = x"yes"])
 
 #########################################################################################
+# data files
+#########################################################################################
+
+AC_ARG_ENABLE(datafiles, AC_HELP_STRING([--disable-datafiles],
+			[don't install configuration and data files]),
+					[enable_datafiles=${enableval}])
+AM_CONDITIONAL(WANT_DATAFILES, test "${enable_datafiles}" != "no")
+
+#########################################################################################
 # output
 #########################################################################################
 
@@ -265,6 +262,7 @@ AC_CONFIG_FILES([
   conf/nokia_n900/Makefile
   conf/herring/Makefile
   conf/GTA04/Makefile
+  conf/phonesim/Makefile
   data/Makefile
   data/org.freesmartphone.ogsmd.service
   src/Makefile
@@ -289,14 +287,13 @@ AC_CONFIG_FILES([
   src/plugins/modem_qualcomm_palm/Makefile
   src/plugins/modem_samsung/Makefile
   src/plugins/modem_option_gtm601/Makefile
+  src/plugins/modem_phonesim/Makefile
   src/plugins/pdp_ppp/Makefile
   src/plugins/pdp_ppp_internal/Makefile
   src/plugins/pdp_ppp_mux/Makefile
   src/plugins/pdp_qmi/Makefile
   src/plugins/pdp_nokia_isi/Makefile
-  src/plugins/pdp_option_gtm601/Makefile
   src/ppp/Makefile
-  src/connman/Makefile
   tests/Makefile
   vapi/Makefile
 ])
@@ -315,7 +312,6 @@ echo "Configuration Options:"
 echo
 echo "  ppp support.............: $ppp"
 echo "  pdp_mux.................: $mux"
-echo "  connman_support.........: $connman"
 echo "  modem_ti_calypso........: $mux"
 echo "  modem_cinterion_mc75....: $mux"
 echo "  modem_qualcomm_palm.....: $palm"

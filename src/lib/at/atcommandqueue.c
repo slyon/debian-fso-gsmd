@@ -229,6 +229,7 @@ struct _FsoGsmParamSpecAtCommandSequence {
 
 static gpointer fso_gsm_at_command_handler_parent_class = NULL;
 static gpointer fso_gsm_at_command_queue_parent_class = NULL;
+static FsoFrameworkIParserDelegateIface* fso_gsm_at_command_queue_fso_framework_iparser_delegate_parent_iface = NULL;
 static gpointer fso_gsm_at_command_sequence_parent_class = NULL;
 
 GType fso_gsm_at_command_queue_command_get_type (void) G_GNUC_CONST;
@@ -254,19 +255,16 @@ enum  {
 #define FSO_GSM_AT_COMMAND_QUEUE_COMMAND_QUEUE_BUFFER_SIZE 4096
 FsoGsmAtCommandQueue* fso_gsm_at_command_queue_new (FsoFrameworkTransport* transport, FsoFrameworkParser* parser);
 FsoGsmAtCommandQueue* fso_gsm_at_command_queue_construct (GType object_type, FsoFrameworkTransport* transport, FsoFrameworkParser* parser);
-gboolean fso_gsm_at_command_queue_haveCommand (FsoGsmAtCommandQueue* self);
-static gboolean _fso_gsm_at_command_queue_haveCommand_fso_framework_parser_have_command_func (gpointer self);
-gboolean fso_gsm_at_command_queue_isExpectedPrefix (FsoGsmAtCommandQueue* self, const gchar* line);
-static gboolean _fso_gsm_at_command_queue_isExpectedPrefix_fso_framework_parser_expected_prefix_func (const gchar* line, gpointer self);
-void fso_gsm_at_command_queue_onParserCompletedSolicited (FsoGsmAtCommandQueue* self, gchar** response, int response_length1);
-static void _fso_gsm_at_command_queue_onParserCompletedSolicited_fso_framework_parser_solicited_completed_func (gchar** response, int response_length1, gpointer self);
-void fso_gsm_at_command_queue_onParserCompletedUnsolicited (FsoGsmAtCommandQueue* self, gchar** response, int response_length1);
-static void _fso_gsm_at_command_queue_onParserCompletedUnsolicited_fso_framework_parser_unsolicited_completed_func (gchar** response, int response_length1, gpointer self);
-static void fso_gsm_at_command_queue_real_onReadFromTransport (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t);
+static void fso_gsm_at_command_queue_real_onTransportDataAvailable (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t);
+static gboolean fso_gsm_at_command_queue_real_onParserHaveCommand (FsoFrameworkIParserDelegate* base);
+static gboolean fso_gsm_at_command_queue_real_onParserIsExpectedPrefix (FsoFrameworkIParserDelegate* base, const gchar* line);
+static void fso_gsm_at_command_queue_real_onParserSolicitedCompleted (FsoFrameworkIParserDelegate* base, gchar** response, int response_length1);
 void fso_gsm_at_command_queue_onSolicitedResponse (FsoGsmAtCommandQueue* self, FsoGsmAtCommandHandler* bundle, gchar** response, int response_length1);
 static gboolean _fso_framework_abstract_command_queue_checkRestartingQ_gsource_func (gpointer self);
+static void fso_gsm_at_command_queue_real_onParserUnsolicitedCompleted (FsoFrameworkIParserDelegate* base, gchar** response, int response_length1);
 static gchar** _vala_array_dup6 (gchar** self, int length);
 static void fso_gsm_at_command_queue_real_onResponseTimeout (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkAbstractCommandHandler* bundle);
+void fso_gsm_at_command_queue_enqueue (FsoGsmAtCommandQueue* self, FsoGsmAtCommandQueueCommand* command, const gchar* request, gint retries);
 static void fso_gsm_at_command_queue_enqueueAsync_data_free (gpointer _data);
 void fso_gsm_at_command_queue_enqueueAsync (FsoGsmAtCommandQueue* self, FsoGsmAtCommandQueueCommand* command, const gchar* request, gint retries, gint timeout, GAsyncReadyCallback _callback_, gpointer _user_data_);
 gchar** fso_gsm_at_command_queue_enqueueAsync_finish (FsoGsmAtCommandQueue* self, GAsyncResult* _res_, int* result_length1);
@@ -579,30 +577,6 @@ GType fso_gsm_at_command_handler_get_type (void) {
 }
 
 
-static gboolean _fso_gsm_at_command_queue_haveCommand_fso_framework_parser_have_command_func (gpointer self) {
-	gboolean result;
-	result = fso_gsm_at_command_queue_haveCommand (self);
-	return result;
-}
-
-
-static gboolean _fso_gsm_at_command_queue_isExpectedPrefix_fso_framework_parser_expected_prefix_func (const gchar* line, gpointer self) {
-	gboolean result;
-	result = fso_gsm_at_command_queue_isExpectedPrefix (self, line);
-	return result;
-}
-
-
-static void _fso_gsm_at_command_queue_onParserCompletedSolicited_fso_framework_parser_solicited_completed_func (gchar** response, int response_length1, gpointer self) {
-	fso_gsm_at_command_queue_onParserCompletedSolicited (self, response, response_length1);
-}
-
-
-static void _fso_gsm_at_command_queue_onParserCompletedUnsolicited_fso_framework_parser_unsolicited_completed_func (gchar** response, int response_length1, gpointer self) {
-	fso_gsm_at_command_queue_onParserCompletedUnsolicited (self, response, response_length1);
-}
-
-
 FsoGsmAtCommandQueue* fso_gsm_at_command_queue_construct (GType object_type, FsoFrameworkTransport* transport, FsoFrameworkParser* parser) {
 	FsoGsmAtCommandQueue * self = NULL;
 	FsoFrameworkTransport* _tmp0_;
@@ -619,7 +593,7 @@ FsoGsmAtCommandQueue* fso_gsm_at_command_queue_construct (GType object_type, Fso
 	_g_object_unref0 (self->parser);
 	self->parser = _tmp2_;
 	_tmp3_ = parser;
-	fso_framework_parser_setDelegates (_tmp3_, _fso_gsm_at_command_queue_haveCommand_fso_framework_parser_have_command_func, self, _fso_gsm_at_command_queue_isExpectedPrefix_fso_framework_parser_expected_prefix_func, self, _fso_gsm_at_command_queue_onParserCompletedSolicited_fso_framework_parser_solicited_completed_func, self, _fso_gsm_at_command_queue_onParserCompletedUnsolicited_fso_framework_parser_unsolicited_completed_func, self);
+	fso_framework_parser_setDelegate (_tmp3_, (FsoFrameworkIParserDelegate*) self);
 	_tmp4_ = g_malloc ((gsize) FSO_GSM_AT_COMMAND_QUEUE_COMMAND_QUEUE_BUFFER_SIZE);
 	self->buffer = _tmp4_;
 	return self;
@@ -631,7 +605,7 @@ FsoGsmAtCommandQueue* fso_gsm_at_command_queue_new (FsoFrameworkTransport* trans
 }
 
 
-static void fso_gsm_at_command_queue_real_onReadFromTransport (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t) {
+static void fso_gsm_at_command_queue_real_onTransportDataAvailable (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t) {
 	FsoGsmAtCommandQueue * self;
 	FsoFrameworkTransport* _tmp0_;
 	FsoFrameworkTransport* _tmp1_;
@@ -667,24 +641,26 @@ static void fso_gsm_at_command_queue_real_onReadFromTransport (FsoFrameworkAbstr
 }
 
 
-gboolean fso_gsm_at_command_queue_haveCommand (FsoGsmAtCommandQueue* self) {
+static gboolean fso_gsm_at_command_queue_real_onParserHaveCommand (FsoFrameworkIParserDelegate* base) {
+	FsoGsmAtCommandQueue * self;
 	gboolean result = FALSE;
 	FsoFrameworkAbstractCommandHandler* _tmp0_;
-	g_return_val_if_fail (self != NULL, FALSE);
+	self = (FsoGsmAtCommandQueue*) base;
 	_tmp0_ = ((FsoFrameworkAbstractCommandQueue*) self)->current;
 	result = _tmp0_ != NULL;
 	return result;
 }
 
 
-gboolean fso_gsm_at_command_queue_isExpectedPrefix (FsoGsmAtCommandQueue* self, const gchar* line) {
+static gboolean fso_gsm_at_command_queue_real_onParserIsExpectedPrefix (FsoFrameworkIParserDelegate* base, const gchar* line) {
+	FsoGsmAtCommandQueue * self;
 	gboolean result = FALSE;
 	FsoFrameworkAbstractCommandHandler* _tmp0_;
 	FsoFrameworkAbstractCommandHandler* _tmp1_;
 	FsoGsmAtCommandQueueCommand* _tmp2_;
 	const gchar* _tmp3_;
 	gboolean _tmp4_ = FALSE;
-	g_return_val_if_fail (self != NULL, FALSE);
+	self = (FsoGsmAtCommandQueue*) base;
 	g_return_val_if_fail (line != NULL, FALSE);
 	_tmp0_ = ((FsoFrameworkAbstractCommandQueue*) self)->current;
 	g_assert (_tmp0_ != NULL);
@@ -704,12 +680,13 @@ static gboolean _fso_framework_abstract_command_queue_checkRestartingQ_gsource_f
 }
 
 
-void fso_gsm_at_command_queue_onParserCompletedSolicited (FsoGsmAtCommandQueue* self, gchar** response, int response_length1) {
+static void fso_gsm_at_command_queue_real_onParserSolicitedCompleted (FsoFrameworkIParserDelegate* base, gchar** response, int response_length1) {
+	FsoGsmAtCommandQueue * self;
 	FsoFrameworkAbstractCommandHandler* _tmp0_;
 	FsoFrameworkAbstractCommandHandler* _tmp1_;
 	gchar** _tmp2_;
 	gint _tmp2__length1;
-	g_return_if_fail (self != NULL);
+	self = (FsoGsmAtCommandQueue*) base;
 	g_object_ref ((GObject*) self);
 	_tmp0_ = ((FsoFrameworkAbstractCommandQueue*) self)->current;
 	g_assert (_tmp0_ != NULL);
@@ -752,7 +729,8 @@ static gchar* string_strip (const gchar* self) {
 }
 
 
-void fso_gsm_at_command_queue_onParserCompletedUnsolicited (FsoGsmAtCommandQueue* self, gchar** response, int response_length1) {
+static void fso_gsm_at_command_queue_real_onParserUnsolicitedCompleted (FsoFrameworkIParserDelegate* base, gchar** response, int response_length1) {
+	FsoGsmAtCommandQueue * self;
 	FsoFrameworkTransport* _tmp0_;
 	FsoFrameworkTransport* _tmp1_;
 	FsoFrameworkLogger* _tmp2_;
@@ -776,7 +754,7 @@ void fso_gsm_at_command_queue_onParserCompletedUnsolicited (FsoGsmAtCommandQueue
 	gint _strings_size_;
 	gchar** _tmp18_;
 	gint _tmp18__length1;
-	g_return_if_fail (self != NULL);
+	self = (FsoGsmAtCommandQueue*) base;
 	_tmp0_ = fso_framework_command_queue_get_transport ((FsoFrameworkCommandQueue*) self);
 	_tmp1_ = _tmp0_;
 	_tmp2_ = _tmp1_->logger;
@@ -998,6 +976,25 @@ static void fso_gsm_at_command_queue_real_onResponseTimeout (FsoFrameworkAbstrac
 }
 
 
+void fso_gsm_at_command_queue_enqueue (FsoGsmAtCommandQueue* self, FsoGsmAtCommandQueueCommand* command, const gchar* request, gint retries) {
+	FsoGsmAtCommandQueueCommand* _tmp0_;
+	const gchar* _tmp1_;
+	gint _tmp2_;
+	FsoGsmAtCommandHandler* _tmp3_;
+	FsoGsmAtCommandHandler* handler;
+	g_return_if_fail (self != NULL);
+	g_return_if_fail (command != NULL);
+	g_return_if_fail (request != NULL);
+	_tmp0_ = command;
+	_tmp1_ = request;
+	_tmp2_ = retries;
+	_tmp3_ = fso_gsm_at_command_handler_new (_tmp0_, _tmp1_, (guint) _tmp2_, (guint) 0);
+	handler = _tmp3_;
+	fso_framework_abstract_command_queue_enqueueCommand ((FsoFrameworkAbstractCommandQueue*) self, (FsoFrameworkAbstractCommandHandler*) handler);
+	_fso_framework_abstract_command_handler_unref0 (handler);
+}
+
+
 static void fso_gsm_at_command_queue_enqueueAsync_data_free (gpointer _data) {
 	fso_gsm_at_command_queue_enqueueAsyncData* _data_;
 	_data_ = _data;
@@ -1125,9 +1122,18 @@ static gboolean fso_gsm_at_command_queue_enqueueAsync_co (fso_gsm_at_command_que
 
 static void fso_gsm_at_command_queue_class_init (FsoGsmAtCommandQueueClass * klass) {
 	fso_gsm_at_command_queue_parent_class = g_type_class_peek_parent (klass);
-	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->onReadFromTransport = fso_gsm_at_command_queue_real_onReadFromTransport;
+	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->onTransportDataAvailable = fso_gsm_at_command_queue_real_onTransportDataAvailable;
 	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->onResponseTimeout = fso_gsm_at_command_queue_real_onResponseTimeout;
 	G_OBJECT_CLASS (klass)->finalize = fso_gsm_at_command_queue_finalize;
+}
+
+
+static void fso_gsm_at_command_queue_fso_framework_iparser_delegate_interface_init (FsoFrameworkIParserDelegateIface * iface) {
+	fso_gsm_at_command_queue_fso_framework_iparser_delegate_parent_iface = g_type_interface_peek_parent (iface);
+	iface->onParserHaveCommand = (gboolean (*)(FsoFrameworkIParserDelegate*)) fso_gsm_at_command_queue_real_onParserHaveCommand;
+	iface->onParserIsExpectedPrefix = (gboolean (*)(FsoFrameworkIParserDelegate*, const gchar*)) fso_gsm_at_command_queue_real_onParserIsExpectedPrefix;
+	iface->onParserSolicitedCompleted = (void (*)(FsoFrameworkIParserDelegate*, gchar**, int)) fso_gsm_at_command_queue_real_onParserSolicitedCompleted;
+	iface->onParserUnsolicitedCompleted = (void (*)(FsoFrameworkIParserDelegate*, gchar**, int)) fso_gsm_at_command_queue_real_onParserUnsolicitedCompleted;
 }
 
 
@@ -1140,7 +1146,7 @@ static void fso_gsm_at_command_queue_finalize (GObject* obj) {
 	FsoFrameworkParser* _tmp0_;
 	self = FSO_GSM_AT_COMMAND_QUEUE (obj);
 	_tmp0_ = self->parser;
-	fso_framework_parser_setDelegates (_tmp0_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	fso_framework_parser_setDelegate (_tmp0_, NULL);
 	_g_object_unref0 (self->parser);
 	G_OBJECT_CLASS (fso_gsm_at_command_queue_parent_class)->finalize (obj);
 }
@@ -1153,8 +1159,10 @@ GType fso_gsm_at_command_queue_get_type (void) {
 	static volatile gsize fso_gsm_at_command_queue_type_id__volatile = 0;
 	if (g_once_init_enter (&fso_gsm_at_command_queue_type_id__volatile)) {
 		static const GTypeInfo g_define_type_info = { sizeof (FsoGsmAtCommandQueueClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) fso_gsm_at_command_queue_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (FsoGsmAtCommandQueue), 0, (GInstanceInitFunc) fso_gsm_at_command_queue_instance_init, NULL };
+		static const GInterfaceInfo fso_framework_iparser_delegate_info = { (GInterfaceInitFunc) fso_gsm_at_command_queue_fso_framework_iparser_delegate_interface_init, (GInterfaceFinalizeFunc) NULL, NULL};
 		GType fso_gsm_at_command_queue_type_id;
 		fso_gsm_at_command_queue_type_id = g_type_register_static (FSO_FRAMEWORK_TYPE_ABSTRACT_COMMAND_QUEUE, "FsoGsmAtCommandQueue", &g_define_type_info, 0);
+		g_type_add_interface_static (fso_gsm_at_command_queue_type_id, FSO_FRAMEWORK_TYPE_IPARSER_DELEGATE, &fso_framework_iparser_delegate_info);
 		g_once_init_leave (&fso_gsm_at_command_queue_type_id__volatile, fso_gsm_at_command_queue_type_id);
 	}
 	return fso_gsm_at_command_queue_type_id__volatile;

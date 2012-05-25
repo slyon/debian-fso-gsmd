@@ -81,7 +81,7 @@ public class WrapHexPdu
  */
 public interface FsoGsm.SmsHandler : FsoFramework.AbstractObject
 {
-    public abstract SmsStorage storage { get; set; }
+    public abstract ISmsStorage storage { get; set; }
 
     public abstract async void handleIncomingSmsOnSim( uint index );
     public abstract async void handleIncomingSms( string hexpdu, int tpdulen );
@@ -95,6 +95,54 @@ public interface FsoGsm.SmsHandler : FsoFramework.AbstractObject
 }
 
 /**
+ * @class NullSmsHandler
+ **/
+public class FsoGsm.NullSmsHandler : FsoFramework.AbstractObject, FsoGsm.SmsHandler
+{
+    public ISmsStorage storage { get; set; }
+
+    public NullSmsHandler()
+    {
+        storage = SmsStorageFactory.create( "null", "" );
+    }
+
+    public async void handleIncomingSmsOnSim( uint index )
+    {
+    }
+
+    public async void handleIncomingSms( string hexpdu, int tpdulen )
+    {
+    }
+
+    public async void handleIncomingSmsReport( string hexpdu, int tpdulen )
+    {
+    }
+
+    public uint16 lastReferenceNumber()
+    {
+        return storage.lastReferenceNumber();
+    }
+    public uint16 nextReferenceNumber()
+    {
+        return storage.increasingReferenceNumber();
+    }
+
+    public Gee.ArrayList<WrapHexPdu> formatTextMessage( string number, string contents, bool requestReport )
+    {
+        return new Gee.ArrayList<WrapHexPdu>();
+    }
+
+    public void storeTransactionIndizesForSentMessage( Gee.ArrayList<WrapHexPdu> hexpdus )
+    {
+    }
+
+    public override string repr()
+    {
+        return @"<>";
+    }
+}
+
+/**
  * @class AbstractSmsHandler
  *
  * An abstract SMS message handler which implements most parts for handling
@@ -103,7 +151,7 @@ public interface FsoGsm.SmsHandler : FsoFramework.AbstractObject
  **/
 public abstract class FsoGsm.AbstractSmsHandler : FsoGsm.SmsHandler, FsoFramework.AbstractObject
 {
-    public SmsStorage storage { get; set; }
+    public ISmsStorage storage { get; set; }
 
     protected abstract async string retrieveImsiFromSIM();
     protected abstract async void fillStorageWithMessageFromSIM();
@@ -125,14 +173,18 @@ public abstract class FsoGsm.AbstractSmsHandler : FsoGsm.SmsHandler, FsoFramewor
         yield syncWithSim();
     }
 
-    private async void syncWithSim()
+    public async void syncWithSim()
     {
-        string imsi = yield retrieveImsiFromSIM();
+        if ( storage == null )
+        {
+            assert( logger.debug( @"Storage not yet available; create a new one ..." ) );
 
-        if ( imsi == "" || imsi == null )
-            imsi = "unknown";
+            string imsi = yield retrieveImsiFromSIM();
+            if ( imsi == "" || imsi == null )
+                imsi = "unknown";
 
-        storage = new SmsStorage( imsi );
+            storage = SmsStorageFactory.create( "default", imsi );
+        }
 
         yield fillStorageWithMessageFromSIM();
     }

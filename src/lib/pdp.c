@@ -29,6 +29,8 @@
 #include <freesmartphone.h>
 #include <fsotransport.h>
 #include <gee.h>
+#include <smsutil.h>
+#include <conversions.h>
 #include <fsosystem.h>
 #include <fsoframework.h>
 #include <gobject/gvaluecollector.h>
@@ -55,6 +57,25 @@ typedef struct _FsoGsmParamSpecRouteInfo FsoGsmParamSpecRouteInfo;
 typedef struct _FsoGsmIPdpHandler FsoGsmIPdpHandler;
 typedef struct _FsoGsmIPdpHandlerIface FsoGsmIPdpHandlerIface;
 
+#define FSO_GSM_TYPE_NULL_PDP_HANDLER (fso_gsm_null_pdp_handler_get_type ())
+#define FSO_GSM_NULL_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_NULL_PDP_HANDLER, FsoGsmNullPdpHandler))
+#define FSO_GSM_NULL_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_NULL_PDP_HANDLER, FsoGsmNullPdpHandlerClass))
+#define FSO_GSM_IS_NULL_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_NULL_PDP_HANDLER))
+#define FSO_GSM_IS_NULL_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_NULL_PDP_HANDLER))
+#define FSO_GSM_NULL_PDP_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_NULL_PDP_HANDLER, FsoGsmNullPdpHandlerClass))
+
+typedef struct _FsoGsmNullPdpHandler FsoGsmNullPdpHandler;
+typedef struct _FsoGsmNullPdpHandlerClass FsoGsmNullPdpHandlerClass;
+typedef struct _FsoGsmNullPdpHandlerPrivate FsoGsmNullPdpHandlerPrivate;
+#define _g_hash_table_unref0(var) ((var == NULL) ? NULL : (var = (g_hash_table_unref (var), NULL)))
+#define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
+typedef struct _FsoGsmNullPdpHandlerActivateData FsoGsmNullPdpHandlerActivateData;
+typedef struct _FsoGsmNullPdpHandlerDeactivateData FsoGsmNullPdpHandlerDeactivateData;
+typedef struct _fso_gsm_null_pdp_handler_statusUpdateData fso_gsm_null_pdp_handler_statusUpdateData;
+#define _fso_gsm_route_info_unref0(var) ((var == NULL) ? NULL : (var = (fso_gsm_route_info_unref (var), NULL)))
+typedef struct _fso_gsm_null_pdp_handler_connectedWithNewDefaultRouteData fso_gsm_null_pdp_handler_connectedWithNewDefaultRouteData;
+typedef struct _fso_gsm_null_pdp_handler_syncStatusData fso_gsm_null_pdp_handler_syncStatusData;
+
 #define FSO_GSM_TYPE_PDP_HANDLER (fso_gsm_pdp_handler_get_type ())
 #define FSO_GSM_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandler))
 #define FSO_GSM_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
@@ -65,8 +86,6 @@ typedef struct _FsoGsmIPdpHandlerIface FsoGsmIPdpHandlerIface;
 typedef struct _FsoGsmPdpHandler FsoGsmPdpHandler;
 typedef struct _FsoGsmPdpHandlerClass FsoGsmPdpHandlerClass;
 typedef struct _FsoGsmPdpHandlerPrivate FsoGsmPdpHandlerPrivate;
-#define _g_hash_table_unref0(var) ((var == NULL) ? NULL : (var = (g_hash_table_unref (var), NULL)))
-#define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
 typedef struct _FsoGsmPdpHandlerScActivateData FsoGsmPdpHandlerScActivateData;
 typedef struct _FsoGsmPdpHandlerScDeactivateData FsoGsmPdpHandlerScDeactivateData;
 
@@ -87,6 +106,8 @@ typedef struct _FsoGsmChannel FsoGsmChannel;
 typedef struct _FsoGsmChannelIface FsoGsmChannelIface;
 
 #define FSO_GSM_MODEM_TYPE_STATUS (fso_gsm_modem_status_get_type ())
+
+#define FSO_GSM_MODEM_TYPE_NETWORK_STATUS (fso_gsm_modem_network_status_get_type ())
 
 #define FSO_GSM_TYPE_AT_COMMAND_SEQUENCE (fso_gsm_at_command_sequence_get_type ())
 #define FSO_GSM_AT_COMMAND_SEQUENCE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_AT_COMMAND_SEQUENCE, FsoGsmAtCommandSequence))
@@ -162,15 +183,13 @@ typedef struct _FsoGsmSmsHandlerIface FsoGsmSmsHandlerIface;
 typedef struct _WrapHexPdu WrapHexPdu;
 typedef struct _WrapHexPduClass WrapHexPduClass;
 
-#define FSO_GSM_TYPE_SMS_STORAGE (fso_gsm_sms_storage_get_type ())
-#define FSO_GSM_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorage))
-#define FSO_GSM_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
-#define FSO_GSM_IS_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_SMS_STORAGE))
-#define FSO_GSM_IS_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_SMS_STORAGE))
-#define FSO_GSM_SMS_STORAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
+#define FSO_GSM_TYPE_ISMS_STORAGE (fso_gsm_isms_storage_get_type ())
+#define FSO_GSM_ISMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ISMS_STORAGE, FsoGsmISmsStorage))
+#define FSO_GSM_IS_ISMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ISMS_STORAGE))
+#define FSO_GSM_ISMS_STORAGE_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_ISMS_STORAGE, FsoGsmISmsStorageIface))
 
-typedef struct _FsoGsmSmsStorage FsoGsmSmsStorage;
-typedef struct _FsoGsmSmsStorageClass FsoGsmSmsStorageClass;
+typedef struct _FsoGsmISmsStorage FsoGsmISmsStorage;
+typedef struct _FsoGsmISmsStorageIface FsoGsmISmsStorageIface;
 
 #define FSO_GSM_TYPE_PHONEBOOK_HANDLER (fso_gsm_phonebook_handler_get_type ())
 #define FSO_GSM_PHONEBOOK_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PHONEBOOK_HANDLER, FsoGsmPhonebookHandler))
@@ -201,7 +220,6 @@ typedef struct _fso_gsm_pdp_handler_updateStatusData fso_gsm_pdp_handler_updateS
 #define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 typedef struct _FsoGsmPdpHandlerActivateData FsoGsmPdpHandlerActivateData;
 typedef struct _FsoGsmPdpHandlerDeactivateData FsoGsmPdpHandlerDeactivateData;
-#define _fso_gsm_route_info_unref0(var) ((var == NULL) ? NULL : (var = (fso_gsm_route_info_unref (var), NULL)))
 #define _fso_framework_network_interface_unref0(var) ((var == NULL) ? NULL : (var = (fso_framework_network_interface_unref (var), NULL)))
 typedef struct _fso_gsm_pdp_handler_connectedWithNewDefaultRouteData fso_gsm_pdp_handler_connectedWithNewDefaultRouteData;
 typedef struct _FsoGsmModemDataPrivate FsoGsmModemDataPrivate;
@@ -269,6 +287,69 @@ struct _FsoGsmIPdpHandlerIface {
 	void (*connectedWithNewDefaultRoute) (FsoGsmIPdpHandler* self, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
 	void (*connectedWithNewDefaultRoute_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
 	void (*disconnected) (FsoGsmIPdpHandler* self);
+	void (*syncStatus) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*syncStatus_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	FreeSmartphoneGSMContextStatus (*get_status) (FsoGsmIPdpHandler* self);
+	void (*set_status) (FsoGsmIPdpHandler* self, FreeSmartphoneGSMContextStatus value);
+	GHashTable* (*get_properties) (FsoGsmIPdpHandler* self);
+	void (*set_properties) (FsoGsmIPdpHandler* self, GHashTable* value);
+};
+
+struct _FsoGsmNullPdpHandler {
+	FsoFrameworkAbstractObject parent_instance;
+	FsoGsmNullPdpHandlerPrivate * priv;
+};
+
+struct _FsoGsmNullPdpHandlerClass {
+	FsoFrameworkAbstractObjectClass parent_class;
+};
+
+struct _FsoGsmNullPdpHandlerPrivate {
+	FreeSmartphoneGSMContextStatus _status;
+	GHashTable* _properties;
+};
+
+struct _FsoGsmNullPdpHandlerActivateData {
+	int _state_;
+	GObject* _source_object_;
+	GAsyncResult* _res_;
+	GSimpleAsyncResult* _async_result;
+	FsoGsmNullPdpHandler* self;
+};
+
+struct _FsoGsmNullPdpHandlerDeactivateData {
+	int _state_;
+	GObject* _source_object_;
+	GAsyncResult* _res_;
+	GSimpleAsyncResult* _async_result;
+	FsoGsmNullPdpHandler* self;
+};
+
+struct _fso_gsm_null_pdp_handler_statusUpdateData {
+	int _state_;
+	GObject* _source_object_;
+	GAsyncResult* _res_;
+	GSimpleAsyncResult* _async_result;
+	FsoGsmNullPdpHandler* self;
+	gchar* status;
+	GHashTable* properties;
+};
+
+struct _fso_gsm_null_pdp_handler_connectedWithNewDefaultRouteData {
+	int _state_;
+	GObject* _source_object_;
+	GAsyncResult* _res_;
+	GSimpleAsyncResult* _async_result;
+	FsoGsmNullPdpHandler* self;
+	FsoGsmRouteInfo* route;
+};
+
+struct _fso_gsm_null_pdp_handler_syncStatusData {
+	int _state_;
+	GObject* _source_object_;
+	GAsyncResult* _res_;
+	GSimpleAsyncResult* _async_result;
+	FsoGsmNullPdpHandler* self;
 };
 
 struct _FsoGsmPdpHandler {
@@ -332,6 +413,13 @@ typedef enum  {
 	FSO_GSM_MODEM_STATUS_RESUMING,
 	FSO_GSM_MODEM_STATUS_CLOSING
 } FsoGsmModemStatus;
+
+typedef enum  {
+	FSO_GSM_MODEM_NETWORK_STATUS_UNKNOWN,
+	FSO_GSM_MODEM_NETWORK_STATUS_UNREGISTERED,
+	FSO_GSM_MODEM_NETWORK_STATUS_SEARCHING,
+	FSO_GSM_MODEM_NETWORK_STATUS_REGISTERED
+} FsoGsmModemNetworkStatus;
 
 struct _FsoGsmAtCommandQueueCommandIface {
 	GTypeInterface parent_iface;
@@ -547,6 +635,19 @@ struct _FsoGsmCallHandlerIface {
 	void (*releaseAll_finish) (FsoGsmCallHandler* self, GAsyncResult* _res_, GError** error);
 };
 
+struct _FsoGsmISmsStorageIface {
+	GTypeInterface parent_iface;
+	void (*clean) (FsoGsmISmsStorage* self);
+	gint (*addSms) (FsoGsmISmsStorage* self, struct sms* message);
+	GeeArrayList* (*keys) (FsoGsmISmsStorage* self);
+	void (*message) (FsoGsmISmsStorage* self, const gchar* key, gint index, FreeSmartphoneGSMSIMMessage* result);
+	FreeSmartphoneGSMSIMMessage* (*messagebook) (FsoGsmISmsStorage* self, int* result_length1);
+	guint16 (*lastReferenceNumber) (FsoGsmISmsStorage* self);
+	guint16 (*increasingReferenceNumber) (FsoGsmISmsStorage* self);
+	void (*storeTransactionIndizesForSentMessage) (FsoGsmISmsStorage* self, GeeArrayList* hexpdus);
+	gint (*confirmReceivedMessage) (FsoGsmISmsStorage* self, gint netreference);
+};
+
 struct _FsoGsmSmsHandlerIface {
 	GTypeInterface parent_iface;
 	void (*handleIncomingSmsOnSim) (FsoGsmSmsHandler* self, guint index, GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -559,12 +660,14 @@ struct _FsoGsmSmsHandlerIface {
 	guint16 (*nextReferenceNumber) (FsoGsmSmsHandler* self);
 	GeeArrayList* (*formatTextMessage) (FsoGsmSmsHandler* self, const gchar* number, const gchar* contents, gboolean requestReport);
 	void (*storeTransactionIndizesForSentMessage) (FsoGsmSmsHandler* self, GeeArrayList* hexpdus);
-	FsoGsmSmsStorage* (*get_storage) (FsoGsmSmsHandler* self);
-	void (*set_storage) (FsoGsmSmsHandler* self, FsoGsmSmsStorage* value);
+	FsoGsmISmsStorage* (*get_storage) (FsoGsmSmsHandler* self);
+	void (*set_storage) (FsoGsmSmsHandler* self, FsoGsmISmsStorage* value);
 };
 
 struct _FsoGsmPhonebookHandlerIface {
 	GTypeInterface parent_iface;
+	void (*syncWithSim) (FsoGsmPhonebookHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*syncWithSim_finish) (FsoGsmPhonebookHandler* self, GAsyncResult* _res_);
 	FsoGsmPhonebookStorage* (*get_storage) (FsoGsmPhonebookHandler* self);
 	void (*set_storage) (FsoGsmPhonebookHandler* self, FsoGsmPhonebookStorage* value);
 };
@@ -590,6 +693,7 @@ struct _FsoGsmModemIface {
 	void (*setFunctionality_finish) (FsoGsmModem* self, GAsyncResult* _res_, GError** error);
 	void (*registerChannel) (FsoGsmModem* self, const gchar* name, FsoGsmChannel* channel);
 	void (*advanceToState) (FsoGsmModem* self, FsoGsmModemStatus status, gboolean force);
+	void (*advanceNetworkState) (FsoGsmModem* self, FsoGsmModemNetworkStatus status);
 	FsoGsmAtCommandSequence* (*atCommandSequence) (FsoGsmModem* self, const gchar* channel, const gchar* purpose);
 	gpointer (*createMediator) (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, GError** error);
 	gpointer (*createAtCommand) (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, const gchar* command);
@@ -600,8 +704,10 @@ struct _FsoGsmModemIface {
 	gchar** (*processAtCommandAsync_finish) (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
 	void (*processAtPduCommandAsync) (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries, GAsyncReadyCallback _callback_, gpointer _user_data_);
 	gchar** (*processAtPduCommandAsync_finish) (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
+	void (*sendAtCommand) (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries);
 	FsoGsmChannel* (*channel) (FsoGsmModem* self, const gchar* category);
 	FsoGsmModemStatus (*status) (FsoGsmModem* self);
+	FsoGsmModemNetworkStatus (*network_status) (FsoGsmModem* self);
 	FreeSmartphoneGSMDeviceStatus (*externalStatus) (FsoGsmModem* self);
 	FsoGsmModemData* (*data) (FsoGsmModem* self);
 	void (*registerAtCommandSequence) (FsoGsmModem* self, const gchar* channel, const gchar* purpose, FsoGsmAtCommandSequence* sequence);
@@ -616,8 +722,8 @@ struct _FsoGsmModemIface {
 	void (*set_pbhandler) (FsoGsmModem* self, FsoGsmPhonebookHandler* value);
 	FsoGsmWatchDog* (*get_watchdog) (FsoGsmModem* self);
 	void (*set_watchdog) (FsoGsmModem* self, FsoGsmWatchDog* value);
-	FsoGsmPdpHandler* (*get_pdphandler) (FsoGsmModem* self);
-	void (*set_pdphandler) (FsoGsmModem* self, FsoGsmPdpHandler* value);
+	FsoGsmIPdpHandler* (*get_pdphandler) (FsoGsmModem* self);
+	void (*set_pdphandler) (FsoGsmModem* self, FsoGsmIPdpHandler* value);
 };
 
 struct _fso_gsm_pdp_handler_updateStatusData {
@@ -630,19 +736,20 @@ struct _fso_gsm_pdp_handler_updateStatusData {
 	GHashTable* properties;
 	FreeSmartphoneGSMContextStatus _tmp0_;
 	FreeSmartphoneGSMContextStatus _tmp1_;
-	FsoFrameworkLogger* _tmp2_;
-	FreeSmartphoneGSMContextStatus _tmp3_;
-	GEnumValue* _tmp4_;
-	gchar* _tmp5_;
+	FreeSmartphoneGSMContextStatus _tmp2_;
+	FsoFrameworkLogger* _tmp3_;
+	FreeSmartphoneGSMContextStatus _tmp4_;
+	GEnumValue* _tmp5_;
 	gchar* _tmp6_;
-	FreeSmartphoneGSMContextStatus _tmp7_;
-	GHashTable* _tmp8_;
-	FsoGsmModem* _tmp9_;
-	gpointer _tmp10_;
+	gchar* _tmp7_;
+	FreeSmartphoneGSMContextStatus _tmp8_;
+	GHashTable* _tmp9_;
+	FsoGsmModem* _tmp10_;
+	gpointer _tmp11_;
 	FreeSmartphoneGSMPDP* obj;
-	FreeSmartphoneGSMPDP* _tmp11_;
-	FreeSmartphoneGSMContextStatus _tmp12_;
-	GHashTable* _tmp13_;
+	FreeSmartphoneGSMPDP* _tmp12_;
+	FreeSmartphoneGSMContextStatus _tmp13_;
+	GHashTable* _tmp14_;
 };
 
 struct _FsoGsmPdpHandlerActivateData {
@@ -653,21 +760,23 @@ struct _FsoGsmPdpHandlerActivateData {
 	FsoGsmPdpHandler* self;
 	FreeSmartphoneGSMContextStatus _tmp0_;
 	FreeSmartphoneGSMContextStatus _tmp1_;
-	GEnumValue* _tmp2_;
-	gchar* _tmp3_;
-	gchar* _tmp4_;
-	GError* _tmp5_;
-	GError* _tmp6_;
-	GHashFunc _tmp7_;
-	GEqualFunc _tmp8_;
-	GHashTable* _tmp9_;
+	FreeSmartphoneGSMContextStatus _tmp2_;
+	FreeSmartphoneGSMContextStatus _tmp3_;
+	GEnumValue* _tmp4_;
+	gchar* _tmp5_;
+	gchar* _tmp6_;
+	GError* _tmp7_;
+	GError* _tmp8_;
+	GHashFunc _tmp9_;
+	GEqualFunc _tmp10_;
+	GHashTable* _tmp11_;
 	GHashTable* status;
 	GError* e1;
-	GError* _tmp10_;
-	GError* _tmp11_;
-	GError* e2;
 	GError* _tmp12_;
 	GError* _tmp13_;
+	GError* e2;
+	GError* _tmp14_;
+	GError* _tmp15_;
 	GError * _inner_error_;
 };
 
@@ -680,18 +789,21 @@ struct _FsoGsmPdpHandlerDeactivateData {
 	gboolean _tmp0_;
 	FreeSmartphoneGSMContextStatus _tmp1_;
 	FreeSmartphoneGSMContextStatus _tmp2_;
-	gboolean _tmp3_;
+	FreeSmartphoneGSMContextStatus _tmp3_;
 	FreeSmartphoneGSMContextStatus _tmp4_;
-	GEnumValue* _tmp5_;
-	gchar* _tmp6_;
-	gchar* _tmp7_;
-	GError* _tmp8_;
-	GError* _tmp9_;
-	GHashFunc _tmp10_;
-	GEqualFunc _tmp11_;
-	GHashTable* _tmp12_;
+	gboolean _tmp5_;
+	FreeSmartphoneGSMContextStatus _tmp6_;
+	FreeSmartphoneGSMContextStatus _tmp7_;
+	GEnumValue* _tmp8_;
+	gchar* _tmp9_;
+	gchar* _tmp10_;
+	GError* _tmp11_;
+	GError* _tmp12_;
+	GHashFunc _tmp13_;
+	GEqualFunc _tmp14_;
+	GHashTable* _tmp15_;
 	GHashTable* status;
-	GHashTable* _tmp13_;
+	GHashTable* _tmp16_;
 	GError * _inner_error_;
 };
 
@@ -831,57 +943,65 @@ struct _fso_gsm_pdp_handler_syncStatusData {
 	gboolean _tmp7_;
 	gboolean roamingAllowed;
 	FreeSmartphoneGSMContextStatus _tmp8_;
+	FreeSmartphoneGSMContextStatus _tmp9_;
 	FreeSmartphoneGSMContextStatus nextContextStatus;
-	gboolean _tmp9_;
-	FsoGsmModem* _tmp10_;
-	gboolean _tmp11_;
-	FreeSmartphoneGSMContextStatus _tmp12_;
-	gboolean _tmp13_;
-	FsoGsmModem* _tmp14_;
-	gpointer _tmp15_;
+	gboolean _tmp10_;
+	FsoGsmModem* _tmp11_;
+	gboolean _tmp12_;
+	FreeSmartphoneGSMContextStatus _tmp13_;
+	FreeSmartphoneGSMContextStatus _tmp14_;
+	gboolean _tmp15_;
+	FsoGsmModem* _tmp16_;
+	gpointer _tmp17_;
 	FreeSmartphoneGSMNetwork* network;
-	FreeSmartphoneGSMNetwork* _tmp16_;
-	GHashTable* _tmp17_;
-	GHashTable* networkStatus;
-	gboolean _tmp18_;
+	FreeSmartphoneGSMNetwork* _tmp18_;
 	GHashTable* _tmp19_;
-	gconstpointer _tmp20_;
-	const gchar* _tmp21_;
-	gchar* _tmp22_;
+	GHashTable* networkStatus;
+	gboolean _tmp20_;
+	GHashTable* _tmp21_;
+	gconstpointer _tmp22_;
 	const gchar* _tmp23_;
-	GHashTable* _tmp24_;
-	gconstpointer _tmp25_;
-	const gchar* _tmp26_;
-	gchar* _tmp27_;
+	gchar* _tmp24_;
+	const gchar* _tmp25_;
+	GHashTable* _tmp26_;
+	gconstpointer _tmp27_;
 	const gchar* _tmp28_;
-	gboolean _tmp29_;
+	gchar* _tmp29_;
 	const gchar* _tmp30_;
-	gchar* _tmp31_;
+	gboolean _tmp31_;
 	const gchar* _tmp32_;
+	gchar* _tmp33_;
+	const gchar* _tmp34_;
 	gboolean registered;
-	gboolean _tmp33_;
-	gboolean _tmp34_;
 	gboolean _tmp35_;
 	gboolean _tmp36_;
-	const gchar* _tmp37_;
+	gboolean _tmp37_;
 	gboolean _tmp38_;
-	gboolean _tmp39_;
+	const gchar* _tmp39_;
 	gboolean _tmp40_;
-	const gchar* _tmp41_;
-	const gchar* _tmp42_;
-	gboolean _tmp43_;
-	FreeSmartphoneGSMContextStatus _tmp44_;
-	FreeSmartphoneGSMContextStatus _tmp45_;
+	gboolean _tmp41_;
+	gboolean _tmp42_;
+	const gchar* _tmp43_;
+	const gchar* _tmp44_;
+	gboolean _tmp45_;
 	FreeSmartphoneGSMContextStatus _tmp46_;
 	FreeSmartphoneGSMContextStatus _tmp47_;
-	GHashTable* _tmp48_;
-	const gchar* _tmp49_;
-	gchar* _tmp50_;
+	FreeSmartphoneGSMContextStatus _tmp48_;
+	FreeSmartphoneGSMContextStatus _tmp49_;
+	FreeSmartphoneGSMContextStatus _tmp50_;
+	GHashTable* _tmp51_;
+	GHashTable* _tmp52_;
+	const gchar* _tmp53_;
+	gchar* _tmp54_;
+	GError* e;
+	FsoFrameworkLogger* _tmp55_;
 	GError * _inner_error_;
 };
 
 
 static gpointer fso_gsm_route_info_parent_class = NULL;
+static gpointer fso_gsm_null_pdp_handler_parent_class = NULL;
+static FsoGsmIPdpHandlerIface* fso_gsm_null_pdp_handler_fso_gsm_ipdp_handler_parent_iface = NULL;
 static gpointer fso_gsm_pdp_handler_parent_class = NULL;
 extern FsoGsmModem* fso_gsm_theModem;
 static FsoGsmIPdpHandlerIface* fso_gsm_pdp_handler_fso_gsm_ipdp_handler_parent_iface = NULL;
@@ -909,6 +1029,43 @@ void fso_gsm_ipdp_handler_statusUpdate_finish (FsoGsmIPdpHandler* self, GAsyncRe
 void fso_gsm_ipdp_handler_connectedWithNewDefaultRoute (FsoGsmIPdpHandler* self, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
 void fso_gsm_ipdp_handler_connectedWithNewDefaultRoute_finish (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
 void fso_gsm_ipdp_handler_disconnected (FsoGsmIPdpHandler* self);
+void fso_gsm_ipdp_handler_syncStatus (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+void fso_gsm_ipdp_handler_syncStatus_finish (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+FreeSmartphoneGSMContextStatus fso_gsm_ipdp_handler_get_status (FsoGsmIPdpHandler* self);
+void fso_gsm_ipdp_handler_set_status (FsoGsmIPdpHandler* self, FreeSmartphoneGSMContextStatus value);
+GHashTable* fso_gsm_ipdp_handler_get_properties (FsoGsmIPdpHandler* self);
+void fso_gsm_ipdp_handler_set_properties (FsoGsmIPdpHandler* self, GHashTable* value);
+GType fso_gsm_null_pdp_handler_get_type (void) G_GNUC_CONST;
+#define FSO_GSM_NULL_PDP_HANDLER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), FSO_GSM_TYPE_NULL_PDP_HANDLER, FsoGsmNullPdpHandlerPrivate))
+enum  {
+	FSO_GSM_NULL_PDP_HANDLER_DUMMY_PROPERTY,
+	FSO_GSM_NULL_PDP_HANDLER_STATUS,
+	FSO_GSM_NULL_PDP_HANDLER_PROPERTIES
+};
+static void _g_free0_ (gpointer var);
+static void _g_variant_unref0_ (gpointer var);
+static void fso_gsm_null_pdp_handler_real_activate_data_free (gpointer _data);
+static void fso_gsm_null_pdp_handler_real_activate (FsoGsmIPdpHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_);
+static gboolean fso_gsm_null_pdp_handler_real_activate_co (FsoGsmNullPdpHandlerActivateData* _data_);
+static void fso_gsm_null_pdp_handler_real_deactivate_data_free (gpointer _data);
+static void fso_gsm_null_pdp_handler_real_deactivate (FsoGsmIPdpHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_);
+static gboolean fso_gsm_null_pdp_handler_real_deactivate_co (FsoGsmNullPdpHandlerDeactivateData* _data_);
+static void fso_gsm_null_pdp_handler_real_statusUpdate_data_free (gpointer _data);
+static void fso_gsm_null_pdp_handler_real_statusUpdate (FsoGsmIPdpHandler* base, const gchar* status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_);
+static gboolean fso_gsm_null_pdp_handler_real_statusUpdate_co (fso_gsm_null_pdp_handler_statusUpdateData* _data_);
+static void fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute_data_free (gpointer _data);
+static void fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute (FsoGsmIPdpHandler* base, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
+static gboolean fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute_co (fso_gsm_null_pdp_handler_connectedWithNewDefaultRouteData* _data_);
+static void fso_gsm_null_pdp_handler_real_disconnected (FsoGsmIPdpHandler* base);
+static void fso_gsm_null_pdp_handler_real_syncStatus_data_free (gpointer _data);
+static void fso_gsm_null_pdp_handler_real_syncStatus (FsoGsmIPdpHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_);
+static gboolean fso_gsm_null_pdp_handler_real_syncStatus_co (fso_gsm_null_pdp_handler_syncStatusData* _data_);
+static gchar* fso_gsm_null_pdp_handler_real_repr (FsoFrameworkAbstractObject* base);
+FsoGsmNullPdpHandler* fso_gsm_null_pdp_handler_new (void);
+FsoGsmNullPdpHandler* fso_gsm_null_pdp_handler_construct (GType object_type);
+static void fso_gsm_null_pdp_handler_finalize (GObject* obj);
+static void _vala_fso_gsm_null_pdp_handler_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
+static void _vala_fso_gsm_null_pdp_handler_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
 GType fso_gsm_pdp_handler_get_type (void) G_GNUC_CONST;
 #define FSO_GSM_PDP_HANDLER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerPrivate))
 enum  {
@@ -930,12 +1087,10 @@ static void fso_gsm_pdp_handler_updateStatus_data_free (gpointer _data);
 void fso_gsm_pdp_handler_updateStatus (FsoGsmPdpHandler* self, FreeSmartphoneGSMContextStatus status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_);
 void fso_gsm_pdp_handler_updateStatus_finish (FsoGsmPdpHandler* self, GAsyncResult* _res_);
 static gboolean fso_gsm_pdp_handler_updateStatus_co (fso_gsm_pdp_handler_updateStatusData* _data_);
-FreeSmartphoneGSMContextStatus fso_gsm_pdp_handler_get_status (FsoGsmPdpHandler* self);
 const gchar* free_smartphone_gsm_context_status_to_string (FreeSmartphoneGSMContextStatus self);
-void fso_gsm_pdp_handler_set_status (FsoGsmPdpHandler* self, FreeSmartphoneGSMContextStatus value);
-void fso_gsm_pdp_handler_set_properties (FsoGsmPdpHandler* self, GHashTable* value);
 GType fso_gsm_channel_get_type (void) G_GNUC_CONST;
 GType fso_gsm_modem_status_get_type (void) G_GNUC_CONST;
+GType fso_gsm_modem_network_status_get_type (void) G_GNUC_CONST;
 gpointer fso_gsm_at_command_sequence_ref (gpointer instance);
 void fso_gsm_at_command_sequence_unref (gpointer instance);
 GParamSpec* fso_gsm_param_spec_at_command_sequence (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
@@ -957,7 +1112,7 @@ void value_set_wrap_hex_pdu (GValue* value, gpointer v_object);
 void value_take_wrap_hex_pdu (GValue* value, gpointer v_object);
 gpointer value_get_wrap_hex_pdu (const GValue* value);
 GType wrap_hex_pdu_get_type (void) G_GNUC_CONST;
-GType fso_gsm_sms_storage_get_type (void) G_GNUC_CONST;
+GType fso_gsm_isms_storage_get_type (void) G_GNUC_CONST;
 GType fso_gsm_sms_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_phonebook_storage_get_type (void) G_GNUC_CONST;
 GType fso_gsm_phonebook_handler_get_type (void) G_GNUC_CONST;
@@ -967,8 +1122,6 @@ gpointer fso_gsm_modem_theDevice (FsoGsmModem* self, GType t_type, GBoxedCopyFun
 static void fso_gsm_pdp_handler_real_activate_data_free (gpointer _data);
 static void fso_gsm_pdp_handler_real_activate (FsoGsmIPdpHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_);
 static gboolean fso_gsm_pdp_handler_real_activate_co (FsoGsmPdpHandlerActivateData* _data_);
-static void _g_free0_ (gpointer var);
-static void _g_variant_unref0_ (gpointer var);
 static void fso_gsm_pdp_handler_activate_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_);
 static void fso_gsm_pdp_handler_real_deactivate_data_free (gpointer _data);
 static void fso_gsm_pdp_handler_real_deactivate (FsoGsmIPdpHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -979,17 +1132,16 @@ void fso_gsm_pdp_handler_statusUpdate_finish (FsoGsmPdpHandler* self, GAsyncResu
 static void fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_data_free (gpointer _data);
 static void fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute (FsoGsmIPdpHandler* base, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
 static gboolean fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_co (fso_gsm_pdp_handler_connectedWithNewDefaultRouteData* _data_);
-static GVariant* _variant_new58 (const gchar* value);
-static GVariant* _variant_new59 (const gchar* value);
-static GVariant* _variant_new60 (const gchar* value);
-static GVariant* _variant_new61 (const gchar* value);
 static GVariant* _variant_new62 (const gchar* value);
+static GVariant* _variant_new63 (const gchar* value);
+static GVariant* _variant_new64 (const gchar* value);
+static GVariant* _variant_new65 (const gchar* value);
+static GVariant* _variant_new66 (const gchar* value);
 static void fso_gsm_pdp_handler_connectedWithNewDefaultRoute_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_);
 static void fso_gsm_pdp_handler_real_disconnected (FsoGsmIPdpHandler* base);
-static void fso_gsm_pdp_handler_syncStatus_data_free (gpointer _data);
-void fso_gsm_pdp_handler_syncStatus (FsoGsmPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-void fso_gsm_pdp_handler_syncStatus_finish (FsoGsmPdpHandler* self, GAsyncResult* _res_);
-static gboolean fso_gsm_pdp_handler_syncStatus_co (fso_gsm_pdp_handler_syncStatusData* _data_);
+static void fso_gsm_pdp_handler_real_syncStatus_data_free (gpointer _data);
+static void fso_gsm_pdp_handler_real_syncStatus (FsoGsmIPdpHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_);
+static gboolean fso_gsm_pdp_handler_real_syncStatus_co (fso_gsm_pdp_handler_syncStatusData* _data_);
 FsoGsmModemData* fso_gsm_modem_data (FsoGsmModem* self);
 gpointer fso_gsm_phonebook_params_ref (gpointer instance);
 void fso_gsm_phonebook_params_unref (gpointer instance);
@@ -1014,9 +1166,8 @@ gpointer fso_gsm_value_get_network_time_report (const GValue* value);
 GType fso_gsm_network_time_report_get_type (void) G_GNUC_CONST;
 gboolean fso_gsm_modem_isAlive (FsoGsmModem* self);
 static void fso_gsm_pdp_handler_syncStatus_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_);
-static const gchar* _variant_get63 (GVariant* value);
-static const gchar* _variant_get64 (GVariant* value);
-GHashTable* fso_gsm_pdp_handler_get_properties (FsoGsmPdpHandler* self);
+static const gchar* _variant_get67 (GVariant* value);
+static const gchar* _variant_get68 (GVariant* value);
 FsoGsmPdpHandler* fso_gsm_pdp_handler_construct (GType object_type);
 static GObject * fso_gsm_pdp_handler_constructor (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties);
 static gboolean _fso_gsm_pdp_handler___lambda0_ (FsoGsmPdpHandler* self);
@@ -1256,10 +1407,46 @@ void fso_gsm_ipdp_handler_disconnected (FsoGsmIPdpHandler* self) {
 }
 
 
+void fso_gsm_ipdp_handler_syncStatus (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+	FSO_GSM_IPDP_HANDLER_GET_INTERFACE (self)->syncStatus (self, _callback_, _user_data_);
+}
+
+
+void fso_gsm_ipdp_handler_syncStatus_finish (FsoGsmIPdpHandler* self, GAsyncResult* _res_) {
+	FSO_GSM_IPDP_HANDLER_GET_INTERFACE (self)->syncStatus_finish (self, _res_);
+}
+
+
+FreeSmartphoneGSMContextStatus fso_gsm_ipdp_handler_get_status (FsoGsmIPdpHandler* self) {
+	g_return_val_if_fail (self != NULL, 0);
+	return FSO_GSM_IPDP_HANDLER_GET_INTERFACE (self)->get_status (self);
+}
+
+
+void fso_gsm_ipdp_handler_set_status (FsoGsmIPdpHandler* self, FreeSmartphoneGSMContextStatus value) {
+	g_return_if_fail (self != NULL);
+	FSO_GSM_IPDP_HANDLER_GET_INTERFACE (self)->set_status (self, value);
+}
+
+
+GHashTable* fso_gsm_ipdp_handler_get_properties (FsoGsmIPdpHandler* self) {
+	g_return_val_if_fail (self != NULL, NULL);
+	return FSO_GSM_IPDP_HANDLER_GET_INTERFACE (self)->get_properties (self);
+}
+
+
+void fso_gsm_ipdp_handler_set_properties (FsoGsmIPdpHandler* self, GHashTable* value) {
+	g_return_if_fail (self != NULL);
+	FSO_GSM_IPDP_HANDLER_GET_INTERFACE (self)->set_properties (self, value);
+}
+
+
 static void fso_gsm_ipdp_handler_base_init (FsoGsmIPdpHandlerIface * iface) {
 	static gboolean initialized = FALSE;
 	if (!initialized) {
 		initialized = TRUE;
+		g_object_interface_install_property (iface, g_param_spec_enum ("status", "status", "status", FREE_SMARTPHONE_GSM_TYPE_CONTEXT_STATUS, 0, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+		g_object_interface_install_property (iface, g_param_spec_boxed ("properties", "properties", "properties", G_TYPE_HASH_TABLE, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
 	}
 }
 
@@ -1280,16 +1467,464 @@ GType fso_gsm_ipdp_handler_get_type (void) {
 }
 
 
-static void fso_gsm_pdp_handler_real_sc_activate_data_free (gpointer _data) {
-	FsoGsmPdpHandlerScActivateData* _data_;
+static void _g_free0_ (gpointer var) {
+	var = (g_free (var), NULL);
+}
+
+
+static void _g_variant_unref0_ (gpointer var) {
+	(var == NULL) ? NULL : (var = (g_variant_unref (var), NULL));
+}
+
+
+static void fso_gsm_null_pdp_handler_real_activate_data_free (gpointer _data) {
+	FsoGsmNullPdpHandlerActivateData* _data_;
 	_data_ = _data;
 	_g_object_unref0 (_data_->self);
-	g_slice_free (FsoGsmPdpHandlerScActivateData, _data_);
+	g_slice_free (FsoGsmNullPdpHandlerActivateData, _data_);
 }
 
 
 static gpointer _g_object_ref0 (gpointer self) {
 	return self ? g_object_ref (self) : NULL;
+}
+
+
+static void fso_gsm_null_pdp_handler_real_activate (FsoGsmIPdpHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+	FsoGsmNullPdpHandler * self;
+	FsoGsmNullPdpHandlerActivateData* _data_;
+	FsoGsmNullPdpHandler* _tmp0_;
+	self = (FsoGsmNullPdpHandler*) base;
+	_data_ = g_slice_new0 (FsoGsmNullPdpHandlerActivateData);
+	_data_->_async_result = g_simple_async_result_new (G_OBJECT (self), _callback_, _user_data_, fso_gsm_null_pdp_handler_real_activate);
+	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, fso_gsm_null_pdp_handler_real_activate_data_free);
+	_tmp0_ = _g_object_ref0 (self);
+	_data_->self = _tmp0_;
+	fso_gsm_null_pdp_handler_real_activate_co (_data_);
+}
+
+
+static void fso_gsm_null_pdp_handler_real_activate_finish (FsoGsmIPdpHandler* base, GAsyncResult* _res_, GError** error) {
+	FsoGsmNullPdpHandlerActivateData* _data_;
+	if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (_res_), error)) {
+		return;
+	}
+	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
+}
+
+
+static gboolean fso_gsm_null_pdp_handler_real_activate_co (FsoGsmNullPdpHandlerActivateData* _data_) {
+	switch (_data_->_state_) {
+		case 0:
+		goto _state_0;
+		default:
+		g_assert_not_reached ();
+	}
+	_state_0:
+	if (_data_->_state_ == 0) {
+		g_simple_async_result_complete_in_idle (_data_->_async_result);
+	} else {
+		g_simple_async_result_complete (_data_->_async_result);
+	}
+	g_object_unref (_data_->_async_result);
+	return FALSE;
+}
+
+
+static void fso_gsm_null_pdp_handler_real_deactivate_data_free (gpointer _data) {
+	FsoGsmNullPdpHandlerDeactivateData* _data_;
+	_data_ = _data;
+	_g_object_unref0 (_data_->self);
+	g_slice_free (FsoGsmNullPdpHandlerDeactivateData, _data_);
+}
+
+
+static void fso_gsm_null_pdp_handler_real_deactivate (FsoGsmIPdpHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+	FsoGsmNullPdpHandler * self;
+	FsoGsmNullPdpHandlerDeactivateData* _data_;
+	FsoGsmNullPdpHandler* _tmp0_;
+	self = (FsoGsmNullPdpHandler*) base;
+	_data_ = g_slice_new0 (FsoGsmNullPdpHandlerDeactivateData);
+	_data_->_async_result = g_simple_async_result_new (G_OBJECT (self), _callback_, _user_data_, fso_gsm_null_pdp_handler_real_deactivate);
+	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, fso_gsm_null_pdp_handler_real_deactivate_data_free);
+	_tmp0_ = _g_object_ref0 (self);
+	_data_->self = _tmp0_;
+	fso_gsm_null_pdp_handler_real_deactivate_co (_data_);
+}
+
+
+static void fso_gsm_null_pdp_handler_real_deactivate_finish (FsoGsmIPdpHandler* base, GAsyncResult* _res_, GError** error) {
+	FsoGsmNullPdpHandlerDeactivateData* _data_;
+	if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (_res_), error)) {
+		return;
+	}
+	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
+}
+
+
+static gboolean fso_gsm_null_pdp_handler_real_deactivate_co (FsoGsmNullPdpHandlerDeactivateData* _data_) {
+	switch (_data_->_state_) {
+		case 0:
+		goto _state_0;
+		default:
+		g_assert_not_reached ();
+	}
+	_state_0:
+	if (_data_->_state_ == 0) {
+		g_simple_async_result_complete_in_idle (_data_->_async_result);
+	} else {
+		g_simple_async_result_complete (_data_->_async_result);
+	}
+	g_object_unref (_data_->_async_result);
+	return FALSE;
+}
+
+
+static void fso_gsm_null_pdp_handler_real_statusUpdate_data_free (gpointer _data) {
+	fso_gsm_null_pdp_handler_statusUpdateData* _data_;
+	_data_ = _data;
+	_g_free0 (_data_->status);
+	_g_hash_table_unref0 (_data_->properties);
+	_g_object_unref0 (_data_->self);
+	g_slice_free (fso_gsm_null_pdp_handler_statusUpdateData, _data_);
+}
+
+
+static gpointer _g_hash_table_ref0 (gpointer self) {
+	return self ? g_hash_table_ref (self) : NULL;
+}
+
+
+static void fso_gsm_null_pdp_handler_real_statusUpdate (FsoGsmIPdpHandler* base, const gchar* status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+	FsoGsmNullPdpHandler * self;
+	fso_gsm_null_pdp_handler_statusUpdateData* _data_;
+	FsoGsmNullPdpHandler* _tmp0_;
+	const gchar* _tmp1_;
+	gchar* _tmp2_;
+	GHashTable* _tmp3_;
+	GHashTable* _tmp4_;
+	self = (FsoGsmNullPdpHandler*) base;
+	_data_ = g_slice_new0 (fso_gsm_null_pdp_handler_statusUpdateData);
+	_data_->_async_result = g_simple_async_result_new (G_OBJECT (self), _callback_, _user_data_, fso_gsm_null_pdp_handler_real_statusUpdate);
+	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, fso_gsm_null_pdp_handler_real_statusUpdate_data_free);
+	_tmp0_ = _g_object_ref0 (self);
+	_data_->self = _tmp0_;
+	_tmp1_ = status;
+	_tmp2_ = g_strdup (_tmp1_);
+	_data_->status = _tmp2_;
+	_tmp3_ = properties;
+	_tmp4_ = _g_hash_table_ref0 (_tmp3_);
+	_data_->properties = _tmp4_;
+	fso_gsm_null_pdp_handler_real_statusUpdate_co (_data_);
+}
+
+
+static void fso_gsm_null_pdp_handler_real_statusUpdate_finish (FsoGsmIPdpHandler* base, GAsyncResult* _res_) {
+	fso_gsm_null_pdp_handler_statusUpdateData* _data_;
+	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
+}
+
+
+static gboolean fso_gsm_null_pdp_handler_real_statusUpdate_co (fso_gsm_null_pdp_handler_statusUpdateData* _data_) {
+	switch (_data_->_state_) {
+		case 0:
+		goto _state_0;
+		default:
+		g_assert_not_reached ();
+	}
+	_state_0:
+	if (_data_->_state_ == 0) {
+		g_simple_async_result_complete_in_idle (_data_->_async_result);
+	} else {
+		g_simple_async_result_complete (_data_->_async_result);
+	}
+	g_object_unref (_data_->_async_result);
+	return FALSE;
+}
+
+
+static void fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute_data_free (gpointer _data) {
+	fso_gsm_null_pdp_handler_connectedWithNewDefaultRouteData* _data_;
+	_data_ = _data;
+	_fso_gsm_route_info_unref0 (_data_->route);
+	_g_object_unref0 (_data_->self);
+	g_slice_free (fso_gsm_null_pdp_handler_connectedWithNewDefaultRouteData, _data_);
+}
+
+
+static gpointer _fso_gsm_route_info_ref0 (gpointer self) {
+	return self ? fso_gsm_route_info_ref (self) : NULL;
+}
+
+
+static void fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute (FsoGsmIPdpHandler* base, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+	FsoGsmNullPdpHandler * self;
+	fso_gsm_null_pdp_handler_connectedWithNewDefaultRouteData* _data_;
+	FsoGsmNullPdpHandler* _tmp0_;
+	FsoGsmRouteInfo* _tmp1_;
+	FsoGsmRouteInfo* _tmp2_;
+	self = (FsoGsmNullPdpHandler*) base;
+	_data_ = g_slice_new0 (fso_gsm_null_pdp_handler_connectedWithNewDefaultRouteData);
+	_data_->_async_result = g_simple_async_result_new (G_OBJECT (self), _callback_, _user_data_, fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute);
+	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute_data_free);
+	_tmp0_ = _g_object_ref0 (self);
+	_data_->self = _tmp0_;
+	_tmp1_ = route;
+	_tmp2_ = _fso_gsm_route_info_ref0 (_tmp1_);
+	_data_->route = _tmp2_;
+	fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute_co (_data_);
+}
+
+
+static void fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute_finish (FsoGsmIPdpHandler* base, GAsyncResult* _res_) {
+	fso_gsm_null_pdp_handler_connectedWithNewDefaultRouteData* _data_;
+	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
+}
+
+
+static gboolean fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute_co (fso_gsm_null_pdp_handler_connectedWithNewDefaultRouteData* _data_) {
+	switch (_data_->_state_) {
+		case 0:
+		goto _state_0;
+		default:
+		g_assert_not_reached ();
+	}
+	_state_0:
+	if (_data_->_state_ == 0) {
+		g_simple_async_result_complete_in_idle (_data_->_async_result);
+	} else {
+		g_simple_async_result_complete (_data_->_async_result);
+	}
+	g_object_unref (_data_->_async_result);
+	return FALSE;
+}
+
+
+static void fso_gsm_null_pdp_handler_real_disconnected (FsoGsmIPdpHandler* base) {
+	FsoGsmNullPdpHandler * self;
+	self = (FsoGsmNullPdpHandler*) base;
+}
+
+
+static void fso_gsm_null_pdp_handler_real_syncStatus_data_free (gpointer _data) {
+	fso_gsm_null_pdp_handler_syncStatusData* _data_;
+	_data_ = _data;
+	_g_object_unref0 (_data_->self);
+	g_slice_free (fso_gsm_null_pdp_handler_syncStatusData, _data_);
+}
+
+
+static void fso_gsm_null_pdp_handler_real_syncStatus (FsoGsmIPdpHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+	FsoGsmNullPdpHandler * self;
+	fso_gsm_null_pdp_handler_syncStatusData* _data_;
+	FsoGsmNullPdpHandler* _tmp0_;
+	self = (FsoGsmNullPdpHandler*) base;
+	_data_ = g_slice_new0 (fso_gsm_null_pdp_handler_syncStatusData);
+	_data_->_async_result = g_simple_async_result_new (G_OBJECT (self), _callback_, _user_data_, fso_gsm_null_pdp_handler_real_syncStatus);
+	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, fso_gsm_null_pdp_handler_real_syncStatus_data_free);
+	_tmp0_ = _g_object_ref0 (self);
+	_data_->self = _tmp0_;
+	fso_gsm_null_pdp_handler_real_syncStatus_co (_data_);
+}
+
+
+static void fso_gsm_null_pdp_handler_real_syncStatus_finish (FsoGsmIPdpHandler* base, GAsyncResult* _res_) {
+	fso_gsm_null_pdp_handler_syncStatusData* _data_;
+	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
+}
+
+
+static gboolean fso_gsm_null_pdp_handler_real_syncStatus_co (fso_gsm_null_pdp_handler_syncStatusData* _data_) {
+	switch (_data_->_state_) {
+		case 0:
+		goto _state_0;
+		default:
+		g_assert_not_reached ();
+	}
+	_state_0:
+	if (_data_->_state_ == 0) {
+		g_simple_async_result_complete_in_idle (_data_->_async_result);
+	} else {
+		g_simple_async_result_complete (_data_->_async_result);
+	}
+	g_object_unref (_data_->_async_result);
+	return FALSE;
+}
+
+
+static gchar* fso_gsm_null_pdp_handler_real_repr (FsoFrameworkAbstractObject* base) {
+	FsoGsmNullPdpHandler * self;
+	gchar* result = NULL;
+	gchar* _tmp0_;
+	self = (FsoGsmNullPdpHandler*) base;
+	_tmp0_ = g_strdup ("<>");
+	result = _tmp0_;
+	return result;
+}
+
+
+FsoGsmNullPdpHandler* fso_gsm_null_pdp_handler_construct (GType object_type) {
+	FsoGsmNullPdpHandler * self = NULL;
+	self = (FsoGsmNullPdpHandler*) fso_framework_abstract_object_construct (object_type);
+	return self;
+}
+
+
+FsoGsmNullPdpHandler* fso_gsm_null_pdp_handler_new (void) {
+	return fso_gsm_null_pdp_handler_construct (FSO_GSM_TYPE_NULL_PDP_HANDLER);
+}
+
+
+static FreeSmartphoneGSMContextStatus fso_gsm_null_pdp_handler_real_get_status (FsoGsmIPdpHandler* base) {
+	FreeSmartphoneGSMContextStatus result;
+	FsoGsmNullPdpHandler* self;
+	FreeSmartphoneGSMContextStatus _tmp0_;
+	self = (FsoGsmNullPdpHandler*) base;
+	_tmp0_ = self->priv->_status;
+	result = _tmp0_;
+	return result;
+}
+
+
+static void fso_gsm_null_pdp_handler_real_set_status (FsoGsmIPdpHandler* base, FreeSmartphoneGSMContextStatus value) {
+	FsoGsmNullPdpHandler* self;
+	FreeSmartphoneGSMContextStatus _tmp0_;
+	self = (FsoGsmNullPdpHandler*) base;
+	_tmp0_ = value;
+	self->priv->_status = _tmp0_;
+	g_object_notify ((GObject *) self, "status");
+}
+
+
+static GHashTable* fso_gsm_null_pdp_handler_real_get_properties (FsoGsmIPdpHandler* base) {
+	GHashTable* result;
+	FsoGsmNullPdpHandler* self;
+	GHashTable* _tmp0_;
+	self = (FsoGsmNullPdpHandler*) base;
+	_tmp0_ = self->priv->_properties;
+	result = _tmp0_;
+	return result;
+}
+
+
+static void fso_gsm_null_pdp_handler_real_set_properties (FsoGsmIPdpHandler* base, GHashTable* value) {
+	FsoGsmNullPdpHandler* self;
+	GHashTable* _tmp0_;
+	GHashTable* _tmp1_;
+	self = (FsoGsmNullPdpHandler*) base;
+	_tmp0_ = value;
+	_tmp1_ = _g_hash_table_ref0 (_tmp0_);
+	_g_hash_table_unref0 (self->priv->_properties);
+	self->priv->_properties = _tmp1_;
+	g_object_notify ((GObject *) self, "properties");
+}
+
+
+static void fso_gsm_null_pdp_handler_class_init (FsoGsmNullPdpHandlerClass * klass) {
+	fso_gsm_null_pdp_handler_parent_class = g_type_class_peek_parent (klass);
+	g_type_class_add_private (klass, sizeof (FsoGsmNullPdpHandlerPrivate));
+	FSO_FRAMEWORK_ABSTRACT_OBJECT_CLASS (klass)->repr = fso_gsm_null_pdp_handler_real_repr;
+	G_OBJECT_CLASS (klass)->get_property = _vala_fso_gsm_null_pdp_handler_get_property;
+	G_OBJECT_CLASS (klass)->set_property = _vala_fso_gsm_null_pdp_handler_set_property;
+	G_OBJECT_CLASS (klass)->finalize = fso_gsm_null_pdp_handler_finalize;
+	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_NULL_PDP_HANDLER_STATUS, g_param_spec_enum ("status", "status", "status", FREE_SMARTPHONE_GSM_TYPE_CONTEXT_STATUS, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_NULL_PDP_HANDLER_PROPERTIES, g_param_spec_boxed ("properties", "properties", "properties", G_TYPE_HASH_TABLE, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+}
+
+
+static void fso_gsm_null_pdp_handler_fso_gsm_ipdp_handler_interface_init (FsoGsmIPdpHandlerIface * iface) {
+	fso_gsm_null_pdp_handler_fso_gsm_ipdp_handler_parent_iface = g_type_interface_peek_parent (iface);
+	iface->activate = (void (*)(FsoGsmIPdpHandler*, GError**)) fso_gsm_null_pdp_handler_real_activate;
+	iface->activate_finish = fso_gsm_null_pdp_handler_real_activate_finish;
+	iface->deactivate = (void (*)(FsoGsmIPdpHandler*, GError**)) fso_gsm_null_pdp_handler_real_deactivate;
+	iface->deactivate_finish = fso_gsm_null_pdp_handler_real_deactivate_finish;
+	iface->statusUpdate = (void (*)(FsoGsmIPdpHandler*, const gchar*, GHashTable*)) fso_gsm_null_pdp_handler_real_statusUpdate;
+	iface->statusUpdate_finish = fso_gsm_null_pdp_handler_real_statusUpdate_finish;
+	iface->connectedWithNewDefaultRoute = (void (*)(FsoGsmIPdpHandler*, FsoGsmRouteInfo*)) fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute;
+	iface->connectedWithNewDefaultRoute_finish = fso_gsm_null_pdp_handler_real_connectedWithNewDefaultRoute_finish;
+	iface->disconnected = (void (*)(FsoGsmIPdpHandler*)) fso_gsm_null_pdp_handler_real_disconnected;
+	iface->syncStatus = (void (*)(FsoGsmIPdpHandler*)) fso_gsm_null_pdp_handler_real_syncStatus;
+	iface->syncStatus_finish = fso_gsm_null_pdp_handler_real_syncStatus_finish;
+	iface->get_status = fso_gsm_null_pdp_handler_real_get_status;
+	iface->set_status = fso_gsm_null_pdp_handler_real_set_status;
+	iface->get_properties = fso_gsm_null_pdp_handler_real_get_properties;
+	iface->set_properties = fso_gsm_null_pdp_handler_real_set_properties;
+}
+
+
+static void fso_gsm_null_pdp_handler_instance_init (FsoGsmNullPdpHandler * self) {
+	GHashTable* _tmp0_;
+	self->priv = FSO_GSM_NULL_PDP_HANDLER_GET_PRIVATE (self);
+	self->priv->_status = FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED;
+	_tmp0_ = g_hash_table_new_full (NULL, NULL, _g_free0_, _g_variant_unref0_);
+	self->priv->_properties = _tmp0_;
+}
+
+
+static void fso_gsm_null_pdp_handler_finalize (GObject* obj) {
+	FsoGsmNullPdpHandler * self;
+	self = FSO_GSM_NULL_PDP_HANDLER (obj);
+	_g_hash_table_unref0 (self->priv->_properties);
+	G_OBJECT_CLASS (fso_gsm_null_pdp_handler_parent_class)->finalize (obj);
+}
+
+
+/**
+ * @class NullPdpHandler
+ **/
+GType fso_gsm_null_pdp_handler_get_type (void) {
+	static volatile gsize fso_gsm_null_pdp_handler_type_id__volatile = 0;
+	if (g_once_init_enter (&fso_gsm_null_pdp_handler_type_id__volatile)) {
+		static const GTypeInfo g_define_type_info = { sizeof (FsoGsmNullPdpHandlerClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) fso_gsm_null_pdp_handler_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (FsoGsmNullPdpHandler), 0, (GInstanceInitFunc) fso_gsm_null_pdp_handler_instance_init, NULL };
+		static const GInterfaceInfo fso_gsm_ipdp_handler_info = { (GInterfaceInitFunc) fso_gsm_null_pdp_handler_fso_gsm_ipdp_handler_interface_init, (GInterfaceFinalizeFunc) NULL, NULL};
+		GType fso_gsm_null_pdp_handler_type_id;
+		fso_gsm_null_pdp_handler_type_id = g_type_register_static (FSO_FRAMEWORK_TYPE_ABSTRACT_OBJECT, "FsoGsmNullPdpHandler", &g_define_type_info, 0);
+		g_type_add_interface_static (fso_gsm_null_pdp_handler_type_id, FSO_GSM_TYPE_IPDP_HANDLER, &fso_gsm_ipdp_handler_info);
+		g_once_init_leave (&fso_gsm_null_pdp_handler_type_id__volatile, fso_gsm_null_pdp_handler_type_id);
+	}
+	return fso_gsm_null_pdp_handler_type_id__volatile;
+}
+
+
+static void _vala_fso_gsm_null_pdp_handler_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec) {
+	FsoGsmNullPdpHandler * self;
+	self = FSO_GSM_NULL_PDP_HANDLER (object);
+	switch (property_id) {
+		case FSO_GSM_NULL_PDP_HANDLER_STATUS:
+		g_value_set_enum (value, fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) self));
+		break;
+		case FSO_GSM_NULL_PDP_HANDLER_PROPERTIES:
+		g_value_set_boxed (value, fso_gsm_ipdp_handler_get_properties ((FsoGsmIPdpHandler*) self));
+		break;
+		default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+
+static void _vala_fso_gsm_null_pdp_handler_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec) {
+	FsoGsmNullPdpHandler * self;
+	self = FSO_GSM_NULL_PDP_HANDLER (object);
+	switch (property_id) {
+		case FSO_GSM_NULL_PDP_HANDLER_STATUS:
+		fso_gsm_ipdp_handler_set_status ((FsoGsmIPdpHandler*) self, g_value_get_enum (value));
+		break;
+		case FSO_GSM_NULL_PDP_HANDLER_PROPERTIES:
+		fso_gsm_ipdp_handler_set_properties ((FsoGsmIPdpHandler*) self, g_value_get_boxed (value));
+		break;
+		default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+
+static void fso_gsm_pdp_handler_real_sc_activate_data_free (gpointer _data) {
+	FsoGsmPdpHandlerScActivateData* _data_;
+	_data_ = _data;
+	_g_object_unref0 (_data_->self);
+	g_slice_free (FsoGsmPdpHandlerScActivateData, _data_);
 }
 
 
@@ -1408,11 +2043,6 @@ static void fso_gsm_pdp_handler_updateStatus_data_free (gpointer _data) {
 }
 
 
-static gpointer _g_hash_table_ref0 (gpointer self) {
-	return self ? g_hash_table_ref (self) : NULL;
-}
-
-
 void fso_gsm_pdp_handler_updateStatus (FsoGsmPdpHandler* self, FreeSmartphoneGSMContextStatus status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_) {
 	fso_gsm_pdp_handler_updateStatusData* _data_;
 	FsoGsmPdpHandler* _tmp0_;
@@ -1448,8 +2078,9 @@ static gboolean fso_gsm_pdp_handler_updateStatus_co (fso_gsm_pdp_handler_updateS
 	}
 	_state_0:
 	_data_->_tmp0_ = _data_->status;
-	_data_->_tmp1_ = _data_->self->priv->_status;
-	if (_data_->_tmp0_ == _data_->_tmp1_) {
+	_data_->_tmp1_ = fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) _data_->self);
+	_data_->_tmp2_ = _data_->_tmp1_;
+	if (_data_->_tmp0_ == _data_->_tmp2_) {
 		if (_data_->_state_ == 0) {
 			g_simple_async_result_complete_in_idle (_data_->_async_result);
 		} else {
@@ -1458,26 +2089,26 @@ static gboolean fso_gsm_pdp_handler_updateStatus_co (fso_gsm_pdp_handler_updateS
 		g_object_unref (_data_->_async_result);
 		return FALSE;
 	}
-	_data_->_tmp2_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
-	_data_->_tmp3_ = _data_->status;
-	_data_->_tmp4_ = g_enum_get_value (g_type_class_ref (FREE_SMARTPHONE_GSM_TYPE_CONTEXT_STATUS), _data_->_tmp3_);
-	_data_->_tmp5_ = NULL;
-	_data_->_tmp5_ = g_strconcat ("PDP Context Status now ", (_data_->_tmp4_ != NULL) ? _data_->_tmp4_->value_name : NULL, NULL);
-	_data_->_tmp6_ = _data_->_tmp5_;
-	fso_framework_logger_info (_data_->_tmp2_, _data_->_tmp6_);
-	_g_free0 (_data_->_tmp6_);
-	_data_->_tmp7_ = _data_->status;
-	fso_gsm_pdp_handler_set_status (_data_->self, _data_->_tmp7_);
-	_data_->_tmp8_ = _data_->properties;
-	fso_gsm_pdp_handler_set_properties (_data_->self, _data_->_tmp8_);
-	_data_->_tmp9_ = fso_gsm_theModem;
-	_data_->_tmp10_ = NULL;
-	_data_->_tmp10_ = fso_gsm_modem_theDevice (_data_->_tmp9_, FREE_SMARTPHONE_GSM_TYPE_PDP, (GBoxedCopyFunc) g_object_ref, g_object_unref);
-	_data_->obj = (FreeSmartphoneGSMPDP*) _data_->_tmp10_;
-	_data_->_tmp11_ = _data_->obj;
-	_data_->_tmp12_ = _data_->status;
-	_data_->_tmp13_ = _data_->properties;
-	g_signal_emit_by_name (_data_->_tmp11_, "context-status", _data_->_tmp12_, _data_->_tmp13_);
+	_data_->_tmp3_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
+	_data_->_tmp4_ = _data_->status;
+	_data_->_tmp5_ = g_enum_get_value (g_type_class_ref (FREE_SMARTPHONE_GSM_TYPE_CONTEXT_STATUS), _data_->_tmp4_);
+	_data_->_tmp6_ = NULL;
+	_data_->_tmp6_ = g_strconcat ("PDP Context Status now ", (_data_->_tmp5_ != NULL) ? _data_->_tmp5_->value_name : NULL, NULL);
+	_data_->_tmp7_ = _data_->_tmp6_;
+	fso_framework_logger_info (_data_->_tmp3_, _data_->_tmp7_);
+	_g_free0 (_data_->_tmp7_);
+	_data_->_tmp8_ = _data_->status;
+	fso_gsm_ipdp_handler_set_status ((FsoGsmIPdpHandler*) _data_->self, _data_->_tmp8_);
+	_data_->_tmp9_ = _data_->properties;
+	fso_gsm_ipdp_handler_set_properties ((FsoGsmIPdpHandler*) _data_->self, _data_->_tmp9_);
+	_data_->_tmp10_ = fso_gsm_theModem;
+	_data_->_tmp11_ = NULL;
+	_data_->_tmp11_ = fso_gsm_modem_theDevice (_data_->_tmp10_, FREE_SMARTPHONE_GSM_TYPE_PDP, (GBoxedCopyFunc) g_object_ref, g_object_unref);
+	_data_->obj = (FreeSmartphoneGSMPDP*) _data_->_tmp11_;
+	_data_->_tmp12_ = _data_->obj;
+	_data_->_tmp13_ = _data_->status;
+	_data_->_tmp14_ = _data_->properties;
+	g_signal_emit_by_name (_data_->_tmp12_, "context-status", _data_->_tmp13_, _data_->_tmp14_);
 	_g_object_unref0 (_data_->obj);
 	if (_data_->_state_ == 0) {
 		g_simple_async_result_complete_in_idle (_data_->_async_result);
@@ -1520,16 +2151,6 @@ static void fso_gsm_pdp_handler_real_activate_finish (FsoGsmIPdpHandler* base, G
 }
 
 
-static void _g_free0_ (gpointer var) {
-	var = (g_free (var), NULL);
-}
-
-
-static void _g_variant_unref0_ (gpointer var) {
-	(var == NULL) ? NULL : (var = (g_variant_unref (var), NULL));
-}
-
-
 static void fso_gsm_pdp_handler_activate_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_) {
 	FsoGsmPdpHandlerActivateData* _data_;
 	_data_ = _user_data_;
@@ -1554,17 +2175,19 @@ static gboolean fso_gsm_pdp_handler_real_activate_co (FsoGsmPdpHandlerActivateDa
 		g_assert_not_reached ();
 	}
 	_state_0:
-	_data_->_tmp0_ = _data_->self->priv->_status;
-	if (_data_->_tmp0_ != FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED) {
-		_data_->_tmp1_ = _data_->self->priv->_status;
-		_data_->_tmp2_ = g_enum_get_value (g_type_class_ref (FREE_SMARTPHONE_GSM_TYPE_CONTEXT_STATUS), _data_->_tmp1_);
-		_data_->_tmp3_ = NULL;
-		_data_->_tmp3_ = g_strconcat ("Can't activate context while in status ", (_data_->_tmp2_ != NULL) ? _data_->_tmp2_->value_name : NULL, NULL);
-		_data_->_tmp4_ = _data_->_tmp3_;
-		_data_->_tmp5_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_UNAVAILABLE, _data_->_tmp4_);
+	_data_->_tmp0_ = fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) _data_->self);
+	_data_->_tmp1_ = _data_->_tmp0_;
+	if (_data_->_tmp1_ != FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED) {
+		_data_->_tmp2_ = fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) _data_->self);
+		_data_->_tmp3_ = _data_->_tmp2_;
+		_data_->_tmp4_ = g_enum_get_value (g_type_class_ref (FREE_SMARTPHONE_GSM_TYPE_CONTEXT_STATUS), _data_->_tmp3_);
+		_data_->_tmp5_ = NULL;
+		_data_->_tmp5_ = g_strconcat ("Can't activate context while in status ", (_data_->_tmp4_ != NULL) ? _data_->_tmp4_->value_name : NULL, NULL);
 		_data_->_tmp6_ = _data_->_tmp5_;
-		_g_free0 (_data_->_tmp4_);
-		_data_->_inner_error_ = _data_->_tmp6_;
+		_data_->_tmp7_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_UNAVAILABLE, _data_->_tmp6_);
+		_data_->_tmp8_ = _data_->_tmp7_;
+		_g_free0 (_data_->_tmp6_);
+		_data_->_inner_error_ = _data_->_tmp8_;
 		if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
 			g_error_free (_data_->_inner_error_);
@@ -1581,10 +2204,10 @@ static gboolean fso_gsm_pdp_handler_real_activate_co (FsoGsmPdpHandlerActivateDa
 			return FALSE;
 		}
 	}
-	_data_->_tmp7_ = g_str_hash;
-	_data_->_tmp8_ = g_str_equal;
-	_data_->_tmp9_ = g_hash_table_new_full (_data_->_tmp7_, _data_->_tmp8_, _g_free0_, _g_variant_unref0_);
-	_data_->status = _data_->_tmp9_;
+	_data_->_tmp9_ = g_str_hash;
+	_data_->_tmp10_ = g_str_equal;
+	_data_->_tmp11_ = g_hash_table_new_full (_data_->_tmp9_, _data_->_tmp10_, _g_free0_, _g_variant_unref0_);
+	_data_->status = _data_->_tmp11_;
 	fso_gsm_pdp_handler_updateStatus (_data_->self, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_OUTGOING, _data_->status, NULL, NULL);
 	{
 		_data_->_state_ = 1;
@@ -1594,10 +2217,10 @@ static gboolean fso_gsm_pdp_handler_real_activate_co (FsoGsmPdpHandlerActivateDa
 		fso_gsm_pdp_handler_sc_activate_finish (_data_->self, _data_->_res_, &_data_->_inner_error_);
 		if (_data_->_inner_error_ != NULL) {
 			if (_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) {
-				goto __catch50_free_smartphone_gsm_error;
+				goto __catch52_free_smartphone_gsm_error;
 			}
 			if (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR) {
-				goto __catch50_free_smartphone_error;
+				goto __catch52_free_smartphone_error;
 			}
 			_g_hash_table_unref0 (_data_->status);
 			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
@@ -1605,31 +2228,31 @@ static gboolean fso_gsm_pdp_handler_real_activate_co (FsoGsmPdpHandlerActivateDa
 			return FALSE;
 		}
 	}
-	goto __finally50;
-	__catch50_free_smartphone_gsm_error:
+	goto __finally52;
+	__catch52_free_smartphone_gsm_error:
 	{
 		_data_->e1 = _data_->_inner_error_;
 		_data_->_inner_error_ = NULL;
 		fso_gsm_pdp_handler_updateStatus (_data_->self, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED, _data_->status, NULL, NULL);
-		_data_->_tmp10_ = _data_->e1;
-		_data_->_tmp11_ = _g_error_copy0 (_data_->_tmp10_);
-		_data_->_inner_error_ = _data_->_tmp11_;
+		_data_->_tmp12_ = _data_->e1;
+		_data_->_tmp13_ = _g_error_copy0 (_data_->_tmp12_);
+		_data_->_inner_error_ = _data_->_tmp13_;
 		_g_error_free0 (_data_->e1);
-		goto __finally50;
+		goto __finally52;
 	}
-	goto __finally50;
-	__catch50_free_smartphone_error:
+	goto __finally52;
+	__catch52_free_smartphone_error:
 	{
 		_data_->e2 = _data_->_inner_error_;
 		_data_->_inner_error_ = NULL;
 		fso_gsm_pdp_handler_updateStatus (_data_->self, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED, _data_->status, NULL, NULL);
-		_data_->_tmp12_ = _data_->e2;
-		_data_->_tmp13_ = _g_error_copy0 (_data_->_tmp12_);
-		_data_->_inner_error_ = _data_->_tmp13_;
+		_data_->_tmp14_ = _data_->e2;
+		_data_->_tmp15_ = _g_error_copy0 (_data_->_tmp14_);
+		_data_->_inner_error_ = _data_->_tmp15_;
 		_g_error_free0 (_data_->e2);
-		goto __finally50;
+		goto __finally52;
 	}
-	__finally50:
+	__finally52:
 	if (_data_->_inner_error_ != NULL) {
 		if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
@@ -1710,24 +2333,27 @@ static gboolean fso_gsm_pdp_handler_real_deactivate_co (FsoGsmPdpHandlerDeactiva
 		g_assert_not_reached ();
 	}
 	_state_0:
-	_data_->_tmp1_ = _data_->self->priv->_status;
-	if (_data_->_tmp1_ != FREE_SMARTPHONE_GSM_CONTEXT_STATUS_ACTIVE) {
-		_data_->_tmp2_ = _data_->self->priv->_status;
-		_data_->_tmp0_ = _data_->_tmp2_ != FREE_SMARTPHONE_GSM_CONTEXT_STATUS_SUSPENDED;
+	_data_->_tmp1_ = fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) _data_->self);
+	_data_->_tmp2_ = _data_->_tmp1_;
+	if (_data_->_tmp2_ != FREE_SMARTPHONE_GSM_CONTEXT_STATUS_ACTIVE) {
+		_data_->_tmp3_ = fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) _data_->self);
+		_data_->_tmp4_ = _data_->_tmp3_;
+		_data_->_tmp0_ = _data_->_tmp4_ != FREE_SMARTPHONE_GSM_CONTEXT_STATUS_SUSPENDED;
 	} else {
 		_data_->_tmp0_ = FALSE;
 	}
-	_data_->_tmp3_ = _data_->_tmp0_;
-	if (_data_->_tmp3_) {
-		_data_->_tmp4_ = _data_->self->priv->_status;
-		_data_->_tmp5_ = g_enum_get_value (g_type_class_ref (FREE_SMARTPHONE_GSM_TYPE_CONTEXT_STATUS), _data_->_tmp4_);
-		_data_->_tmp6_ = NULL;
-		_data_->_tmp6_ = g_strconcat ("Can't deactivate context while in status ", (_data_->_tmp5_ != NULL) ? _data_->_tmp5_->value_name : NULL, NULL);
+	_data_->_tmp5_ = _data_->_tmp0_;
+	if (_data_->_tmp5_) {
+		_data_->_tmp6_ = fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) _data_->self);
 		_data_->_tmp7_ = _data_->_tmp6_;
-		_data_->_tmp8_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_UNAVAILABLE, _data_->_tmp7_);
-		_data_->_tmp9_ = _data_->_tmp8_;
-		_g_free0 (_data_->_tmp7_);
-		_data_->_inner_error_ = _data_->_tmp9_;
+		_data_->_tmp8_ = g_enum_get_value (g_type_class_ref (FREE_SMARTPHONE_GSM_TYPE_CONTEXT_STATUS), _data_->_tmp7_);
+		_data_->_tmp9_ = NULL;
+		_data_->_tmp9_ = g_strconcat ("Can't deactivate context while in status ", (_data_->_tmp8_ != NULL) ? _data_->_tmp8_->value_name : NULL, NULL);
+		_data_->_tmp10_ = _data_->_tmp9_;
+		_data_->_tmp11_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_UNAVAILABLE, _data_->_tmp10_);
+		_data_->_tmp12_ = _data_->_tmp11_;
+		_g_free0 (_data_->_tmp10_);
+		_data_->_inner_error_ = _data_->_tmp12_;
 		if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
 			g_error_free (_data_->_inner_error_);
@@ -1766,12 +2392,12 @@ static gboolean fso_gsm_pdp_handler_real_deactivate_co (FsoGsmPdpHandlerDeactiva
 			return FALSE;
 		}
 	}
-	_data_->_tmp10_ = g_str_hash;
-	_data_->_tmp11_ = g_str_equal;
-	_data_->_tmp12_ = g_hash_table_new_full (_data_->_tmp10_, _data_->_tmp11_, _g_free0_, _g_variant_unref0_);
-	_data_->status = _data_->_tmp12_;
-	_data_->_tmp13_ = _data_->status;
-	fso_gsm_pdp_handler_updateStatus (_data_->self, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED, _data_->_tmp13_, NULL, NULL);
+	_data_->_tmp13_ = g_str_hash;
+	_data_->_tmp14_ = g_str_equal;
+	_data_->_tmp15_ = g_hash_table_new_full (_data_->_tmp13_, _data_->_tmp14_, _g_free0_, _g_variant_unref0_);
+	_data_->status = _data_->_tmp15_;
+	_data_->_tmp16_ = _data_->status;
+	fso_gsm_pdp_handler_updateStatus (_data_->self, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED, _data_->_tmp16_, NULL, NULL);
 	_g_hash_table_unref0 (_data_->status);
 	if (_data_->_state_ == 0) {
 		g_simple_async_result_complete_in_idle (_data_->_async_result);
@@ -1799,11 +2425,6 @@ static void fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_data_free (gpo
 	_fso_gsm_route_info_unref0 (_data_->route);
 	_g_object_unref0 (_data_->self);
 	g_slice_free (fso_gsm_pdp_handler_connectedWithNewDefaultRouteData, _data_);
-}
-
-
-static gpointer _fso_gsm_route_info_ref0 (gpointer self) {
-	return self ? fso_gsm_route_info_ref (self) : NULL;
 }
 
 
@@ -1840,27 +2461,27 @@ static const gchar* string_to_string (const gchar* self) {
 }
 
 
-static GVariant* _variant_new58 (const gchar* value) {
-	return g_variant_ref_sink (g_variant_new_string (value));
-}
-
-
-static GVariant* _variant_new59 (const gchar* value) {
-	return g_variant_ref_sink (g_variant_new_string (value));
-}
-
-
-static GVariant* _variant_new60 (const gchar* value) {
-	return g_variant_ref_sink (g_variant_new_string (value));
-}
-
-
-static GVariant* _variant_new61 (const gchar* value) {
-	return g_variant_ref_sink (g_variant_new_string (value));
-}
-
-
 static GVariant* _variant_new62 (const gchar* value) {
+	return g_variant_ref_sink (g_variant_new_string (value));
+}
+
+
+static GVariant* _variant_new63 (const gchar* value) {
+	return g_variant_ref_sink (g_variant_new_string (value));
+}
+
+
+static GVariant* _variant_new64 (const gchar* value) {
+	return g_variant_ref_sink (g_variant_new_string (value));
+}
+
+
+static GVariant* _variant_new65 (const gchar* value) {
+	return g_variant_ref_sink (g_variant_new_string (value));
+}
+
+
+static GVariant* _variant_new66 (const gchar* value) {
 	return g_variant_ref_sink (g_variant_new_string (value));
 }
 
@@ -1891,7 +2512,7 @@ static gboolean fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_co (fso_gs
 		_data_->_tmp3_ = _data_->_tmp2_;
 		if (_data_->_inner_error_ != NULL) {
 			if (_data_->_inner_error_->domain == FSO_FRAMEWORK_NETWORK_ERROR) {
-				goto __catch51_fso_framework_network_error;
+				goto __catch53_fso_framework_network_error;
 			}
 			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 			g_clear_error (&_data_->_inner_error_);
@@ -1902,15 +2523,15 @@ static gboolean fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_co (fso_gs
 		_fso_framework_network_interface_unref0 (_data_->_tmp4_);
 		if (_data_->_inner_error_ != NULL) {
 			if (_data_->_inner_error_->domain == FSO_FRAMEWORK_NETWORK_ERROR) {
-				goto __catch51_fso_framework_network_error;
+				goto __catch53_fso_framework_network_error;
 			}
 			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 			g_clear_error (&_data_->_inner_error_);
 			return FALSE;
 		}
 	}
-	goto __finally51;
-	__catch51_fso_framework_network_error:
+	goto __finally53;
+	__catch53_fso_framework_network_error:
 	{
 		_data_->err = _data_->_inner_error_;
 		_data_->_inner_error_ = NULL;
@@ -1929,7 +2550,7 @@ static gboolean fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_co (fso_gs
 		_g_free0 (_data_->_tmp10_);
 		_g_error_free0 (_data_->err);
 	}
-	__finally51:
+	__finally53:
 	if (_data_->_inner_error_ != NULL) {
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 		g_clear_error (&_data_->_inner_error_);
@@ -1943,31 +2564,31 @@ static gboolean fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_co (fso_gs
 	_data_->_tmp17_ = g_strdup ("ipv4addr");
 	_data_->_tmp18_ = _data_->route;
 	_data_->_tmp19_ = _data_->_tmp18_->ipv4addr;
-	_data_->_tmp20_ = _variant_new58 (_data_->_tmp19_);
+	_data_->_tmp20_ = _variant_new62 (_data_->_tmp19_);
 	g_hash_table_insert (_data_->_tmp16_, _data_->_tmp17_, _data_->_tmp20_);
 	_data_->_tmp21_ = _data_->status;
 	_data_->_tmp22_ = g_strdup ("ipv4mask");
 	_data_->_tmp23_ = _data_->route;
 	_data_->_tmp24_ = _data_->_tmp23_->ipv4mask;
-	_data_->_tmp25_ = _variant_new59 (_data_->_tmp24_);
+	_data_->_tmp25_ = _variant_new63 (_data_->_tmp24_);
 	g_hash_table_insert (_data_->_tmp21_, _data_->_tmp22_, _data_->_tmp25_);
 	_data_->_tmp26_ = _data_->status;
 	_data_->_tmp27_ = g_strdup ("ipv4gateway");
 	_data_->_tmp28_ = _data_->route;
 	_data_->_tmp29_ = _data_->_tmp28_->ipv4gateway;
-	_data_->_tmp30_ = _variant_new60 (_data_->_tmp29_);
+	_data_->_tmp30_ = _variant_new64 (_data_->_tmp29_);
 	g_hash_table_insert (_data_->_tmp26_, _data_->_tmp27_, _data_->_tmp30_);
 	_data_->_tmp31_ = _data_->status;
 	_data_->_tmp32_ = g_strdup ("dns1");
 	_data_->_tmp33_ = _data_->route;
 	_data_->_tmp34_ = _data_->_tmp33_->dns1;
-	_data_->_tmp35_ = _variant_new61 (_data_->_tmp34_);
+	_data_->_tmp35_ = _variant_new65 (_data_->_tmp34_);
 	g_hash_table_insert (_data_->_tmp31_, _data_->_tmp32_, _data_->_tmp35_);
 	_data_->_tmp36_ = _data_->status;
 	_data_->_tmp37_ = g_strdup ("dns2");
 	_data_->_tmp38_ = _data_->route;
 	_data_->_tmp39_ = _data_->_tmp38_->dns2;
-	_data_->_tmp40_ = _variant_new62 (_data_->_tmp39_);
+	_data_->_tmp40_ = _variant_new66 (_data_->_tmp39_);
 	g_hash_table_insert (_data_->_tmp36_, _data_->_tmp37_, _data_->_tmp40_);
 	_data_->_tmp41_ = _data_->status;
 	fso_gsm_pdp_handler_updateStatus (_data_->self, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_ACTIVE, _data_->_tmp41_, NULL, NULL);
@@ -1982,7 +2603,7 @@ static gboolean fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_co (fso_gs
 			_data_->_tmp45_ = g_initable_new (FREE_SMARTPHONE_TYPE_NETWORK_PROXY, NULL, &_data_->_inner_error_, "g-flags", 0, "g-name", FSO_FRAMEWORK_NETWORK_ServiceDBusName, "g-bus-type", G_BUS_TYPE_SYSTEM, "g-object-path", FSO_FRAMEWORK_NETWORK_ServicePathPrefix, "g-interface-name", "org.freesmartphone.Network", NULL);
 			_data_->network = (FreeSmartphoneNetwork*) _data_->_tmp45_;
 			if (_data_->_inner_error_ != NULL) {
-				goto __catch52_g_error;
+				goto __catch54_g_error;
 			}
 			_data_->_tmp46_ = _data_->network;
 			_data_->_tmp47_ = _data_->route;
@@ -2004,12 +2625,12 @@ static gboolean fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_co (fso_gs
 			free_smartphone_network_offer_default_route_finish (_data_->_tmp46_, _data_->_res_, &_data_->_inner_error_);
 			if (_data_->_inner_error_ != NULL) {
 				_g_object_unref0 (_data_->network);
-				goto __catch52_g_error;
+				goto __catch54_g_error;
 			}
 			_g_object_unref0 (_data_->network);
 		}
-		goto __finally52;
-		__catch52_g_error:
+		goto __finally54;
+		__catch54_g_error:
 		{
 			_data_->e = _data_->_inner_error_;
 			_data_->_inner_error_ = NULL;
@@ -2025,7 +2646,7 @@ static gboolean fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_co (fso_gs
 			_g_free0 (_data_->_tmp64_);
 			_g_error_free0 (_data_->e);
 		}
-		__finally52:
+		__finally54:
 		if (_data_->_inner_error_ != NULL) {
 			_g_hash_table_unref0 (_data_->status);
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
@@ -2050,26 +2671,17 @@ static void fso_gsm_pdp_handler_real_disconnected (FsoGsmIPdpHandler* base) {
 	GEqualFunc _tmp1_;
 	GHashTable* _tmp2_;
 	GHashTable* status;
-	GHashFunc _tmp3_;
-	GEqualFunc _tmp4_;
-	GHashTable* _tmp5_;
-	GHashTable* _tmp6_;
 	self = (FsoGsmPdpHandler*) base;
 	_tmp0_ = g_str_hash;
 	_tmp1_ = g_str_equal;
 	_tmp2_ = g_hash_table_new_full (_tmp0_, _tmp1_, _g_free0_, _g_variant_unref0_);
 	status = _tmp2_;
-	_tmp3_ = g_str_hash;
-	_tmp4_ = g_str_equal;
-	_tmp5_ = g_hash_table_new_full (_tmp3_, _tmp4_, _g_free0_, _g_variant_unref0_);
-	_tmp6_ = _tmp5_;
-	fso_gsm_pdp_handler_updateStatus (self, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED, _tmp6_, NULL, NULL);
-	_g_hash_table_unref0 (_tmp6_);
+	fso_gsm_pdp_handler_updateStatus (self, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED, status, NULL, NULL);
 	_g_hash_table_unref0 (status);
 }
 
 
-static void fso_gsm_pdp_handler_syncStatus_data_free (gpointer _data) {
+static void fso_gsm_pdp_handler_real_syncStatus_data_free (gpointer _data) {
 	fso_gsm_pdp_handler_syncStatusData* _data_;
 	_data_ = _data;
 	_g_object_unref0 (_data_->self);
@@ -2077,19 +2689,21 @@ static void fso_gsm_pdp_handler_syncStatus_data_free (gpointer _data) {
 }
 
 
-void fso_gsm_pdp_handler_syncStatus (FsoGsmPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+static void fso_gsm_pdp_handler_real_syncStatus (FsoGsmIPdpHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+	FsoGsmPdpHandler * self;
 	fso_gsm_pdp_handler_syncStatusData* _data_;
 	FsoGsmPdpHandler* _tmp0_;
+	self = (FsoGsmPdpHandler*) base;
 	_data_ = g_slice_new0 (fso_gsm_pdp_handler_syncStatusData);
-	_data_->_async_result = g_simple_async_result_new (G_OBJECT (self), _callback_, _user_data_, fso_gsm_pdp_handler_syncStatus);
-	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, fso_gsm_pdp_handler_syncStatus_data_free);
+	_data_->_async_result = g_simple_async_result_new (G_OBJECT (self), _callback_, _user_data_, fso_gsm_pdp_handler_real_syncStatus);
+	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, fso_gsm_pdp_handler_real_syncStatus_data_free);
 	_tmp0_ = _g_object_ref0 (self);
 	_data_->self = _tmp0_;
-	fso_gsm_pdp_handler_syncStatus_co (_data_);
+	fso_gsm_pdp_handler_real_syncStatus_co (_data_);
 }
 
 
-void fso_gsm_pdp_handler_syncStatus_finish (FsoGsmPdpHandler* self, GAsyncResult* _res_) {
+static void fso_gsm_pdp_handler_real_syncStatus_finish (FsoGsmIPdpHandler* base, GAsyncResult* _res_) {
 	fso_gsm_pdp_handler_syncStatusData* _data_;
 	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
 }
@@ -2100,21 +2714,21 @@ static void fso_gsm_pdp_handler_syncStatus_ready (GObject* source_object, GAsync
 	_data_ = _user_data_;
 	_data_->_source_object_ = source_object;
 	_data_->_res_ = _res_;
-	fso_gsm_pdp_handler_syncStatus_co (_data_);
+	fso_gsm_pdp_handler_real_syncStatus_co (_data_);
 }
 
 
-static const gchar* _variant_get63 (GVariant* value) {
+static const gchar* _variant_get67 (GVariant* value) {
 	return g_variant_dup_string (value, NULL);
 }
 
 
-static const gchar* _variant_get64 (GVariant* value) {
+static const gchar* _variant_get68 (GVariant* value) {
 	return g_variant_dup_string (value, NULL);
 }
 
 
-static gboolean fso_gsm_pdp_handler_syncStatus_co (fso_gsm_pdp_handler_syncStatusData* _data_) {
+static gboolean fso_gsm_pdp_handler_real_syncStatus_co (fso_gsm_pdp_handler_syncStatusData* _data_) {
 	switch (_data_->_state_) {
 		case 0:
 		goto _state_0;
@@ -2146,19 +2760,21 @@ static gboolean fso_gsm_pdp_handler_syncStatus_co (fso_gsm_pdp_handler_syncStatu
 	_data_->_tmp7_ = _data_->_tmp6_;
 	_g_object_unref0 (_data_->_tmp5_);
 	_data_->roamingAllowed = _data_->_tmp7_;
-	_data_->_tmp8_ = _data_->self->priv->_status;
-	_data_->nextContextStatus = _data_->_tmp8_;
-	_data_->_tmp10_ = fso_gsm_theModem;
-	_data_->_tmp11_ = FALSE;
-	_data_->_tmp11_ = fso_gsm_modem_isAlive (_data_->_tmp10_);
-	if (!_data_->_tmp11_) {
-		_data_->_tmp9_ = TRUE;
+	_data_->_tmp8_ = fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) _data_->self);
+	_data_->_tmp9_ = _data_->_tmp8_;
+	_data_->nextContextStatus = _data_->_tmp9_;
+	_data_->_tmp11_ = fso_gsm_theModem;
+	_data_->_tmp12_ = FALSE;
+	_data_->_tmp12_ = fso_gsm_modem_isAlive (_data_->_tmp11_);
+	if (!_data_->_tmp12_) {
+		_data_->_tmp10_ = TRUE;
 	} else {
-		_data_->_tmp12_ = _data_->self->priv->_status;
-		_data_->_tmp9_ = _data_->_tmp12_ == FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED;
+		_data_->_tmp13_ = fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) _data_->self);
+		_data_->_tmp14_ = _data_->_tmp13_;
+		_data_->_tmp10_ = _data_->_tmp14_ == FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED;
 	}
-	_data_->_tmp13_ = _data_->_tmp9_;
-	if (_data_->_tmp13_) {
+	_data_->_tmp15_ = _data_->_tmp10_;
+	if (_data_->_tmp15_) {
 		_g_free0 (_data_->networkRegistrationStatus);
 		if (_data_->_state_ == 0) {
 			g_simple_async_result_complete_in_idle (_data_->_async_result);
@@ -2168,118 +2784,135 @@ static gboolean fso_gsm_pdp_handler_syncStatus_co (fso_gsm_pdp_handler_syncStatu
 		g_object_unref (_data_->_async_result);
 		return FALSE;
 	}
-	_data_->_tmp14_ = fso_gsm_theModem;
-	_data_->_tmp15_ = NULL;
-	_data_->_tmp15_ = fso_gsm_modem_theDevice (_data_->_tmp14_, FREE_SMARTPHONE_GSM_TYPE_NETWORK, (GBoxedCopyFunc) g_object_ref, g_object_unref);
-	_data_->network = (FreeSmartphoneGSMNetwork*) _data_->_tmp15_;
-	_data_->_tmp16_ = _data_->network;
-	_data_->_state_ = 1;
-	free_smartphone_gsm_network_get_status (_data_->_tmp16_, fso_gsm_pdp_handler_syncStatus_ready, _data_);
-	return FALSE;
-	_state_1:
-	_data_->_tmp17_ = NULL;
-	_data_->_tmp17_ = free_smartphone_gsm_network_get_status_finish (_data_->_tmp16_, _data_->_res_, &_data_->_inner_error_);
-	_data_->networkStatus = _data_->_tmp17_;
-	if (_data_->_inner_error_ != NULL) {
+	{
+		_data_->_tmp16_ = fso_gsm_theModem;
+		_data_->_tmp17_ = NULL;
+		_data_->_tmp17_ = fso_gsm_modem_theDevice (_data_->_tmp16_, FREE_SMARTPHONE_GSM_TYPE_NETWORK, (GBoxedCopyFunc) g_object_ref, g_object_unref);
+		_data_->network = (FreeSmartphoneGSMNetwork*) _data_->_tmp17_;
+		_data_->_tmp18_ = _data_->network;
+		_data_->_state_ = 1;
+		free_smartphone_gsm_network_get_status (_data_->_tmp18_, fso_gsm_pdp_handler_syncStatus_ready, _data_);
+		return FALSE;
+		_state_1:
+		_data_->_tmp19_ = NULL;
+		_data_->_tmp19_ = free_smartphone_gsm_network_get_status_finish (_data_->_tmp18_, _data_->_res_, &_data_->_inner_error_);
+		_data_->networkStatus = _data_->_tmp19_;
+		if (_data_->_inner_error_ != NULL) {
+			_g_object_unref0 (_data_->network);
+			goto __catch55_g_error;
+		}
+		_data_->_tmp21_ = _data_->networkStatus;
+		_data_->_tmp22_ = NULL;
+		_data_->_tmp22_ = g_hash_table_lookup (_data_->_tmp21_, "pdp.registration");
+		_data_->_tmp23_ = _variant_get67 ((GVariant*) _data_->_tmp22_);
+		_data_->_tmp24_ = g_strdup (_data_->_tmp23_);
+		_g_free0 (_data_->networkRegistrationStatus);
+		_data_->networkRegistrationStatus = _data_->_tmp24_;
+		_data_->_tmp25_ = _data_->networkRegistrationStatus;
+		if (_data_->_tmp25_ == NULL) {
+			_data_->_tmp26_ = _data_->networkStatus;
+			_data_->_tmp27_ = NULL;
+			_data_->_tmp27_ = g_hash_table_lookup (_data_->_tmp26_, "registration");
+			_data_->_tmp28_ = _variant_get68 ((GVariant*) _data_->_tmp27_);
+			_data_->_tmp29_ = g_strdup (_data_->_tmp28_);
+			_g_free0 (_data_->networkRegistrationStatus);
+			_data_->networkRegistrationStatus = _data_->_tmp29_;
+			_data_->_tmp30_ = _data_->networkRegistrationStatus;
+			_data_->_tmp20_ = _data_->_tmp30_ == NULL;
+		} else {
+			_data_->_tmp20_ = FALSE;
+		}
+		_data_->_tmp31_ = _data_->_tmp20_;
+		if (_data_->_tmp31_) {
+			_data_->_tmp32_ = _data_->self->priv->lastNetworkRegistrationStatus;
+			_data_->_tmp33_ = g_strdup (_data_->_tmp32_);
+			_g_free0 (_data_->networkRegistrationStatus);
+			_data_->networkRegistrationStatus = _data_->_tmp33_;
+		}
+		_data_->_tmp34_ = _data_->networkRegistrationStatus;
+		_data_->registered = g_strcmp0 (_data_->_tmp34_, "registered") == 0;
+		_data_->_tmp36_ = _data_->registered;
+		if (_data_->_tmp36_) {
+			_data_->_tmp35_ = TRUE;
+		} else {
+			_data_->_tmp38_ = _data_->roamingAllowed;
+			if (_data_->_tmp38_) {
+				_data_->_tmp39_ = _data_->networkRegistrationStatus;
+				_data_->_tmp37_ = g_strcmp0 (_data_->_tmp39_, "roaming") == 0;
+			} else {
+				_data_->_tmp37_ = FALSE;
+			}
+			_data_->_tmp40_ = _data_->_tmp37_;
+			_data_->_tmp35_ = _data_->_tmp40_;
+		}
+		_data_->_tmp41_ = _data_->_tmp35_;
+		if (_data_->_tmp41_) {
+			_data_->nextContextStatus = FREE_SMARTPHONE_GSM_CONTEXT_STATUS_ACTIVE;
+		} else {
+			_data_->_tmp43_ = _data_->networkRegistrationStatus;
+			if (g_strcmp0 (_data_->_tmp43_, "home") != 0) {
+				_data_->_tmp44_ = _data_->networkRegistrationStatus;
+				_data_->_tmp42_ = g_strcmp0 (_data_->_tmp44_, "roaming") != 0;
+			} else {
+				_data_->_tmp42_ = FALSE;
+			}
+			_data_->_tmp45_ = _data_->_tmp42_;
+			if (_data_->_tmp45_) {
+				_data_->nextContextStatus = FREE_SMARTPHONE_GSM_CONTEXT_STATUS_SUSPENDED;
+			}
+		}
+		_data_->_tmp46_ = _data_->nextContextStatus;
+		_data_->_tmp47_ = fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) _data_->self);
+		_data_->_tmp48_ = _data_->_tmp47_;
+		if (_data_->_tmp46_ != _data_->_tmp48_) {
+			_data_->_tmp49_ = _data_->nextContextStatus;
+			switch (_data_->_tmp49_) {
+				case FREE_SMARTPHONE_GSM_CONTEXT_STATUS_ACTIVE:
+				{
+					fso_gsm_ipdp_handler_activate ((FsoGsmIPdpHandler*) _data_->self, NULL, NULL);
+					break;
+				}
+				case FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED:
+				{
+					fso_gsm_ipdp_handler_deactivate ((FsoGsmIPdpHandler*) _data_->self, NULL, NULL);
+					break;
+				}
+				case FREE_SMARTPHONE_GSM_CONTEXT_STATUS_SUSPENDED:
+				{
+					_data_->_tmp50_ = _data_->nextContextStatus;
+					_data_->_tmp51_ = fso_gsm_ipdp_handler_get_properties ((FsoGsmIPdpHandler*) _data_->self);
+					_data_->_tmp52_ = _data_->_tmp51_;
+					fso_gsm_pdp_handler_updateStatus (_data_->self, _data_->_tmp50_, _data_->_tmp52_, NULL, NULL);
+					break;
+				}
+				default:
+				break;
+			}
+		}
+		_data_->_tmp53_ = _data_->networkRegistrationStatus;
+		_data_->_tmp54_ = g_strdup (_data_->_tmp53_);
+		_g_free0 (_data_->self->priv->lastNetworkRegistrationStatus);
+		_data_->self->priv->lastNetworkRegistrationStatus = _data_->_tmp54_;
+		_g_hash_table_unref0 (_data_->networkStatus);
 		_g_object_unref0 (_data_->network);
+	}
+	goto __finally55;
+	__catch55_g_error:
+	{
+		_data_->e = _data_->_inner_error_;
+		_data_->_inner_error_ = NULL;
+		_data_->_tmp55_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
+		fso_framework_logger_error (_data_->_tmp55_, "Could not synchronize PDP registration status");
+		_g_error_free0 (_data_->e);
+	}
+	__finally55:
+	if (_data_->_inner_error_ != NULL) {
 		_g_free0 (_data_->networkRegistrationStatus);
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 		g_clear_error (&_data_->_inner_error_);
 		return FALSE;
 	}
-	_data_->_tmp19_ = _data_->networkStatus;
-	_data_->_tmp20_ = NULL;
-	_data_->_tmp20_ = g_hash_table_lookup (_data_->_tmp19_, "pdp.registration");
-	_data_->_tmp21_ = _variant_get63 ((GVariant*) _data_->_tmp20_);
-	_data_->_tmp22_ = g_strdup (_data_->_tmp21_);
-	_g_free0 (_data_->networkRegistrationStatus);
-	_data_->networkRegistrationStatus = _data_->_tmp22_;
-	_data_->_tmp23_ = _data_->networkRegistrationStatus;
-	if (_data_->_tmp23_ == NULL) {
-		_data_->_tmp24_ = _data_->networkStatus;
-		_data_->_tmp25_ = NULL;
-		_data_->_tmp25_ = g_hash_table_lookup (_data_->_tmp24_, "registration");
-		_data_->_tmp26_ = _variant_get64 ((GVariant*) _data_->_tmp25_);
-		_data_->_tmp27_ = g_strdup (_data_->_tmp26_);
-		_g_free0 (_data_->networkRegistrationStatus);
-		_data_->networkRegistrationStatus = _data_->_tmp27_;
-		_data_->_tmp28_ = _data_->networkRegistrationStatus;
-		_data_->_tmp18_ = _data_->_tmp28_ == NULL;
-	} else {
-		_data_->_tmp18_ = FALSE;
-	}
-	_data_->_tmp29_ = _data_->_tmp18_;
-	if (_data_->_tmp29_) {
-		_data_->_tmp30_ = _data_->self->priv->lastNetworkRegistrationStatus;
-		_data_->_tmp31_ = g_strdup (_data_->_tmp30_);
-		_g_free0 (_data_->networkRegistrationStatus);
-		_data_->networkRegistrationStatus = _data_->_tmp31_;
-	}
-	_data_->_tmp32_ = _data_->networkRegistrationStatus;
-	_data_->registered = g_strcmp0 (_data_->_tmp32_, "registered") == 0;
-	_data_->_tmp34_ = _data_->registered;
-	if (_data_->_tmp34_) {
-		_data_->_tmp33_ = TRUE;
-	} else {
-		_data_->_tmp36_ = _data_->roamingAllowed;
-		if (_data_->_tmp36_) {
-			_data_->_tmp37_ = _data_->networkRegistrationStatus;
-			_data_->_tmp35_ = g_strcmp0 (_data_->_tmp37_, "roaming") == 0;
-		} else {
-			_data_->_tmp35_ = FALSE;
-		}
-		_data_->_tmp38_ = _data_->_tmp35_;
-		_data_->_tmp33_ = _data_->_tmp38_;
-	}
-	_data_->_tmp39_ = _data_->_tmp33_;
-	if (_data_->_tmp39_) {
-		_data_->nextContextStatus = FREE_SMARTPHONE_GSM_CONTEXT_STATUS_ACTIVE;
-	} else {
-		_data_->_tmp41_ = _data_->networkRegistrationStatus;
-		if (g_strcmp0 (_data_->_tmp41_, "home") != 0) {
-			_data_->_tmp42_ = _data_->networkRegistrationStatus;
-			_data_->_tmp40_ = g_strcmp0 (_data_->_tmp42_, "roaming") != 0;
-		} else {
-			_data_->_tmp40_ = FALSE;
-		}
-		_data_->_tmp43_ = _data_->_tmp40_;
-		if (_data_->_tmp43_) {
-			_data_->nextContextStatus = FREE_SMARTPHONE_GSM_CONTEXT_STATUS_SUSPENDED;
-		}
-	}
-	_data_->_tmp44_ = _data_->nextContextStatus;
-	_data_->_tmp45_ = _data_->self->priv->_status;
-	if (_data_->_tmp44_ != _data_->_tmp45_) {
-		_data_->_tmp46_ = _data_->nextContextStatus;
-		switch (_data_->_tmp46_) {
-			case FREE_SMARTPHONE_GSM_CONTEXT_STATUS_ACTIVE:
-			{
-				fso_gsm_ipdp_handler_activate ((FsoGsmIPdpHandler*) _data_->self, NULL, NULL);
-				break;
-			}
-			case FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED:
-			{
-				fso_gsm_ipdp_handler_deactivate ((FsoGsmIPdpHandler*) _data_->self, NULL, NULL);
-				break;
-			}
-			case FREE_SMARTPHONE_GSM_CONTEXT_STATUS_SUSPENDED:
-			{
-				_data_->_tmp47_ = _data_->nextContextStatus;
-				_data_->_tmp48_ = _data_->self->priv->_properties;
-				fso_gsm_pdp_handler_updateStatus (_data_->self, _data_->_tmp47_, _data_->_tmp48_, NULL, NULL);
-				break;
-			}
-			default:
-			break;
-		}
-	}
-	_data_->_tmp49_ = _data_->networkRegistrationStatus;
-	_data_->_tmp50_ = g_strdup (_data_->_tmp49_);
-	_g_free0 (_data_->self->priv->lastNetworkRegistrationStatus);
-	_data_->self->priv->lastNetworkRegistrationStatus = _data_->_tmp50_;
 	_data_->self->priv->inSyncStatus = FALSE;
-	_g_hash_table_unref0 (_data_->networkStatus);
-	_g_object_unref0 (_data_->network);
 	_g_free0 (_data_->networkRegistrationStatus);
 	if (_data_->_state_ == 0) {
 		g_simple_async_result_complete_in_idle (_data_->_async_result);
@@ -2298,39 +2931,43 @@ FsoGsmPdpHandler* fso_gsm_pdp_handler_construct (GType object_type) {
 }
 
 
-FreeSmartphoneGSMContextStatus fso_gsm_pdp_handler_get_status (FsoGsmPdpHandler* self) {
+static FreeSmartphoneGSMContextStatus fso_gsm_pdp_handler_real_get_status (FsoGsmIPdpHandler* base) {
 	FreeSmartphoneGSMContextStatus result;
+	FsoGsmPdpHandler* self;
 	FreeSmartphoneGSMContextStatus _tmp0_;
-	g_return_val_if_fail (self != NULL, 0);
+	self = (FsoGsmPdpHandler*) base;
 	_tmp0_ = self->priv->_status;
 	result = _tmp0_;
 	return result;
 }
 
 
-void fso_gsm_pdp_handler_set_status (FsoGsmPdpHandler* self, FreeSmartphoneGSMContextStatus value) {
+static void fso_gsm_pdp_handler_real_set_status (FsoGsmIPdpHandler* base, FreeSmartphoneGSMContextStatus value) {
+	FsoGsmPdpHandler* self;
 	FreeSmartphoneGSMContextStatus _tmp0_;
-	g_return_if_fail (self != NULL);
+	self = (FsoGsmPdpHandler*) base;
 	_tmp0_ = value;
 	self->priv->_status = _tmp0_;
 	g_object_notify ((GObject *) self, "status");
 }
 
 
-GHashTable* fso_gsm_pdp_handler_get_properties (FsoGsmPdpHandler* self) {
+static GHashTable* fso_gsm_pdp_handler_real_get_properties (FsoGsmIPdpHandler* base) {
 	GHashTable* result;
+	FsoGsmPdpHandler* self;
 	GHashTable* _tmp0_;
-	g_return_val_if_fail (self != NULL, NULL);
+	self = (FsoGsmPdpHandler*) base;
 	_tmp0_ = self->priv->_properties;
 	result = _tmp0_;
 	return result;
 }
 
 
-void fso_gsm_pdp_handler_set_properties (FsoGsmPdpHandler* self, GHashTable* value) {
+static void fso_gsm_pdp_handler_real_set_properties (FsoGsmIPdpHandler* base, GHashTable* value) {
+	FsoGsmPdpHandler* self;
 	GHashTable* _tmp0_;
 	GHashTable* _tmp1_;
-	g_return_if_fail (self != NULL);
+	self = (FsoGsmPdpHandler*) base;
 	_tmp0_ = value;
 	_tmp1_ = _g_hash_table_ref0 (_tmp0_);
 	_g_hash_table_unref0 (self->priv->_properties);
@@ -2341,7 +2978,7 @@ void fso_gsm_pdp_handler_set_properties (FsoGsmPdpHandler* self, GHashTable* val
 
 static void __lambda1_ (FsoGsmPdpHandler* self, GHashTable* status) {
 	g_return_if_fail (status != NULL);
-	fso_gsm_pdp_handler_syncStatus (self, NULL, NULL);
+	fso_gsm_ipdp_handler_syncStatus ((FsoGsmIPdpHandler*) self, NULL, NULL);
 }
 
 
@@ -2351,7 +2988,7 @@ static void ___lambda1__free_smartphone_gsm_network_status (FreeSmartphoneGSMNet
 
 
 static void __lambda2_ (FsoGsmPdpHandler* self, FreeSmartphoneGSMDeviceStatus status) {
-	fso_gsm_pdp_handler_syncStatus (self, NULL, NULL);
+	fso_gsm_ipdp_handler_syncStatus ((FsoGsmIPdpHandler*) self, NULL, NULL);
 }
 
 
@@ -2405,12 +3042,12 @@ static GObject * fso_gsm_pdp_handler_constructor (GType type, guint n_construct_
 	parent_class = G_OBJECT_CLASS (fso_gsm_pdp_handler_parent_class);
 	obj = parent_class->constructor (type, n_construct_properties, construct_properties);
 	self = FSO_GSM_PDP_HANDLER (obj);
-	fso_gsm_pdp_handler_set_status (self, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED);
+	fso_gsm_ipdp_handler_set_status ((FsoGsmIPdpHandler*) self, FREE_SMARTPHONE_GSM_CONTEXT_STATUS_RELEASED);
 	_tmp0_ = g_str_hash;
 	_tmp1_ = g_str_equal;
 	_tmp2_ = g_hash_table_new_full (_tmp0_, _tmp1_, _g_free0_, _g_variant_unref0_);
 	_tmp3_ = _tmp2_;
-	fso_gsm_pdp_handler_set_properties (self, _tmp3_);
+	fso_gsm_ipdp_handler_set_properties ((FsoGsmIPdpHandler*) self, _tmp3_);
 	_g_hash_table_unref0 (_tmp3_);
 	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, __fso_gsm_pdp_handler___lambda0__gsource_func, g_object_ref (self), g_object_unref);
 	return obj;
@@ -2444,6 +3081,12 @@ static void fso_gsm_pdp_handler_fso_gsm_ipdp_handler_interface_init (FsoGsmIPdpH
 	iface->connectedWithNewDefaultRoute = (void (*)(FsoGsmIPdpHandler*, FsoGsmRouteInfo*)) fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute;
 	iface->connectedWithNewDefaultRoute_finish = fso_gsm_pdp_handler_real_connectedWithNewDefaultRoute_finish;
 	iface->disconnected = (void (*)(FsoGsmIPdpHandler*)) fso_gsm_pdp_handler_real_disconnected;
+	iface->syncStatus = (void (*)(FsoGsmIPdpHandler*)) fso_gsm_pdp_handler_real_syncStatus;
+	iface->syncStatus_finish = fso_gsm_pdp_handler_real_syncStatus_finish;
+	iface->get_status = fso_gsm_pdp_handler_real_get_status;
+	iface->set_status = fso_gsm_pdp_handler_real_set_status;
+	iface->get_properties = fso_gsm_pdp_handler_real_get_properties;
+	iface->set_properties = fso_gsm_pdp_handler_real_set_properties;
 }
 
 
@@ -2487,10 +3130,10 @@ static void _vala_fso_gsm_pdp_handler_get_property (GObject * object, guint prop
 	self = FSO_GSM_PDP_HANDLER (object);
 	switch (property_id) {
 		case FSO_GSM_PDP_HANDLER_STATUS:
-		g_value_set_enum (value, fso_gsm_pdp_handler_get_status (self));
+		g_value_set_enum (value, fso_gsm_ipdp_handler_get_status ((FsoGsmIPdpHandler*) self));
 		break;
 		case FSO_GSM_PDP_HANDLER_PROPERTIES:
-		g_value_set_boxed (value, fso_gsm_pdp_handler_get_properties (self));
+		g_value_set_boxed (value, fso_gsm_ipdp_handler_get_properties ((FsoGsmIPdpHandler*) self));
 		break;
 		default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -2504,10 +3147,10 @@ static void _vala_fso_gsm_pdp_handler_set_property (GObject * object, guint prop
 	self = FSO_GSM_PDP_HANDLER (object);
 	switch (property_id) {
 		case FSO_GSM_PDP_HANDLER_STATUS:
-		fso_gsm_pdp_handler_set_status (self, g_value_get_enum (value));
+		fso_gsm_ipdp_handler_set_status ((FsoGsmIPdpHandler*) self, g_value_get_enum (value));
 		break;
 		case FSO_GSM_PDP_HANDLER_PROPERTIES:
-		fso_gsm_pdp_handler_set_properties (self, g_value_get_boxed (value));
+		fso_gsm_ipdp_handler_set_properties ((FsoGsmIPdpHandler*) self, g_value_get_boxed (value));
 		break;
 		default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);

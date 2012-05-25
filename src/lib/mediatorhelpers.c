@@ -29,6 +29,9 @@
 #include <freesmartphone.h>
 #include <fsotransport.h>
 #include <gee.h>
+#include <smsutil.h>
+#include <conversions.h>
+#include <fsoframework.h>
 
 
 #define FSO_GSM_TYPE_MODEM (fso_gsm_modem_get_type ())
@@ -48,6 +51,8 @@ typedef struct _FsoGsmChannel FsoGsmChannel;
 typedef struct _FsoGsmChannelIface FsoGsmChannelIface;
 
 #define FSO_GSM_MODEM_TYPE_STATUS (fso_gsm_modem_status_get_type ())
+
+#define FSO_GSM_MODEM_TYPE_NETWORK_STATUS (fso_gsm_modem_network_status_get_type ())
 
 #define FSO_GSM_TYPE_AT_COMMAND_SEQUENCE (fso_gsm_at_command_sequence_get_type ())
 #define FSO_GSM_AT_COMMAND_SEQUENCE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_AT_COMMAND_SEQUENCE, FsoGsmAtCommandSequence))
@@ -123,15 +128,13 @@ typedef struct _FsoGsmSmsHandlerIface FsoGsmSmsHandlerIface;
 typedef struct _WrapHexPdu WrapHexPdu;
 typedef struct _WrapHexPduClass WrapHexPduClass;
 
-#define FSO_GSM_TYPE_SMS_STORAGE (fso_gsm_sms_storage_get_type ())
-#define FSO_GSM_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorage))
-#define FSO_GSM_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
-#define FSO_GSM_IS_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_SMS_STORAGE))
-#define FSO_GSM_IS_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_SMS_STORAGE))
-#define FSO_GSM_SMS_STORAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
+#define FSO_GSM_TYPE_ISMS_STORAGE (fso_gsm_isms_storage_get_type ())
+#define FSO_GSM_ISMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ISMS_STORAGE, FsoGsmISmsStorage))
+#define FSO_GSM_IS_ISMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ISMS_STORAGE))
+#define FSO_GSM_ISMS_STORAGE_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_ISMS_STORAGE, FsoGsmISmsStorageIface))
 
-typedef struct _FsoGsmSmsStorage FsoGsmSmsStorage;
-typedef struct _FsoGsmSmsStorageClass FsoGsmSmsStorageClass;
+typedef struct _FsoGsmISmsStorage FsoGsmISmsStorage;
+typedef struct _FsoGsmISmsStorageIface FsoGsmISmsStorageIface;
 
 #define FSO_GSM_TYPE_PHONEBOOK_HANDLER (fso_gsm_phonebook_handler_get_type ())
 #define FSO_GSM_PHONEBOOK_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PHONEBOOK_HANDLER, FsoGsmPhonebookHandler))
@@ -159,15 +162,23 @@ typedef struct _FsoGsmPhonebookStorageClass FsoGsmPhonebookStorageClass;
 typedef struct _FsoGsmWatchDog FsoGsmWatchDog;
 typedef struct _FsoGsmWatchDogIface FsoGsmWatchDogIface;
 
-#define FSO_GSM_TYPE_PDP_HANDLER (fso_gsm_pdp_handler_get_type ())
-#define FSO_GSM_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandler))
-#define FSO_GSM_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
-#define FSO_GSM_IS_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_PDP_HANDLER))
-#define FSO_GSM_IS_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_PDP_HANDLER))
-#define FSO_GSM_PDP_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
+#define FSO_GSM_TYPE_IPDP_HANDLER (fso_gsm_ipdp_handler_get_type ())
+#define FSO_GSM_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandler))
+#define FSO_GSM_IS_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_IPDP_HANDLER))
+#define FSO_GSM_IPDP_HANDLER_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandlerIface))
 
-typedef struct _FsoGsmPdpHandler FsoGsmPdpHandler;
-typedef struct _FsoGsmPdpHandlerClass FsoGsmPdpHandlerClass;
+typedef struct _FsoGsmIPdpHandler FsoGsmIPdpHandler;
+typedef struct _FsoGsmIPdpHandlerIface FsoGsmIPdpHandlerIface;
+
+#define FSO_GSM_TYPE_ROUTE_INFO (fso_gsm_route_info_get_type ())
+#define FSO_GSM_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfo))
+#define FSO_GSM_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
+#define FSO_GSM_IS_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ROUTE_INFO))
+#define FSO_GSM_IS_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_ROUTE_INFO))
+#define FSO_GSM_ROUTE_INFO_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
+
+typedef struct _FsoGsmRouteInfo FsoGsmRouteInfo;
+typedef struct _FsoGsmRouteInfoClass FsoGsmRouteInfoClass;
 #define _g_free0(var) (var = (g_free (var), NULL))
 
 #define FSO_GSM_TYPE_ABSTRACT_MEDIATOR (fso_gsm_abstract_mediator_get_type ())
@@ -189,9 +200,11 @@ typedef struct _FsoGsmAbstractMediatorClass FsoGsmAbstractMediatorClass;
 
 typedef struct _FsoGsmNetworkGetStatus FsoGsmNetworkGetStatus;
 typedef struct _FsoGsmNetworkGetStatusClass FsoGsmNetworkGetStatusClass;
-#define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
+#define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 typedef struct _fso_gsm_triggerUpdateNetworkStatusData fso_gsm_triggerUpdateNetworkStatusData;
+typedef struct _fso_gsm_findProviderNameForMccMncData fso_gsm_findProviderNameForMccMncData;
+typedef struct _fso_gsm_updateNetworkSignalStrengthData fso_gsm_updateNetworkSignalStrengthData;
 
 struct _FsoGsmChannelIface {
 	GTypeInterface parent_iface;
@@ -216,6 +229,13 @@ typedef enum  {
 	FSO_GSM_MODEM_STATUS_RESUMING,
 	FSO_GSM_MODEM_STATUS_CLOSING
 } FsoGsmModemStatus;
+
+typedef enum  {
+	FSO_GSM_MODEM_NETWORK_STATUS_UNKNOWN,
+	FSO_GSM_MODEM_NETWORK_STATUS_UNREGISTERED,
+	FSO_GSM_MODEM_NETWORK_STATUS_SEARCHING,
+	FSO_GSM_MODEM_NETWORK_STATUS_REGISTERED
+} FsoGsmModemNetworkStatus;
 
 struct _FsoGsmAtCommandQueueCommandIface {
 	GTypeInterface parent_iface;
@@ -431,6 +451,19 @@ struct _FsoGsmCallHandlerIface {
 	void (*releaseAll_finish) (FsoGsmCallHandler* self, GAsyncResult* _res_, GError** error);
 };
 
+struct _FsoGsmISmsStorageIface {
+	GTypeInterface parent_iface;
+	void (*clean) (FsoGsmISmsStorage* self);
+	gint (*addSms) (FsoGsmISmsStorage* self, struct sms* message);
+	GeeArrayList* (*keys) (FsoGsmISmsStorage* self);
+	void (*message) (FsoGsmISmsStorage* self, const gchar* key, gint index, FreeSmartphoneGSMSIMMessage* result);
+	FreeSmartphoneGSMSIMMessage* (*messagebook) (FsoGsmISmsStorage* self, int* result_length1);
+	guint16 (*lastReferenceNumber) (FsoGsmISmsStorage* self);
+	guint16 (*increasingReferenceNumber) (FsoGsmISmsStorage* self);
+	void (*storeTransactionIndizesForSentMessage) (FsoGsmISmsStorage* self, GeeArrayList* hexpdus);
+	gint (*confirmReceivedMessage) (FsoGsmISmsStorage* self, gint netreference);
+};
+
 struct _FsoGsmSmsHandlerIface {
 	GTypeInterface parent_iface;
 	void (*handleIncomingSmsOnSim) (FsoGsmSmsHandler* self, guint index, GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -443,12 +476,14 @@ struct _FsoGsmSmsHandlerIface {
 	guint16 (*nextReferenceNumber) (FsoGsmSmsHandler* self);
 	GeeArrayList* (*formatTextMessage) (FsoGsmSmsHandler* self, const gchar* number, const gchar* contents, gboolean requestReport);
 	void (*storeTransactionIndizesForSentMessage) (FsoGsmSmsHandler* self, GeeArrayList* hexpdus);
-	FsoGsmSmsStorage* (*get_storage) (FsoGsmSmsHandler* self);
-	void (*set_storage) (FsoGsmSmsHandler* self, FsoGsmSmsStorage* value);
+	FsoGsmISmsStorage* (*get_storage) (FsoGsmSmsHandler* self);
+	void (*set_storage) (FsoGsmSmsHandler* self, FsoGsmISmsStorage* value);
 };
 
 struct _FsoGsmPhonebookHandlerIface {
 	GTypeInterface parent_iface;
+	void (*syncWithSim) (FsoGsmPhonebookHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*syncWithSim_finish) (FsoGsmPhonebookHandler* self, GAsyncResult* _res_);
 	FsoGsmPhonebookStorage* (*get_storage) (FsoGsmPhonebookHandler* self);
 	void (*set_storage) (FsoGsmPhonebookHandler* self, FsoGsmPhonebookStorage* value);
 };
@@ -457,6 +492,25 @@ struct _FsoGsmWatchDogIface {
 	GTypeInterface parent_iface;
 	void (*check) (FsoGsmWatchDog* self);
 	void (*resetUnlockMarker) (FsoGsmWatchDog* self);
+};
+
+struct _FsoGsmIPdpHandlerIface {
+	GTypeInterface parent_iface;
+	void (*activate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*activate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
+	void (*deactivate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*deactivate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
+	void (*statusUpdate) (FsoGsmIPdpHandler* self, const gchar* status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*statusUpdate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	void (*connectedWithNewDefaultRoute) (FsoGsmIPdpHandler* self, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*connectedWithNewDefaultRoute_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	void (*disconnected) (FsoGsmIPdpHandler* self);
+	void (*syncStatus) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*syncStatus_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	FreeSmartphoneGSMContextStatus (*get_status) (FsoGsmIPdpHandler* self);
+	void (*set_status) (FsoGsmIPdpHandler* self, FreeSmartphoneGSMContextStatus value);
+	GHashTable* (*get_properties) (FsoGsmIPdpHandler* self);
+	void (*set_properties) (FsoGsmIPdpHandler* self, GHashTable* value);
 };
 
 struct _FsoGsmModemIface {
@@ -474,6 +528,7 @@ struct _FsoGsmModemIface {
 	void (*setFunctionality_finish) (FsoGsmModem* self, GAsyncResult* _res_, GError** error);
 	void (*registerChannel) (FsoGsmModem* self, const gchar* name, FsoGsmChannel* channel);
 	void (*advanceToState) (FsoGsmModem* self, FsoGsmModemStatus status, gboolean force);
+	void (*advanceNetworkState) (FsoGsmModem* self, FsoGsmModemNetworkStatus status);
 	FsoGsmAtCommandSequence* (*atCommandSequence) (FsoGsmModem* self, const gchar* channel, const gchar* purpose);
 	gpointer (*createMediator) (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, GError** error);
 	gpointer (*createAtCommand) (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, const gchar* command);
@@ -484,8 +539,10 @@ struct _FsoGsmModemIface {
 	gchar** (*processAtCommandAsync_finish) (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
 	void (*processAtPduCommandAsync) (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries, GAsyncReadyCallback _callback_, gpointer _user_data_);
 	gchar** (*processAtPduCommandAsync_finish) (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
+	void (*sendAtCommand) (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries);
 	FsoGsmChannel* (*channel) (FsoGsmModem* self, const gchar* category);
 	FsoGsmModemStatus (*status) (FsoGsmModem* self);
+	FsoGsmModemNetworkStatus (*network_status) (FsoGsmModem* self);
 	FreeSmartphoneGSMDeviceStatus (*externalStatus) (FsoGsmModem* self);
 	FsoGsmModemData* (*data) (FsoGsmModem* self);
 	void (*registerAtCommandSequence) (FsoGsmModem* self, const gchar* channel, const gchar* purpose, FsoGsmAtCommandSequence* sequence);
@@ -500,8 +557,8 @@ struct _FsoGsmModemIface {
 	void (*set_pbhandler) (FsoGsmModem* self, FsoGsmPhonebookHandler* value);
 	FsoGsmWatchDog* (*get_watchdog) (FsoGsmModem* self);
 	void (*set_watchdog) (FsoGsmModem* self, FsoGsmWatchDog* value);
-	FsoGsmPdpHandler* (*get_pdphandler) (FsoGsmModem* self);
-	void (*set_pdphandler) (FsoGsmModem* self, FsoGsmPdpHandler* value);
+	FsoGsmIPdpHandler* (*get_pdphandler) (FsoGsmModem* self);
+	void (*set_pdphandler) (FsoGsmModem* self, FsoGsmIPdpHandler* value);
 };
 
 struct _fso_gsm_triggerUpdateNetworkStatusData {
@@ -531,42 +588,86 @@ struct _fso_gsm_triggerUpdateNetworkStatusData {
 	gpointer _tmp18_;
 	FsoGsmNetworkGetStatus* m;
 	FsoGsmNetworkGetStatus* _tmp19_;
-	GError* e;
-	FsoGsmModem* _tmp20_;
-	FsoFrameworkLogger* _tmp21_;
-	GError* _tmp22_;
-	const gchar* _tmp23_;
+	FsoGsmNetworkGetStatus* _tmp20_;
+	GHashTable* _tmp21_;
+	GHashTable* _tmp22_;
+	gconstpointer _tmp23_;
 	const gchar* _tmp24_;
 	gchar* _tmp25_;
-	gchar* _tmp26_;
-	FsoGsmNetworkGetStatus* _tmp27_;
-	GHashTable* _tmp28_;
-	GHashTable* _tmp29_;
-	gconstpointer _tmp30_;
-	const gchar* _tmp31_;
-	gchar* _tmp32_;
 	gchar* status;
-	FsoGsmModem* _tmp33_;
-	FsoFrameworkLogger* _tmp34_;
-	const gchar* _tmp35_;
-	const gchar* _tmp36_;
-	gchar* _tmp37_;
-	gchar* _tmp38_;
-	gboolean _tmp39_;
-	gboolean _tmp40_;
-	const gchar* _tmp41_;
-	const gchar* _tmp42_;
-	gboolean _tmp43_;
-	FsoGsmModem* _tmp44_;
-	FsoGsmModem* _tmp45_;
-	FsoGsmModem* _tmp46_;
-	gpointer _tmp47_;
+	FsoGsmModem* _tmp26_;
+	FsoFrameworkLogger* _tmp27_;
+	const gchar* _tmp28_;
+	const gchar* _tmp29_;
+	gchar* _tmp30_;
+	gchar* _tmp31_;
+	gboolean _tmp32_;
+	const gchar* _tmp33_;
+	const gchar* _tmp34_;
+	GQuark _tmp36_;
+	FsoGsmModem* _tmp37_;
+	FsoGsmModem* _tmp38_;
+	FsoGsmModem* _tmp39_;
+	FsoGsmModem* _tmp40_;
+	FsoGsmModem* _tmp41_;
+	FsoGsmModem* _tmp42_;
+	FsoGsmModem* _tmp43_;
+	gpointer _tmp44_;
 	FreeSmartphoneGSMNetwork* obj;
-	FreeSmartphoneGSMNetwork* _tmp48_;
-	FsoGsmNetworkGetStatus* _tmp49_;
-	GHashTable* _tmp50_;
-	GHashTable* _tmp51_;
+	FreeSmartphoneGSMNetwork* _tmp45_;
+	FsoGsmNetworkGetStatus* _tmp46_;
+	GHashTable* _tmp47_;
+	GHashTable* _tmp48_;
+	GError* e;
+	FsoGsmModem* _tmp49_;
+	FsoFrameworkLogger* _tmp50_;
+	GError* _tmp51_;
+	const gchar* _tmp52_;
+	const gchar* _tmp53_;
+	gchar* _tmp54_;
+	gchar* _tmp55_;
 	GError * _inner_error_;
+};
+
+struct _fso_gsm_findProviderNameForMccMncData {
+	int _state_;
+	GObject* _source_object_;
+	GAsyncResult* _res_;
+	GSimpleAsyncResult* _async_result;
+	gchar* mccmnc;
+	gchar* result;
+	gchar* _tmp0_;
+	gchar* provider;
+	FreeSmartphoneDataWorld* _tmp1_;
+	FreeSmartphoneDataWorld* world_service;
+	FreeSmartphoneDataWorld* _tmp2_;
+	const gchar* _tmp3_;
+	gchar* _tmp4_;
+	gchar* _tmp5_;
+	GError* err;
+	FsoFrameworkLogger* _tmp6_;
+	const gchar* _tmp7_;
+	const gchar* _tmp8_;
+	gchar* _tmp9_;
+	gchar* _tmp10_;
+	GError * _inner_error_;
+};
+
+struct _fso_gsm_updateNetworkSignalStrengthData {
+	int _state_;
+	GObject* _source_object_;
+	GAsyncResult* _res_;
+	GSimpleAsyncResult* _async_result;
+	gint strength;
+	FsoGsmModem* _tmp0_;
+	FsoGsmModemStatus _tmp1_;
+	FsoGsmModem* _tmp2_;
+	gpointer _tmp3_;
+	FreeSmartphoneGSMNetwork* obj;
+	FreeSmartphoneGSMNetwork* _tmp4_;
+	gint _tmp5_;
+	FsoFrameworkLogger* _tmp6_;
+	gboolean _tmp7_;
 };
 
 
@@ -580,6 +681,7 @@ void fso_gsm_triggerUpdateNetworkStatus_finish (GAsyncResult* _res_);
 static gboolean fso_gsm_triggerUpdateNetworkStatus_co (fso_gsm_triggerUpdateNetworkStatusData* _data_);
 GType fso_gsm_channel_get_type (void) G_GNUC_CONST;
 GType fso_gsm_modem_status_get_type (void) G_GNUC_CONST;
+GType fso_gsm_modem_network_status_get_type (void) G_GNUC_CONST;
 gpointer fso_gsm_at_command_sequence_ref (gpointer instance);
 void fso_gsm_at_command_sequence_unref (gpointer instance);
 GParamSpec* fso_gsm_param_spec_at_command_sequence (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
@@ -601,12 +703,19 @@ void value_set_wrap_hex_pdu (GValue* value, gpointer v_object);
 void value_take_wrap_hex_pdu (GValue* value, gpointer v_object);
 gpointer value_get_wrap_hex_pdu (const GValue* value);
 GType wrap_hex_pdu_get_type (void) G_GNUC_CONST;
-GType fso_gsm_sms_storage_get_type (void) G_GNUC_CONST;
+GType fso_gsm_isms_storage_get_type (void) G_GNUC_CONST;
 GType fso_gsm_sms_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_phonebook_storage_get_type (void) G_GNUC_CONST;
 GType fso_gsm_phonebook_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_watch_dog_get_type (void) G_GNUC_CONST;
-GType fso_gsm_pdp_handler_get_type (void) G_GNUC_CONST;
+gpointer fso_gsm_route_info_ref (gpointer instance);
+void fso_gsm_route_info_unref (gpointer instance);
+GParamSpec* fso_gsm_param_spec_route_info (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
+void fso_gsm_value_set_route_info (GValue* value, gpointer v_object);
+void fso_gsm_value_take_route_info (GValue* value, gpointer v_object);
+gpointer fso_gsm_value_get_route_info (const GValue* value);
+GType fso_gsm_route_info_get_type (void) G_GNUC_CONST;
+GType fso_gsm_ipdp_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_modem_get_type (void) G_GNUC_CONST;
 FsoGsmModemStatus fso_gsm_modem_status (FsoGsmModem* self);
 const gchar* fso_gsm_modem_status_to_string (FsoGsmModemStatus self);
@@ -618,9 +727,19 @@ void fso_gsm_network_get_status_run_finish (FsoGsmNetworkGetStatus* self, GAsync
 static void fso_gsm_triggerUpdateNetworkStatus_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_);
 GHashTable* fso_gsm_network_get_status_get_status (FsoGsmNetworkGetStatus* self);
 void fso_gsm_modem_advanceToState (FsoGsmModem* self, FsoGsmModemStatus status, gboolean force);
+void fso_gsm_modem_advanceNetworkState (FsoGsmModem* self, FsoGsmModemNetworkStatus status);
 gpointer fso_gsm_modem_theDevice (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func);
 void fso_gsm_validatePhoneNumber (const gchar* number, GError** error);
-void fso_gsm_validateDtmfTones (const gchar* tones);
+void fso_gsm_validateDtmfTones (const gchar* tones, GError** error);
+static void fso_gsm_findProviderNameForMccMnc_data_free (gpointer _data);
+void fso_gsm_findProviderNameForMccMnc (const gchar* mccmnc, GAsyncReadyCallback _callback_, gpointer _user_data_);
+gchar* fso_gsm_findProviderNameForMccMnc_finish (GAsyncResult* _res_);
+static gboolean fso_gsm_findProviderNameForMccMnc_co (fso_gsm_findProviderNameForMccMncData* _data_);
+static void fso_gsm_findProviderNameForMccMnc_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_);
+static void fso_gsm_updateNetworkSignalStrength_data_free (gpointer _data);
+void fso_gsm_updateNetworkSignalStrength (gint strength, GAsyncReadyCallback _callback_, gpointer _user_data_);
+void fso_gsm_updateNetworkSignalStrength_finish (GAsyncResult* _res_);
+static gboolean fso_gsm_updateNetworkSignalStrength_co (fso_gsm_updateNetworkSignalStrengthData* _data_);
 
 
 static void fso_gsm_triggerUpdateNetworkStatus_data_free (gpointer _data) {
@@ -727,16 +846,20 @@ static gboolean fso_gsm_triggerUpdateNetworkStatus_co (fso_gsm_triggerUpdateNetw
 		g_object_unref (_data_->_async_result);
 		return FALSE;
 	}
-	_data_->_tmp17_ = fso_gsm_theModem;
-	_data_->_tmp18_ = NULL;
-	_data_->_tmp18_ = fso_gsm_modem_createMediator (_data_->_tmp17_, FSO_GSM_TYPE_NETWORK_GET_STATUS, (GBoxedCopyFunc) g_object_ref, g_object_unref, &_data_->_inner_error_);
-	_data_->m = (FsoGsmNetworkGetStatus*) _data_->_tmp18_;
-	if (_data_->_inner_error_ != NULL) {
-		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
-		g_clear_error (&_data_->_inner_error_);
-		return FALSE;
-	}
 	{
+		static GQuark _tmp35_label0 = 0;
+		static GQuark _tmp35_label1 = 0;
+		static GQuark _tmp35_label2 = 0;
+		static GQuark _tmp35_label3 = 0;
+		static GQuark _tmp35_label4 = 0;
+		static GQuark _tmp35_label5 = 0;
+		_data_->_tmp17_ = fso_gsm_theModem;
+		_data_->_tmp18_ = NULL;
+		_data_->_tmp18_ = fso_gsm_modem_createMediator (_data_->_tmp17_, FSO_GSM_TYPE_NETWORK_GET_STATUS, (GBoxedCopyFunc) g_object_ref, g_object_unref, &_data_->_inner_error_);
+		_data_->m = (FsoGsmNetworkGetStatus*) _data_->_tmp18_;
+		if (_data_->_inner_error_ != NULL) {
+			goto __catch47_g_error;
+		}
 		_data_->_tmp19_ = _data_->m;
 		_data_->_state_ = 1;
 		fso_gsm_network_get_status_run (_data_->_tmp19_, fso_gsm_triggerUpdateNetworkStatus_ready, _data_);
@@ -744,28 +867,99 @@ static gboolean fso_gsm_triggerUpdateNetworkStatus_co (fso_gsm_triggerUpdateNetw
 		_state_1:
 		fso_gsm_network_get_status_run_finish (_data_->_tmp19_, _data_->_res_, &_data_->_inner_error_);
 		if (_data_->_inner_error_ != NULL) {
+			_g_object_unref0 (_data_->m);
 			goto __catch47_g_error;
 		}
+		_data_->_tmp20_ = _data_->m;
+		_data_->_tmp21_ = fso_gsm_network_get_status_get_status (_data_->_tmp20_);
+		_data_->_tmp22_ = _data_->_tmp21_;
+		_data_->_tmp23_ = NULL;
+		_data_->_tmp23_ = g_hash_table_lookup (_data_->_tmp22_, "registration");
+		_data_->_tmp24_ = NULL;
+		_data_->_tmp24_ = g_variant_get_string ((GVariant*) _data_->_tmp23_, NULL);
+		_data_->_tmp25_ = g_strdup (_data_->_tmp24_);
+		_data_->status = _data_->_tmp25_;
+		_data_->_tmp26_ = fso_gsm_theModem;
+		_data_->_tmp27_ = ((FsoFrameworkAbstractObject*) _data_->_tmp26_)->logger;
+		_data_->_tmp28_ = _data_->status;
+		_data_->_tmp29_ = NULL;
+		_data_->_tmp29_ = string_to_string (_data_->_tmp28_);
+		_data_->_tmp30_ = NULL;
+		_data_->_tmp30_ = g_strconcat ("triggerUpdateNetworkStatus() status = ", _data_->_tmp29_, NULL);
+		_data_->_tmp31_ = _data_->_tmp30_;
+		_data_->_tmp32_ = FALSE;
+		_data_->_tmp32_ = fso_framework_logger_debug (_data_->_tmp27_, _data_->_tmp31_);
+		g_assert (_data_->_tmp32_);
+		_g_free0 (_data_->_tmp31_);
+		_data_->_tmp33_ = _data_->status;
+		_data_->_tmp36_ = 0U;
+		_data_->_tmp34_ = _data_->_tmp33_;
+		_data_->_tmp36_ = (NULL == _data_->_tmp34_) ? 0 : g_quark_from_string (_data_->_tmp34_);
+		if ((_data_->_tmp36_ == ((0 != _tmp35_label0) ? _tmp35_label0 : (_tmp35_label0 = g_quark_from_static_string ("home")))) || (_data_->_tmp36_ == ((0 != _tmp35_label1) ? _tmp35_label1 : (_tmp35_label1 = g_quark_from_static_string ("roaming"))))) {
+			switch (0) {
+				default:
+				{
+					_data_->_tmp37_ = fso_gsm_theModem;
+					fso_gsm_modem_advanceToState (_data_->_tmp37_, FSO_GSM_MODEM_STATUS_ALIVE_REGISTERED, FALSE);
+					_data_->_tmp38_ = fso_gsm_theModem;
+					fso_gsm_modem_advanceNetworkState (_data_->_tmp38_, FSO_GSM_MODEM_NETWORK_STATUS_REGISTERED);
+					break;
+				}
+			}
+		} else if (_data_->_tmp36_ == ((0 != _tmp35_label2) ? _tmp35_label2 : (_tmp35_label2 = g_quark_from_static_string ("searching")))) {
+			switch (0) {
+				default:
+				{
+					_data_->_tmp39_ = fso_gsm_theModem;
+					fso_gsm_modem_advanceToState (_data_->_tmp39_, FSO_GSM_MODEM_STATUS_ALIVE_SIM_READY, TRUE);
+					_data_->_tmp40_ = fso_gsm_theModem;
+					fso_gsm_modem_advanceNetworkState (_data_->_tmp40_, FSO_GSM_MODEM_NETWORK_STATUS_SEARCHING);
+					break;
+				}
+			}
+		} else if (((_data_->_tmp36_ == ((0 != _tmp35_label3) ? _tmp35_label3 : (_tmp35_label3 = g_quark_from_static_string ("denied")))) || (_data_->_tmp36_ == ((0 != _tmp35_label4) ? _tmp35_label4 : (_tmp35_label4 = g_quark_from_static_string ("unregistered"))))) || (_data_->_tmp36_ == ((0 != _tmp35_label5) ? _tmp35_label5 : (_tmp35_label5 = g_quark_from_static_string ("unknown"))))) {
+			switch (0) {
+				default:
+				{
+					_data_->_tmp41_ = fso_gsm_theModem;
+					fso_gsm_modem_advanceToState (_data_->_tmp41_, FSO_GSM_MODEM_STATUS_ALIVE_SIM_READY, TRUE);
+					_data_->_tmp42_ = fso_gsm_theModem;
+					fso_gsm_modem_advanceNetworkState (_data_->_tmp42_, FSO_GSM_MODEM_NETWORK_STATUS_UNREGISTERED);
+					break;
+				}
+			}
+		}
+		_data_->_tmp43_ = fso_gsm_theModem;
+		_data_->_tmp44_ = NULL;
+		_data_->_tmp44_ = fso_gsm_modem_theDevice (_data_->_tmp43_, FREE_SMARTPHONE_GSM_TYPE_NETWORK, (GBoxedCopyFunc) g_object_ref, g_object_unref);
+		_data_->obj = (FreeSmartphoneGSMNetwork*) _data_->_tmp44_;
+		_data_->_tmp45_ = _data_->obj;
+		_data_->_tmp46_ = _data_->m;
+		_data_->_tmp47_ = fso_gsm_network_get_status_get_status (_data_->_tmp46_);
+		_data_->_tmp48_ = _data_->_tmp47_;
+		g_signal_emit_by_name (_data_->_tmp45_, "status", _data_->_tmp48_);
+		_g_object_unref0 (_data_->obj);
+		_g_free0 (_data_->status);
+		_g_object_unref0 (_data_->m);
 	}
 	goto __finally47;
 	__catch47_g_error:
 	{
 		_data_->e = _data_->_inner_error_;
 		_data_->_inner_error_ = NULL;
-		_data_->_tmp20_ = fso_gsm_theModem;
-		_data_->_tmp21_ = ((FsoFrameworkAbstractObject*) _data_->_tmp20_)->logger;
-		_data_->_tmp22_ = _data_->e;
-		_data_->_tmp23_ = _data_->_tmp22_->message;
-		_data_->_tmp24_ = NULL;
-		_data_->_tmp24_ = string_to_string (_data_->_tmp23_);
-		_data_->_tmp25_ = NULL;
-		_data_->_tmp25_ = g_strconcat ("Can't query networking status: ", _data_->_tmp24_, NULL);
-		_data_->_tmp26_ = _data_->_tmp25_;
-		fso_framework_logger_warning (_data_->_tmp21_, _data_->_tmp26_);
-		_g_free0 (_data_->_tmp26_);
+		_data_->_tmp49_ = fso_gsm_theModem;
+		_data_->_tmp50_ = ((FsoFrameworkAbstractObject*) _data_->_tmp49_)->logger;
+		_data_->_tmp51_ = _data_->e;
+		_data_->_tmp52_ = _data_->_tmp51_->message;
+		_data_->_tmp53_ = NULL;
+		_data_->_tmp53_ = string_to_string (_data_->_tmp52_);
+		_data_->_tmp54_ = NULL;
+		_data_->_tmp54_ = g_strconcat ("Can't query networking status: ", _data_->_tmp53_, NULL);
+		_data_->_tmp55_ = _data_->_tmp54_;
+		fso_framework_logger_warning (_data_->_tmp50_, _data_->_tmp55_);
+		_g_free0 (_data_->_tmp55_);
 		fso_gsm_inTriggerUpdateNetworkStatus = FALSE;
 		_g_error_free0 (_data_->e);
-		_g_object_unref0 (_data_->m);
 		if (_data_->_state_ == 0) {
 			g_simple_async_result_complete_in_idle (_data_->_async_result);
 		} else {
@@ -776,60 +970,11 @@ static gboolean fso_gsm_triggerUpdateNetworkStatus_co (fso_gsm_triggerUpdateNetw
 	}
 	__finally47:
 	if (_data_->_inner_error_ != NULL) {
-		_g_object_unref0 (_data_->m);
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 		g_clear_error (&_data_->_inner_error_);
 		return FALSE;
 	}
-	_data_->_tmp27_ = _data_->m;
-	_data_->_tmp28_ = fso_gsm_network_get_status_get_status (_data_->_tmp27_);
-	_data_->_tmp29_ = _data_->_tmp28_;
-	_data_->_tmp30_ = NULL;
-	_data_->_tmp30_ = g_hash_table_lookup (_data_->_tmp29_, "registration");
-	_data_->_tmp31_ = NULL;
-	_data_->_tmp31_ = g_variant_get_string ((GVariant*) _data_->_tmp30_, NULL);
-	_data_->_tmp32_ = g_strdup (_data_->_tmp31_);
-	_data_->status = _data_->_tmp32_;
-	_data_->_tmp33_ = fso_gsm_theModem;
-	_data_->_tmp34_ = ((FsoFrameworkAbstractObject*) _data_->_tmp33_)->logger;
-	_data_->_tmp35_ = _data_->status;
-	_data_->_tmp36_ = NULL;
-	_data_->_tmp36_ = string_to_string (_data_->_tmp35_);
-	_data_->_tmp37_ = NULL;
-	_data_->_tmp37_ = g_strconcat ("triggerUpdateNetworkStatus() status = ", _data_->_tmp36_, NULL);
-	_data_->_tmp38_ = _data_->_tmp37_;
-	_data_->_tmp39_ = FALSE;
-	_data_->_tmp39_ = fso_framework_logger_debug (_data_->_tmp34_, _data_->_tmp38_);
-	g_assert (_data_->_tmp39_);
-	_g_free0 (_data_->_tmp38_);
-	_data_->_tmp41_ = _data_->status;
-	if (g_strcmp0 (_data_->_tmp41_, "home") == 0) {
-		_data_->_tmp40_ = TRUE;
-	} else {
-		_data_->_tmp42_ = _data_->status;
-		_data_->_tmp40_ = g_strcmp0 (_data_->_tmp42_, "roaming") == 0;
-	}
-	_data_->_tmp43_ = _data_->_tmp40_;
-	if (_data_->_tmp43_) {
-		_data_->_tmp44_ = fso_gsm_theModem;
-		fso_gsm_modem_advanceToState (_data_->_tmp44_, FSO_GSM_MODEM_STATUS_ALIVE_REGISTERED, FALSE);
-	} else {
-		_data_->_tmp45_ = fso_gsm_theModem;
-		fso_gsm_modem_advanceToState (_data_->_tmp45_, FSO_GSM_MODEM_STATUS_ALIVE_SIM_READY, TRUE);
-	}
-	_data_->_tmp46_ = fso_gsm_theModem;
-	_data_->_tmp47_ = NULL;
-	_data_->_tmp47_ = fso_gsm_modem_theDevice (_data_->_tmp46_, FREE_SMARTPHONE_GSM_TYPE_NETWORK, (GBoxedCopyFunc) g_object_ref, g_object_unref);
-	_data_->obj = (FreeSmartphoneGSMNetwork*) _data_->_tmp47_;
-	_data_->_tmp48_ = _data_->obj;
-	_data_->_tmp49_ = _data_->m;
-	_data_->_tmp50_ = fso_gsm_network_get_status_get_status (_data_->_tmp49_);
-	_data_->_tmp51_ = _data_->_tmp50_;
-	g_signal_emit_by_name (_data_->_tmp48_, "status", _data_->_tmp51_);
 	fso_gsm_inTriggerUpdateNetworkStatus = FALSE;
-	_g_object_unref0 (_data_->obj);
-	_g_free0 (_data_->status);
-	_g_object_unref0 (_data_->m);
 	if (_data_->_state_ == 0) {
 		g_simple_async_result_complete_in_idle (_data_->_async_result);
 	} else {
@@ -984,7 +1129,7 @@ void fso_gsm_validatePhoneNumber (const gchar* number, GError** error) {
 }
 
 
-void fso_gsm_validateDtmfTones (const gchar* tones) {
+void fso_gsm_validateDtmfTones (const gchar* tones, GError** error) {
 	const gchar* _tmp0_;
 	GError * _inner_error_ = NULL;
 	g_return_if_fail (tones != NULL);
@@ -993,9 +1138,14 @@ void fso_gsm_validateDtmfTones (const gchar* tones) {
 		GError* _tmp1_;
 		_tmp1_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_INVALID_PARAMETER, "Invalid DTMF tones");
 		_inner_error_ = _tmp1_;
-		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
-		g_clear_error (&_inner_error_);
-		return;
+		if (_inner_error_->domain == FREE_SMARTPHONE_ERROR) {
+			g_propagate_error (error, _inner_error_);
+			return;
+		} else {
+			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+			g_clear_error (&_inner_error_);
+			return;
+		}
 	}
 	{
 		gint n;
@@ -1099,13 +1249,199 @@ void fso_gsm_validateDtmfTones (const gchar* tones) {
 					GError* _tmp32_;
 					_tmp32_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_INVALID_PARAMETER, "Invalid DTMF tones");
 					_inner_error_ = _tmp32_;
-					g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
-					g_clear_error (&_inner_error_);
-					return;
+					if (_inner_error_->domain == FREE_SMARTPHONE_ERROR) {
+						g_propagate_error (error, _inner_error_);
+						return;
+					} else {
+						g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+						g_clear_error (&_inner_error_);
+						return;
+					}
 				}
 			}
 		}
 	}
+}
+
+
+static void fso_gsm_findProviderNameForMccMnc_data_free (gpointer _data) {
+	fso_gsm_findProviderNameForMccMncData* _data_;
+	_data_ = _data;
+	_g_free0 (_data_->mccmnc);
+	_g_free0 (_data_->result);
+	g_slice_free (fso_gsm_findProviderNameForMccMncData, _data_);
+}
+
+
+void fso_gsm_findProviderNameForMccMnc (const gchar* mccmnc, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+	fso_gsm_findProviderNameForMccMncData* _data_;
+	const gchar* _tmp0_;
+	gchar* _tmp1_;
+	_data_ = g_slice_new0 (fso_gsm_findProviderNameForMccMncData);
+	_data_->_async_result = g_simple_async_result_new (g_object_newv (G_TYPE_OBJECT, 0, NULL), _callback_, _user_data_, fso_gsm_findProviderNameForMccMnc);
+	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, fso_gsm_findProviderNameForMccMnc_data_free);
+	_tmp0_ = mccmnc;
+	_tmp1_ = g_strdup (_tmp0_);
+	_data_->mccmnc = _tmp1_;
+	fso_gsm_findProviderNameForMccMnc_co (_data_);
+}
+
+
+gchar* fso_gsm_findProviderNameForMccMnc_finish (GAsyncResult* _res_) {
+	gchar* result;
+	fso_gsm_findProviderNameForMccMncData* _data_;
+	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
+	result = _data_->result;
+	_data_->result = NULL;
+	return result;
+}
+
+
+static void fso_gsm_findProviderNameForMccMnc_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_) {
+	fso_gsm_findProviderNameForMccMncData* _data_;
+	_data_ = _user_data_;
+	_data_->_source_object_ = source_object;
+	_data_->_res_ = _res_;
+	fso_gsm_findProviderNameForMccMnc_co (_data_);
+}
+
+
+static gboolean fso_gsm_findProviderNameForMccMnc_co (fso_gsm_findProviderNameForMccMncData* _data_) {
+	switch (_data_->_state_) {
+		case 0:
+		goto _state_0;
+		case 1:
+		goto _state_1;
+		default:
+		g_assert_not_reached ();
+	}
+	_state_0:
+	_data_->_tmp0_ = g_strdup ("unknown");
+	_data_->provider = _data_->_tmp0_;
+	{
+		_data_->_tmp1_ = NULL;
+		_data_->_tmp1_ = g_initable_new (FREE_SMARTPHONE_DATA_TYPE_WORLD_PROXY, NULL, &_data_->_inner_error_, "g-flags", 0, "g-name", FSO_FRAMEWORK_DATA_WorldServicePath, "g-bus-type", G_BUS_TYPE_SYSTEM, "g-object-path", FSO_FRAMEWORK_DATA_WorldServiceFace, "g-interface-name", "org.freesmartphone.Data.World", NULL);
+		_data_->world_service = (FreeSmartphoneDataWorld*) _data_->_tmp1_;
+		if (_data_->_inner_error_ != NULL) {
+			goto __catch48_g_error;
+		}
+		_data_->_tmp2_ = _data_->world_service;
+		_data_->_tmp3_ = _data_->mccmnc;
+		_data_->_state_ = 1;
+		free_smartphone_data_world_get_provider_name_for_mcc_mnc (_data_->_tmp2_, _data_->_tmp3_, fso_gsm_findProviderNameForMccMnc_ready, _data_);
+		return FALSE;
+		_state_1:
+		_data_->_tmp4_ = NULL;
+		_data_->_tmp4_ = free_smartphone_data_world_get_provider_name_for_mcc_mnc_finish (_data_->_tmp2_, _data_->_res_, &_data_->_inner_error_);
+		_data_->_tmp5_ = _data_->_tmp4_;
+		if (_data_->_inner_error_ != NULL) {
+			_g_object_unref0 (_data_->world_service);
+			goto __catch48_g_error;
+		}
+		_g_free0 (_data_->provider);
+		_data_->provider = _data_->_tmp5_;
+		_g_object_unref0 (_data_->world_service);
+	}
+	goto __finally48;
+	__catch48_g_error:
+	{
+		_data_->err = _data_->_inner_error_;
+		_data_->_inner_error_ = NULL;
+		_data_->_tmp6_ = fso_framework_theLogger;
+		_data_->_tmp7_ = _data_->mccmnc;
+		_data_->_tmp8_ = NULL;
+		_data_->_tmp8_ = string_to_string (_data_->_tmp7_);
+		_data_->_tmp9_ = NULL;
+		_data_->_tmp9_ = g_strconcat ("Could not find and valid provider name for MCC/MNC ", _data_->_tmp8_, NULL);
+		_data_->_tmp10_ = _data_->_tmp9_;
+		fso_framework_logger_warning (_data_->_tmp6_, _data_->_tmp10_);
+		_g_free0 (_data_->_tmp10_);
+		_g_error_free0 (_data_->err);
+	}
+	__finally48:
+	if (_data_->_inner_error_ != NULL) {
+		_g_free0 (_data_->provider);
+		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
+		g_clear_error (&_data_->_inner_error_);
+		return FALSE;
+	}
+	_data_->result = _data_->provider;
+	if (_data_->_state_ == 0) {
+		g_simple_async_result_complete_in_idle (_data_->_async_result);
+	} else {
+		g_simple_async_result_complete (_data_->_async_result);
+	}
+	g_object_unref (_data_->_async_result);
+	return FALSE;
+	_g_free0 (_data_->provider);
+	if (_data_->_state_ == 0) {
+		g_simple_async_result_complete_in_idle (_data_->_async_result);
+	} else {
+		g_simple_async_result_complete (_data_->_async_result);
+	}
+	g_object_unref (_data_->_async_result);
+	return FALSE;
+}
+
+
+static void fso_gsm_updateNetworkSignalStrength_data_free (gpointer _data) {
+	fso_gsm_updateNetworkSignalStrengthData* _data_;
+	_data_ = _data;
+	g_slice_free (fso_gsm_updateNetworkSignalStrengthData, _data_);
+}
+
+
+void fso_gsm_updateNetworkSignalStrength (gint strength, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+	fso_gsm_updateNetworkSignalStrengthData* _data_;
+	gint _tmp0_;
+	_data_ = g_slice_new0 (fso_gsm_updateNetworkSignalStrengthData);
+	_data_->_async_result = g_simple_async_result_new (g_object_newv (G_TYPE_OBJECT, 0, NULL), _callback_, _user_data_, fso_gsm_updateNetworkSignalStrength);
+	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, fso_gsm_updateNetworkSignalStrength_data_free);
+	_tmp0_ = strength;
+	_data_->strength = _tmp0_;
+	fso_gsm_updateNetworkSignalStrength_co (_data_);
+}
+
+
+void fso_gsm_updateNetworkSignalStrength_finish (GAsyncResult* _res_) {
+	fso_gsm_updateNetworkSignalStrengthData* _data_;
+	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
+}
+
+
+static gboolean fso_gsm_updateNetworkSignalStrength_co (fso_gsm_updateNetworkSignalStrengthData* _data_) {
+	switch (_data_->_state_) {
+		case 0:
+		goto _state_0;
+		default:
+		g_assert_not_reached ();
+	}
+	_state_0:
+	_data_->_tmp0_ = fso_gsm_theModem;
+	_data_->_tmp1_ = 0;
+	_data_->_tmp1_ = fso_gsm_modem_status (_data_->_tmp0_);
+	if (_data_->_tmp1_ == FSO_GSM_MODEM_STATUS_ALIVE_REGISTERED) {
+		_data_->_tmp2_ = fso_gsm_theModem;
+		_data_->_tmp3_ = NULL;
+		_data_->_tmp3_ = fso_gsm_modem_theDevice (_data_->_tmp2_, FREE_SMARTPHONE_GSM_TYPE_NETWORK, (GBoxedCopyFunc) g_object_ref, g_object_unref);
+		_data_->obj = (FreeSmartphoneGSMNetwork*) _data_->_tmp3_;
+		_data_->_tmp4_ = _data_->obj;
+		_data_->_tmp5_ = _data_->strength;
+		g_signal_emit_by_name (_data_->_tmp4_, "signal-strength", _data_->_tmp5_);
+		_g_object_unref0 (_data_->obj);
+	} else {
+		_data_->_tmp6_ = fso_framework_theLogger;
+		_data_->_tmp7_ = FALSE;
+		_data_->_tmp7_ = fso_framework_logger_debug (_data_->_tmp6_, "Ignoring signal strength update while not in ALIVE_REGISTERED state");
+		g_assert (_data_->_tmp7_);
+	}
+	if (_data_->_state_ == 0) {
+		g_simple_async_result_complete_in_idle (_data_->_async_result);
+	} else {
+		g_simple_async_result_complete (_data_->_async_result);
+	}
+	g_object_unref (_data_->_async_result);
+	return FALSE;
 }
 
 

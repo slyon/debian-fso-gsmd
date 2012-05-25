@@ -436,8 +436,7 @@ static void _vala_array_add7 (gchar** array, int* length, int* size, gchar value
 FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_start (FsoGsmStateBasedAtParser* self, gchar c) {
 	FsoGsmStateBasedAtParserState result = 0;
 	gchar _tmp0_;
-	FsoFrameworkParserHaveCommandFunc _tmp1_;
-	void* _tmp1__target;
+	FsoFrameworkIParserDelegate* _tmp1_;
 	gboolean _tmp2_ = FALSE;
 	g_return_val_if_fail (self != NULL, 0);
 	_tmp0_ = c;
@@ -455,9 +454,8 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_start (FsoGsmStateBa
 		default:
 		break;
 	}
-	_tmp1_ = ((FsoFrameworkBaseParser*) self)->haveCommand;
-	_tmp1__target = ((FsoFrameworkBaseParser*) self)->haveCommand_target;
-	_tmp2_ = _tmp1_ (_tmp1__target);
+	_tmp1_ = ((FsoFrameworkBaseParser*) self)->_delegate;
+	_tmp2_ = fso_framework_iparser_delegate_onParserHaveCommand (_tmp1_);
 	if (_tmp2_) {
 		gchar _tmp3_;
 		_tmp3_ = c;
@@ -761,8 +759,7 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endofline (FsoGsmSta
 	gint _tmp0__length1;
 	gchar* _tmp1_;
 	gint _tmp1__length1;
-	FsoFrameworkParserHaveCommandFunc _tmp2_;
-	void* _tmp2__target;
+	FsoFrameworkIParserDelegate* _tmp2_;
 	gboolean _tmp3_ = FALSE;
 	g_return_val_if_fail (self != NULL, 0);
 	_tmp0_ = self->priv->curline;
@@ -774,9 +771,8 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endofline (FsoGsmSta
 	_tmp1_ = self->priv->curline;
 	_tmp1__length1 = self->priv->curline_length1;
 	_vala_array_add11 (&self->priv->curline, &self->priv->curline_length1, &self->priv->_curline_size_, (gchar) 0x0);
-	_tmp2_ = ((FsoFrameworkBaseParser*) self)->haveCommand;
-	_tmp2__target = ((FsoFrameworkBaseParser*) self)->haveCommand_target;
-	_tmp3_ = _tmp2_ (_tmp2__target);
+	_tmp2_ = ((FsoFrameworkBaseParser*) self)->_delegate;
+	_tmp3_ = fso_framework_iparser_delegate_onParserHaveCommand (_tmp2_);
 	if (!_tmp3_) {
 		FsoGsmStateBasedAtParserState _tmp4_ = 0;
 		_tmp4_ = fso_gsm_state_based_at_parser_endoflineSurelyUnsolicited (self);
@@ -816,8 +812,7 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endoflinePerhapsSoli
 	gboolean _tmp0_ = FALSE;
 	gboolean _tmp2_;
 	gboolean _tmp4_;
-	FsoFrameworkParserExpectedPrefixFunc _tmp9_;
-	void* _tmp9__target;
+	FsoFrameworkIParserDelegate* _tmp9_;
 	gchar* _tmp10_;
 	gint _tmp10__length1;
 	gboolean _tmp11_ = FALSE;
@@ -862,11 +857,10 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endoflinePerhapsSoli
 		result = _tmp8_;
 		return result;
 	}
-	_tmp9_ = ((FsoFrameworkBaseParser*) self)->expectedPrefix;
-	_tmp9__target = ((FsoFrameworkBaseParser*) self)->expectedPrefix_target;
+	_tmp9_ = ((FsoFrameworkBaseParser*) self)->_delegate;
 	_tmp10_ = self->priv->curline;
 	_tmp10__length1 = self->priv->curline_length1;
-	_tmp11_ = _tmp9_ ((const gchar*) _tmp10_, _tmp9__target);
+	_tmp11_ = fso_framework_iparser_delegate_onParserIsExpectedPrefix (_tmp9_, (const gchar*) _tmp10_);
 	if (!_tmp11_) {
 		FsoGsmStateBasedAtParserState _tmp12_ = 0;
 		_tmp12_ = fso_gsm_state_based_at_parser_endoflineSurelyUnsolicited (self);
@@ -904,8 +898,7 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endoflineSurelySolic
 	gchar* _tmp1_;
 	gint _tmp1__length1;
 	gchar* _tmp2_;
-	FsoFrameworkParserSolicitedCompletedFunc _tmp3_;
-	void* _tmp3__target;
+	FsoFrameworkIParserDelegate* _tmp3_;
 	gchar** _tmp4_;
 	gint _tmp4__length1;
 	FsoGsmStateBasedAtParserState _tmp5_ = 0;
@@ -916,11 +909,10 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endoflineSurelySolic
 	_tmp1__length1 = self->priv->curline_length1;
 	_tmp2_ = g_strdup ((const gchar*) _tmp1_);
 	_vala_array_add14 (&self->priv->solicited, &self->priv->solicited_length1, &self->priv->_solicited_size_, _tmp2_);
-	_tmp3_ = ((FsoFrameworkBaseParser*) self)->solicitedCompleted;
-	_tmp3__target = ((FsoFrameworkBaseParser*) self)->solicitedCompleted_target;
+	_tmp3_ = ((FsoFrameworkBaseParser*) self)->_delegate;
 	_tmp4_ = self->priv->solicited;
 	_tmp4__length1 = self->priv->solicited_length1;
-	_tmp3_ (_tmp4_, _tmp4__length1, _tmp3__target);
+	fso_framework_iparser_delegate_onParserSolicitedCompleted (_tmp3_, _tmp4_, _tmp4__length1);
 	_tmp5_ = fso_gsm_state_based_at_parser_resetAll (self, TRUE);
 	result = _tmp5_;
 	return result;
@@ -946,8 +938,7 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endoflineSurelyUnsol
 	gchar* _tmp2_;
 	gboolean _tmp3_;
 	gboolean _tmp7_ = FALSE;
-	FsoFrameworkParserUnsolicitedCompletedFunc _tmp9_;
-	void* _tmp9__target;
+	FsoFrameworkIParserDelegate* _tmp9_;
 	gchar** _tmp10_;
 	gint _tmp10__length1;
 	FsoGsmStateBasedAtParserState _tmp11_ = 0;
@@ -960,17 +951,15 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endoflineSurelyUnsol
 	_vala_array_add15 (&self->priv->unsolicited, &self->priv->unsolicited_length1, &self->priv->_unsolicited_size_, _tmp2_);
 	_tmp3_ = self->priv->pendingUnsolicitedPDU;
 	if (_tmp3_) {
-		FsoFrameworkParserUnsolicitedCompletedFunc _tmp4_;
-		void* _tmp4__target;
+		FsoFrameworkIParserDelegate* _tmp4_;
 		gchar** _tmp5_;
 		gint _tmp5__length1;
 		FsoGsmStateBasedAtParserState _tmp6_ = 0;
 		self->priv->pendingUnsolicitedPDU = FALSE;
-		_tmp4_ = ((FsoFrameworkBaseParser*) self)->unsolicitedCompleted;
-		_tmp4__target = ((FsoFrameworkBaseParser*) self)->unsolicitedCompleted_target;
+		_tmp4_ = ((FsoFrameworkBaseParser*) self)->_delegate;
 		_tmp5_ = self->priv->unsolicited;
 		_tmp5__length1 = self->priv->unsolicited_length1;
-		_tmp4_ (_tmp5_, _tmp5__length1, _tmp4__target);
+		fso_framework_iparser_delegate_onParserUnsolicitedCompleted (_tmp4_, _tmp5_, _tmp5__length1);
 		_tmp6_ = fso_gsm_state_based_at_parser_resetAll (self, FALSE);
 		result = _tmp6_;
 		return result;
@@ -983,11 +972,10 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endoflineSurelyUnsol
 		result = _tmp8_;
 		return result;
 	}
-	_tmp9_ = ((FsoFrameworkBaseParser*) self)->unsolicitedCompleted;
-	_tmp9__target = ((FsoFrameworkBaseParser*) self)->unsolicitedCompleted_target;
+	_tmp9_ = ((FsoFrameworkBaseParser*) self)->_delegate;
 	_tmp10_ = self->priv->unsolicited;
 	_tmp10__length1 = self->priv->unsolicited_length1;
-	_tmp9_ (_tmp10_, _tmp10__length1, _tmp9__target);
+	fso_framework_iparser_delegate_onParserUnsolicitedCompleted (_tmp9_, _tmp10_, _tmp10__length1);
 	_tmp11_ = fso_gsm_state_based_at_parser_resetAll (self, FALSE);
 	result = _tmp11_;
 	return result;

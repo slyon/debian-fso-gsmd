@@ -334,16 +334,6 @@ typedef struct _SamsungSmsRetrieveTextMessagesClass SamsungSmsRetrieveTextMessag
 typedef struct _SamsungSmsSendTextMessage SamsungSmsSendTextMessage;
 typedef struct _SamsungSmsSendTextMessageClass SamsungSmsSendTextMessageClass;
 
-#define TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE (samsung_sms_get_size_for_text_message_get_type ())
-#define SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE, SamsungSmsGetSizeForTextMessage))
-#define SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE, SamsungSmsGetSizeForTextMessageClass))
-#define IS_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE))
-#define IS_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE))
-#define SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE, SamsungSmsGetSizeForTextMessageClass))
-
-typedef struct _SamsungSmsGetSizeForTextMessage SamsungSmsGetSizeForTextMessage;
-typedef struct _SamsungSmsGetSizeForTextMessageClass SamsungSmsGetSizeForTextMessageClass;
-
 struct _SamsungModem {
 	FsoGsmAbstractModem parent_instance;
 	SamsungModemPrivate * priv;
@@ -442,8 +432,6 @@ GType samsung_sms_retrieve_text_messages_get_type (void) G_GNUC_CONST;
 GType samsung_sms_retrieve_text_messages_register_type (GTypeModule * module);
 GType samsung_sms_send_text_message_get_type (void) G_GNUC_CONST;
 GType samsung_sms_send_text_message_register_type (GTypeModule * module);
-GType samsung_sms_get_size_for_text_message_get_type (void) G_GNUC_CONST;
-GType samsung_sms_get_size_for_text_message_register_type (GTypeModule * module);
 SamsungModem* samsung_modem_new (void);
 SamsungModem* samsung_modem_construct (GType object_type);
 static GObject * samsung_modem_constructor (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties);
@@ -531,54 +519,60 @@ static FsoGsmPhonebookHandler* samsung_modem_real_createPhonebookHandler (FsoGsm
 static void samsung_modem_real_createChannels (FsoGsmAbstractModem* base) {
 	SamsungModem * self;
 	FsoFrameworkTransport* _tmp0_ = NULL;
-	const gchar* _tmp1_;
-	FsoFrameworkTransport* _tmp8_;
-	FsoFrameworkTransport* _tmp9_;
+	FsoFrameworkTransportSpec* _tmp1_;
+	FsoFrameworkTransportSpec* _tmp2_;
+	const gchar* _tmp3_;
+	FsoFrameworkTransport* _tmp11_;
+	FsoFrameworkTransport* _tmp12_;
 	FsoFrameworkTransport* fmt_transport;
-	SamsungIpcChannel* _tmp10_;
-	SamsungIpcChannel* _tmp11_;
-	FsoFrameworkSmartKeyFile* _tmp12_;
-	gchar* _tmp13_ = NULL;
+	SamsungIpcChannel* _tmp13_;
+	SamsungIpcChannel* _tmp14_;
+	FsoFrameworkSmartKeyFile* _tmp15_;
+	gchar* _tmp16_ = NULL;
 	gchar* rfs_modem_port;
-	FsoGsmSamsungModemTransport* _tmp14_;
+	FsoGsmSamsungModemTransport* _tmp17_;
 	FsoGsmSamsungModemTransport* rfs_transport;
-	SamsungRfsChannel* _tmp15_;
-	SamsungRfsChannel* _tmp16_;
+	SamsungRfsChannel* _tmp18_;
+	SamsungRfsChannel* _tmp19_;
 	self = (SamsungModem*) base;
-	_tmp1_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-	if (g_strcmp0 (_tmp1_, "samsung") == 0) {
-		const gchar* _tmp2_;
-		FsoGsmSamsungModemTransport* _tmp3_;
-		_tmp2_ = ((FsoGsmAbstractModem*) self)->modem_port;
-		_tmp3_ = fso_gsm_samsung_modem_transport_new (_tmp2_);
+	_tmp1_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+	_tmp2_ = _tmp1_;
+	_tmp3_ = _tmp2_->type;
+	if (g_strcmp0 (_tmp3_, "samsung") == 0) {
+		FsoFrameworkTransportSpec* _tmp4_;
+		FsoFrameworkTransportSpec* _tmp5_;
+		const gchar* _tmp6_;
+		FsoGsmSamsungModemTransport* _tmp7_;
+		_tmp4_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+		_tmp5_ = _tmp4_;
+		_tmp6_ = _tmp5_->name;
+		_tmp7_ = fso_gsm_samsung_modem_transport_new (_tmp6_);
 		_g_object_unref0 (_tmp0_);
-		_tmp0_ = (FsoFrameworkTransport*) _tmp3_;
+		_tmp0_ = (FsoFrameworkTransport*) _tmp7_;
 	} else {
-		const gchar* _tmp4_;
-		const gchar* _tmp5_;
-		gint _tmp6_;
-		FsoFrameworkTransport* _tmp7_ = NULL;
-		_tmp4_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-		_tmp5_ = ((FsoGsmAbstractModem*) self)->modem_port;
-		_tmp6_ = ((FsoGsmAbstractModem*) self)->modem_speed;
-		_tmp7_ = fso_framework_transport_create (_tmp4_, _tmp5_, (guint) _tmp6_, TRUE, TRUE);
+		FsoFrameworkTransportSpec* _tmp8_;
+		FsoFrameworkTransportSpec* _tmp9_;
+		FsoFrameworkTransport* _tmp10_ = NULL;
+		_tmp8_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+		_tmp9_ = _tmp8_;
+		_tmp10_ = fso_framework_transport_spec_create (_tmp9_);
 		_g_object_unref0 (_tmp0_);
-		_tmp0_ = _tmp7_;
+		_tmp0_ = _tmp10_;
 	}
-	_tmp8_ = _tmp0_;
-	_tmp9_ = _g_object_ref0 (_tmp8_);
-	fmt_transport = _tmp9_;
-	_tmp10_ = samsung_ipc_channel_new (SAMSUNG_MODEM_MAIN_CHANNEL_NAME, fmt_transport);
-	_tmp11_ = _tmp10_;
-	_g_object_unref0 (_tmp11_);
-	_tmp12_ = ((FsoFrameworkAbstractObject*) self)->config;
-	_tmp13_ = fso_framework_smart_key_file_stringValue (_tmp12_, "fsogsm.modem_samsung", "modem_rfs_access", "/dev/modem_rfs");
-	rfs_modem_port = _tmp13_;
-	_tmp14_ = fso_gsm_samsung_modem_transport_new (rfs_modem_port);
-	rfs_transport = _tmp14_;
-	_tmp15_ = samsung_rfs_channel_new (SAMSUNG_MODEM_RFS_CHANNEL_NAME, (FsoFrameworkTransport*) rfs_transport);
-	_tmp16_ = _tmp15_;
-	_g_object_unref0 (_tmp16_);
+	_tmp11_ = _tmp0_;
+	_tmp12_ = _g_object_ref0 (_tmp11_);
+	fmt_transport = _tmp12_;
+	_tmp13_ = samsung_ipc_channel_new (SAMSUNG_MODEM_MAIN_CHANNEL_NAME, fmt_transport);
+	_tmp14_ = _tmp13_;
+	_g_object_unref0 (_tmp14_);
+	_tmp15_ = ((FsoFrameworkAbstractObject*) self)->config;
+	_tmp16_ = fso_framework_smart_key_file_stringValue (_tmp15_, "fsogsm.modem_samsung", "modem_rfs_access", "/dev/modem_rfs");
+	rfs_modem_port = _tmp16_;
+	_tmp17_ = fso_gsm_samsung_modem_transport_new (rfs_modem_port);
+	rfs_transport = _tmp17_;
+	_tmp18_ = samsung_rfs_channel_new (SAMSUNG_MODEM_RFS_CHANNEL_NAME, (FsoFrameworkTransport*) rfs_transport);
+	_tmp19_ = _tmp18_;
+	_g_object_unref0 (_tmp19_);
 	_g_object_unref0 (rfs_transport);
 	_g_free0 (rfs_modem_port);
 	_g_object_unref0 (fmt_transport);
@@ -629,7 +623,6 @@ static void samsung_modem_real_registerCustomMediators (FsoGsmAbstractModem* bas
 	GeeHashMap* _tmp25_;
 	GeeHashMap* _tmp26_;
 	GeeHashMap* _tmp27_;
-	GeeHashMap* _tmp28_;
 	self = (SamsungModem*) base;
 	g_return_if_fail (mediators != NULL);
 	_tmp0_ = mediators;
@@ -688,8 +681,6 @@ static void samsung_modem_real_registerCustomMediators (FsoGsmAbstractModem* bas
 	gee_abstract_map_set ((GeeAbstractMap*) _tmp26_, GINT_TO_POINTER (FSO_GSM_TYPE_SMS_RETRIEVE_TEXT_MESSAGES), GINT_TO_POINTER (TYPE_SAMSUNG_SMS_RETRIEVE_TEXT_MESSAGES));
 	_tmp27_ = mediators;
 	gee_abstract_map_set ((GeeAbstractMap*) _tmp27_, GINT_TO_POINTER (FSO_GSM_TYPE_SMS_SEND_TEXT_MESSAGE), GINT_TO_POINTER (TYPE_SAMSUNG_SMS_SEND_TEXT_MESSAGE));
-	_tmp28_ = mediators;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp28_, GINT_TO_POINTER (FSO_GSM_TYPE_SMS_GET_SIZE_FOR_TEXT_MESSAGE), GINT_TO_POINTER (TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE));
 }
 
 
@@ -799,7 +790,6 @@ void fso_register_function (GTypeModule* module) {
 	samsung_network_list_providers_register_type (module);
 	samsung_pdp_set_credentials_register_type (module);
 	samsung_sms_retrieve_text_messages_register_type (module);
-	samsung_sms_get_size_for_text_message_register_type (module);
 	samsung_sms_send_text_message_register_type (module);
 	samsung_call_activate_register_type (module);
 	samsung_call_hold_active_register_type (module);

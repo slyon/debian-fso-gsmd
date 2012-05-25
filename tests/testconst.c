@@ -14,8 +14,12 @@
 
 
 void test_ctzv_to_timezone (void);
+void test_phone_number_string_to_tuple (void);
+void test_phone_number_string_to_real_tuple (void);
 void _vala_main (gchar** args, int args_length1);
 static void _test_ctzv_to_timezone_gcallback (void);
+static void _test_phone_number_string_to_tuple_gcallback (void);
+static void _test_phone_number_string_to_real_tuple_gcallback (void);
 
 
 /**
@@ -42,55 +46,111 @@ void test_ctzv_to_timezone (void) {
 	gint _tmp2_ = 0;
 	gint _tmp3_;
 	gint tz1;
-	gchar* _tmp4_ = NULL;
-	gchar* _tmp5_;
-	FsoGsmConstants* _tmp6_ = NULL;
-	FsoGsmConstants* _tmp7_;
-	gint _tmp8_ = 0;
-	gint _tmp9_;
+	FsoGsmConstants* _tmp4_ = NULL;
+	FsoGsmConstants* _tmp5_;
+	gint _tmp6_ = 0;
+	gint _tmp7_;
 	gint tz2;
-	gchar* _tmp10_ = NULL;
-	gchar* _tmp11_;
-	FsoGsmConstants* _tmp12_ = NULL;
-	FsoGsmConstants* _tmp13_;
-	gint _tmp14_ = 0;
-	gint _tmp15_;
+	FsoGsmConstants* _tmp8_ = NULL;
+	FsoGsmConstants* _tmp9_;
+	gint _tmp10_ = 0;
+	gint _tmp11_;
 	gint tz3;
-	gchar* _tmp16_ = NULL;
-	gchar* _tmp17_;
 	_tmp0_ = fso_gsm_constants_instance ();
 	_tmp1_ = _tmp0_;
 	_tmp2_ = fso_gsm_constants_ctzvToTimeZone (_tmp1_, 0x19);
 	_tmp3_ = _tmp2_;
 	_fso_gsm_constants_unref0 (_tmp1_);
 	tz1 = _tmp3_;
-	_tmp4_ = g_strdup_printf ("%i", tz1);
-	_tmp5_ = _tmp4_;
-	g_message ("testconst.vala:27: %s", _tmp5_);
-	_g_free0 (_tmp5_);
 	g_assert (tz1 == (-165));
+	_tmp4_ = fso_gsm_constants_instance ();
+	_tmp5_ = _tmp4_;
+	_tmp6_ = fso_gsm_constants_ctzvToTimeZone (_tmp5_, 35);
+	_tmp7_ = _tmp6_;
+	_fso_gsm_constants_unref0 (_tmp5_);
+	tz2 = _tmp7_;
+	g_assert (tz2 == (8 * 60));
+	_tmp8_ = fso_gsm_constants_instance ();
+	_tmp9_ = _tmp8_;
+	_tmp10_ = fso_gsm_constants_ctzvToTimeZone (_tmp9_, 105);
+	_tmp11_ = _tmp10_;
+	_fso_gsm_constants_unref0 (_tmp9_);
+	tz3 = _tmp11_;
+	g_assert (tz3 == ((-4) * 60));
+}
+
+
+void test_phone_number_string_to_tuple (void) {
+	FsoGsmConstants* _tmp0_ = NULL;
+	FsoGsmConstants* _tmp1_;
+	gchar* _tmp2_ = NULL;
+	gchar* _tmp3_;
+	gchar* t0;
+	FsoGsmConstants* _tmp4_ = NULL;
+	FsoGsmConstants* _tmp5_;
+	gchar* _tmp6_ = NULL;
+	gchar* _tmp7_;
+	gchar* t1;
+	_tmp0_ = fso_gsm_constants_instance ();
+	_tmp1_ = _tmp0_;
+	_tmp2_ = fso_gsm_constants_phonenumberStringToTuple (_tmp1_, "+1234567890");
+	_tmp3_ = _tmp2_;
+	_fso_gsm_constants_unref0 (_tmp1_);
+	t0 = _tmp3_;
+	g_assert (g_strcmp0 (t0, "\"1234567890\",145") == 0);
+	_tmp4_ = fso_gsm_constants_instance ();
+	_tmp5_ = _tmp4_;
+	_tmp6_ = fso_gsm_constants_phonenumberStringToTuple (_tmp5_, "0987654321");
+	_tmp7_ = _tmp6_;
+	_fso_gsm_constants_unref0 (_tmp5_);
+	t1 = _tmp7_;
+	g_assert (g_strcmp0 (t1, "\"0987654321\",129") == 0);
+	_g_free0 (t1);
+	_g_free0 (t0);
+}
+
+
+void test_phone_number_string_to_real_tuple (void) {
+	guint8 nt0;
+	FsoGsmConstants* _tmp0_ = NULL;
+	FsoGsmConstants* _tmp1_;
+	guint8 _tmp2_ = 0U;
+	gchar* _tmp3_ = NULL;
+	gchar* _tmp4_;
+	gchar* t0;
+	guint8 _tmp5_;
+	guint8 nt1;
+	FsoGsmConstants* _tmp6_ = NULL;
+	FsoGsmConstants* _tmp7_;
+	guint8 _tmp8_ = 0U;
+	gchar* _tmp9_ = NULL;
+	gchar* _tmp10_;
+	gchar* t1;
+	guint8 _tmp11_;
+	nt0 = (guint8) 0;
+	_tmp0_ = fso_gsm_constants_instance ();
+	_tmp1_ = _tmp0_;
+	_tmp3_ = fso_gsm_constants_phonenumberStringToRealTuple (_tmp1_, "+1234567890", &_tmp2_);
+	nt0 = _tmp2_;
+	_tmp4_ = _tmp3_;
+	_fso_gsm_constants_unref0 (_tmp1_);
+	t0 = _tmp4_;
+	g_assert (g_strcmp0 (t0, "1234567890") == 0);
+	_tmp5_ = nt0;
+	g_assert (((gint) _tmp5_) == 145);
+	nt1 = (guint8) 0;
 	_tmp6_ = fso_gsm_constants_instance ();
 	_tmp7_ = _tmp6_;
-	_tmp8_ = fso_gsm_constants_ctzvToTimeZone (_tmp7_, 35);
-	_tmp9_ = _tmp8_;
+	_tmp9_ = fso_gsm_constants_phonenumberStringToRealTuple (_tmp7_, "0987654321", &_tmp8_);
+	nt1 = _tmp8_;
+	_tmp10_ = _tmp9_;
 	_fso_gsm_constants_unref0 (_tmp7_);
-	tz2 = _tmp9_;
-	_tmp10_ = g_strdup_printf ("%i", tz2);
-	_tmp11_ = _tmp10_;
-	g_message ("testconst.vala:31: %s", _tmp11_);
-	_g_free0 (_tmp11_);
-	g_assert (tz2 == (8 * 60));
-	_tmp12_ = fso_gsm_constants_instance ();
-	_tmp13_ = _tmp12_;
-	_tmp14_ = fso_gsm_constants_ctzvToTimeZone (_tmp13_, 105);
-	_tmp15_ = _tmp14_;
-	_fso_gsm_constants_unref0 (_tmp13_);
-	tz3 = _tmp15_;
-	_tmp16_ = g_strdup_printf ("%i", tz3);
-	_tmp17_ = _tmp16_;
-	g_message ("testconst.vala:35: %s", _tmp17_);
-	_g_free0 (_tmp17_);
-	g_assert (tz3 == ((-4) * 60));
+	t1 = _tmp10_;
+	g_assert (g_strcmp0 (t1, "0987654321") == 0);
+	_tmp11_ = nt1;
+	g_assert (((gint) _tmp11_) == 129);
+	_g_free0 (t1);
+	_g_free0 (t0);
 }
 
 
@@ -99,9 +159,21 @@ static void _test_ctzv_to_timezone_gcallback (void) {
 }
 
 
+static void _test_phone_number_string_to_tuple_gcallback (void) {
+	test_phone_number_string_to_tuple ();
+}
+
+
+static void _test_phone_number_string_to_real_tuple_gcallback (void) {
+	test_phone_number_string_to_real_tuple ();
+}
+
+
 void _vala_main (gchar** args, int args_length1) {
 	g_test_init (&args_length1, &args, NULL);
 	g_test_add_func ("/Const/ctzvToTimezone", _test_ctzv_to_timezone_gcallback);
+	g_test_add_func ("/Const/phoneNumberStringToTuple", _test_phone_number_string_to_tuple_gcallback);
+	g_test_add_func ("/Const/phonenumberStringToRealTuple", _test_phone_number_string_to_real_tuple_gcallback);
 	g_test_run ();
 }
 

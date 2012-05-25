@@ -29,6 +29,7 @@ void test_atcommand_PlusCGSN (void);
 void test_atcommand_PlusCOPS (void);
 void test_atcommand_PlusCPIN (void);
 void test_atcommand_PlusFCLASS (void);
+void test_atcommand_PlusVTS (void);
 void _vala_main (gchar** args, int args_length1);
 static void _test_atcommand_PlusCFUN_gcallback (void);
 static void _test_atcommand_PlusCGCLASS_gcallback (void);
@@ -38,16 +39,21 @@ static void _test_atcommand_PlusCGSN_gcallback (void);
 static void _test_atcommand_PlusCOPS_gcallback (void);
 static void _test_atcommand_PlusCPIN_gcallback (void);
 static void _test_atcommand_PlusFCLASS_gcallback (void);
+static void _test_atcommand_PlusVTS_gcallback (void);
 
 
 void setup (void) {
-	GeeHashMap* _tmp0_;
+	FsoGsmNullModem* _tmp0_;
 	GeeHashMap* _tmp1_;
-	_tmp0_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, FSO_GSM_TYPE_AT_COMMAND, (GBoxedCopyFunc) g_object_ref, g_object_unref, NULL, NULL, NULL);
+	GeeHashMap* _tmp2_;
+	_tmp0_ = fso_gsm_null_modem_new ();
+	_g_object_unref0 (fso_gsm_theModem);
+	fso_gsm_theModem = (FsoGsmModem*) _tmp0_;
+	_tmp1_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, FSO_GSM_TYPE_AT_COMMAND, (GBoxedCopyFunc) g_object_ref, g_object_unref, NULL, NULL, NULL);
 	_g_object_unref0 (commands);
-	commands = _tmp0_;
-	_tmp1_ = commands;
-	fso_gsm_registerGenericAtCommands (_tmp1_);
+	commands = _tmp1_;
+	_tmp2_ = commands;
+	fso_gsm_registerGenericAtCommands (_tmp2_);
 }
 
 
@@ -78,14 +84,12 @@ void test_atcommand_PlusCFUN (void) {
 	FsoGsmPlusCFUN* _tmp2_;
 	gconstpointer _tmp3_;
 	FsoGsmPlusCFUN* _tmp4_;
-	gconstpointer _tmp5_;
-	FsoGsmPlusCFUN* _tmp6_;
-	FsoGsmPlusCFUN* _tmp7_;
-	gconstpointer _tmp8_;
-	FsoGsmPlusCFUN* _tmp10_;
-	gchar* _tmp11_ = NULL;
+	FsoGsmPlusCFUN* _tmp5_;
+	gconstpointer _tmp6_;
+	FsoGsmPlusCFUN* _tmp8_;
+	gchar* _tmp9_ = NULL;
 	gchar* str;
-	const gchar* _tmp12_;
+	const gchar* _tmp10_;
 	GError * _inner_error_ = NULL;
 	_tmp0_ = atCommandFactory ("+CFUN");
 	cmd = FSO_GSM_PLUS_CFUN (_tmp0_);
@@ -99,25 +103,22 @@ void test_atcommand_PlusCFUN (void) {
 	}
 	_tmp2_ = cmd;
 	_tmp3_ = ((FsoGsmSimpleAtCommand*) _tmp2_)->value;
-	g_message ("testatcommand.vala:46: cmd.value = %d", GPOINTER_TO_INT (_tmp3_));
+	g_assert (GPOINTER_TO_INT (_tmp3_) == 0);
 	_tmp4_ = cmd;
-	_tmp5_ = ((FsoGsmSimpleAtCommand*) _tmp4_)->value;
-	g_assert (GPOINTER_TO_INT (_tmp5_) == 0);
-	_tmp6_ = cmd;
-	fso_gsm_abstract_at_command_parse ((FsoGsmAbstractAtCommand*) _tmp6_, "+CFUN: 1", &_inner_error_);
+	fso_gsm_abstract_at_command_parse ((FsoGsmAbstractAtCommand*) _tmp4_, "+CFUN: 1", &_inner_error_);
 	if (_inner_error_ != NULL) {
 		_g_object_unref0 (cmd);
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 		g_clear_error (&_inner_error_);
 		return;
 	}
-	_tmp7_ = cmd;
-	_tmp8_ = ((FsoGsmSimpleAtCommand*) _tmp7_)->value;
-	g_assert (GPOINTER_TO_INT (_tmp8_) == 1);
+	_tmp5_ = cmd;
+	_tmp6_ = ((FsoGsmSimpleAtCommand*) _tmp5_)->value;
+	g_assert (GPOINTER_TO_INT (_tmp6_) == 1);
 	{
-		FsoGsmPlusCFUN* _tmp9_;
-		_tmp9_ = cmd;
-		fso_gsm_abstract_at_command_parse ((FsoGsmAbstractAtCommand*) _tmp9_, "+CFUN: NOTANINTEGER", &_inner_error_);
+		FsoGsmPlusCFUN* _tmp7_;
+		_tmp7_ = cmd;
+		fso_gsm_abstract_at_command_parse ((FsoGsmAbstractAtCommand*) _tmp7_, "+CFUN: NOTANINTEGER", &_inner_error_);
 		if (_inner_error_ != NULL) {
 			goto __catch0_g_error;
 		}
@@ -138,11 +139,11 @@ void test_atcommand_PlusCFUN (void) {
 		g_clear_error (&_inner_error_);
 		return;
 	}
-	_tmp10_ = cmd;
-	_tmp11_ = fso_gsm_simple_at_command_issue ((FsoGsmSimpleAtCommand*) _tmp10_, GINT_TO_POINTER (1));
-	str = _tmp11_;
-	_tmp12_ = str;
-	g_assert (g_strcmp0 (_tmp12_, "+CFUN=1") == 0);
+	_tmp8_ = cmd;
+	_tmp9_ = fso_gsm_simple_at_command_issue ((FsoGsmSimpleAtCommand*) _tmp8_, GINT_TO_POINTER (1));
+	str = _tmp9_;
+	_tmp10_ = str;
+	g_assert (g_strcmp0 (_tmp10_, "+CFUN=1") == 0);
 	_g_free0 (str);
 	_g_object_unref0 (cmd);
 }
@@ -537,10 +538,10 @@ void test_atcommand_PlusCOPS (void) {
 		return;
 	}
 	_tmp2_ = cmd;
-	_tmp3_ = _tmp2_->status;
+	_tmp3_ = _tmp2_->mode;
 	g_assert (_tmp3_ == 2);
 	_tmp4_ = cmd;
-	_tmp5_ = _tmp4_->mode;
+	_tmp5_ = _tmp4_->format;
 	g_assert (_tmp5_ == (-1));
 	_tmp6_ = cmd;
 	_tmp7_ = _tmp6_->oper;
@@ -554,10 +555,10 @@ void test_atcommand_PlusCOPS (void) {
 		return;
 	}
 	_tmp9_ = cmd;
-	_tmp10_ = _tmp9_->status;
+	_tmp10_ = _tmp9_->mode;
 	g_assert (_tmp10_ == 0);
 	_tmp11_ = cmd;
-	_tmp12_ = _tmp11_->mode;
+	_tmp12_ = _tmp11_->format;
 	g_assert (_tmp12_ == 3);
 	_tmp13_ = cmd;
 	_tmp14_ = _tmp13_->oper;
@@ -769,6 +770,27 @@ void test_atcommand_PlusFCLASS (void) {
 }
 
 
+void test_atcommand_PlusVTS (void) {
+	FsoGsmAtCommand* _tmp0_ = NULL;
+	FsoGsmPlusVTS* cmd;
+	gchar* _tmp1_ = NULL;
+	gchar* _tmp2_;
+	gchar* _tmp3_ = NULL;
+	gchar* _tmp4_;
+	_tmp0_ = atCommandFactory ("+VTS");
+	cmd = FSO_GSM_PLUS_VTS (_tmp0_);
+	_tmp1_ = fso_gsm_plus_vts_issue (cmd, "9AD0");
+	_tmp2_ = _tmp1_;
+	g_assert (g_strcmp0 (_tmp2_, "+VTS=9;+VTS=A;+VTS=D;+VTS=0") == 0);
+	_g_free0 (_tmp2_);
+	_tmp3_ = fso_gsm_plus_vts_issue (cmd, "B");
+	_tmp4_ = _tmp3_;
+	g_assert (g_strcmp0 (_tmp4_, "+VTS=B") == 0);
+	_g_free0 (_tmp4_);
+	_g_object_unref0 (cmd);
+}
+
+
 static void _test_atcommand_PlusCFUN_gcallback (void) {
 	test_atcommand_PlusCFUN ();
 }
@@ -809,6 +831,11 @@ static void _test_atcommand_PlusFCLASS_gcallback (void) {
 }
 
 
+static void _test_atcommand_PlusVTS_gcallback (void) {
+	test_atcommand_PlusVTS ();
+}
+
+
 void _vala_main (gchar** args, int args_length1) {
 	g_test_init (&args_length1, &args, NULL);
 	setup ();
@@ -820,6 +847,8 @@ void _vala_main (gchar** args, int args_length1) {
 	g_test_add_func ("/AtCommand/+COPS", _test_atcommand_PlusCOPS_gcallback);
 	g_test_add_func ("/AtCommand/+CPIN", _test_atcommand_PlusCPIN_gcallback);
 	g_test_add_func ("/AtCommand/+FCLASS", _test_atcommand_PlusFCLASS_gcallback);
+	g_test_add_func ("/AtCommand/+VTS", _test_atcommand_PlusVTS_gcallback);
+	g_test_run ();
 }
 
 

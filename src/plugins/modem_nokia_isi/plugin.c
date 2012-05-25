@@ -27,12 +27,11 @@
 #include <string.h>
 #include <fsogsm.h>
 #include <gisicomm.h>
+#include <fsotransport.h>
 #include <fsobasics.h>
 #include <unistd.h>
-#include <fsotransport.h>
 #include <gee.h>
 #include <mtc.h>
-#include <net/if.h>
 #include <libgisi.h>
 #include <clients.h>
 #include <modem.h>
@@ -199,18 +198,26 @@ static const gchar* string_to_string (const gchar* self) {
 static gchar* nokia_isi_modem_real_repr (FsoFrameworkAbstractObject* base) {
 	NokiaIsiModem * self;
 	gchar* result = NULL;
-	const gchar* _tmp0_;
-	const gchar* _tmp1_ = NULL;
+	FsoFrameworkTransportSpec* _tmp0_;
+	FsoFrameworkTransportSpec* _tmp1_;
 	const gchar* _tmp2_;
 	const gchar* _tmp3_ = NULL;
-	gchar* _tmp4_ = NULL;
+	FsoFrameworkTransportSpec* _tmp4_;
+	FsoFrameworkTransportSpec* _tmp5_;
+	const gchar* _tmp6_;
+	const gchar* _tmp7_ = NULL;
+	gchar* _tmp8_ = NULL;
 	self = (NokiaIsiModem*) base;
-	_tmp0_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-	_tmp1_ = string_to_string (_tmp0_);
-	_tmp2_ = ((FsoGsmAbstractModem*) self)->modem_port;
+	_tmp0_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = _tmp1_->type;
 	_tmp3_ = string_to_string (_tmp2_);
-	_tmp4_ = g_strconcat ("<", _tmp1_, ":", _tmp3_, ">", NULL);
-	result = _tmp4_;
+	_tmp4_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+	_tmp5_ = _tmp4_;
+	_tmp6_ = _tmp5_->name;
+	_tmp7_ = string_to_string (_tmp6_);
+	_tmp8_ = g_strconcat ("<", _tmp3_, ":", _tmp7_, ">", NULL);
+	result = _tmp8_;
 	return result;
 }
 
@@ -366,19 +373,23 @@ static FsoGsmPhonebookHandler* nokia_isi_modem_real_createPhonebookHandler (FsoG
 
 static void nokia_isi_modem_real_createChannels (FsoGsmAbstractModem* base) {
 	NokiaIsiModem * self;
-	const gchar* _tmp0_;
-	IsiTransport* _tmp1_;
-	IsiTransport* _tmp2_;
-	IsiChannel* _tmp3_;
-	IsiChannel* _tmp4_;
+	FsoFrameworkTransportSpec* _tmp0_;
+	FsoFrameworkTransportSpec* _tmp1_;
+	const gchar* _tmp2_;
+	IsiTransport* _tmp3_;
+	IsiTransport* _tmp4_;
+	IsiChannel* _tmp5_;
+	IsiChannel* _tmp6_;
 	self = (NokiaIsiModem*) base;
-	_tmp0_ = ((FsoGsmAbstractModem*) self)->modem_port;
-	_tmp1_ = isi_transport_new (_tmp0_);
-	_tmp2_ = _tmp1_;
-	_tmp3_ = isi_channel_new (NOKIA_ISI_MODEM_ISI_CHANNEL_NAME, _tmp2_);
+	_tmp0_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = _tmp1_->name;
+	_tmp3_ = isi_transport_new (_tmp2_);
 	_tmp4_ = _tmp3_;
+	_tmp5_ = isi_channel_new (NOKIA_ISI_MODEM_ISI_CHANNEL_NAME, _tmp4_);
+	_tmp6_ = _tmp5_;
+	_g_object_unref0 (_tmp6_);
 	_g_object_unref0 (_tmp4_);
-	_g_object_unref0 (_tmp2_);
 }
 
 
@@ -944,58 +955,48 @@ static GObject * nokia_isi_modem_constructor (GType type, guint n_construct_prop
 	GObject * obj;
 	GObjectClass * parent_class;
 	NokiaIsiModem * self;
-	const gchar* _tmp0_;
+	FsoFrameworkTransportSpec* _tmp0_;
+	FsoFrameworkTransportSpec* _tmp1_;
 	const gchar* _tmp2_;
-	guint _tmp3_ = 0U;
-	FsoFrameworkSmartKeyFile* _tmp9_;
-	gboolean _tmp10_ = FALSE;
-	NokiaIsiModem* _tmp11_;
-	const gchar* _tmp12_;
+	FsoFrameworkSmartKeyFile* _tmp4_;
+	gboolean _tmp5_ = FALSE;
+	NokiaIsiModem* _tmp6_;
+	FsoFrameworkTransportSpec* _tmp7_;
+	FsoFrameworkTransportSpec* _tmp8_;
+	const gchar* _tmp9_;
+	GIsiCommModemAccess* _tmp10_;
+	GIsiCommModemAccess* _tmp11_;
+	GIsiModem* _tmp12_;
 	GIsiCommModemAccess* _tmp13_;
-	GIsiCommModemAccess* _tmp14_;
-	GIsiModem* _tmp15_;
-	GIsiCommModemAccess* _tmp16_;
 	parent_class = G_OBJECT_CLASS (nokia_isi_modem_parent_class);
 	obj = parent_class->constructor (type, n_construct_properties, construct_properties);
 	self = NOKIA_ISI_MODEM (obj);
-	_tmp0_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-	if (g_strcmp0 (_tmp0_, "phonet") != 0) {
-		FsoFrameworkLogger* _tmp1_;
-		_tmp1_ = ((FsoFrameworkAbstractObject*) self)->logger;
-		fso_framework_logger_critical (_tmp1_, "ISI: This modem plugin only supports the PHONET transport");
+	_tmp0_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = _tmp1_->type;
+	if (g_strcmp0 (_tmp2_, "phonet") != 0) {
+		FsoFrameworkLogger* _tmp3_;
+		_tmp3_ = ((FsoFrameworkAbstractObject*) self)->logger;
+		fso_framework_logger_critical (_tmp3_, "ISI: This modem plugin only supports the PHONET transport");
 		return obj;
 	}
-	_tmp2_ = ((FsoGsmAbstractModem*) self)->modem_port;
-	_tmp3_ = if_nametoindex (_tmp2_);
-	if (_tmp3_ == ((guint) 0)) {
-		FsoFrameworkLogger* _tmp4_;
-		const gchar* _tmp5_;
-		const gchar* _tmp6_ = NULL;
-		gchar* _tmp7_ = NULL;
-		gchar* _tmp8_;
-		_tmp4_ = ((FsoFrameworkAbstractObject*) self)->logger;
-		_tmp5_ = ((FsoGsmAbstractModem*) self)->modem_port;
-		_tmp6_ = string_to_string (_tmp5_);
-		_tmp7_ = g_strconcat ("Interface ", _tmp6_, " not available", NULL);
-		_tmp8_ = _tmp7_;
-		fso_framework_logger_critical (_tmp4_, _tmp8_);
-		_g_free0 (_tmp8_);
-	}
-	_tmp9_ = ((FsoFrameworkAbstractObject*) self)->config;
-	_tmp10_ = fso_framework_smart_key_file_boolValue (_tmp9_, NOKIA_ISI_MODULE_NAME, "handle_modem_power", TRUE);
-	self->priv->handle_modem_power = _tmp10_;
-	_tmp11_ = _g_object_ref0 (self);
+	_tmp4_ = ((FsoFrameworkAbstractObject*) self)->config;
+	_tmp5_ = fso_framework_smart_key_file_boolValue (_tmp4_, NOKIA_ISI_MODULE_NAME, "handle_modem_power", TRUE);
+	self->priv->handle_modem_power = _tmp5_;
+	_tmp6_ = _g_object_ref0 (self);
 	_g_object_unref0 (nokia_isi_modem);
-	nokia_isi_modem = _tmp11_;
-	_tmp12_ = ((FsoGsmAbstractModem*) self)->modem_port;
-	_tmp13_ = gisi_comm_modem_access_new (_tmp12_);
+	nokia_isi_modem = _tmp6_;
+	_tmp7_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+	_tmp8_ = _tmp7_;
+	_tmp9_ = _tmp8_->name;
+	_tmp10_ = gisi_comm_modem_access_new (_tmp9_);
 	_gisi_comm_modem_access_unref0 (nokia_isi_isimodem);
-	nokia_isi_isimodem = _tmp13_;
-	_tmp14_ = nokia_isi_isimodem;
-	_tmp15_ = _tmp14_->m;
-	g_isi_modem_set_flags (_tmp15_, GISI_MODEM_FLAG_USE_LEGACY_SUBSCRIBE);
-	_tmp16_ = nokia_isi_isimodem;
-	g_signal_connect_object (_tmp16_, "netlink-changed", (GCallback) _nokia_isi_modem_onNetlinkChanged_gisi_comm_modem_access_netlink_changed, self, 0);
+	nokia_isi_isimodem = _tmp10_;
+	_tmp11_ = nokia_isi_isimodem;
+	_tmp12_ = _tmp11_->m;
+	g_isi_modem_set_flags (_tmp12_, GISI_MODEM_FLAG_USE_LEGACY_SUBSCRIBE);
+	_tmp13_ = nokia_isi_isimodem;
+	g_signal_connect_object (_tmp13_, "netlink-changed", (GCallback) _nokia_isi_modem_onNetlinkChanged_gisi_comm_modem_access_netlink_changed, self, 0);
 	nokia_isi_modem_gpio_probe (self);
 	return obj;
 }

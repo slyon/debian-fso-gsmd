@@ -630,6 +630,8 @@ typedef struct _FsoGsmPlusCREG FsoGsmPlusCREG;
 typedef struct _FsoGsmPlusCREGClass FsoGsmPlusCREGClass;
 typedef struct _FsoGsmPlusCREGPrivate FsoGsmPlusCREGPrivate;
 
+#define FSO_GSM_PLUS_CREG_TYPE_MODE (fso_gsm_plus_creg_mode_get_type ())
+
 #define FSO_GSM_TYPE_PLUS_CRSM (fso_gsm_plus_crsm_get_type ())
 #define FSO_GSM_PLUS_CRSM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PLUS_CRSM, FsoGsmPlusCRSM))
 #define FSO_GSM_PLUS_CRSM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_PLUS_CRSM, FsoGsmPlusCRSMClass))
@@ -1480,7 +1482,6 @@ struct _FsoGsmPlusCOPS {
 	gint mode;
 	gchar* oper;
 	gchar* act;
-	gint status;
 	FreeSmartphoneGSMNetworkProvider* providers;
 	gint providers_length1;
 };
@@ -1580,6 +1581,12 @@ struct _FsoGsmPlusCREG {
 struct _FsoGsmPlusCREGClass {
 	FsoGsmAbstractAtCommandClass parent_class;
 };
+
+typedef enum  {
+	FSO_GSM_PLUS_CREG_MODE_DISABLE = 0,
+	FSO_GSM_PLUS_CREG_MODE_ENABLE_WITH_NETORK_REGISTRATION = 1,
+	FSO_GSM_PLUS_CREG_MODE_ENABLE_WITH_NETORK_REGISTRATION_AND_LOCATION = 2
+} FsoGsmPlusCREGMode;
 
 struct _FsoGsmPlusCRSM {
 	FsoGsmAbstractAtCommand parent_instance;
@@ -2043,8 +2050,8 @@ GType fso_gsm_plus_cmgl_mode_get_type (void) G_GNUC_CONST;
 FsoGsmPlusCMGL* fso_gsm_plus_cmgl_new (void);
 FsoGsmPlusCMGL* fso_gsm_plus_cmgl_construct (GType object_type);
 static void fso_gsm_plus_cmgl_real_parseMulti (FsoGsmAbstractAtCommand* base, gchar** response, int response_length1, GError** error);
-WrapSms* wrap_sms_new (structsms* message, gint index);
-WrapSms* wrap_sms_construct (GType object_type, structsms* message, gint index);
+WrapSms* wrap_sms_new (struct sms* message, gint index);
+WrapSms* wrap_sms_construct (GType object_type, struct sms* message, gint index);
 gchar* fso_gsm_plus_cmgl_issue (FsoGsmPlusCMGL* self, FsoGsmPlusCMGLMode mode);
 static void fso_gsm_plus_cmgl_finalize (GObject* obj);
 GType fso_gsm_plus_cmgr_get_type (void) G_GNUC_CONST;
@@ -2248,12 +2255,12 @@ GType fso_gsm_plus_creg_get_type (void) G_GNUC_CONST;
 enum  {
 	FSO_GSM_PLUS_CREG_DUMMY_PROPERTY
 };
+GType fso_gsm_plus_creg_mode_get_type (void) G_GNUC_CONST;
 FsoGsmPlusCREG* fso_gsm_plus_creg_new (void);
 FsoGsmPlusCREG* fso_gsm_plus_creg_construct (GType object_type);
 static void fso_gsm_plus_creg_real_parse (FsoGsmAbstractAtCommand* base, const gchar* response, GError** error);
 gchar* fso_gsm_plus_creg_query (FsoGsmPlusCREG* self);
-gchar* fso_gsm_plus_creg_issue (FsoGsmPlusCREG* self, gint mode);
-gchar* fso_gsm_plus_creg_queryFull (FsoGsmPlusCREG* self, gint restoreMode);
+gchar* fso_gsm_plus_creg_issue (FsoGsmPlusCREG* self, FsoGsmPlusCREGMode mode);
 static void fso_gsm_plus_creg_finalize (GObject* obj);
 GType fso_gsm_plus_crsm_get_type (void) G_GNUC_CONST;
 enum  {
@@ -2341,7 +2348,6 @@ GType fso_gsm_plus_vts_get_type (void) G_GNUC_CONST;
 enum  {
 	FSO_GSM_PLUS_VTS_DUMMY_PROPERTY
 };
-#define FSO_GSM_PLUS_VTS_DTMF_VALID_CHARS "0123456789ABC+#"
 gchar* fso_gsm_plus_vts_issue (FsoGsmPlusVTS* self, const gchar* tones);
 FsoGsmPlusVTS* fso_gsm_plus_vts_new (void);
 FsoGsmPlusVTS* fso_gsm_plus_vts_construct (GType object_type);
@@ -4644,8 +4650,8 @@ FsoGsmPlusCMGL* fso_gsm_plus_cmgl_new (void) {
 }
 
 
-static structsms* sms_newFromHexPdu (const gchar* hexpdu, gint tpdulen) {
-	structsms* result = NULL;
+static struct sms* sms_newFromHexPdu (const gchar* hexpdu, gint tpdulen) {
+	struct sms* result = NULL;
 	glong items_written;
 	gchar* _tmp0_ = NULL;
 	gchar* binpdu;
@@ -4656,12 +4662,12 @@ static structsms* sms_newFromHexPdu (const gchar* hexpdu, gint tpdulen) {
 	gint _tmp2__length1;
 	glong _tmp3_ = 0L;
 	glong _tmp4_;
-	structsms* _tmp5_;
-	structsms* sms;
+	struct sms* _tmp5_;
+	struct sms* sms;
 	gchar* _tmp6_;
 	gint _tmp6__length1;
 	gint _tmp7_;
-	structsms* _tmp8_;
+	struct sms* _tmp8_;
 	gboolean _tmp9_ = FALSE;
 	gboolean res;
 	gboolean _tmp10_;
@@ -4702,7 +4708,7 @@ static structsms* sms_newFromHexPdu (const gchar* hexpdu, gint tpdulen) {
 		_tmp15_ = string_to_string (_tmp14_);
 		_tmp16_ = g_strconcat ("Sms.Message::newFromHexPdu: could not decode message w/ tpdulen ", _tmp13_, " and hexpdu ", _tmp15_, NULL);
 		_tmp17_ = _tmp16_;
-		g_warning ("fsogsm3rdparty.vapi:599: %s", _tmp17_);
+		g_warning ("fsogsm3rdparty.vapi:602: %s", _tmp17_);
 		_g_free0 (_tmp17_);
 		_g_free0 (_tmp13_);
 		result = NULL;
@@ -4784,9 +4790,9 @@ static void fso_gsm_plus_cmgl_real_parseMulti (FsoGsmAbstractAtCommand* base, gc
 					gint _tmp12_;
 					const gchar* _tmp13_;
 					gint _tmp14_;
-					structsms* _tmp15_ = NULL;
-					structsms* sms;
-					structsms* _tmp16_;
+					struct sms* _tmp15_ = NULL;
+					struct sms* sms;
+					struct sms* _tmp16_;
 					_tmp11_ = response;
 					_tmp11__length1 = response_length1;
 					_tmp12_ = i;
@@ -4797,7 +4803,7 @@ static void fso_gsm_plus_cmgl_real_parseMulti (FsoGsmAbstractAtCommand* base, gc
 					_tmp16_ = sms;
 					if (_tmp16_ != NULL) {
 						GeeArrayList* _tmp17_;
-						structsms* _tmp18_;
+						struct sms* _tmp18_;
 						gint _tmp19_ = 0;
 						WrapSms* _tmp20_;
 						WrapSms* _tmp21_;
@@ -6409,9 +6415,9 @@ static void fso_gsm_plus_cops_real_parseTest (FsoGsmAbstractAtCommand* base, con
 				_tmp9_ = fso_gsm_abstract_at_command_to_int ((FsoGsmAbstractAtCommand*) self, "status");
 				_tmp10_ = fso_gsm_constants_networkProviderStatusToString (_tmp8_, _tmp9_);
 				_tmp11_ = _tmp10_;
-				_tmp12_ = fso_gsm_abstract_at_command_to_string ((FsoGsmAbstractAtCommand*) self, "longname");
+				_tmp12_ = fso_gsm_abstract_at_command_to_string ((FsoGsmAbstractAtCommand*) self, "shortname");
 				_tmp13_ = _tmp12_;
-				_tmp14_ = fso_gsm_abstract_at_command_to_string ((FsoGsmAbstractAtCommand*) self, "shortname");
+				_tmp14_ = fso_gsm_abstract_at_command_to_string ((FsoGsmAbstractAtCommand*) self, "longname");
 				_tmp15_ = _tmp14_;
 				_tmp16_ = fso_gsm_abstract_at_command_to_string ((FsoGsmAbstractAtCommand*) self, "mccmnc");
 				_tmp17_ = _tmp16_;
@@ -7747,6 +7753,18 @@ GType fso_gsm_plus_cpwd_get_type (void) {
 }
 
 
+GType fso_gsm_plus_creg_mode_get_type (void) {
+	static volatile gsize fso_gsm_plus_creg_mode_type_id__volatile = 0;
+	if (g_once_init_enter (&fso_gsm_plus_creg_mode_type_id__volatile)) {
+		static const GEnumValue values[] = {{FSO_GSM_PLUS_CREG_MODE_DISABLE, "FSO_GSM_PLUS_CREG_MODE_DISABLE", "disable"}, {FSO_GSM_PLUS_CREG_MODE_ENABLE_WITH_NETORK_REGISTRATION, "FSO_GSM_PLUS_CREG_MODE_ENABLE_WITH_NETORK_REGISTRATION", "enable-with-netork-registration"}, {FSO_GSM_PLUS_CREG_MODE_ENABLE_WITH_NETORK_REGISTRATION_AND_LOCATION, "FSO_GSM_PLUS_CREG_MODE_ENABLE_WITH_NETORK_REGISTRATION_AND_LOCATION", "enable-with-netork-registration-and-location"}, {0, NULL, NULL}};
+		GType fso_gsm_plus_creg_mode_type_id;
+		fso_gsm_plus_creg_mode_type_id = g_enum_register_static ("FsoGsmPlusCREGMode", values);
+		g_once_init_leave (&fso_gsm_plus_creg_mode_type_id__volatile, fso_gsm_plus_creg_mode_type_id);
+	}
+	return fso_gsm_plus_creg_mode_type_id__volatile;
+}
+
+
 FsoGsmPlusCREG* fso_gsm_plus_creg_construct (GType object_type) {
 	FsoGsmPlusCREG * self = NULL;
 	gchar* _tmp2_;
@@ -7845,40 +7863,14 @@ gchar* fso_gsm_plus_creg_query (FsoGsmPlusCREG* self) {
 }
 
 
-gchar* fso_gsm_plus_creg_issue (FsoGsmPlusCREG* self, gint mode) {
+gchar* fso_gsm_plus_creg_issue (FsoGsmPlusCREG* self, FsoGsmPlusCREGMode mode) {
 	gchar* result = NULL;
-	gint _tmp0_;
+	FsoGsmPlusCREGMode _tmp0_;
 	gchar* _tmp1_ = NULL;
-	gchar* _tmp2_;
-	gchar* _tmp3_ = NULL;
-	gchar* _tmp4_;
 	g_return_val_if_fail (self != NULL, NULL);
 	_tmp0_ = mode;
-	_tmp1_ = g_strdup_printf ("%i", _tmp0_);
-	_tmp2_ = _tmp1_;
-	_tmp3_ = g_strconcat ("+CREG=", _tmp2_, NULL);
-	_tmp4_ = _tmp3_;
-	_g_free0 (_tmp2_);
-	result = _tmp4_;
-	return result;
-}
-
-
-gchar* fso_gsm_plus_creg_queryFull (FsoGsmPlusCREG* self, gint restoreMode) {
-	gchar* result = NULL;
-	gint _tmp0_;
-	gchar* _tmp1_ = NULL;
-	gchar* _tmp2_;
-	gchar* _tmp3_ = NULL;
-	gchar* _tmp4_;
-	g_return_val_if_fail (self != NULL, NULL);
-	_tmp0_ = restoreMode;
-	_tmp1_ = g_strdup_printf ("%i", _tmp0_);
-	_tmp2_ = _tmp1_;
-	_tmp3_ = g_strconcat ("+CREG=2;+CREG?;+CREG=", _tmp2_, NULL);
-	_tmp4_ = _tmp3_;
-	_g_free0 (_tmp2_);
-	result = _tmp4_;
+	_tmp1_ = g_strdup_printf ("+CREG=%i", (gint) _tmp0_);
+	result = _tmp1_;
 	return result;
 }
 
@@ -8847,17 +8839,89 @@ GType fso_gsm_plus_gcap_get_type (void) {
 }
 
 
+static gchar string_get (const gchar* self, glong index) {
+	gchar result = '\0';
+	glong _tmp0_;
+	gchar _tmp1_;
+	g_return_val_if_fail (self != NULL, '\0');
+	_tmp0_ = index;
+	_tmp1_ = ((gchar*) self)[_tmp0_];
+	result = _tmp1_;
+	return result;
+}
+
+
 gchar* fso_gsm_plus_vts_issue (FsoGsmPlusVTS* self, const gchar* tones) {
 	gchar* result = NULL;
 	const gchar* _tmp0_;
-	const gchar* _tmp1_ = NULL;
+	gchar _tmp1_ = '\0';
 	gchar* _tmp2_ = NULL;
+	gchar* _tmp3_;
+	gchar* _tmp4_ = NULL;
+	gchar* _tmp5_;
+	gchar* command;
 	g_return_val_if_fail (self != NULL, NULL);
 	g_return_val_if_fail (tones != NULL, NULL);
 	_tmp0_ = tones;
-	_tmp1_ = string_to_string (_tmp0_);
-	_tmp2_ = g_strconcat ("+VTS=", _tmp1_, NULL);
-	result = _tmp2_;
+	_tmp1_ = string_get (_tmp0_, (glong) 0);
+	_tmp2_ = g_strdup_printf ("%c", _tmp1_);
+	_tmp3_ = _tmp2_;
+	_tmp4_ = g_strconcat ("+VTS=", _tmp3_, NULL);
+	_tmp5_ = _tmp4_;
+	_g_free0 (_tmp3_);
+	command = _tmp5_;
+	{
+		gint n;
+		n = 1;
+		{
+			gboolean _tmp6_;
+			_tmp6_ = TRUE;
+			while (TRUE) {
+				gboolean _tmp7_;
+				gint _tmp9_;
+				const gchar* _tmp10_;
+				gint _tmp11_;
+				gint _tmp12_;
+				const gchar* _tmp13_;
+				const gchar* _tmp14_;
+				gint _tmp15_;
+				gchar _tmp16_ = '\0';
+				gchar* _tmp17_ = NULL;
+				gchar* _tmp18_;
+				gchar* _tmp19_ = NULL;
+				gchar* _tmp20_;
+				gchar* _tmp21_;
+				_tmp7_ = _tmp6_;
+				if (!_tmp7_) {
+					gint _tmp8_;
+					_tmp8_ = n;
+					n = _tmp8_ + 1;
+				}
+				_tmp6_ = FALSE;
+				_tmp9_ = n;
+				_tmp10_ = tones;
+				_tmp11_ = strlen (_tmp10_);
+				_tmp12_ = _tmp11_;
+				if (!(_tmp9_ < _tmp12_)) {
+					break;
+				}
+				_tmp13_ = command;
+				_tmp14_ = tones;
+				_tmp15_ = n;
+				_tmp16_ = string_get (_tmp14_, (glong) _tmp15_);
+				_tmp17_ = g_strdup_printf ("%c", _tmp16_);
+				_tmp18_ = _tmp17_;
+				_tmp19_ = g_strconcat (";+VTS=", _tmp18_, NULL);
+				_tmp20_ = _tmp19_;
+				_tmp21_ = g_strconcat (_tmp13_, _tmp20_, NULL);
+				_g_free0 (command);
+				command = _tmp21_;
+				_g_free0 (_tmp20_);
+				_g_free0 (_tmp18_);
+			}
+		}
+	}
+	result = command;
 	return result;
 }
 

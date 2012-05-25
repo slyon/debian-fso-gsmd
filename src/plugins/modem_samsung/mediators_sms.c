@@ -42,19 +42,6 @@ typedef struct _SamsungSmsRetrieveTextMessagesPrivate SamsungSmsRetrieveTextMess
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
 typedef struct _SamsungSmsRetrieveTextMessagesRunData SamsungSmsRetrieveTextMessagesRunData;
 
-#define TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE (samsung_sms_get_size_for_text_message_get_type ())
-#define SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE, SamsungSmsGetSizeForTextMessage))
-#define SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE, SamsungSmsGetSizeForTextMessageClass))
-#define IS_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE))
-#define IS_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE))
-#define SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE, SamsungSmsGetSizeForTextMessageClass))
-
-typedef struct _SamsungSmsGetSizeForTextMessage SamsungSmsGetSizeForTextMessage;
-typedef struct _SamsungSmsGetSizeForTextMessageClass SamsungSmsGetSizeForTextMessageClass;
-typedef struct _SamsungSmsGetSizeForTextMessagePrivate SamsungSmsGetSizeForTextMessagePrivate;
-#define _g_free0(var) (var = (g_free (var), NULL))
-typedef struct _SamsungSmsGetSizeForTextMessageRunData SamsungSmsGetSizeForTextMessageRunData;
-
 #define TYPE_SAMSUNG_SMS_SEND_TEXT_MESSAGE (samsung_sms_send_text_message_get_type ())
 #define SAMSUNG_SMS_SEND_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_SAMSUNG_SMS_SEND_TEXT_MESSAGE, SamsungSmsSendTextMessage))
 #define SAMSUNG_SMS_SEND_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_SAMSUNG_SMS_SEND_TEXT_MESSAGE, SamsungSmsSendTextMessageClass))
@@ -65,6 +52,7 @@ typedef struct _SamsungSmsGetSizeForTextMessageRunData SamsungSmsGetSizeForTextM
 typedef struct _SamsungSmsSendTextMessage SamsungSmsSendTextMessage;
 typedef struct _SamsungSmsSendTextMessageClass SamsungSmsSendTextMessageClass;
 typedef struct _SamsungSmsSendTextMessagePrivate SamsungSmsSendTextMessagePrivate;
+#define _g_free0(var) (var = (g_free (var), NULL))
 typedef struct _SamsungSmsSendTextMessageRunData SamsungSmsSendTextMessageRunData;
 
 struct _SamsungSmsRetrieveTextMessages {
@@ -82,26 +70,6 @@ struct _SamsungSmsRetrieveTextMessagesRunData {
 	GAsyncResult* _res_;
 	GSimpleAsyncResult* _async_result;
 	SamsungSmsRetrieveTextMessages* self;
-	GError* _tmp0_;
-	GError * _inner_error_;
-};
-
-struct _SamsungSmsGetSizeForTextMessage {
-	FsoGsmSmsGetSizeForTextMessage parent_instance;
-	SamsungSmsGetSizeForTextMessagePrivate * priv;
-};
-
-struct _SamsungSmsGetSizeForTextMessageClass {
-	FsoGsmSmsGetSizeForTextMessageClass parent_class;
-};
-
-struct _SamsungSmsGetSizeForTextMessageRunData {
-	int _state_;
-	GObject* _source_object_;
-	GAsyncResult* _res_;
-	GSimpleAsyncResult* _async_result;
-	SamsungSmsGetSizeForTextMessage* self;
-	gchar* contents;
 	GError* _tmp0_;
 	GError * _inner_error_;
 };
@@ -131,8 +99,6 @@ struct _SamsungSmsSendTextMessageRunData {
 
 static gpointer samsung_sms_retrieve_text_messages_parent_class = NULL;
 static GType samsung_sms_retrieve_text_messages_type_id = 0;
-static gpointer samsung_sms_get_size_for_text_message_parent_class = NULL;
-static GType samsung_sms_get_size_for_text_message_type_id = 0;
 static gpointer samsung_sms_send_text_message_parent_class = NULL;
 static GType samsung_sms_send_text_message_type_id = 0;
 
@@ -146,16 +112,6 @@ static void samsung_sms_retrieve_text_messages_real_run (FsoGsmSmsRetrieveTextMe
 static gboolean samsung_sms_retrieve_text_messages_real_run_co (SamsungSmsRetrieveTextMessagesRunData* _data_);
 SamsungSmsRetrieveTextMessages* samsung_sms_retrieve_text_messages_new (void);
 SamsungSmsRetrieveTextMessages* samsung_sms_retrieve_text_messages_construct (GType object_type);
-GType samsung_sms_get_size_for_text_message_get_type (void) G_GNUC_CONST;
-GType samsung_sms_get_size_for_text_message_register_type (GTypeModule * module);
-enum  {
-	SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE_DUMMY_PROPERTY
-};
-static void samsung_sms_get_size_for_text_message_real_run_data_free (gpointer _data);
-static void samsung_sms_get_size_for_text_message_real_run (FsoGsmSmsGetSizeForTextMessage* base, const gchar* contents, GAsyncReadyCallback _callback_, gpointer _user_data_);
-static gboolean samsung_sms_get_size_for_text_message_real_run_co (SamsungSmsGetSizeForTextMessageRunData* _data_);
-SamsungSmsGetSizeForTextMessage* samsung_sms_get_size_for_text_message_new (void);
-SamsungSmsGetSizeForTextMessage* samsung_sms_get_size_for_text_message_construct (GType object_type);
 GType samsung_sms_send_text_message_get_type (void) G_GNUC_CONST;
 GType samsung_sms_send_text_message_register_type (GTypeModule * module);
 enum  {
@@ -274,113 +230,6 @@ GType samsung_sms_retrieve_text_messages_register_type (GTypeModule * module) {
 	static const GTypeInfo g_define_type_info = { sizeof (SamsungSmsRetrieveTextMessagesClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) samsung_sms_retrieve_text_messages_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SamsungSmsRetrieveTextMessages), 0, (GInstanceInitFunc) samsung_sms_retrieve_text_messages_instance_init, NULL };
 	samsung_sms_retrieve_text_messages_type_id = g_type_module_register_type (module, FSO_GSM_TYPE_SMS_RETRIEVE_TEXT_MESSAGES, "SamsungSmsRetrieveTextMessages", &g_define_type_info, 0);
 	return samsung_sms_retrieve_text_messages_type_id;
-}
-
-
-static void samsung_sms_get_size_for_text_message_real_run_data_free (gpointer _data) {
-	SamsungSmsGetSizeForTextMessageRunData* _data_;
-	_data_ = _data;
-	_g_free0 (_data_->contents);
-	_g_object_unref0 (_data_->self);
-	g_slice_free (SamsungSmsGetSizeForTextMessageRunData, _data_);
-}
-
-
-static void samsung_sms_get_size_for_text_message_real_run (FsoGsmSmsGetSizeForTextMessage* base, const gchar* contents, GAsyncReadyCallback _callback_, gpointer _user_data_) {
-	SamsungSmsGetSizeForTextMessage * self;
-	SamsungSmsGetSizeForTextMessageRunData* _data_;
-	SamsungSmsGetSizeForTextMessage* _tmp0_;
-	const gchar* _tmp1_;
-	gchar* _tmp2_;
-	self = (SamsungSmsGetSizeForTextMessage*) base;
-	_data_ = g_slice_new0 (SamsungSmsGetSizeForTextMessageRunData);
-	_data_->_async_result = g_simple_async_result_new (G_OBJECT (self), _callback_, _user_data_, samsung_sms_get_size_for_text_message_real_run);
-	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, samsung_sms_get_size_for_text_message_real_run_data_free);
-	_tmp0_ = _g_object_ref0 (self);
-	_data_->self = _tmp0_;
-	_tmp1_ = contents;
-	_tmp2_ = g_strdup (_tmp1_);
-	_data_->contents = _tmp2_;
-	samsung_sms_get_size_for_text_message_real_run_co (_data_);
-}
-
-
-static void samsung_sms_get_size_for_text_message_real_run_finish (FsoGsmSmsGetSizeForTextMessage* base, GAsyncResult* _res_, GError** error) {
-	SamsungSmsGetSizeForTextMessageRunData* _data_;
-	if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (_res_), error)) {
-		return;
-	}
-	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
-}
-
-
-static gboolean samsung_sms_get_size_for_text_message_real_run_co (SamsungSmsGetSizeForTextMessageRunData* _data_) {
-	switch (_data_->_state_) {
-		case 0:
-		goto _state_0;
-		default:
-		g_assert_not_reached ();
-	}
-	_state_0:
-	_data_->_tmp0_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_UNSUPPORTED, "Not yet implemented!");
-	_data_->_inner_error_ = _data_->_tmp0_;
-	if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
-		g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
-		g_error_free (_data_->_inner_error_);
-		if (_data_->_state_ == 0) {
-			g_simple_async_result_complete_in_idle (_data_->_async_result);
-		} else {
-			g_simple_async_result_complete (_data_->_async_result);
-		}
-		g_object_unref (_data_->_async_result);
-		return FALSE;
-	} else {
-		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
-		g_clear_error (&_data_->_inner_error_);
-		return FALSE;
-	}
-	if (_data_->_state_ == 0) {
-		g_simple_async_result_complete_in_idle (_data_->_async_result);
-	} else {
-		g_simple_async_result_complete (_data_->_async_result);
-	}
-	g_object_unref (_data_->_async_result);
-	return FALSE;
-}
-
-
-SamsungSmsGetSizeForTextMessage* samsung_sms_get_size_for_text_message_construct (GType object_type) {
-	SamsungSmsGetSizeForTextMessage * self = NULL;
-	self = (SamsungSmsGetSizeForTextMessage*) fso_gsm_sms_get_size_for_text_message_construct (object_type);
-	return self;
-}
-
-
-SamsungSmsGetSizeForTextMessage* samsung_sms_get_size_for_text_message_new (void) {
-	return samsung_sms_get_size_for_text_message_construct (TYPE_SAMSUNG_SMS_GET_SIZE_FOR_TEXT_MESSAGE);
-}
-
-
-static void samsung_sms_get_size_for_text_message_class_init (SamsungSmsGetSizeForTextMessageClass * klass) {
-	samsung_sms_get_size_for_text_message_parent_class = g_type_class_peek_parent (klass);
-	FSO_GSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS (klass)->run = samsung_sms_get_size_for_text_message_real_run;
-	FSO_GSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS (klass)->run_finish = samsung_sms_get_size_for_text_message_real_run_finish;
-}
-
-
-static void samsung_sms_get_size_for_text_message_instance_init (SamsungSmsGetSizeForTextMessage * self) {
-}
-
-
-GType samsung_sms_get_size_for_text_message_get_type (void) {
-	return samsung_sms_get_size_for_text_message_type_id;
-}
-
-
-GType samsung_sms_get_size_for_text_message_register_type (GTypeModule * module) {
-	static const GTypeInfo g_define_type_info = { sizeof (SamsungSmsGetSizeForTextMessageClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) samsung_sms_get_size_for_text_message_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (SamsungSmsGetSizeForTextMessage), 0, (GInstanceInitFunc) samsung_sms_get_size_for_text_message_instance_init, NULL };
-	samsung_sms_get_size_for_text_message_type_id = g_type_module_register_type (module, FSO_GSM_TYPE_SMS_GET_SIZE_FOR_TEXT_MESSAGE, "SamsungSmsGetSizeForTextMessage", &g_define_type_info, 0);
-	return samsung_sms_get_size_for_text_message_type_id;
 }
 
 

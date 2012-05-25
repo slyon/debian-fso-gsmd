@@ -581,14 +581,14 @@ static gchar* samsung_sms_handler_real_repr (FsoFrameworkAbstractObject* base) {
 	SamsungSmsHandler * self;
 	gchar* result = NULL;
 	gchar* _tmp0_ = NULL;
-	FsoGsmSmsStorage* _tmp1_;
-	FsoGsmSmsStorage* _tmp2_;
+	FsoGsmISmsStorage* _tmp1_;
+	FsoGsmISmsStorage* _tmp2_;
 	self = (SamsungSmsHandler*) base;
 	_tmp1_ = fso_gsm_sms_handler_get_storage ((FsoGsmSmsHandler*) self);
 	_tmp2_ = _tmp1_;
 	if (_tmp2_ != NULL) {
-		FsoGsmSmsStorage* _tmp3_;
-		FsoGsmSmsStorage* _tmp4_;
+		FsoGsmISmsStorage* _tmp3_;
+		FsoGsmISmsStorage* _tmp4_;
 		gchar* _tmp5_ = NULL;
 		_tmp3_ = fso_gsm_sms_handler_get_storage ((FsoGsmSmsHandler*) self);
 		_tmp4_ = _tmp3_;

@@ -29,6 +29,8 @@
 #include <freesmartphone.h>
 #include <fsotransport.h>
 #include <gee.h>
+#include <smsutil.h>
+#include <conversions.h>
 #include <gobject/gvaluecollector.h>
 
 
@@ -49,6 +51,8 @@ typedef struct _FsoGsmChannel FsoGsmChannel;
 typedef struct _FsoGsmChannelIface FsoGsmChannelIface;
 
 #define FSO_GSM_MODEM_TYPE_STATUS (fso_gsm_modem_status_get_type ())
+
+#define FSO_GSM_MODEM_TYPE_NETWORK_STATUS (fso_gsm_modem_network_status_get_type ())
 
 #define FSO_GSM_TYPE_AT_COMMAND_SEQUENCE (fso_gsm_at_command_sequence_get_type ())
 #define FSO_GSM_AT_COMMAND_SEQUENCE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_AT_COMMAND_SEQUENCE, FsoGsmAtCommandSequence))
@@ -124,15 +128,13 @@ typedef struct _FsoGsmSmsHandlerIface FsoGsmSmsHandlerIface;
 typedef struct _WrapHexPdu WrapHexPdu;
 typedef struct _WrapHexPduClass WrapHexPduClass;
 
-#define FSO_GSM_TYPE_SMS_STORAGE (fso_gsm_sms_storage_get_type ())
-#define FSO_GSM_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorage))
-#define FSO_GSM_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
-#define FSO_GSM_IS_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_SMS_STORAGE))
-#define FSO_GSM_IS_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_SMS_STORAGE))
-#define FSO_GSM_SMS_STORAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
+#define FSO_GSM_TYPE_ISMS_STORAGE (fso_gsm_isms_storage_get_type ())
+#define FSO_GSM_ISMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ISMS_STORAGE, FsoGsmISmsStorage))
+#define FSO_GSM_IS_ISMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ISMS_STORAGE))
+#define FSO_GSM_ISMS_STORAGE_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_ISMS_STORAGE, FsoGsmISmsStorageIface))
 
-typedef struct _FsoGsmSmsStorage FsoGsmSmsStorage;
-typedef struct _FsoGsmSmsStorageClass FsoGsmSmsStorageClass;
+typedef struct _FsoGsmISmsStorage FsoGsmISmsStorage;
+typedef struct _FsoGsmISmsStorageIface FsoGsmISmsStorageIface;
 
 #define FSO_GSM_TYPE_PHONEBOOK_HANDLER (fso_gsm_phonebook_handler_get_type ())
 #define FSO_GSM_PHONEBOOK_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PHONEBOOK_HANDLER, FsoGsmPhonebookHandler))
@@ -160,15 +162,23 @@ typedef struct _FsoGsmPhonebookStorageClass FsoGsmPhonebookStorageClass;
 typedef struct _FsoGsmWatchDog FsoGsmWatchDog;
 typedef struct _FsoGsmWatchDogIface FsoGsmWatchDogIface;
 
-#define FSO_GSM_TYPE_PDP_HANDLER (fso_gsm_pdp_handler_get_type ())
-#define FSO_GSM_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandler))
-#define FSO_GSM_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
-#define FSO_GSM_IS_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_PDP_HANDLER))
-#define FSO_GSM_IS_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_PDP_HANDLER))
-#define FSO_GSM_PDP_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
+#define FSO_GSM_TYPE_IPDP_HANDLER (fso_gsm_ipdp_handler_get_type ())
+#define FSO_GSM_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandler))
+#define FSO_GSM_IS_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_IPDP_HANDLER))
+#define FSO_GSM_IPDP_HANDLER_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandlerIface))
 
-typedef struct _FsoGsmPdpHandler FsoGsmPdpHandler;
-typedef struct _FsoGsmPdpHandlerClass FsoGsmPdpHandlerClass;
+typedef struct _FsoGsmIPdpHandler FsoGsmIPdpHandler;
+typedef struct _FsoGsmIPdpHandlerIface FsoGsmIPdpHandlerIface;
+
+#define FSO_GSM_TYPE_ROUTE_INFO (fso_gsm_route_info_get_type ())
+#define FSO_GSM_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfo))
+#define FSO_GSM_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
+#define FSO_GSM_IS_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ROUTE_INFO))
+#define FSO_GSM_IS_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_ROUTE_INFO))
+#define FSO_GSM_ROUTE_INFO_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
+
+typedef struct _FsoGsmRouteInfo FsoGsmRouteInfo;
+typedef struct _FsoGsmRouteInfoClass FsoGsmRouteInfoClass;
 
 #define FSO_GSM_TYPE_PHONEBOOK_PARAMS (fso_gsm_phonebook_params_get_type ())
 #define FSO_GSM_PHONEBOOK_PARAMS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PHONEBOOK_PARAMS, FsoGsmPhonebookParams))
@@ -238,6 +248,7 @@ typedef struct _FsoGsmUnsolicitedResponseHandlerIface FsoGsmUnsolicitedResponseH
 
 typedef struct _FsoGsmLowLevel FsoGsmLowLevel;
 typedef struct _FsoGsmLowLevelIface FsoGsmLowLevelIface;
+#define _fso_framework_transport_spec_unref0(var) ((var == NULL) ? NULL : (var = (fso_framework_transport_spec_unref (var), NULL)))
 
 #define FSO_GSM_TYPE_NULL_LOW_LEVEL (fso_gsm_null_low_level_get_type ())
 #define FSO_GSM_NULL_LOW_LEVEL(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_NULL_LOW_LEVEL, FsoGsmNullLowLevel))
@@ -248,6 +259,26 @@ typedef struct _FsoGsmLowLevelIface FsoGsmLowLevelIface;
 
 typedef struct _FsoGsmNullLowLevel FsoGsmNullLowLevel;
 typedef struct _FsoGsmNullLowLevelClass FsoGsmNullLowLevelClass;
+
+#define FSO_GSM_TYPE_NULL_PDP_HANDLER (fso_gsm_null_pdp_handler_get_type ())
+#define FSO_GSM_NULL_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_NULL_PDP_HANDLER, FsoGsmNullPdpHandler))
+#define FSO_GSM_NULL_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_NULL_PDP_HANDLER, FsoGsmNullPdpHandlerClass))
+#define FSO_GSM_IS_NULL_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_NULL_PDP_HANDLER))
+#define FSO_GSM_IS_NULL_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_NULL_PDP_HANDLER))
+#define FSO_GSM_NULL_PDP_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_NULL_PDP_HANDLER, FsoGsmNullPdpHandlerClass))
+
+typedef struct _FsoGsmNullPdpHandler FsoGsmNullPdpHandler;
+typedef struct _FsoGsmNullPdpHandlerClass FsoGsmNullPdpHandlerClass;
+
+#define FSO_GSM_TYPE_PDP_HANDLER (fso_gsm_pdp_handler_get_type ())
+#define FSO_GSM_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandler))
+#define FSO_GSM_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
+#define FSO_GSM_IS_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_PDP_HANDLER))
+#define FSO_GSM_IS_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_PDP_HANDLER))
+#define FSO_GSM_PDP_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
+
+typedef struct _FsoGsmPdpHandler FsoGsmPdpHandler;
+typedef struct _FsoGsmPdpHandlerClass FsoGsmPdpHandlerClass;
 #define _fso_gsm_at_command_sequence_unref0(var) ((var == NULL) ? NULL : (var = (fso_gsm_at_command_sequence_unref (var), NULL)))
 typedef struct _fso_gsm_abstract_modem_checkChannelsForHangupData fso_gsm_abstract_modem_checkChannelsForHangupData;
 
@@ -291,6 +322,16 @@ typedef struct _FsoGsmAbstractCallHandlerClass FsoGsmAbstractCallHandlerClass;
 typedef struct _FsoGsmGenericAtCallHandler FsoGsmGenericAtCallHandler;
 typedef struct _FsoGsmGenericAtCallHandlerClass FsoGsmGenericAtCallHandlerClass;
 
+#define FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER (fso_gsm_abstract_sms_handler_get_type ())
+#define FSO_GSM_ABSTRACT_SMS_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER, FsoGsmAbstractSmsHandler))
+#define FSO_GSM_ABSTRACT_SMS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER, FsoGsmAbstractSmsHandlerClass))
+#define FSO_GSM_IS_ABSTRACT_SMS_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER))
+#define FSO_GSM_IS_ABSTRACT_SMS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER))
+#define FSO_GSM_ABSTRACT_SMS_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER, FsoGsmAbstractSmsHandlerClass))
+
+typedef struct _FsoGsmAbstractSmsHandler FsoGsmAbstractSmsHandler;
+typedef struct _FsoGsmAbstractSmsHandlerClass FsoGsmAbstractSmsHandlerClass;
+
 #define FSO_GSM_TYPE_AT_SMS_HANDLER (fso_gsm_at_sms_handler_get_type ())
 #define FSO_GSM_AT_SMS_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_AT_SMS_HANDLER, FsoGsmAtSmsHandler))
 #define FSO_GSM_AT_SMS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_AT_SMS_HANDLER, FsoGsmAtSmsHandlerClass))
@@ -321,24 +362,7 @@ typedef struct _FsoGsmAtPhonebookHandlerClass FsoGsmAtPhonebookHandlerClass;
 typedef struct _FsoGsmGenericWatchDog FsoGsmGenericWatchDog;
 typedef struct _FsoGsmGenericWatchDogClass FsoGsmGenericWatchDogClass;
 typedef struct _FsoGsmAbstractModemOpenData FsoGsmAbstractModemOpenData;
-
-#define FSO_GSM_TYPE_IPDP_HANDLER (fso_gsm_ipdp_handler_get_type ())
-#define FSO_GSM_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandler))
-#define FSO_GSM_IS_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_IPDP_HANDLER))
-#define FSO_GSM_IPDP_HANDLER_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandlerIface))
-
-typedef struct _FsoGsmIPdpHandler FsoGsmIPdpHandler;
-typedef struct _FsoGsmIPdpHandlerIface FsoGsmIPdpHandlerIface;
-
-#define FSO_GSM_TYPE_ROUTE_INFO (fso_gsm_route_info_get_type ())
-#define FSO_GSM_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfo))
-#define FSO_GSM_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
-#define FSO_GSM_IS_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ROUTE_INFO))
-#define FSO_GSM_IS_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_ROUTE_INFO))
-#define FSO_GSM_ROUTE_INFO_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
-
-typedef struct _FsoGsmRouteInfo FsoGsmRouteInfo;
-typedef struct _FsoGsmRouteInfoClass FsoGsmRouteInfoClass;
+#define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 typedef struct _FsoGsmAbstractModemCloseData FsoGsmAbstractModemCloseData;
 typedef struct _FsoGsmAbstractModemSuspendData FsoGsmAbstractModemSuspendData;
 typedef struct _FsoGsmAbstractModemResumeData FsoGsmAbstractModemResumeData;
@@ -409,6 +433,17 @@ typedef struct _FsoGsmAbstractCdmaModem FsoGsmAbstractCdmaModem;
 typedef struct _FsoGsmAbstractCdmaModemClass FsoGsmAbstractCdmaModemClass;
 typedef struct _FsoGsmAbstractCdmaModemPrivate FsoGsmAbstractCdmaModemPrivate;
 
+#define FSO_GSM_TYPE_NULL_MODEM (fso_gsm_null_modem_get_type ())
+#define FSO_GSM_NULL_MODEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_NULL_MODEM, FsoGsmNullModem))
+#define FSO_GSM_NULL_MODEM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_NULL_MODEM, FsoGsmNullModemClass))
+#define FSO_GSM_IS_NULL_MODEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_NULL_MODEM))
+#define FSO_GSM_IS_NULL_MODEM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_NULL_MODEM))
+#define FSO_GSM_NULL_MODEM_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_NULL_MODEM, FsoGsmNullModemClass))
+
+typedef struct _FsoGsmNullModem FsoGsmNullModem;
+typedef struct _FsoGsmNullModemClass FsoGsmNullModemClass;
+typedef struct _FsoGsmNullModemPrivate FsoGsmNullModemPrivate;
+
 struct _FsoGsmChannelIface {
 	GTypeInterface parent_iface;
 	void (*injectResponse) (FsoGsmChannel* self, const gchar* response);
@@ -432,6 +467,13 @@ typedef enum  {
 	FSO_GSM_MODEM_STATUS_RESUMING,
 	FSO_GSM_MODEM_STATUS_CLOSING
 } FsoGsmModemStatus;
+
+typedef enum  {
+	FSO_GSM_MODEM_NETWORK_STATUS_UNKNOWN,
+	FSO_GSM_MODEM_NETWORK_STATUS_UNREGISTERED,
+	FSO_GSM_MODEM_NETWORK_STATUS_SEARCHING,
+	FSO_GSM_MODEM_NETWORK_STATUS_REGISTERED
+} FsoGsmModemNetworkStatus;
 
 struct _FsoGsmAtCommandQueueCommandIface {
 	GTypeInterface parent_iface;
@@ -647,6 +689,19 @@ struct _FsoGsmCallHandlerIface {
 	void (*releaseAll_finish) (FsoGsmCallHandler* self, GAsyncResult* _res_, GError** error);
 };
 
+struct _FsoGsmISmsStorageIface {
+	GTypeInterface parent_iface;
+	void (*clean) (FsoGsmISmsStorage* self);
+	gint (*addSms) (FsoGsmISmsStorage* self, struct sms* message);
+	GeeArrayList* (*keys) (FsoGsmISmsStorage* self);
+	void (*message) (FsoGsmISmsStorage* self, const gchar* key, gint index, FreeSmartphoneGSMSIMMessage* result);
+	FreeSmartphoneGSMSIMMessage* (*messagebook) (FsoGsmISmsStorage* self, int* result_length1);
+	guint16 (*lastReferenceNumber) (FsoGsmISmsStorage* self);
+	guint16 (*increasingReferenceNumber) (FsoGsmISmsStorage* self);
+	void (*storeTransactionIndizesForSentMessage) (FsoGsmISmsStorage* self, GeeArrayList* hexpdus);
+	gint (*confirmReceivedMessage) (FsoGsmISmsStorage* self, gint netreference);
+};
+
 struct _FsoGsmSmsHandlerIface {
 	GTypeInterface parent_iface;
 	void (*handleIncomingSmsOnSim) (FsoGsmSmsHandler* self, guint index, GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -659,12 +714,14 @@ struct _FsoGsmSmsHandlerIface {
 	guint16 (*nextReferenceNumber) (FsoGsmSmsHandler* self);
 	GeeArrayList* (*formatTextMessage) (FsoGsmSmsHandler* self, const gchar* number, const gchar* contents, gboolean requestReport);
 	void (*storeTransactionIndizesForSentMessage) (FsoGsmSmsHandler* self, GeeArrayList* hexpdus);
-	FsoGsmSmsStorage* (*get_storage) (FsoGsmSmsHandler* self);
-	void (*set_storage) (FsoGsmSmsHandler* self, FsoGsmSmsStorage* value);
+	FsoGsmISmsStorage* (*get_storage) (FsoGsmSmsHandler* self);
+	void (*set_storage) (FsoGsmSmsHandler* self, FsoGsmISmsStorage* value);
 };
 
 struct _FsoGsmPhonebookHandlerIface {
 	GTypeInterface parent_iface;
+	void (*syncWithSim) (FsoGsmPhonebookHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*syncWithSim_finish) (FsoGsmPhonebookHandler* self, GAsyncResult* _res_);
 	FsoGsmPhonebookStorage* (*get_storage) (FsoGsmPhonebookHandler* self);
 	void (*set_storage) (FsoGsmPhonebookHandler* self, FsoGsmPhonebookStorage* value);
 };
@@ -673,6 +730,25 @@ struct _FsoGsmWatchDogIface {
 	GTypeInterface parent_iface;
 	void (*check) (FsoGsmWatchDog* self);
 	void (*resetUnlockMarker) (FsoGsmWatchDog* self);
+};
+
+struct _FsoGsmIPdpHandlerIface {
+	GTypeInterface parent_iface;
+	void (*activate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*activate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
+	void (*deactivate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*deactivate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
+	void (*statusUpdate) (FsoGsmIPdpHandler* self, const gchar* status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*statusUpdate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	void (*connectedWithNewDefaultRoute) (FsoGsmIPdpHandler* self, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*connectedWithNewDefaultRoute_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	void (*disconnected) (FsoGsmIPdpHandler* self);
+	void (*syncStatus) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*syncStatus_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	FreeSmartphoneGSMContextStatus (*get_status) (FsoGsmIPdpHandler* self);
+	void (*set_status) (FsoGsmIPdpHandler* self, FreeSmartphoneGSMContextStatus value);
+	GHashTable* (*get_properties) (FsoGsmIPdpHandler* self);
+	void (*set_properties) (FsoGsmIPdpHandler* self, GHashTable* value);
 };
 
 struct _FsoGsmModemIface {
@@ -690,6 +766,7 @@ struct _FsoGsmModemIface {
 	void (*setFunctionality_finish) (FsoGsmModem* self, GAsyncResult* _res_, GError** error);
 	void (*registerChannel) (FsoGsmModem* self, const gchar* name, FsoGsmChannel* channel);
 	void (*advanceToState) (FsoGsmModem* self, FsoGsmModemStatus status, gboolean force);
+	void (*advanceNetworkState) (FsoGsmModem* self, FsoGsmModemNetworkStatus status);
 	FsoGsmAtCommandSequence* (*atCommandSequence) (FsoGsmModem* self, const gchar* channel, const gchar* purpose);
 	gpointer (*createMediator) (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, GError** error);
 	gpointer (*createAtCommand) (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, const gchar* command);
@@ -700,8 +777,10 @@ struct _FsoGsmModemIface {
 	gchar** (*processAtCommandAsync_finish) (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
 	void (*processAtPduCommandAsync) (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries, GAsyncReadyCallback _callback_, gpointer _user_data_);
 	gchar** (*processAtPduCommandAsync_finish) (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
+	void (*sendAtCommand) (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries);
 	FsoGsmChannel* (*channel) (FsoGsmModem* self, const gchar* category);
 	FsoGsmModemStatus (*status) (FsoGsmModem* self);
+	FsoGsmModemNetworkStatus (*network_status) (FsoGsmModem* self);
 	FreeSmartphoneGSMDeviceStatus (*externalStatus) (FsoGsmModem* self);
 	FsoGsmModemData* (*data) (FsoGsmModem* self);
 	void (*registerAtCommandSequence) (FsoGsmModem* self, const gchar* channel, const gchar* purpose, FsoGsmAtCommandSequence* sequence);
@@ -716,8 +795,8 @@ struct _FsoGsmModemIface {
 	void (*set_pbhandler) (FsoGsmModem* self, FsoGsmPhonebookHandler* value);
 	FsoGsmWatchDog* (*get_watchdog) (FsoGsmModem* self);
 	void (*set_watchdog) (FsoGsmModem* self, FsoGsmWatchDog* value);
-	FsoGsmPdpHandler* (*get_pdphandler) (FsoGsmModem* self);
-	void (*set_pdphandler) (FsoGsmModem* self, FsoGsmPdpHandler* value);
+	FsoGsmIPdpHandler* (*get_pdphandler) (FsoGsmModem* self);
+	void (*set_pdphandler) (FsoGsmModem* self, FsoGsmIPdpHandler* value);
 };
 
 struct _FsoGsmPhonebookParams {
@@ -829,15 +908,8 @@ struct _FsoGsmLowLevelIface {
 struct _FsoGsmAbstractModem {
 	FsoFrameworkAbstractObject parent_instance;
 	FsoGsmAbstractModemPrivate * priv;
-	gchar* modem_type;
-	gchar* modem_transport;
-	gchar* modem_port;
-	gint modem_speed;
-	gchar* data_type;
-	gchar* data_transport;
-	gchar* data_port;
-	gint data_speed;
 	FsoGsmModemStatus modem_status;
+	FsoGsmModemNetworkStatus modem_network_status;
 	FsoGsmModemData* modem_data;
 	GeeHashMap* channels;
 	GeeHashMap* commands;
@@ -879,12 +951,14 @@ struct _FsoGsmAbstractModemClass {
 };
 
 struct _FsoGsmAbstractModemPrivate {
+	FsoFrameworkTransportSpec* _modem_transport_spec;
+	FsoFrameworkTransportSpec* _data_transport_spec;
 	GObject* _parent;
 	FsoGsmCallHandler* _callhandler;
 	FsoGsmSmsHandler* _smshandler;
 	FsoGsmPhonebookHandler* _pbhandler;
 	FsoGsmWatchDog* _watchdog;
-	FsoGsmPdpHandler* _pdphandler;
+	FsoGsmIPdpHandler* _pdphandler;
 };
 
 struct _fso_gsm_abstract_modem_checkChannelsForHangupData {
@@ -893,45 +967,53 @@ struct _fso_gsm_abstract_modem_checkChannelsForHangupData {
 	GAsyncResult* _res_;
 	GSimpleAsyncResult* _async_result;
 	FsoGsmAbstractModem* self;
-	GeeHashMap* _tmp0_;
-	gpointer _tmp1_;
+	FsoFrameworkLogger* _tmp0_;
+	gboolean _tmp1_;
+	GeeHashMap* _tmp2_;
+	gpointer _tmp3_;
 	FsoGsmChannel* mainchannel;
-	FsoGsmChannel* _tmp2_;
-	gboolean _tmp3_;
-	FsoFrameworkLogger* _tmp4_;
-	GeeHashMap* _tmp5_;
-	GeeSet* _tmp6_;
-	GeeSet* _tmp7_;
+	FsoGsmChannel* _tmp4_;
+	gboolean _tmp5_;
+	FsoFrameworkLogger* _tmp6_;
+	GeeHashMap* _tmp7_;
 	GeeSet* _tmp8_;
-	GeeIterator* _tmp9_;
-	GeeIterator* _tmp10_;
-	GeeIterator* _cname_it;
+	GeeSet* _tmp9_;
+	GeeSet* _tmp10_;
 	GeeIterator* _tmp11_;
-	gboolean _tmp12_;
+	GeeIterator* _tmp12_;
+	GeeIterator* _cname_it;
 	GeeIterator* _tmp13_;
-	gpointer _tmp14_;
+	gboolean _tmp14_;
+	GeeIterator* _tmp15_;
+	gpointer _tmp16_;
 	gchar* cname;
-	const gchar* _tmp15_;
-	GeeHashMap* _tmp16_;
 	const gchar* _tmp17_;
-	gpointer _tmp18_;
+	FsoFrameworkLogger* _tmp18_;
+	const gchar* _tmp19_;
+	const gchar* _tmp20_;
+	gchar* _tmp21_;
+	gchar* _tmp22_;
+	gboolean _tmp23_;
+	GeeHashMap* _tmp24_;
+	const gchar* _tmp25_;
+	gpointer _tmp26_;
 	FsoGsmChannel* channel;
-	FsoGsmChannel* _tmp19_;
-	gboolean _tmp20_;
-	FsoFrameworkLogger* _tmp21_;
-	const gchar* _tmp22_;
-	const gchar* _tmp23_;
-	gchar* _tmp24_;
-	gchar* _tmp25_;
-	FsoGsmChannel* _tmp26_;
-	gboolean _tmp27_;
-	gboolean ok;
+	FsoGsmChannel* _tmp27_;
 	gboolean _tmp28_;
 	FsoFrameworkLogger* _tmp29_;
 	const gchar* _tmp30_;
 	const gchar* _tmp31_;
 	gchar* _tmp32_;
 	gchar* _tmp33_;
+	FsoGsmChannel* _tmp34_;
+	gboolean _tmp35_;
+	gboolean ok;
+	gboolean _tmp36_;
+	FsoFrameworkLogger* _tmp37_;
+	const gchar* _tmp38_;
+	const gchar* _tmp39_;
+	gchar* _tmp40_;
+	gchar* _tmp41_;
 };
 
 struct _FsoGsmAbstractModemOpenData {
@@ -999,19 +1081,6 @@ struct _FsoGsmAbstractModemOpenData {
 	FsoGsmLowLevel* _tmp49_;
 };
 
-struct _FsoGsmIPdpHandlerIface {
-	GTypeInterface parent_iface;
-	void (*activate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	void (*activate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
-	void (*deactivate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	void (*deactivate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
-	void (*statusUpdate) (FsoGsmIPdpHandler* self, const gchar* status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	void (*statusUpdate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
-	void (*connectedWithNewDefaultRoute) (FsoGsmIPdpHandler* self, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	void (*connectedWithNewDefaultRoute_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
-	void (*disconnected) (FsoGsmIPdpHandler* self);
-};
-
 struct _FsoGsmAbstractModemCloseData {
 	int _state_;
 	GObject* _source_object_;
@@ -1024,31 +1093,42 @@ struct _FsoGsmAbstractModemCloseData {
 	FsoFrameworkLogger* _tmp3_;
 	gboolean _tmp4_;
 	gboolean _tmp5_;
-	FsoGsmPdpHandler* _tmp6_;
-	FsoGsmPdpHandler* _tmp7_;
-	FreeSmartphoneGSMContextStatus _tmp8_;
-	FreeSmartphoneGSMContextStatus _tmp9_;
-	FsoGsmPdpHandler* _tmp10_;
-	FsoGsmPdpHandler* _tmp11_;
+	FsoGsmIPdpHandler* _tmp6_;
+	FsoGsmIPdpHandler* _tmp7_;
+	gboolean _tmp8_;
+	FsoGsmIPdpHandler* _tmp9_;
+	FsoGsmIPdpHandler* _tmp10_;
+	FreeSmartphoneGSMContextStatus _tmp11_;
 	FreeSmartphoneGSMContextStatus _tmp12_;
-	FreeSmartphoneGSMContextStatus _tmp13_;
-	gboolean _tmp14_;
-	FsoGsmPdpHandler* _tmp15_;
-	FsoGsmPdpHandler* _tmp16_;
-	GeeHashMap* _tmp17_;
-	GeeCollection* _tmp18_;
-	GeeCollection* _tmp19_;
+	FsoGsmIPdpHandler* _tmp13_;
+	FsoGsmIPdpHandler* _tmp14_;
+	FreeSmartphoneGSMContextStatus _tmp15_;
+	FreeSmartphoneGSMContextStatus _tmp16_;
+	gboolean _tmp17_;
+	gboolean _tmp18_;
+	FsoGsmIPdpHandler* _tmp19_;
+	FsoGsmIPdpHandler* _tmp20_;
+	GError* e;
+	FsoFrameworkLogger* _tmp21_;
+	GError* _tmp22_;
+	const gchar* _tmp23_;
+	const gchar* _tmp24_;
+	gchar* _tmp25_;
+	gchar* _tmp26_;
+	GeeHashMap* _tmp27_;
+	GeeCollection* _tmp28_;
+	GeeCollection* _tmp29_;
 	GeeCollection* channels;
-	GeeCollection* _tmp20_;
-	GeeIterator* _tmp21_;
+	GeeCollection* _tmp30_;
+	GeeIterator* _tmp31_;
 	GeeIterator* _channel_it;
-	GeeIterator* _tmp22_;
-	gboolean _tmp23_;
-	GeeIterator* _tmp24_;
-	gpointer _tmp25_;
+	GeeIterator* _tmp32_;
+	gboolean _tmp33_;
+	GeeIterator* _tmp34_;
+	gpointer _tmp35_;
 	FsoGsmChannel* channel;
-	FsoGsmChannel* _tmp26_;
-	FsoGsmLowLevel* _tmp27_;
+	FsoGsmChannel* _tmp36_;
+	FsoGsmLowLevel* _tmp37_;
 	GError * _inner_error_;
 };
 
@@ -1221,6 +1301,15 @@ struct _FsoGsmAbstractCdmaModemClass {
 	FsoGsmAbstractModemClass parent_class;
 };
 
+struct _FsoGsmNullModem {
+	FsoGsmAbstractModem parent_instance;
+	FsoGsmNullModemPrivate * priv;
+};
+
+struct _FsoGsmNullModemClass {
+	FsoGsmAbstractModemClass parent_class;
+};
+
 
 extern FsoGsmModem* fso_gsm_theModem;
 FsoGsmModem* fso_gsm_theModem = NULL;
@@ -1234,9 +1323,11 @@ static gpointer fso_gsm_abstract_modem_parent_class = NULL;
 static FsoGsmModemIface* fso_gsm_abstract_modem_fso_gsm_modem_parent_iface = NULL;
 static gpointer fso_gsm_abstract_gsm_modem_parent_class = NULL;
 static gpointer fso_gsm_abstract_cdma_modem_parent_class = NULL;
+static gpointer fso_gsm_null_modem_parent_class = NULL;
 
 GType fso_gsm_channel_get_type (void) G_GNUC_CONST;
 GType fso_gsm_modem_status_get_type (void) G_GNUC_CONST;
+GType fso_gsm_modem_network_status_get_type (void) G_GNUC_CONST;
 gpointer fso_gsm_at_command_sequence_ref (gpointer instance);
 void fso_gsm_at_command_sequence_unref (gpointer instance);
 GParamSpec* fso_gsm_param_spec_at_command_sequence (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
@@ -1258,12 +1349,19 @@ void value_set_wrap_hex_pdu (GValue* value, gpointer v_object);
 void value_take_wrap_hex_pdu (GValue* value, gpointer v_object);
 gpointer value_get_wrap_hex_pdu (const GValue* value);
 GType wrap_hex_pdu_get_type (void) G_GNUC_CONST;
-GType fso_gsm_sms_storage_get_type (void) G_GNUC_CONST;
+GType fso_gsm_isms_storage_get_type (void) G_GNUC_CONST;
 GType fso_gsm_sms_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_phonebook_storage_get_type (void) G_GNUC_CONST;
 GType fso_gsm_phonebook_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_watch_dog_get_type (void) G_GNUC_CONST;
-GType fso_gsm_pdp_handler_get_type (void) G_GNUC_CONST;
+gpointer fso_gsm_route_info_ref (gpointer instance);
+void fso_gsm_route_info_unref (gpointer instance);
+GParamSpec* fso_gsm_param_spec_route_info (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
+void fso_gsm_value_set_route_info (GValue* value, gpointer v_object);
+void fso_gsm_value_take_route_info (GValue* value, gpointer v_object);
+gpointer fso_gsm_value_get_route_info (const GValue* value);
+GType fso_gsm_route_info_get_type (void) G_GNUC_CONST;
+GType fso_gsm_ipdp_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_modem_get_type (void) G_GNUC_CONST;
 #define FSO_GSM_CONFIG_SECTION "fsogsm"
 #define FSO_GSM_PPPD_DEFAULT_COMMAND "/usr/sbin/pppd"
@@ -1324,6 +1422,7 @@ void fso_gsm_modem_setFunctionality (FsoGsmModem* self, const gchar* level, gboo
 void fso_gsm_modem_setFunctionality_finish (FsoGsmModem* self, GAsyncResult* _res_, GError** error);
 void fso_gsm_modem_registerChannel (FsoGsmModem* self, const gchar* name, FsoGsmChannel* channel);
 void fso_gsm_modem_advanceToState (FsoGsmModem* self, FsoGsmModemStatus status, gboolean force);
+void fso_gsm_modem_advanceNetworkState (FsoGsmModem* self, FsoGsmModemNetworkStatus status);
 FsoGsmAtCommandSequence* fso_gsm_modem_atCommandSequence (FsoGsmModem* self, const gchar* channel, const gchar* purpose);
 gpointer fso_gsm_modem_createMediator (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, GError** error);
 gpointer fso_gsm_modem_createAtCommand (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, const gchar* command);
@@ -1333,8 +1432,10 @@ void fso_gsm_modem_processAtCommandAsync (FsoGsmModem* self, FsoGsmAtCommand* co
 gchar** fso_gsm_modem_processAtCommandAsync_finish (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
 void fso_gsm_modem_processAtPduCommandAsync (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries, GAsyncReadyCallback _callback_, gpointer _user_data_);
 gchar** fso_gsm_modem_processAtPduCommandAsync_finish (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
+void fso_gsm_modem_sendAtCommand (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries);
 FsoGsmChannel* fso_gsm_modem_channel (FsoGsmModem* self, const gchar* category);
 FsoGsmModemStatus fso_gsm_modem_status (FsoGsmModem* self);
+FsoGsmModemNetworkStatus fso_gsm_modem_network_status (FsoGsmModem* self);
 FreeSmartphoneGSMDeviceStatus fso_gsm_modem_externalStatus (FsoGsmModem* self);
 FsoGsmModemData* fso_gsm_modem_data (FsoGsmModem* self);
 void fso_gsm_modem_registerAtCommandSequence (FsoGsmModem* self, const gchar* channel, const gchar* purpose, FsoGsmAtCommandSequence* sequence);
@@ -1350,8 +1451,8 @@ FsoGsmPhonebookHandler* fso_gsm_modem_get_pbhandler (FsoGsmModem* self);
 void fso_gsm_modem_set_pbhandler (FsoGsmModem* self, FsoGsmPhonebookHandler* value);
 FsoGsmWatchDog* fso_gsm_modem_get_watchdog (FsoGsmModem* self);
 void fso_gsm_modem_set_watchdog (FsoGsmModem* self, FsoGsmWatchDog* value);
-FsoGsmPdpHandler* fso_gsm_modem_get_pdphandler (FsoGsmModem* self);
-void fso_gsm_modem_set_pdphandler (FsoGsmModem* self, FsoGsmPdpHandler* value);
+FsoGsmIPdpHandler* fso_gsm_modem_get_pdphandler (FsoGsmModem* self);
+void fso_gsm_modem_set_pdphandler (FsoGsmModem* self, FsoGsmIPdpHandler* value);
 enum  {
 	FSO_GSM_MODEM_DATA_DUMMY_PROPERTY
 };
@@ -1364,6 +1465,8 @@ GType fso_gsm_low_level_get_type (void) G_GNUC_CONST;
 #define FSO_GSM_ABSTRACT_MODEM_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), FSO_GSM_TYPE_ABSTRACT_MODEM, FsoGsmAbstractModemPrivate))
 enum  {
 	FSO_GSM_ABSTRACT_MODEM_DUMMY_PROPERTY,
+	FSO_GSM_ABSTRACT_MODEM_MODEM_TRANSPORT_SPEC,
+	FSO_GSM_ABSTRACT_MODEM_DATA_TRANSPORT_SPEC,
 	FSO_GSM_ABSTRACT_MODEM_PARENT,
 	FSO_GSM_ABSTRACT_MODEM_CALLHANDLER,
 	FSO_GSM_ABSTRACT_MODEM_SMSHANDLER,
@@ -1376,7 +1479,12 @@ FsoGsmNullLowLevel* fso_gsm_null_low_level_new (void);
 FsoGsmNullLowLevel* fso_gsm_null_low_level_construct (GType object_type);
 GType fso_gsm_null_low_level_get_type (void) G_GNUC_CONST;
 static void fso_gsm_abstract_modem_initPdpHandler (FsoGsmAbstractModem* self);
+FsoGsmNullPdpHandler* fso_gsm_null_pdp_handler_new (void);
+FsoGsmNullPdpHandler* fso_gsm_null_pdp_handler_construct (GType object_type);
+GType fso_gsm_null_pdp_handler_get_type (void) G_GNUC_CONST;
+GType fso_gsm_pdp_handler_get_type (void) G_GNUC_CONST;
 static void fso_gsm_abstract_modem_initData (FsoGsmAbstractModem* self);
+FsoFrameworkTransportSpec* fso_gsm_abstract_modem_get_data_transport_spec (FsoGsmAbstractModem* self);
 FsoGsmAtCommandSequence* fso_gsm_at_command_sequence_new (gchar** commands, int commands_length1);
 FsoGsmAtCommandSequence* fso_gsm_at_command_sequence_construct (GType object_type, gchar** commands, int commands_length1);
 void fso_gsm_at_command_sequence_append (FsoGsmAtCommandSequence* self, gchar** commands, int commands_length1);
@@ -1403,8 +1511,8 @@ void fso_gsm_abstract_modem_close (FsoGsmAbstractModem* self, GAsyncReadyCallbac
 void fso_gsm_abstract_modem_close_finish (FsoGsmAbstractModem* self, GAsyncResult* _res_);
 static void fso_gsm_abstract_modem_checkChannelsForHangup_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_);
 static void fso_gsm_abstract_modem_onChannelHangup (FsoGsmAbstractModem* self);
-static gboolean ___lambda5_ (FsoGsmAbstractModem* self);
-static gboolean ____lambda5__gsource_func (gpointer self);
+static gboolean __lambda5_ (FsoGsmAbstractModem* self);
+static gboolean ___lambda5__gsource_func (gpointer self);
 static void fso_gsm_abstract_modem_real_registerCustomMediators (FsoGsmAbstractModem* self, GeeHashMap* mediators);
 static void fso_gsm_abstract_modem_real_registerCustomAtCommands (FsoGsmAbstractModem* self, GeeHashMap* commands);
 static FsoGsmUnsolicitedResponseHandler* fso_gsm_abstract_modem_real_createUnsolicitedHandler (FsoGsmAbstractModem* self);
@@ -1420,6 +1528,7 @@ GType fso_gsm_generic_at_call_handler_get_type (void) G_GNUC_CONST;
 static FsoGsmSmsHandler* fso_gsm_abstract_modem_real_createSmsHandler (FsoGsmAbstractModem* self);
 FsoGsmAtSmsHandler* fso_gsm_at_sms_handler_new (void);
 FsoGsmAtSmsHandler* fso_gsm_at_sms_handler_construct (GType object_type);
+GType fso_gsm_abstract_sms_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_at_sms_handler_get_type (void) G_GNUC_CONST;
 static FsoGsmPhonebookHandler* fso_gsm_abstract_modem_real_createPhonebookHandler (FsoGsmAbstractModem* self);
 FsoGsmAtPhonebookHandler* fso_gsm_at_phonebook_handler_new (void);
@@ -1450,15 +1559,7 @@ static void fso_gsm_abstract_modem_real_close_data_free (gpointer _data);
 static void fso_gsm_abstract_modem_real_close (FsoGsmAbstractModem* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
 static gboolean fso_gsm_abstract_modem_real_close_co (FsoGsmAbstractModemCloseData* _data_);
 static gboolean _fso_gsm_abstract_modem_real_close_co_gsource_func (gpointer self);
-FreeSmartphoneGSMContextStatus fso_gsm_pdp_handler_get_status (FsoGsmPdpHandler* self);
-gpointer fso_gsm_route_info_ref (gpointer instance);
-void fso_gsm_route_info_unref (gpointer instance);
-GParamSpec* fso_gsm_param_spec_route_info (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void fso_gsm_value_set_route_info (GValue* value, gpointer v_object);
-void fso_gsm_value_take_route_info (GValue* value, gpointer v_object);
-gpointer fso_gsm_value_get_route_info (const GValue* value);
-GType fso_gsm_route_info_get_type (void) G_GNUC_CONST;
-GType fso_gsm_ipdp_handler_get_type (void) G_GNUC_CONST;
+FreeSmartphoneGSMContextStatus fso_gsm_ipdp_handler_get_status (FsoGsmIPdpHandler* self);
 void fso_gsm_ipdp_handler_deactivate (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
 void fso_gsm_ipdp_handler_deactivate_finish (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
 static void fso_gsm_abstract_modem_close_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_);
@@ -1496,6 +1597,7 @@ static void fso_gsm_abstract_modem_setFunctionality_ready (GObject* source_objec
 void fso_gsm_watch_dog_check (FsoGsmWatchDog* self);
 static gpointer fso_gsm_abstract_modem_real_theDevice (FsoGsmModem* base, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func);
 static FsoGsmModemStatus fso_gsm_abstract_modem_real_status (FsoGsmModem* base);
+static FsoGsmModemNetworkStatus fso_gsm_abstract_modem_real_network_status (FsoGsmModem* base);
 static FsoGsmModemData* fso_gsm_abstract_modem_real_data (FsoGsmModem* base);
 FsoGsmChannel* fso_gsm_abstract_modem_channel (FsoGsmAbstractModem* self, const gchar* category);
 static FsoGsmChannel* fso_gsm_abstract_modem_real_channel (FsoGsmAbstractModem* self, const gchar* category);
@@ -1513,6 +1615,8 @@ GType fso_gsm_at_channel_get_type (void) G_GNUC_CONST;
 void fso_gsm_at_command_queue_enqueueAsync (FsoGsmAtCommandQueue* self, FsoGsmAtCommandQueueCommand* command, const gchar* request, gint retries, gint timeout, GAsyncReadyCallback _callback_, gpointer _user_data_);
 gchar** fso_gsm_at_command_queue_enqueueAsync_finish (FsoGsmAtCommandQueue* self, GAsyncResult* _res_, int* result_length1);
 static void fso_gsm_abstract_modem_processAtCommandAsync_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_);
+static void fso_gsm_abstract_modem_real_sendAtCommand (FsoGsmModem* base, FsoGsmAtCommand* command, const gchar* request, gint retries);
+void fso_gsm_at_command_queue_enqueue (FsoGsmAtCommandQueue* self, FsoGsmAtCommandQueueCommand* command, const gchar* request, gint retries);
 static void fso_gsm_abstract_modem_real_processAtPduCommandAsync_data_free (gpointer _data);
 static void fso_gsm_abstract_modem_real_processAtPduCommandAsync (FsoGsmModem* base, FsoGsmAtCommand* command, const gchar* request, gint retries, GAsyncReadyCallback _callback_, gpointer _user_data_);
 static gboolean fso_gsm_abstract_modem_real_processAtPduCommandAsync_co (fso_gsm_abstract_modem_processAtPduCommandAsyncData* _data_);
@@ -1528,10 +1632,15 @@ static void fso_gsm_abstract_modem_real_advanceToState (FsoGsmModem* base, FsoGs
 const gchar* fso_gsm_modem_status_to_string (FsoGsmModemStatus self);
 static gboolean ____lambda4_ (FsoGsmAbstractModem* self);
 static gboolean _____lambda4__gsource_func (gpointer self);
+static void fso_gsm_abstract_modem_real_advanceNetworkState (FsoGsmModem* base, FsoGsmModemNetworkStatus state);
+const gchar* fso_gsm_modem_network_status_to_string (FsoGsmModemNetworkStatus self);
 static FsoGsmAtCommandSequence* fso_gsm_abstract_modem_real_atCommandSequence (FsoGsmModem* base, const gchar* channel, const gchar* purpose);
 static FreeSmartphoneGSMDeviceStatus fso_gsm_abstract_modem_real_externalStatus (FsoGsmModem* base);
 static gboolean fso_gsm_abstract_modem_real_isAlive (FsoGsmModem* base);
 FsoGsmAbstractModem* fso_gsm_abstract_modem_construct (GType object_type);
+FsoFrameworkTransportSpec* fso_gsm_abstract_modem_get_modem_transport_spec (FsoGsmAbstractModem* self);
+static void fso_gsm_abstract_modem_set_modem_transport_spec (FsoGsmAbstractModem* self, FsoFrameworkTransportSpec* value);
+static void fso_gsm_abstract_modem_set_data_transport_spec (FsoGsmAbstractModem* self, FsoFrameworkTransportSpec* value);
 static GObject * fso_gsm_abstract_modem_constructor (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties);
 static void fso_gsm_abstract_modem_finalize (GObject* obj);
 static void _vala_fso_gsm_abstract_modem_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
@@ -1546,6 +1655,14 @@ enum  {
 	FSO_GSM_ABSTRACT_CDMA_MODEM_DUMMY_PROPERTY
 };
 FsoGsmAbstractCdmaModem* fso_gsm_abstract_cdma_modem_construct (GType object_type);
+GType fso_gsm_null_modem_get_type (void) G_GNUC_CONST;
+enum  {
+	FSO_GSM_NULL_MODEM_DUMMY_PROPERTY
+};
+static gchar* fso_gsm_null_modem_real_repr (FsoFrameworkAbstractObject* base);
+static FsoGsmChannel* fso_gsm_null_modem_real_channelForCommand (FsoGsmAbstractModem* base, FsoGsmAtCommand* command, const gchar* query);
+FsoGsmNullModem* fso_gsm_null_modem_new (void);
+FsoGsmNullModem* fso_gsm_null_modem_construct (GType object_type);
 static void _vala_array_destroy (gpointer array, gint array_length, GDestroyNotify destroy_func);
 static void _vala_array_free (gpointer array, gint array_length, GDestroyNotify destroy_func);
 static gint _vala_array_length (gpointer array);
@@ -2182,6 +2299,27 @@ GType fso_gsm_modem_status_get_type (void) {
 }
 
 
+/**
+     * Network connection state. We have this separated from the Modem status itself to be
+     * able to keep track of it for other purposes than exposing a global modem state
+     * (e.g. when state is SUSPENDING or CLOSING it's impossible to find out if we are
+     * still registered with any network or not).
+     *
+     * NOTE: This is currently only for internal use and will not be exposed with our
+     * public dbus API (which will maybe happen later).
+     **/
+GType fso_gsm_modem_network_status_get_type (void) {
+	static volatile gsize fso_gsm_modem_network_status_type_id__volatile = 0;
+	if (g_once_init_enter (&fso_gsm_modem_network_status_type_id__volatile)) {
+		static const GEnumValue values[] = {{FSO_GSM_MODEM_NETWORK_STATUS_UNKNOWN, "FSO_GSM_MODEM_NETWORK_STATUS_UNKNOWN", "unknown"}, {FSO_GSM_MODEM_NETWORK_STATUS_UNREGISTERED, "FSO_GSM_MODEM_NETWORK_STATUS_UNREGISTERED", "unregistered"}, {FSO_GSM_MODEM_NETWORK_STATUS_SEARCHING, "FSO_GSM_MODEM_NETWORK_STATUS_SEARCHING", "searching"}, {FSO_GSM_MODEM_NETWORK_STATUS_REGISTERED, "FSO_GSM_MODEM_NETWORK_STATUS_REGISTERED", "registered"}, {0, NULL, NULL}};
+		GType fso_gsm_modem_network_status_type_id;
+		fso_gsm_modem_network_status_type_id = g_enum_register_static ("FsoGsmModemNetworkStatus", values);
+		g_once_init_leave (&fso_gsm_modem_network_status_type_id__volatile, fso_gsm_modem_network_status_type_id);
+	}
+	return fso_gsm_modem_network_status_type_id__volatile;
+}
+
+
 void fso_gsm_modem_open (FsoGsmModem* self, GAsyncReadyCallback _callback_, gpointer _user_data_) {
 	FSO_GSM_MODEM_GET_INTERFACE (self)->open (self, _callback_, _user_data_);
 }
@@ -2250,6 +2388,12 @@ void fso_gsm_modem_advanceToState (FsoGsmModem* self, FsoGsmModemStatus status, 
 }
 
 
+void fso_gsm_modem_advanceNetworkState (FsoGsmModem* self, FsoGsmModemNetworkStatus status) {
+	g_return_if_fail (self != NULL);
+	FSO_GSM_MODEM_GET_INTERFACE (self)->advanceNetworkState (self, status);
+}
+
+
 FsoGsmAtCommandSequence* fso_gsm_modem_atCommandSequence (FsoGsmModem* self, const gchar* channel, const gchar* purpose) {
 	g_return_val_if_fail (self != NULL, NULL);
 	return FSO_GSM_MODEM_GET_INTERFACE (self)->atCommandSequence (self, channel, purpose);
@@ -2306,6 +2450,18 @@ gchar** fso_gsm_modem_processAtPduCommandAsync_finish (FsoGsmModem* self, GAsync
 }
 
 
+/**
+     * Send an AT command to the modem but don't wait for any response. This might me usefull in
+     * some cases where we're really sure that the modem will understand the command we're sending.
+     *
+     * Possible response will be threated as unsolicited ones when using this method.
+     **/
+void fso_gsm_modem_sendAtCommand (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries) {
+	g_return_if_fail (self != NULL);
+	FSO_GSM_MODEM_GET_INTERFACE (self)->sendAtCommand (self, command, request, retries);
+}
+
+
 FsoGsmChannel* fso_gsm_modem_channel (FsoGsmModem* self, const gchar* category) {
 	g_return_val_if_fail (self != NULL, NULL);
 	return FSO_GSM_MODEM_GET_INTERFACE (self)->channel (self, category);
@@ -2315,6 +2471,12 @@ FsoGsmChannel* fso_gsm_modem_channel (FsoGsmModem* self, const gchar* category) 
 FsoGsmModemStatus fso_gsm_modem_status (FsoGsmModem* self) {
 	g_return_val_if_fail (self != NULL, 0);
 	return FSO_GSM_MODEM_GET_INTERFACE (self)->status (self);
+}
+
+
+FsoGsmModemNetworkStatus fso_gsm_modem_network_status (FsoGsmModem* self) {
+	g_return_val_if_fail (self != NULL, 0);
+	return FSO_GSM_MODEM_GET_INTERFACE (self)->network_status (self);
 }
 
 
@@ -2402,13 +2564,13 @@ void fso_gsm_modem_set_watchdog (FsoGsmModem* self, FsoGsmWatchDog* value) {
 }
 
 
-FsoGsmPdpHandler* fso_gsm_modem_get_pdphandler (FsoGsmModem* self) {
+FsoGsmIPdpHandler* fso_gsm_modem_get_pdphandler (FsoGsmModem* self) {
 	g_return_val_if_fail (self != NULL, NULL);
 	return FSO_GSM_MODEM_GET_INTERFACE (self)->get_pdphandler (self);
 }
 
 
-void fso_gsm_modem_set_pdphandler (FsoGsmModem* self, FsoGsmPdpHandler* value) {
+void fso_gsm_modem_set_pdphandler (FsoGsmModem* self, FsoGsmIPdpHandler* value) {
 	g_return_if_fail (self != NULL);
 	FSO_GSM_MODEM_GET_INTERFACE (self)->set_pdphandler (self, value);
 }
@@ -2480,7 +2642,7 @@ static void fso_gsm_modem_base_init (FsoGsmModemIface * iface) {
 		g_object_interface_install_property (iface, g_param_spec_object ("smshandler", "smshandler", "smshandler", FSO_GSM_TYPE_SMS_HANDLER, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
 		g_object_interface_install_property (iface, g_param_spec_object ("pbhandler", "pbhandler", "pbhandler", FSO_GSM_TYPE_PHONEBOOK_HANDLER, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
 		g_object_interface_install_property (iface, g_param_spec_object ("watchdog", "watchdog", "watchdog", FSO_GSM_TYPE_WATCH_DOG, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
-		g_object_interface_install_property (iface, g_param_spec_object ("pdphandler", "pdphandler", "pdphandler", FSO_GSM_TYPE_PDP_HANDLER, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+		g_object_interface_install_property (iface, g_param_spec_object ("pdphandler", "pdphandler", "pdphandler", FSO_GSM_TYPE_IPDP_HANDLER, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
 		g_signal_new ("hangup", FSO_GSM_TYPE_MODEM, G_SIGNAL_RUN_LAST, 0, NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 		g_signal_new ("signal_status_changed", FSO_GSM_TYPE_MODEM, G_SIGNAL_RUN_LAST, 0, NULL, NULL, g_cclosure_marshal_VOID__ENUM, G_TYPE_NONE, 1, FSO_GSM_MODEM_TYPE_STATUS);
 	}
@@ -2698,7 +2860,7 @@ static void fso_gsm_abstract_modem_initPdpHandler (FsoGsmAbstractModem* self) {
 	static GQuark _tmp5_label4 = 0;
 	static GQuark _tmp5_label5 = 0;
 	static GQuark _tmp5_label6 = 0;
-	const gchar* _tmp19_;
+	const gchar* _tmp21_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = ((FsoFrameworkAbstractObject*) self)->config;
 	_tmp1_ = fso_framework_smart_key_file_stringValue (_tmp0_, FSO_GSM_CONFIG_SECTION, "pdp_type", "none");
@@ -2794,6 +2956,8 @@ static void fso_gsm_abstract_modem_initPdpHandler (FsoGsmAbstractModem* self) {
 				const gchar* _tmp16_ = NULL;
 				gchar* _tmp17_ = NULL;
 				gchar* _tmp18_;
+				FsoGsmNullPdpHandler* _tmp19_;
+				FsoGsmNullPdpHandler* _tmp20_;
 				_tmp14_ = ((FsoFrameworkAbstractObject*) self)->logger;
 				_tmp15_ = pdphandlertype;
 				_tmp16_ = string_to_string (_tmp15_);
@@ -2801,61 +2965,71 @@ static void fso_gsm_abstract_modem_initPdpHandler (FsoGsmAbstractModem* self) {
 				_tmp18_ = _tmp17_;
 				fso_framework_logger_warning (_tmp14_, _tmp18_);
 				_g_free0 (_tmp18_);
+				_tmp19_ = fso_gsm_null_pdp_handler_new ();
+				_tmp20_ = _tmp19_;
+				fso_gsm_modem_set_pdphandler ((FsoGsmModem*) self, (FsoGsmIPdpHandler*) _tmp20_);
+				_g_object_unref0 (_tmp20_);
 				_g_free0 (typename);
 				_g_free0 (pdphandlertype);
 				return;
 			}
 		}
 	}
-	_tmp19_ = pdphandlertype;
-	if (g_strcmp0 (_tmp19_, "none") != 0) {
-		const gchar* _tmp20_;
-		GType _tmp21_ = 0UL;
+	_tmp21_ = pdphandlertype;
+	if (g_strcmp0 (_tmp21_, "none") != 0) {
+		const gchar* _tmp22_;
+		GType _tmp23_ = 0UL;
 		GType pdphandlerclass;
-		GType _tmp22_;
-		GType _tmp28_;
-		GObject* _tmp29_ = NULL;
-		GObject* _tmp30_;
-		FsoGsmPdpHandler* _tmp31_;
-		FsoFrameworkLogger* _tmp32_;
-		const gchar* _tmp33_;
-		const gchar* _tmp34_ = NULL;
-		gchar* _tmp35_ = NULL;
-		gchar* _tmp36_;
-		_tmp20_ = typename;
-		_tmp21_ = g_type_from_name (_tmp20_);
-		pdphandlerclass = _tmp21_;
-		_tmp22_ = pdphandlerclass;
-		if (_tmp22_ == G_TYPE_INVALID) {
-			FsoFrameworkLogger* _tmp23_;
-			const gchar* _tmp24_;
-			const gchar* _tmp25_ = NULL;
-			gchar* _tmp26_ = NULL;
-			gchar* _tmp27_;
-			_tmp23_ = ((FsoFrameworkAbstractObject*) self)->logger;
-			_tmp24_ = pdphandlertype;
-			_tmp25_ = string_to_string (_tmp24_);
-			_tmp26_ = g_strconcat ("Can't find plugin for pdp_type ", _tmp25_, "; data connectivity will NOT be available", NULL);
-			_tmp27_ = _tmp26_;
-			fso_framework_logger_warning (_tmp23_, _tmp27_);
-			_g_free0 (_tmp27_);
+		GType _tmp24_;
+		GType _tmp32_;
+		GObject* _tmp33_ = NULL;
+		GObject* _tmp34_;
+		FsoGsmPdpHandler* _tmp35_;
+		FsoFrameworkLogger* _tmp36_;
+		const gchar* _tmp37_;
+		const gchar* _tmp38_ = NULL;
+		gchar* _tmp39_ = NULL;
+		gchar* _tmp40_;
+		_tmp22_ = typename;
+		_tmp23_ = g_type_from_name (_tmp22_);
+		pdphandlerclass = _tmp23_;
+		_tmp24_ = pdphandlerclass;
+		if (_tmp24_ == G_TYPE_INVALID) {
+			FsoFrameworkLogger* _tmp25_;
+			const gchar* _tmp26_;
+			const gchar* _tmp27_ = NULL;
+			gchar* _tmp28_ = NULL;
+			gchar* _tmp29_;
+			FsoGsmNullPdpHandler* _tmp30_;
+			FsoGsmNullPdpHandler* _tmp31_;
+			_tmp25_ = ((FsoFrameworkAbstractObject*) self)->logger;
+			_tmp26_ = pdphandlertype;
+			_tmp27_ = string_to_string (_tmp26_);
+			_tmp28_ = g_strconcat ("Can't find plugin for pdp_type ", _tmp27_, "; data connectivity will NOT be available", NULL);
+			_tmp29_ = _tmp28_;
+			fso_framework_logger_warning (_tmp25_, _tmp29_);
+			_g_free0 (_tmp29_);
+			_tmp30_ = fso_gsm_null_pdp_handler_new ();
+			_tmp31_ = _tmp30_;
+			fso_gsm_modem_set_pdphandler ((FsoGsmModem*) self, (FsoGsmIPdpHandler*) _tmp31_);
+			_g_object_unref0 (_tmp31_);
 			_g_free0 (typename);
 			_g_free0 (pdphandlertype);
 			return;
 		}
-		_tmp28_ = pdphandlerclass;
-		_tmp29_ = g_object_new (_tmp28_, NULL);
-		_tmp30_ = G_IS_INITIALLY_UNOWNED (_tmp29_) ? g_object_ref_sink (_tmp29_) : _tmp29_;
-		_tmp31_ = FSO_GSM_IS_PDP_HANDLER (_tmp30_) ? ((FsoGsmPdpHandler*) _tmp30_) : NULL;
-		fso_gsm_modem_set_pdphandler ((FsoGsmModem*) self, _tmp31_);
-		_g_object_unref0 (_tmp31_);
-		_tmp32_ = ((FsoFrameworkAbstractObject*) self)->logger;
-		_tmp33_ = pdphandlertype;
-		_tmp34_ = string_to_string (_tmp33_);
-		_tmp35_ = g_strconcat ("Ready. Using pdp plugin ", _tmp34_, " to handle data connectivity", NULL);
-		_tmp36_ = _tmp35_;
-		fso_framework_logger_info (_tmp32_, _tmp36_);
-		_g_free0 (_tmp36_);
+		_tmp32_ = pdphandlerclass;
+		_tmp33_ = g_object_new (_tmp32_, NULL);
+		_tmp34_ = G_IS_INITIALLY_UNOWNED (_tmp33_) ? g_object_ref_sink (_tmp33_) : _tmp33_;
+		_tmp35_ = FSO_GSM_IS_PDP_HANDLER (_tmp34_) ? ((FsoGsmPdpHandler*) _tmp34_) : NULL;
+		fso_gsm_modem_set_pdphandler ((FsoGsmModem*) self, (FsoGsmIPdpHandler*) _tmp35_);
+		_g_object_unref0 (_tmp35_);
+		_tmp36_ = ((FsoFrameworkAbstractObject*) self)->logger;
+		_tmp37_ = pdphandlertype;
+		_tmp38_ = string_to_string (_tmp37_);
+		_tmp39_ = g_strconcat ("Ready. Using pdp plugin ", _tmp38_, " to handle data connectivity", NULL);
+		_tmp40_ = _tmp39_;
+		fso_framework_logger_info (_tmp36_, _tmp40_);
+		_g_free0 (_tmp40_);
 	}
 	_g_free0 (typename);
 	_g_free0 (pdphandlertype);
@@ -2906,16 +3080,16 @@ static void fso_gsm_abstract_modem_initData (FsoGsmAbstractModem* self) {
 	FsoGsmModemData* _tmp35_;
 	FsoFrameworkSmartKeyFile* _tmp36_;
 	gchar* _tmp37_ = NULL;
-	const gchar* _tmp38_;
-	gchar* _tmp39_;
+	FsoFrameworkTransportSpec* _tmp38_;
+	const gchar* _tmp39_;
 	gchar* _tmp40_;
-	const gchar* _tmp41_;
-	FsoGsmModemData* _tmp44_;
-	const gchar* _tmp45_;
-	gchar* _tmp46_;
-	FsoGsmModemData* _tmp47_;
-	FsoFrameworkSmartKeyFile* _tmp48_;
-	gchar* _tmp49_;
+	gchar* _tmp41_;
+	const gchar* _tmp42_;
+	FsoGsmModemData* _tmp45_;
+	const gchar* _tmp46_;
+	gchar* _tmp47_;
+	FsoGsmModemData* _tmp48_;
+	FsoFrameworkSmartKeyFile* _tmp49_;
 	gchar* _tmp50_;
 	gchar* _tmp51_;
 	gchar* _tmp52_;
@@ -2930,22 +3104,22 @@ static void fso_gsm_abstract_modem_initData (FsoGsmAbstractModem* self) {
 	gchar* _tmp61_;
 	gchar* _tmp62_;
 	gchar* _tmp63_;
-	gchar** _tmp64_ = NULL;
-	gchar** _tmp65_;
-	gint _tmp65__length1;
-	gint _tmp66_ = 0;
-	gchar** _tmp67_ = NULL;
-	FsoGsmModemData* _tmp68_;
+	gchar* _tmp64_;
+	gchar** _tmp65_ = NULL;
+	gchar** _tmp66_;
+	gint _tmp66__length1;
+	gint _tmp67_ = 0;
+	gchar** _tmp68_ = NULL;
 	FsoGsmModemData* _tmp69_;
-	GeeHashMap* _tmp70_;
+	FsoGsmModemData* _tmp70_;
 	GeeHashMap* _tmp71_;
+	GeeHashMap* _tmp72_;
 	GeeHashMap* seq;
-	gchar** _tmp72_ = NULL;
-	gchar** _tmp73_;
-	gint _tmp73__length1;
-	FsoGsmAtCommandSequence* _tmp74_;
+	gchar** _tmp73_ = NULL;
+	gchar** _tmp74_;
+	gint _tmp74__length1;
 	FsoGsmAtCommandSequence* _tmp75_;
-	gchar* _tmp76_;
+	FsoGsmAtCommandSequence* _tmp76_;
 	gchar* _tmp77_;
 	gchar* _tmp78_;
 	gchar* _tmp79_;
@@ -2955,25 +3129,26 @@ static void fso_gsm_abstract_modem_initData (FsoGsmAbstractModem* self) {
 	gchar* _tmp83_;
 	gchar* _tmp84_;
 	gchar* _tmp85_;
-	gchar** _tmp86_ = NULL;
-	gchar** _tmp87_;
-	gint _tmp87__length1;
-	FsoGsmAtCommandSequence* _tmp88_;
+	gchar* _tmp86_;
+	gchar** _tmp87_ = NULL;
+	gchar** _tmp88_;
+	gint _tmp88__length1;
 	FsoGsmAtCommandSequence* _tmp89_;
+	FsoGsmAtCommandSequence* _tmp90_;
 	FsoGsmAtCommandSequence* initsequence;
-	FsoFrameworkSmartKeyFile* _tmp90_;
-	gchar** _tmp91_ = NULL;
-	gchar** _tmp92_;
-	gint _tmp92__length1;
-	gint _tmp93_ = 0;
-	gchar** _tmp94_ = NULL;
-	gchar** _tmp95_;
-	gint _tmp95__length1;
-	gchar** _tmp96_ = NULL;
-	gchar** _tmp97_;
-	gint _tmp97__length1;
-	FsoGsmAtCommandSequence* _tmp98_;
+	FsoFrameworkSmartKeyFile* _tmp91_;
+	gchar** _tmp92_ = NULL;
+	gchar** _tmp93_;
+	gint _tmp93__length1;
+	gint _tmp94_ = 0;
+	gchar** _tmp95_ = NULL;
+	gchar** _tmp96_;
+	gint _tmp96__length1;
+	gchar** _tmp97_ = NULL;
+	gchar** _tmp98_;
+	gint _tmp98__length1;
 	FsoGsmAtCommandSequence* _tmp99_;
+	FsoGsmAtCommandSequence* _tmp100_;
 	g_return_if_fail (self != NULL);
 	_tmp0_ = fso_gsm_modem_data_new ();
 	_g_object_unref0 (self->modem_data);
@@ -3044,127 +3219,128 @@ static void fso_gsm_abstract_modem_initData (FsoGsmAbstractModem* self) {
 	_tmp37_ = fso_framework_smart_key_file_stringValue (_tmp36_, FSO_GSM_CONFIG_SECTION, "ppp_command", FSO_GSM_PPPD_DEFAULT_COMMAND);
 	_g_free0 (_tmp35_->pppCommand);
 	_tmp35_->pppCommand = _tmp37_;
-	_tmp38_ = self->data_port;
-	_tmp39_ = g_strdup (_tmp38_);
-	_tmp40_ = _tmp39_;
+	_tmp38_ = self->priv->_data_transport_spec;
+	_tmp39_ = _tmp38_->name;
+	_tmp40_ = g_strdup (_tmp39_);
 	_tmp41_ = _tmp40_;
-	if (_tmp41_ == NULL) {
-		FsoFrameworkSmartKeyFile* _tmp42_;
-		gchar* _tmp43_ = NULL;
-		_tmp42_ = ((FsoFrameworkAbstractObject*) self)->config;
-		_tmp43_ = fso_framework_smart_key_file_stringValue (_tmp42_, FSO_GSM_CONFIG_SECTION, "ppp_port", "/dev/null");
-		_g_free0 (_tmp40_);
-		_tmp40_ = _tmp43_;
+	_tmp42_ = _tmp41_;
+	if (_tmp42_ == NULL) {
+		FsoFrameworkSmartKeyFile* _tmp43_;
+		gchar* _tmp44_ = NULL;
+		_tmp43_ = ((FsoFrameworkAbstractObject*) self)->config;
+		_tmp44_ = fso_framework_smart_key_file_stringValue (_tmp43_, FSO_GSM_CONFIG_SECTION, "ppp_port", "/dev/null");
+		_g_free0 (_tmp41_);
+		_tmp41_ = _tmp44_;
 	}
-	_tmp44_ = self->modem_data;
-	_tmp45_ = _tmp40_;
-	_tmp46_ = g_strdup (_tmp45_);
-	_g_free0 (_tmp44_->pppPort);
-	_tmp44_->pppPort = _tmp46_;
-	_tmp47_ = self->modem_data;
-	_tmp48_ = ((FsoFrameworkAbstractObject*) self)->config;
-	_tmp49_ = g_strdup ("115200");
-	_tmp50_ = g_strdup ("nodetach");
-	_tmp51_ = g_strdup ("modem");
-	_tmp52_ = g_strdup ("crtscts");
-	_tmp53_ = g_strdup ("nodefaultroute");
-	_tmp54_ = g_strdup ("noreplacedefaultroute");
-	_tmp55_ = g_strdup ("debug");
-	_tmp56_ = g_strdup ("hide-password");
-	_tmp57_ = g_strdup ("ktune");
-	_tmp58_ = g_strdup ("noccp");
-	_tmp59_ = g_strdup ("noipdefault");
-	_tmp60_ = g_strdup ("novj");
-	_tmp61_ = g_strdup ("novjccomp");
-	_tmp62_ = g_strdup ("proxyarp");
-	_tmp63_ = g_strdup ("usepeerdns");
-	_tmp64_ = g_new0 (gchar*, 15 + 1);
-	_tmp64_[0] = _tmp49_;
-	_tmp64_[1] = _tmp50_;
-	_tmp64_[2] = _tmp51_;
-	_tmp64_[3] = _tmp52_;
-	_tmp64_[4] = _tmp53_;
-	_tmp64_[5] = _tmp54_;
-	_tmp64_[6] = _tmp55_;
-	_tmp64_[7] = _tmp56_;
-	_tmp64_[8] = _tmp57_;
-	_tmp64_[9] = _tmp58_;
-	_tmp64_[10] = _tmp59_;
-	_tmp64_[11] = _tmp60_;
-	_tmp64_[12] = _tmp61_;
-	_tmp64_[13] = _tmp62_;
-	_tmp64_[14] = _tmp63_;
-	_tmp65_ = _tmp64_;
-	_tmp65__length1 = 15;
-	_tmp67_ = fso_framework_smart_key_file_stringListValue (_tmp48_, FSO_GSM_CONFIG_SECTION, "ppp_options", _tmp65_, 15, &_tmp66_);
-	_tmp47_->pppOptions = (_vala_array_free (_tmp47_->pppOptions, _tmp47_->pppOptions_length1, (GDestroyNotify) g_free), NULL);
-	_tmp47_->pppOptions = _tmp67_;
-	_tmp47_->pppOptions_length1 = _tmp66_;
-	_tmp65_ = (_vala_array_free (_tmp65_, _tmp65__length1, (GDestroyNotify) g_free), NULL);
-	_tmp68_ = self->modem_data;
-	_tmp68_->roamingAllowed = FALSE;
+	_tmp45_ = self->modem_data;
+	_tmp46_ = _tmp41_;
+	_tmp47_ = g_strdup (_tmp46_);
+	_g_free0 (_tmp45_->pppPort);
+	_tmp45_->pppPort = _tmp47_;
+	_tmp48_ = self->modem_data;
+	_tmp49_ = ((FsoFrameworkAbstractObject*) self)->config;
+	_tmp50_ = g_strdup ("115200");
+	_tmp51_ = g_strdup ("nodetach");
+	_tmp52_ = g_strdup ("modem");
+	_tmp53_ = g_strdup ("crtscts");
+	_tmp54_ = g_strdup ("nodefaultroute");
+	_tmp55_ = g_strdup ("noreplacedefaultroute");
+	_tmp56_ = g_strdup ("debug");
+	_tmp57_ = g_strdup ("hide-password");
+	_tmp58_ = g_strdup ("ktune");
+	_tmp59_ = g_strdup ("noccp");
+	_tmp60_ = g_strdup ("noipdefault");
+	_tmp61_ = g_strdup ("novj");
+	_tmp62_ = g_strdup ("novjccomp");
+	_tmp63_ = g_strdup ("proxyarp");
+	_tmp64_ = g_strdup ("usepeerdns");
+	_tmp65_ = g_new0 (gchar*, 15 + 1);
+	_tmp65_[0] = _tmp50_;
+	_tmp65_[1] = _tmp51_;
+	_tmp65_[2] = _tmp52_;
+	_tmp65_[3] = _tmp53_;
+	_tmp65_[4] = _tmp54_;
+	_tmp65_[5] = _tmp55_;
+	_tmp65_[6] = _tmp56_;
+	_tmp65_[7] = _tmp57_;
+	_tmp65_[8] = _tmp58_;
+	_tmp65_[9] = _tmp59_;
+	_tmp65_[10] = _tmp60_;
+	_tmp65_[11] = _tmp61_;
+	_tmp65_[12] = _tmp62_;
+	_tmp65_[13] = _tmp63_;
+	_tmp65_[14] = _tmp64_;
+	_tmp66_ = _tmp65_;
+	_tmp66__length1 = 15;
+	_tmp68_ = fso_framework_smart_key_file_stringListValue (_tmp49_, FSO_GSM_CONFIG_SECTION, "ppp_options", _tmp66_, 15, &_tmp67_);
+	_tmp48_->pppOptions = (_vala_array_free (_tmp48_->pppOptions, _tmp48_->pppOptions_length1, (GDestroyNotify) g_free), NULL);
+	_tmp48_->pppOptions = _tmp68_;
+	_tmp48_->pppOptions_length1 = _tmp67_;
+	_tmp66_ = (_vala_array_free (_tmp66_, _tmp66__length1, (GDestroyNotify) g_free), NULL);
 	_tmp69_ = self->modem_data;
-	_tmp70_ = _tmp69_->cmdSequences;
-	_tmp71_ = _g_object_ref0 (_tmp70_);
-	seq = _tmp71_;
-	_tmp72_ = g_new0 (gchar*, 0 + 1);
-	_tmp73_ = _tmp72_;
-	_tmp73__length1 = 0;
-	_tmp74_ = fso_gsm_at_command_sequence_new (_tmp73_, 0);
-	_tmp75_ = _tmp74_;
-	gee_abstract_map_set ((GeeAbstractMap*) seq, "null", _tmp75_);
-	_fso_gsm_at_command_sequence_unref0 (_tmp75_);
-	_tmp73_ = (_vala_array_free (_tmp73_, _tmp73__length1, (GDestroyNotify) g_free), NULL);
-	_tmp76_ = g_strdup ("E0Q0V1");
-	_tmp77_ = g_strdup ("+CMEE=1");
-	_tmp78_ = g_strdup ("+CRC=1");
-	_tmp79_ = g_strdup ("+CSNS=0");
-	_tmp80_ = g_strdup ("+CMGF=0");
-	_tmp81_ = g_strdup ("+CLIP=0");
-	_tmp82_ = g_strdup ("+CLIR=0");
-	_tmp83_ = g_strdup ("+COLP=0");
-	_tmp84_ = g_strdup ("+CCWA=0");
-	_tmp85_ = g_strdup ("+CSMS=1");
-	_tmp86_ = g_new0 (gchar*, 10 + 1);
-	_tmp86_[0] = _tmp76_;
-	_tmp86_[1] = _tmp77_;
-	_tmp86_[2] = _tmp78_;
-	_tmp86_[3] = _tmp79_;
-	_tmp86_[4] = _tmp80_;
-	_tmp86_[5] = _tmp81_;
-	_tmp86_[6] = _tmp82_;
-	_tmp86_[7] = _tmp83_;
-	_tmp86_[8] = _tmp84_;
-	_tmp86_[9] = _tmp85_;
-	_tmp87_ = _tmp86_;
-	_tmp87__length1 = 10;
-	_tmp88_ = fso_gsm_at_command_sequence_new (_tmp87_, 10);
-	_tmp89_ = _tmp88_;
-	_tmp87_ = (_vala_array_free (_tmp87_, _tmp87__length1, (GDestroyNotify) g_free), NULL);
-	initsequence = _tmp89_;
-	_tmp90_ = ((FsoFrameworkAbstractObject*) self)->config;
-	_tmp91_ = g_new0 (gchar*, 0 + 1);
-	_tmp92_ = _tmp91_;
-	_tmp92__length1 = 0;
-	_tmp94_ = fso_framework_smart_key_file_stringListValue (_tmp90_, FSO_GSM_CONFIG_SECTION, "modem_init", _tmp92_, 0, &_tmp93_);
-	_tmp95_ = _tmp94_;
-	_tmp95__length1 = _tmp93_;
-	fso_gsm_at_command_sequence_append (initsequence, _tmp95_, _tmp93_);
-	_tmp95_ = (_vala_array_free (_tmp95_, _tmp95__length1, (GDestroyNotify) g_free), NULL);
-	_tmp92_ = (_vala_array_free (_tmp92_, _tmp92__length1, (GDestroyNotify) g_free), NULL);
+	_tmp69_->roamingAllowed = FALSE;
+	_tmp70_ = self->modem_data;
+	_tmp71_ = _tmp70_->cmdSequences;
+	_tmp72_ = _g_object_ref0 (_tmp71_);
+	seq = _tmp72_;
+	_tmp73_ = g_new0 (gchar*, 0 + 1);
+	_tmp74_ = _tmp73_;
+	_tmp74__length1 = 0;
+	_tmp75_ = fso_gsm_at_command_sequence_new (_tmp74_, 0);
+	_tmp76_ = _tmp75_;
+	gee_abstract_map_set ((GeeAbstractMap*) seq, "null", _tmp76_);
+	_fso_gsm_at_command_sequence_unref0 (_tmp76_);
+	_tmp74_ = (_vala_array_free (_tmp74_, _tmp74__length1, (GDestroyNotify) g_free), NULL);
+	_tmp77_ = g_strdup ("E0Q0V1");
+	_tmp78_ = g_strdup ("+CMEE=1");
+	_tmp79_ = g_strdup ("+CRC=1");
+	_tmp80_ = g_strdup ("+CSNS=0");
+	_tmp81_ = g_strdup ("+CMGF=0");
+	_tmp82_ = g_strdup ("+CLIP=0");
+	_tmp83_ = g_strdup ("+CLIR=0");
+	_tmp84_ = g_strdup ("+COLP=0");
+	_tmp85_ = g_strdup ("+CCWA=0");
+	_tmp86_ = g_strdup ("+CSMS=1");
+	_tmp87_ = g_new0 (gchar*, 10 + 1);
+	_tmp87_[0] = _tmp77_;
+	_tmp87_[1] = _tmp78_;
+	_tmp87_[2] = _tmp79_;
+	_tmp87_[3] = _tmp80_;
+	_tmp87_[4] = _tmp81_;
+	_tmp87_[5] = _tmp82_;
+	_tmp87_[6] = _tmp83_;
+	_tmp87_[7] = _tmp84_;
+	_tmp87_[8] = _tmp85_;
+	_tmp87_[9] = _tmp86_;
+	_tmp88_ = _tmp87_;
+	_tmp88__length1 = 10;
+	_tmp89_ = fso_gsm_at_command_sequence_new (_tmp88_, 10);
+	_tmp90_ = _tmp89_;
+	_tmp88_ = (_vala_array_free (_tmp88_, _tmp88__length1, (GDestroyNotify) g_free), NULL);
+	initsequence = _tmp90_;
+	_tmp91_ = ((FsoFrameworkAbstractObject*) self)->config;
+	_tmp92_ = g_new0 (gchar*, 0 + 1);
+	_tmp93_ = _tmp92_;
+	_tmp93__length1 = 0;
+	_tmp95_ = fso_framework_smart_key_file_stringListValue (_tmp91_, FSO_GSM_CONFIG_SECTION, "modem_init", _tmp93_, 0, &_tmp94_);
+	_tmp96_ = _tmp95_;
+	_tmp96__length1 = _tmp94_;
+	fso_gsm_at_command_sequence_append (initsequence, _tmp96_, _tmp94_);
+	_tmp96_ = (_vala_array_free (_tmp96_, _tmp96__length1, (GDestroyNotify) g_free), NULL);
+	_tmp93_ = (_vala_array_free (_tmp93_, _tmp93__length1, (GDestroyNotify) g_free), NULL);
 	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "MODEM", "init", initsequence);
-	_tmp96_ = g_new0 (gchar*, 0 + 1);
-	_tmp97_ = _tmp96_;
-	_tmp97__length1 = 0;
-	_tmp98_ = fso_gsm_at_command_sequence_new (_tmp97_, 0);
-	_tmp99_ = _tmp98_;
-	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "MODEM", "shutdown", _tmp99_);
-	_fso_gsm_at_command_sequence_unref0 (_tmp99_);
-	_tmp97_ = (_vala_array_free (_tmp97_, _tmp97__length1, (GDestroyNotify) g_free), NULL);
+	_tmp97_ = g_new0 (gchar*, 0 + 1);
+	_tmp98_ = _tmp97_;
+	_tmp98__length1 = 0;
+	_tmp99_ = fso_gsm_at_command_sequence_new (_tmp98_, 0);
+	_tmp100_ = _tmp99_;
+	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "MODEM", "shutdown", _tmp100_);
+	_fso_gsm_at_command_sequence_unref0 (_tmp100_);
+	_tmp98_ = (_vala_array_free (_tmp98_, _tmp98__length1, (GDestroyNotify) g_free), NULL);
 	fso_gsm_abstract_modem_configureData (self);
 	_fso_gsm_at_command_sequence_unref0 (initsequence);
 	_g_object_unref0 (seq);
-	_g_free0 (_tmp40_);
+	_g_free0 (_tmp41_);
 }
 
 
@@ -3320,79 +3496,94 @@ static gboolean fso_gsm_abstract_modem_checkChannelsForHangup_co (fso_gsm_abstra
 		g_assert_not_reached ();
 	}
 	_state_0:
-	_data_->_tmp0_ = _data_->self->channels;
-	_data_->_tmp1_ = NULL;
-	_data_->_tmp1_ = gee_abstract_map_get ((GeeAbstractMap*) _data_->_tmp0_, "main");
-	_data_->mainchannel = (FsoGsmChannel*) _data_->_tmp1_;
-	_data_->_tmp2_ = _data_->mainchannel;
-	_data_->_tmp3_ = FALSE;
-	_data_->_tmp3_ = fso_gsm_channel_isActive (_data_->_tmp2_);
-	if (_data_->_tmp3_) {
-		_data_->_tmp4_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
-		fso_framework_logger_error (_data_->_tmp4_, "Detected main channel hangup; closing modem");
+	_data_->_tmp0_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
+	_data_->_tmp1_ = FALSE;
+	_data_->_tmp1_ = fso_framework_logger_debug (_data_->_tmp0_, "Checking our channels as one had a hangup ...");
+	g_assert (_data_->_tmp1_);
+	_data_->_tmp2_ = _data_->self->channels;
+	_data_->_tmp3_ = NULL;
+	_data_->_tmp3_ = gee_abstract_map_get ((GeeAbstractMap*) _data_->_tmp2_, "main");
+	_data_->mainchannel = (FsoGsmChannel*) _data_->_tmp3_;
+	_data_->_tmp4_ = _data_->mainchannel;
+	_data_->_tmp5_ = FALSE;
+	_data_->_tmp5_ = fso_gsm_channel_isActive (_data_->_tmp4_);
+	if (!_data_->_tmp5_) {
+		_data_->_tmp6_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
+		fso_framework_logger_error (_data_->_tmp6_, "Detected main channel hangup; closing modem ...");
 		fso_gsm_abstract_modem_close (_data_->self, NULL, NULL);
 		g_signal_emit_by_name ((FsoGsmModem*) _data_->self, "hangup");
 	} else {
 		{
-			_data_->_tmp5_ = _data_->self->channels;
-			_data_->_tmp6_ = gee_abstract_map_get_keys ((GeeMap*) _data_->_tmp5_);
-			_data_->_tmp7_ = _data_->_tmp6_;
-			_data_->_tmp8_ = _data_->_tmp7_;
-			_data_->_tmp9_ = NULL;
-			_data_->_tmp9_ = gee_iterable_iterator ((GeeIterable*) _data_->_tmp8_);
+			_data_->_tmp7_ = _data_->self->channels;
+			_data_->_tmp8_ = gee_abstract_map_get_keys ((GeeMap*) _data_->_tmp7_);
+			_data_->_tmp9_ = _data_->_tmp8_;
 			_data_->_tmp10_ = _data_->_tmp9_;
-			_g_object_unref0 (_data_->_tmp8_);
-			_data_->_cname_it = _data_->_tmp10_;
+			_data_->_tmp11_ = NULL;
+			_data_->_tmp11_ = gee_iterable_iterator ((GeeIterable*) _data_->_tmp10_);
+			_data_->_tmp12_ = _data_->_tmp11_;
+			_g_object_unref0 (_data_->_tmp10_);
+			_data_->_cname_it = _data_->_tmp12_;
 			while (TRUE) {
-				_data_->_tmp11_ = _data_->_cname_it;
-				_data_->_tmp12_ = FALSE;
-				_data_->_tmp12_ = gee_iterator_next (_data_->_tmp11_);
-				if (!_data_->_tmp12_) {
+				_data_->_tmp13_ = _data_->_cname_it;
+				_data_->_tmp14_ = FALSE;
+				_data_->_tmp14_ = gee_iterator_next (_data_->_tmp13_);
+				if (!_data_->_tmp14_) {
 					break;
 				}
-				_data_->_tmp13_ = _data_->_cname_it;
-				_data_->_tmp14_ = NULL;
-				_data_->_tmp14_ = gee_iterator_get (_data_->_tmp13_);
-				_data_->cname = (gchar*) _data_->_tmp14_;
-				_data_->_tmp15_ = _data_->cname;
-				if (g_strcmp0 (_data_->_tmp15_, "main") != 0) {
-					_data_->_tmp16_ = _data_->self->channels;
-					_data_->_tmp17_ = _data_->cname;
-					_data_->_tmp18_ = NULL;
-					_data_->_tmp18_ = gee_abstract_map_get ((GeeAbstractMap*) _data_->_tmp16_, _data_->_tmp17_);
-					_data_->channel = (FsoGsmChannel*) _data_->_tmp18_;
-					_data_->_tmp19_ = _data_->channel;
-					_data_->_tmp20_ = FALSE;
-					_data_->_tmp20_ = fso_gsm_channel_isActive (_data_->_tmp19_);
-					if (!_data_->_tmp20_) {
-						_data_->_tmp21_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
-						_data_->_tmp22_ = _data_->cname;
-						_data_->_tmp23_ = NULL;
-						_data_->_tmp23_ = string_to_string (_data_->_tmp22_);
-						_data_->_tmp24_ = NULL;
-						_data_->_tmp24_ = g_strconcat ("Detected ", _data_->_tmp23_, " channel hangup; reopening channel ...", NULL);
-						_data_->_tmp25_ = _data_->_tmp24_;
-						fso_framework_logger_info (_data_->_tmp21_, _data_->_tmp25_);
-						_g_free0 (_data_->_tmp25_);
-						_data_->_tmp26_ = _data_->channel;
+				_data_->_tmp15_ = _data_->_cname_it;
+				_data_->_tmp16_ = NULL;
+				_data_->_tmp16_ = gee_iterator_get (_data_->_tmp15_);
+				_data_->cname = (gchar*) _data_->_tmp16_;
+				_data_->_tmp17_ = _data_->cname;
+				if (g_strcmp0 (_data_->_tmp17_, "main") != 0) {
+					_data_->_tmp18_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
+					_data_->_tmp19_ = _data_->cname;
+					_data_->_tmp20_ = NULL;
+					_data_->_tmp20_ = string_to_string (_data_->_tmp19_);
+					_data_->_tmp21_ = NULL;
+					_data_->_tmp21_ = g_strconcat ("Checking channel ", _data_->_tmp20_, " for hangup ...", NULL);
+					_data_->_tmp22_ = _data_->_tmp21_;
+					_data_->_tmp23_ = FALSE;
+					_data_->_tmp23_ = fso_framework_logger_debug (_data_->_tmp18_, _data_->_tmp22_);
+					g_assert (_data_->_tmp23_);
+					_g_free0 (_data_->_tmp22_);
+					_data_->_tmp24_ = _data_->self->channels;
+					_data_->_tmp25_ = _data_->cname;
+					_data_->_tmp26_ = NULL;
+					_data_->_tmp26_ = gee_abstract_map_get ((GeeAbstractMap*) _data_->_tmp24_, _data_->_tmp25_);
+					_data_->channel = (FsoGsmChannel*) _data_->_tmp26_;
+					_data_->_tmp27_ = _data_->channel;
+					_data_->_tmp28_ = FALSE;
+					_data_->_tmp28_ = fso_gsm_channel_isActive (_data_->_tmp27_);
+					if (!_data_->_tmp28_) {
+						_data_->_tmp29_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
+						_data_->_tmp30_ = _data_->cname;
+						_data_->_tmp31_ = NULL;
+						_data_->_tmp31_ = string_to_string (_data_->_tmp30_);
+						_data_->_tmp32_ = NULL;
+						_data_->_tmp32_ = g_strconcat ("Detected ", _data_->_tmp31_, " channel hangup; reopening channel ...", NULL);
+						_data_->_tmp33_ = _data_->_tmp32_;
+						fso_framework_logger_info (_data_->_tmp29_, _data_->_tmp33_);
+						_g_free0 (_data_->_tmp33_);
+						_data_->_tmp34_ = _data_->channel;
 						_data_->_state_ = 1;
-						fso_framework_command_queue_open ((FsoFrameworkCommandQueue*) _data_->_tmp26_, fso_gsm_abstract_modem_checkChannelsForHangup_ready, _data_);
+						fso_framework_command_queue_open ((FsoFrameworkCommandQueue*) _data_->_tmp34_, fso_gsm_abstract_modem_checkChannelsForHangup_ready, _data_);
 						return FALSE;
 						_state_1:
-						_data_->_tmp27_ = FALSE;
-						_data_->_tmp27_ = fso_framework_command_queue_open_finish ((FsoFrameworkCommandQueue*) _data_->_tmp26_, _data_->_res_);
-						_data_->ok = _data_->_tmp27_;
-						_data_->_tmp28_ = _data_->ok;
-						if (!_data_->_tmp28_) {
-							_data_->_tmp29_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
-							_data_->_tmp30_ = _data_->cname;
-							_data_->_tmp31_ = NULL;
-							_data_->_tmp31_ = string_to_string (_data_->_tmp30_);
-							_data_->_tmp32_ = NULL;
-							_data_->_tmp32_ = g_strconcat ("Could not reopen channel '", _data_->_tmp31_, "' after hangup!!!", NULL);
-							_data_->_tmp33_ = _data_->_tmp32_;
-							fso_framework_logger_error (_data_->_tmp29_, _data_->_tmp33_);
-							_g_free0 (_data_->_tmp33_);
+						_data_->_tmp35_ = FALSE;
+						_data_->_tmp35_ = fso_framework_command_queue_open_finish ((FsoFrameworkCommandQueue*) _data_->_tmp34_, _data_->_res_);
+						_data_->ok = _data_->_tmp35_;
+						_data_->_tmp36_ = _data_->ok;
+						if (!_data_->_tmp36_) {
+							_data_->_tmp37_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
+							_data_->_tmp38_ = _data_->cname;
+							_data_->_tmp39_ = NULL;
+							_data_->_tmp39_ = string_to_string (_data_->_tmp38_);
+							_data_->_tmp40_ = NULL;
+							_data_->_tmp40_ = g_strconcat ("Could not reopen channel '", _data_->_tmp39_, "' after hangup!!!", NULL);
+							_data_->_tmp41_ = _data_->_tmp40_;
+							fso_framework_logger_error (_data_->_tmp37_, _data_->_tmp41_);
+							_g_free0 (_data_->_tmp41_);
 						}
 					}
 					_g_object_unref0 (_data_->channel);
@@ -3413,7 +3604,7 @@ static gboolean fso_gsm_abstract_modem_checkChannelsForHangup_co (fso_gsm_abstra
 }
 
 
-static gboolean ___lambda5_ (FsoGsmAbstractModem* self) {
+static gboolean __lambda5_ (FsoGsmAbstractModem* self) {
 	gboolean result = FALSE;
 	fso_gsm_abstract_modem_checkChannelsForHangup (self, NULL, NULL);
 	result = FALSE;
@@ -3421,9 +3612,9 @@ static gboolean ___lambda5_ (FsoGsmAbstractModem* self) {
 }
 
 
-static gboolean ____lambda5__gsource_func (gpointer self) {
+static gboolean ___lambda5__gsource_func (gpointer self) {
 	gboolean result;
-	result = ___lambda5_ (self);
+	result = __lambda5_ (self);
 	return result;
 }
 
@@ -3436,9 +3627,9 @@ static void fso_gsm_abstract_modem_onChannelHangup (FsoGsmAbstractModem* self) {
 		FsoFrameworkLogger* _tmp1_;
 		_tmp1_ = ((FsoFrameworkAbstractObject*) self)->logger;
 		fso_framework_logger_warning (_tmp1_, "Ignoring additional channel hangup while already closing the modem...");
-	} else {
-		g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, ____lambda5__gsource_func, g_object_ref (self), g_object_unref);
+		return;
 	}
+	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, ___lambda5__gsource_func, g_object_ref (self), g_object_unref);
 }
 
 
@@ -3954,60 +4145,91 @@ static gboolean fso_gsm_abstract_modem_real_close_co (FsoGsmAbstractModemCloseDa
 	g_assert (_data_->_tmp4_);
 	_data_->_tmp6_ = fso_gsm_modem_get_pdphandler ((FsoGsmModem*) _data_->self);
 	_data_->_tmp7_ = _data_->_tmp6_;
-	_data_->_tmp8_ = fso_gsm_pdp_handler_get_status (_data_->_tmp7_);
-	_data_->_tmp9_ = _data_->_tmp8_;
-	if (_data_->_tmp9_ == FREE_SMARTPHONE_GSM_CONTEXT_STATUS_ACTIVE) {
-		_data_->_tmp5_ = TRUE;
+	if (_data_->_tmp7_ != NULL) {
+		_data_->_tmp9_ = fso_gsm_modem_get_pdphandler ((FsoGsmModem*) _data_->self);
+		_data_->_tmp10_ = _data_->_tmp9_;
+		_data_->_tmp11_ = fso_gsm_ipdp_handler_get_status (_data_->_tmp10_);
+		_data_->_tmp12_ = _data_->_tmp11_;
+		if (_data_->_tmp12_ == FREE_SMARTPHONE_GSM_CONTEXT_STATUS_ACTIVE) {
+			_data_->_tmp8_ = TRUE;
+		} else {
+			_data_->_tmp13_ = fso_gsm_modem_get_pdphandler ((FsoGsmModem*) _data_->self);
+			_data_->_tmp14_ = _data_->_tmp13_;
+			_data_->_tmp15_ = fso_gsm_ipdp_handler_get_status (_data_->_tmp14_);
+			_data_->_tmp16_ = _data_->_tmp15_;
+			_data_->_tmp8_ = _data_->_tmp16_ == FREE_SMARTPHONE_GSM_CONTEXT_STATUS_SUSPENDED;
+		}
+		_data_->_tmp17_ = _data_->_tmp8_;
+		_data_->_tmp5_ = _data_->_tmp17_;
 	} else {
-		_data_->_tmp10_ = fso_gsm_modem_get_pdphandler ((FsoGsmModem*) _data_->self);
-		_data_->_tmp11_ = _data_->_tmp10_;
-		_data_->_tmp12_ = fso_gsm_pdp_handler_get_status (_data_->_tmp11_);
-		_data_->_tmp13_ = _data_->_tmp12_;
-		_data_->_tmp5_ = _data_->_tmp13_ == FREE_SMARTPHONE_GSM_CONTEXT_STATUS_SUSPENDED;
+		_data_->_tmp5_ = FALSE;
 	}
-	_data_->_tmp14_ = _data_->_tmp5_;
-	if (_data_->_tmp14_) {
-		_data_->_tmp15_ = fso_gsm_modem_get_pdphandler ((FsoGsmModem*) _data_->self);
-		_data_->_tmp16_ = _data_->_tmp15_;
-		_data_->_state_ = 2;
-		fso_gsm_ipdp_handler_deactivate ((FsoGsmIPdpHandler*) _data_->_tmp16_, fso_gsm_abstract_modem_close_ready, _data_);
-		return FALSE;
-		_state_2:
-		fso_gsm_ipdp_handler_deactivate_finish ((FsoGsmIPdpHandler*) _data_->_tmp16_, _data_->_res_, &_data_->_inner_error_);
+	_data_->_tmp18_ = _data_->_tmp5_;
+	if (_data_->_tmp18_) {
+		{
+			_data_->_tmp19_ = fso_gsm_modem_get_pdphandler ((FsoGsmModem*) _data_->self);
+			_data_->_tmp20_ = _data_->_tmp19_;
+			_data_->_state_ = 2;
+			fso_gsm_ipdp_handler_deactivate (_data_->_tmp20_, fso_gsm_abstract_modem_close_ready, _data_);
+			return FALSE;
+			_state_2:
+			fso_gsm_ipdp_handler_deactivate_finish (_data_->_tmp20_, _data_->_res_, &_data_->_inner_error_);
+			if (_data_->_inner_error_ != NULL) {
+				goto __catch49_g_error;
+			}
+		}
+		goto __finally49;
+		__catch49_g_error:
+		{
+			_data_->e = _data_->_inner_error_;
+			_data_->_inner_error_ = NULL;
+			_data_->_tmp21_ = ((FsoFrameworkAbstractObject*) _data_->self)->logger;
+			_data_->_tmp22_ = _data_->e;
+			_data_->_tmp23_ = _data_->_tmp22_->message;
+			_data_->_tmp24_ = NULL;
+			_data_->_tmp24_ = string_to_string (_data_->_tmp23_);
+			_data_->_tmp25_ = NULL;
+			_data_->_tmp25_ = g_strconcat ("Could not deactivate PDP handle: ", _data_->_tmp24_, NULL);
+			_data_->_tmp26_ = _data_->_tmp25_;
+			fso_framework_logger_error (_data_->_tmp21_, _data_->_tmp26_);
+			_g_free0 (_data_->_tmp26_);
+			_g_error_free0 (_data_->e);
+		}
+		__finally49:
 		if (_data_->_inner_error_ != NULL) {
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 			g_clear_error (&_data_->_inner_error_);
 			return FALSE;
 		}
 	}
-	_data_->_tmp17_ = _data_->self->channels;
-	_data_->_tmp18_ = gee_abstract_map_get_values ((GeeMap*) _data_->_tmp17_);
-	_data_->_tmp19_ = _data_->_tmp18_;
-	_data_->channels = _data_->_tmp19_;
+	_data_->_tmp27_ = _data_->self->channels;
+	_data_->_tmp28_ = gee_abstract_map_get_values ((GeeMap*) _data_->_tmp27_);
+	_data_->_tmp29_ = _data_->_tmp28_;
+	_data_->channels = _data_->_tmp29_;
 	{
-		_data_->_tmp20_ = _data_->channels;
-		_data_->_tmp21_ = NULL;
-		_data_->_tmp21_ = gee_iterable_iterator ((GeeIterable*) _data_->_tmp20_);
-		_data_->_channel_it = _data_->_tmp21_;
+		_data_->_tmp30_ = _data_->channels;
+		_data_->_tmp31_ = NULL;
+		_data_->_tmp31_ = gee_iterable_iterator ((GeeIterable*) _data_->_tmp30_);
+		_data_->_channel_it = _data_->_tmp31_;
 		while (TRUE) {
-			_data_->_tmp22_ = _data_->_channel_it;
-			_data_->_tmp23_ = FALSE;
-			_data_->_tmp23_ = gee_iterator_next (_data_->_tmp22_);
-			if (!_data_->_tmp23_) {
+			_data_->_tmp32_ = _data_->_channel_it;
+			_data_->_tmp33_ = FALSE;
+			_data_->_tmp33_ = gee_iterator_next (_data_->_tmp32_);
+			if (!_data_->_tmp33_) {
 				break;
 			}
-			_data_->_tmp24_ = _data_->_channel_it;
-			_data_->_tmp25_ = NULL;
-			_data_->_tmp25_ = gee_iterator_get (_data_->_tmp24_);
-			_data_->channel = (FsoGsmChannel*) _data_->_tmp25_;
-			_data_->_tmp26_ = _data_->channel;
-			fso_framework_command_queue_close ((FsoFrameworkCommandQueue*) _data_->_tmp26_, NULL, NULL);
+			_data_->_tmp34_ = _data_->_channel_it;
+			_data_->_tmp35_ = NULL;
+			_data_->_tmp35_ = gee_iterator_get (_data_->_tmp34_);
+			_data_->channel = (FsoGsmChannel*) _data_->_tmp35_;
+			_data_->_tmp36_ = _data_->channel;
+			fso_framework_command_queue_close ((FsoFrameworkCommandQueue*) _data_->_tmp36_, NULL, NULL);
 			_g_object_unref0 (_data_->channel);
 		}
 		_g_object_unref0 (_data_->_channel_it);
 	}
-	_data_->_tmp27_ = _data_->self->lowlevel;
-	fso_gsm_low_level_poweroff (_data_->_tmp27_);
+	_data_->_tmp37_ = _data_->self->lowlevel;
+	fso_gsm_low_level_poweroff (_data_->_tmp37_);
 	fso_gsm_abstract_modem_powerOff (_data_->self);
 	fso_gsm_modem_advanceToState ((FsoGsmModem*) _data_->self, FSO_GSM_MODEM_STATUS_CLOSED, TRUE);
 	fso_gsm_abstract_modem_initData (_data_->self);
@@ -4480,6 +4702,17 @@ static FsoGsmModemStatus fso_gsm_abstract_modem_real_status (FsoGsmModem* base) 
 }
 
 
+static FsoGsmModemNetworkStatus fso_gsm_abstract_modem_real_network_status (FsoGsmModem* base) {
+	FsoGsmAbstractModem * self;
+	FsoGsmModemNetworkStatus result = 0;
+	FsoGsmModemNetworkStatus _tmp0_;
+	self = (FsoGsmAbstractModem*) base;
+	_tmp0_ = self->modem_network_status;
+	result = _tmp0_;
+	return result;
+}
+
+
 static FsoGsmModemData* fso_gsm_abstract_modem_real_data (FsoGsmModem* base) {
 	FsoGsmAbstractModem * self;
 	FsoGsmModemData* result = NULL;
@@ -4688,11 +4921,13 @@ static gpointer fso_gsm_abstract_modem_real_createAtCommand (FsoGsmModem* base, 
      **/
 static gchar* fso_gsm_abstract_modem_real_allocateDataPort (FsoGsmAbstractModem* self) {
 	gchar* result = NULL;
-	const gchar* _tmp0_;
-	gchar* _tmp1_;
-	_tmp0_ = self->data_port;
-	_tmp1_ = g_strdup (_tmp0_);
-	result = _tmp1_;
+	FsoFrameworkTransportSpec* _tmp0_;
+	const gchar* _tmp1_;
+	gchar* _tmp2_;
+	_tmp0_ = self->priv->_data_transport_spec;
+	_tmp1_ = _tmp0_->name;
+	_tmp2_ = g_strdup (_tmp1_);
+	result = _tmp2_;
 	return result;
 }
 
@@ -4823,6 +5058,30 @@ static gboolean fso_gsm_abstract_modem_real_processAtCommandAsync_co (fso_gsm_ab
 	}
 	g_object_unref (_data_->_async_result);
 	return FALSE;
+}
+
+
+static void fso_gsm_abstract_modem_real_sendAtCommand (FsoGsmModem* base, FsoGsmAtCommand* command, const gchar* request, gint retries) {
+	FsoGsmAbstractModem * self;
+	FsoGsmAtCommand* _tmp0_;
+	const gchar* _tmp1_;
+	FsoGsmChannel* _tmp2_ = NULL;
+	FsoGsmAtChannel* channel;
+	FsoGsmAtCommand* _tmp3_;
+	const gchar* _tmp4_;
+	gint _tmp5_;
+	self = (FsoGsmAbstractModem*) base;
+	g_return_if_fail (command != NULL);
+	g_return_if_fail (request != NULL);
+	_tmp0_ = command;
+	_tmp1_ = request;
+	_tmp2_ = fso_gsm_abstract_modem_channelForCommand (self, _tmp0_, _tmp1_);
+	channel = FSO_GSM_IS_AT_CHANNEL (_tmp2_) ? ((FsoGsmAtChannel*) _tmp2_) : NULL;
+	_tmp3_ = command;
+	_tmp4_ = request;
+	_tmp5_ = retries;
+	fso_gsm_at_command_queue_enqueue ((FsoGsmAtCommandQueue*) channel, (FsoGsmAtCommandQueueCommand*) _tmp3_, _tmp4_, _tmp5_);
+	_g_object_unref0 (channel);
 }
 
 
@@ -5302,6 +5561,29 @@ static void fso_gsm_abstract_modem_real_advanceToState (FsoGsmModem* base, FsoGs
 }
 
 
+static void fso_gsm_abstract_modem_real_advanceNetworkState (FsoGsmModem* base, FsoGsmModemNetworkStatus state) {
+	FsoGsmAbstractModem * self;
+	FsoFrameworkLogger* _tmp0_;
+	FsoGsmModemNetworkStatus _tmp1_;
+	GEnumValue* _tmp2_;
+	gchar* _tmp3_ = NULL;
+	gchar* _tmp4_;
+	gboolean _tmp5_ = FALSE;
+	FsoGsmModemNetworkStatus _tmp6_;
+	self = (FsoGsmAbstractModem*) base;
+	_tmp0_ = ((FsoFrameworkAbstractObject*) self)->logger;
+	_tmp1_ = state;
+	_tmp2_ = g_enum_get_value (g_type_class_ref (FSO_GSM_MODEM_TYPE_NETWORK_STATUS), _tmp1_);
+	_tmp3_ = g_strconcat ("Advancing network state to ", (_tmp2_ != NULL) ? _tmp2_->value_name : NULL, NULL);
+	_tmp4_ = _tmp3_;
+	_tmp5_ = fso_framework_logger_debug (_tmp0_, _tmp4_);
+	g_assert (_tmp5_);
+	_g_free0 (_tmp4_);
+	_tmp6_ = state;
+	self->modem_network_status = _tmp6_;
+}
+
+
 static gpointer _fso_gsm_at_command_sequence_ref0 (gpointer self) {
 	return self ? fso_gsm_at_command_sequence_ref (self) : NULL;
 }
@@ -5491,6 +5773,55 @@ FsoGsmAbstractModem* fso_gsm_abstract_modem_construct (GType object_type) {
 }
 
 
+FsoFrameworkTransportSpec* fso_gsm_abstract_modem_get_modem_transport_spec (FsoGsmAbstractModem* self) {
+	FsoFrameworkTransportSpec* result;
+	FsoFrameworkTransportSpec* _tmp0_;
+	g_return_val_if_fail (self != NULL, NULL);
+	_tmp0_ = self->priv->_modem_transport_spec;
+	result = _tmp0_;
+	return result;
+}
+
+
+static gpointer _fso_framework_transport_spec_ref0 (gpointer self) {
+	return self ? fso_framework_transport_spec_ref (self) : NULL;
+}
+
+
+static void fso_gsm_abstract_modem_set_modem_transport_spec (FsoGsmAbstractModem* self, FsoFrameworkTransportSpec* value) {
+	FsoFrameworkTransportSpec* _tmp0_;
+	FsoFrameworkTransportSpec* _tmp1_;
+	g_return_if_fail (self != NULL);
+	_tmp0_ = value;
+	_tmp1_ = _fso_framework_transport_spec_ref0 (_tmp0_);
+	_fso_framework_transport_spec_unref0 (self->priv->_modem_transport_spec);
+	self->priv->_modem_transport_spec = _tmp1_;
+	g_object_notify ((GObject *) self, "modem-transport-spec");
+}
+
+
+FsoFrameworkTransportSpec* fso_gsm_abstract_modem_get_data_transport_spec (FsoGsmAbstractModem* self) {
+	FsoFrameworkTransportSpec* result;
+	FsoFrameworkTransportSpec* _tmp0_;
+	g_return_val_if_fail (self != NULL, NULL);
+	_tmp0_ = self->priv->_data_transport_spec;
+	result = _tmp0_;
+	return result;
+}
+
+
+static void fso_gsm_abstract_modem_set_data_transport_spec (FsoGsmAbstractModem* self, FsoFrameworkTransportSpec* value) {
+	FsoFrameworkTransportSpec* _tmp0_;
+	FsoFrameworkTransportSpec* _tmp1_;
+	g_return_if_fail (self != NULL);
+	_tmp0_ = value;
+	_tmp1_ = _fso_framework_transport_spec_ref0 (_tmp0_);
+	_fso_framework_transport_spec_unref0 (self->priv->_data_transport_spec);
+	self->priv->_data_transport_spec = _tmp1_;
+	g_object_notify ((GObject *) self, "data-transport-spec");
+}
+
+
 static GObject* fso_gsm_abstract_modem_real_get_parent (FsoGsmModem* base) {
 	GObject* result;
 	FsoGsmAbstractModem* self;
@@ -5611,10 +5942,10 @@ static void fso_gsm_abstract_modem_real_set_watchdog (FsoGsmModem* base, FsoGsmW
 }
 
 
-static FsoGsmPdpHandler* fso_gsm_abstract_modem_real_get_pdphandler (FsoGsmModem* base) {
-	FsoGsmPdpHandler* result;
+static FsoGsmIPdpHandler* fso_gsm_abstract_modem_real_get_pdphandler (FsoGsmModem* base) {
+	FsoGsmIPdpHandler* result;
 	FsoGsmAbstractModem* self;
-	FsoGsmPdpHandler* _tmp0_;
+	FsoGsmIPdpHandler* _tmp0_;
 	self = (FsoGsmAbstractModem*) base;
 	_tmp0_ = self->priv->_pdphandler;
 	result = _tmp0_;
@@ -5622,10 +5953,10 @@ static FsoGsmPdpHandler* fso_gsm_abstract_modem_real_get_pdphandler (FsoGsmModem
 }
 
 
-static void fso_gsm_abstract_modem_real_set_pdphandler (FsoGsmModem* base, FsoGsmPdpHandler* value) {
+static void fso_gsm_abstract_modem_real_set_pdphandler (FsoGsmModem* base, FsoGsmIPdpHandler* value) {
 	FsoGsmAbstractModem* self;
-	FsoGsmPdpHandler* _tmp0_;
-	FsoGsmPdpHandler* _tmp1_;
+	FsoGsmIPdpHandler* _tmp0_;
+	FsoGsmIPdpHandler* _tmp1_;
 	self = (FsoGsmAbstractModem*) base;
 	_tmp0_ = value;
 	_tmp1_ = _g_object_ref0 (_tmp0_);
@@ -5646,27 +5977,24 @@ static GObject * fso_gsm_abstract_modem_constructor (GType type, guint n_constru
 	gchar* _tmp4_ = NULL;
 	gchar* modem_config;
 	const gchar* _tmp5_;
-	FsoFrameworkSmartKeyFile* _tmp29_;
-	gchar* _tmp30_ = NULL;
+	FsoFrameworkTransportSpec* _tmp6_ = NULL;
+	FsoFrameworkTransportSpec* _tmp7_;
+	FsoFrameworkSmartKeyFile* _tmp8_;
+	gchar* _tmp9_ = NULL;
 	gchar* data_config;
-	const gchar* _tmp31_;
-	const gchar* _tmp54_;
-	const gchar* _tmp55_ = NULL;
-	const gchar* _tmp56_;
-	const gchar* _tmp57_ = NULL;
-	gint _tmp58_;
-	gchar* _tmp59_ = NULL;
-	gchar* _tmp60_;
-	gchar* _tmp61_ = NULL;
-	gchar* _tmp62_;
+	const gchar* _tmp10_;
+	FsoFrameworkTransportSpec* _tmp11_ = NULL;
+	FsoFrameworkTransportSpec* _tmp12_;
+	FsoFrameworkTransportSpec* _tmp13_;
+	gchar* _tmp14_ = NULL;
 	gchar* configuration;
-	const gchar* _tmp63_;
-	FsoFrameworkLogger* _tmp75_;
-	const gchar* _tmp76_;
-	const gchar* _tmp77_ = NULL;
-	gchar* _tmp78_ = NULL;
-	gchar* _tmp79_;
-	gboolean _tmp80_ = FALSE;
+	const gchar* _tmp15_;
+	FsoFrameworkLogger* _tmp24_;
+	const gchar* _tmp25_;
+	const gchar* _tmp26_ = NULL;
+	gchar* _tmp27_ = NULL;
+	gchar* _tmp28_;
+	gboolean _tmp29_ = FALSE;
 	parent_class = G_OBJECT_CLASS (fso_gsm_abstract_modem_parent_class);
 	obj = parent_class->constructor (type, n_construct_properties, construct_properties);
 	self = FSO_GSM_ABSTRACT_MODEM (obj);
@@ -5682,175 +6010,18 @@ static GObject * fso_gsm_abstract_modem_constructor (GType type, guint n_constru
 	_tmp4_ = fso_framework_smart_key_file_stringValue (_tmp3_, FSO_GSM_CONFIG_SECTION, "modem_access", "invalid:invalid:-1");
 	modem_config = _tmp4_;
 	_tmp5_ = modem_config;
-	if (g_strcmp0 (_tmp5_, "") != 0) {
-		const gchar* _tmp6_;
-		gchar** _tmp7_;
-		gchar** _tmp8_ = NULL;
-		gchar** params;
-		gint params_length1;
-		gint _params_size_;
-		gchar** _tmp9_;
-		gint _tmp9__length1;
-		_tmp6_ = modem_config;
-		_tmp8_ = _tmp7_ = g_strsplit (_tmp6_, ":", 0);
-		params = _tmp8_;
-		params_length1 = _vala_array_length (_tmp7_);
-		_params_size_ = params_length1;
-		_tmp9_ = params;
-		_tmp9__length1 = params_length1;
-		if (_tmp9__length1 == 3) {
-			const gchar* _tmp10_;
-			gchar** _tmp11_;
-			gchar** _tmp12_ = NULL;
-			gchar** values;
-			gint values_length1;
-			gint _values_size_;
-			gchar** _tmp13_;
-			gint _tmp13__length1;
-			const gchar* _tmp14_;
-			gchar* _tmp15_;
-			gchar** _tmp16_;
-			gint _tmp16__length1;
-			const gchar* _tmp17_;
-			gchar* _tmp18_;
-			gchar** _tmp19_;
-			gint _tmp19__length1;
-			const gchar* _tmp20_;
-			gint _tmp21_ = 0;
-			_tmp10_ = modem_config;
-			_tmp12_ = _tmp11_ = g_strsplit (_tmp10_, ":", 0);
-			values = _tmp12_;
-			values_length1 = _vala_array_length (_tmp11_);
-			_values_size_ = values_length1;
-			_tmp13_ = values;
-			_tmp13__length1 = values_length1;
-			_tmp14_ = _tmp13_[0];
-			_tmp15_ = g_strdup (_tmp14_);
-			_g_free0 (self->modem_transport);
-			self->modem_transport = _tmp15_;
-			_tmp16_ = values;
-			_tmp16__length1 = values_length1;
-			_tmp17_ = _tmp16_[1];
-			_tmp18_ = g_strdup (_tmp17_);
-			_g_free0 (self->modem_port);
-			self->modem_port = _tmp18_;
-			_tmp19_ = values;
-			_tmp19__length1 = values_length1;
-			_tmp20_ = _tmp19_[2];
-			_tmp21_ = atoi (_tmp20_);
-			self->modem_speed = _tmp21_;
-			values = (_vala_array_free (values, values_length1, (GDestroyNotify) g_free), NULL);
-		} else {
-			FsoFrameworkLogger* _tmp22_;
-			gchar** _tmp23_;
-			gint _tmp23__length1;
-			gchar* _tmp24_ = NULL;
-			gchar* _tmp25_;
-			gchar* _tmp26_ = NULL;
-			gchar* _tmp27_;
-			_tmp22_ = ((FsoFrameworkAbstractObject*) self)->logger;
-			_tmp23_ = params;
-			_tmp23__length1 = params_length1;
-			_tmp24_ = g_strdup_printf ("%i", _tmp23__length1);
-			_tmp25_ = _tmp24_;
-			_tmp26_ = g_strconcat ("Configuration string 'modem_access' invalid; expected 3 parameters, go" \
-"t ", _tmp25_, NULL);
-			_tmp27_ = _tmp26_;
-			fso_framework_logger_warning (_tmp22_, _tmp27_);
-			_g_free0 (_tmp27_);
-			_g_free0 (_tmp25_);
-		}
-		params = (_vala_array_free (params, params_length1, (GDestroyNotify) g_free), NULL);
-	} else {
-		FsoFrameworkLogger* _tmp28_;
-		_tmp28_ = ((FsoFrameworkAbstractObject*) self)->logger;
-		fso_framework_logger_warning (_tmp28_, "Configuration string 'modem_access' missing. This might not be what yo" \
-"u want.");
-	}
-	_tmp29_ = ((FsoFrameworkAbstractObject*) self)->config;
-	_tmp30_ = fso_framework_smart_key_file_stringValue (_tmp29_, FSO_GSM_CONFIG_SECTION, "data_access", "");
-	data_config = _tmp30_;
-	_tmp31_ = data_config;
-	if (g_strcmp0 (_tmp31_, "") != 0) {
-		const gchar* _tmp32_;
-		gchar** _tmp33_;
-		gchar** _tmp34_ = NULL;
-		gchar** params;
-		gint params_length1;
-		gint _params_size_;
-		gchar** _tmp35_;
-		gint _tmp35__length1;
-		_tmp32_ = data_config;
-		_tmp34_ = _tmp33_ = g_strsplit (_tmp32_, ":", 0);
-		params = _tmp34_;
-		params_length1 = _vala_array_length (_tmp33_);
-		_params_size_ = params_length1;
-		_tmp35_ = params;
-		_tmp35__length1 = params_length1;
-		if (_tmp35__length1 == 3) {
-			const gchar* _tmp36_;
-			gchar** _tmp37_;
-			gchar** _tmp38_ = NULL;
-			gchar** values;
-			gint values_length1;
-			gint _values_size_;
-			gchar** _tmp39_;
-			gint _tmp39__length1;
-			const gchar* _tmp40_;
-			gchar* _tmp41_;
-			gchar** _tmp42_;
-			gint _tmp42__length1;
-			const gchar* _tmp43_;
-			gchar* _tmp44_;
-			gchar** _tmp45_;
-			gint _tmp45__length1;
-			const gchar* _tmp46_;
-			gint _tmp47_ = 0;
-			_tmp36_ = data_config;
-			_tmp38_ = _tmp37_ = g_strsplit (_tmp36_, ":", 0);
-			values = _tmp38_;
-			values_length1 = _vala_array_length (_tmp37_);
-			_values_size_ = values_length1;
-			_tmp39_ = values;
-			_tmp39__length1 = values_length1;
-			_tmp40_ = _tmp39_[0];
-			_tmp41_ = g_strdup (_tmp40_);
-			_g_free0 (self->data_transport);
-			self->data_transport = _tmp41_;
-			_tmp42_ = values;
-			_tmp42__length1 = values_length1;
-			_tmp43_ = _tmp42_[1];
-			_tmp44_ = g_strdup (_tmp43_);
-			_g_free0 (self->data_port);
-			self->data_port = _tmp44_;
-			_tmp45_ = values;
-			_tmp45__length1 = values_length1;
-			_tmp46_ = _tmp45_[2];
-			_tmp47_ = atoi (_tmp46_);
-			self->data_speed = _tmp47_;
-			values = (_vala_array_free (values, values_length1, (GDestroyNotify) g_free), NULL);
-		} else {
-			FsoFrameworkLogger* _tmp48_;
-			gchar** _tmp49_;
-			gint _tmp49__length1;
-			gchar* _tmp50_ = NULL;
-			gchar* _tmp51_;
-			gchar* _tmp52_ = NULL;
-			gchar* _tmp53_;
-			_tmp48_ = ((FsoFrameworkAbstractObject*) self)->logger;
-			_tmp49_ = params;
-			_tmp49__length1 = params_length1;
-			_tmp50_ = g_strdup_printf ("%i", _tmp49__length1);
-			_tmp51_ = _tmp50_;
-			_tmp52_ = g_strconcat ("Configuration string 'data_access' invalid; expected 3 parameters, got" \
-" ", _tmp51_, NULL);
-			_tmp53_ = _tmp52_;
-			fso_framework_logger_warning (_tmp48_, _tmp53_);
-			_g_free0 (_tmp53_);
-			_g_free0 (_tmp51_);
-		}
-		params = (_vala_array_free (params, params_length1, (GDestroyNotify) g_free), NULL);
-	}
+	_tmp6_ = fso_framework_transport_spec_parse (_tmp5_);
+	_tmp7_ = _tmp6_;
+	fso_gsm_abstract_modem_set_modem_transport_spec (self, _tmp7_);
+	_fso_framework_transport_spec_unref0 (_tmp7_);
+	_tmp8_ = ((FsoFrameworkAbstractObject*) self)->config;
+	_tmp9_ = fso_framework_smart_key_file_stringValue (_tmp8_, FSO_GSM_CONFIG_SECTION, "data_access", "");
+	data_config = _tmp9_;
+	_tmp10_ = data_config;
+	_tmp11_ = fso_framework_transport_spec_parse (_tmp10_);
+	_tmp12_ = _tmp11_;
+	fso_gsm_abstract_modem_set_data_transport_spec (self, _tmp12_);
+	_fso_framework_transport_spec_unref0 (_tmp12_);
 	fso_gsm_abstract_modem_initLowlevel (self);
 	fso_gsm_abstract_modem_initPdpHandler (self);
 	fso_gsm_abstract_modem_initData (self);
@@ -5859,54 +6030,40 @@ static GObject * fso_gsm_abstract_modem_constructor (GType type, guint n_constru
 	fso_gsm_abstract_modem_registerMediators (self);
 	fso_gsm_abstract_modem_registerAtCommands (self);
 	fso_gsm_abstract_modem_createChannels (self);
-	_tmp54_ = self->modem_transport;
-	_tmp55_ = string_to_string (_tmp54_);
-	_tmp56_ = self->modem_port;
-	_tmp57_ = string_to_string (_tmp56_);
-	_tmp58_ = self->modem_speed;
-	_tmp59_ = g_strdup_printf ("%i", _tmp58_);
-	_tmp60_ = _tmp59_;
-	_tmp61_ = g_strconcat (_tmp55_, ":", _tmp57_, "@", _tmp60_, NULL);
-	_tmp62_ = _tmp61_;
-	_g_free0 (_tmp60_);
-	configuration = _tmp62_;
-	_tmp63_ = data_config;
-	if (g_strcmp0 (_tmp63_, "") != 0) {
-		const gchar* _tmp64_;
-		const gchar* _tmp65_;
-		const gchar* _tmp66_ = NULL;
-		const gchar* _tmp67_;
-		const gchar* _tmp68_ = NULL;
-		gint _tmp69_;
-		gchar* _tmp70_ = NULL;
-		gchar* _tmp71_;
-		gchar* _tmp72_ = NULL;
-		gchar* _tmp73_;
-		gchar* _tmp74_;
-		_tmp64_ = configuration;
-		_tmp65_ = self->data_transport;
-		_tmp66_ = string_to_string (_tmp65_);
-		_tmp67_ = self->data_port;
-		_tmp68_ = string_to_string (_tmp67_);
-		_tmp69_ = self->data_speed;
-		_tmp70_ = g_strdup_printf ("%i", _tmp69_);
-		_tmp71_ = _tmp70_;
-		_tmp72_ = g_strconcat (" / ", _tmp66_, ":", _tmp68_, "@", _tmp71_, NULL);
-		_tmp73_ = _tmp72_;
-		_tmp74_ = g_strconcat (_tmp64_, _tmp73_, NULL);
+	_tmp13_ = self->priv->_modem_transport_spec;
+	_tmp14_ = fso_framework_transport_spec_repr (_tmp13_);
+	configuration = _tmp14_;
+	_tmp15_ = data_config;
+	if (g_strcmp0 (_tmp15_, "") != 0) {
+		const gchar* _tmp16_;
+		FsoFrameworkTransportSpec* _tmp17_;
+		gchar* _tmp18_ = NULL;
+		gchar* _tmp19_;
+		const gchar* _tmp20_ = NULL;
+		gchar* _tmp21_ = NULL;
+		gchar* _tmp22_;
+		gchar* _tmp23_;
+		_tmp16_ = configuration;
+		_tmp17_ = self->priv->_data_transport_spec;
+		_tmp18_ = fso_framework_transport_spec_repr (_tmp17_);
+		_tmp19_ = _tmp18_;
+		_tmp20_ = string_to_string (_tmp19_);
+		_tmp21_ = g_strconcat (" / ", _tmp20_, NULL);
+		_tmp22_ = _tmp21_;
+		_tmp23_ = g_strconcat (_tmp16_, _tmp22_, NULL);
 		_g_free0 (configuration);
-		configuration = _tmp74_;
-		_g_free0 (_tmp73_);
-		_g_free0 (_tmp71_);
+		configuration = _tmp23_;
+		_g_free0 (_tmp22_);
+		_g_free0 (_tmp19_);
 	}
-	_tmp75_ = ((FsoFrameworkAbstractObject*) self)->logger;
-	_tmp76_ = configuration;
-	_tmp77_ = string_to_string (_tmp76_);
-	_tmp78_ = g_strconcat ("Created; configured for ", _tmp77_, NULL);
-	_tmp79_ = _tmp78_;
-	_tmp80_ = fso_framework_logger_debug (_tmp75_, _tmp79_);
-	g_assert (_tmp80_);
-	_g_free0 (_tmp79_);
+	_tmp24_ = ((FsoFrameworkAbstractObject*) self)->logger;
+	_tmp25_ = configuration;
+	_tmp26_ = string_to_string (_tmp25_);
+	_tmp27_ = g_strconcat ("Created; configured for ", _tmp26_, NULL);
+	_tmp28_ = _tmp27_;
+	_tmp29_ = fso_framework_logger_debug (_tmp24_, _tmp28_);
+	g_assert (_tmp29_);
+	_g_free0 (_tmp28_);
 	_g_free0 (configuration);
 	_g_free0 (data_config);
 	_g_free0 (modem_config);
@@ -5947,12 +6104,14 @@ static void fso_gsm_abstract_modem_class_init (FsoGsmAbstractModemClass * klass)
 	G_OBJECT_CLASS (klass)->set_property = _vala_fso_gsm_abstract_modem_set_property;
 	G_OBJECT_CLASS (klass)->constructor = fso_gsm_abstract_modem_constructor;
 	G_OBJECT_CLASS (klass)->finalize = fso_gsm_abstract_modem_finalize;
+	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_ABSTRACT_MODEM_MODEM_TRANSPORT_SPEC, fso_framework_param_spec_transport_spec ("modem-transport-spec", "modem-transport-spec", "modem-transport-spec", FSO_FRAMEWORK_TYPE_TRANSPORT_SPEC, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_ABSTRACT_MODEM_DATA_TRANSPORT_SPEC, fso_framework_param_spec_transport_spec ("data-transport-spec", "data-transport-spec", "data-transport-spec", FSO_FRAMEWORK_TYPE_TRANSPORT_SPEC, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
 	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_ABSTRACT_MODEM_PARENT, g_param_spec_object ("parent", "parent", "parent", G_TYPE_OBJECT, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
 	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_ABSTRACT_MODEM_CALLHANDLER, g_param_spec_object ("callhandler", "callhandler", "callhandler", FSO_GSM_TYPE_CALL_HANDLER, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
 	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_ABSTRACT_MODEM_SMSHANDLER, g_param_spec_object ("smshandler", "smshandler", "smshandler", FSO_GSM_TYPE_SMS_HANDLER, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
 	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_ABSTRACT_MODEM_PBHANDLER, g_param_spec_object ("pbhandler", "pbhandler", "pbhandler", FSO_GSM_TYPE_PHONEBOOK_HANDLER, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
 	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_ABSTRACT_MODEM_WATCHDOG, g_param_spec_object ("watchdog", "watchdog", "watchdog", FSO_GSM_TYPE_WATCH_DOG, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
-	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_ABSTRACT_MODEM_PDPHANDLER, g_param_spec_object ("pdphandler", "pdphandler", "pdphandler", FSO_GSM_TYPE_PDP_HANDLER, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+	g_object_class_install_property (G_OBJECT_CLASS (klass), FSO_GSM_ABSTRACT_MODEM_PDPHANDLER, g_param_spec_object ("pdphandler", "pdphandler", "pdphandler", FSO_GSM_TYPE_IPDP_HANDLER, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
 }
 
 
@@ -5972,6 +6131,7 @@ static void fso_gsm_abstract_modem_fso_gsm_modem_interface_init (FsoGsmModemIfac
 	iface->setFunctionality_finish = fso_gsm_abstract_modem_setFunctionality_finish;
 	iface->theDevice = (gpointer (*)(FsoGsmModem*, GType, GBoxedCopyFunc, GDestroyNotify)) fso_gsm_abstract_modem_real_theDevice;
 	iface->status = (FsoGsmModemStatus (*)(FsoGsmModem*)) fso_gsm_abstract_modem_real_status;
+	iface->network_status = (FsoGsmModemNetworkStatus (*)(FsoGsmModem*)) fso_gsm_abstract_modem_real_network_status;
 	iface->data = (FsoGsmModemData* (*)(FsoGsmModem*)) fso_gsm_abstract_modem_real_data;
 	iface->channel = (FsoGsmChannel* (*)(FsoGsmModem*, const gchar*)) fso_gsm_abstract_modem_channel;
 	iface->createMediator = (gpointer (*)(FsoGsmModem*, GType, GBoxedCopyFunc, GDestroyNotify, GError**)) fso_gsm_abstract_modem_real_createMediator;
@@ -5980,10 +6140,12 @@ static void fso_gsm_abstract_modem_fso_gsm_modem_interface_init (FsoGsmModemIfac
 	iface->releaseDataPort = (void (*)(FsoGsmModem*)) fso_gsm_abstract_modem_releaseDataPort;
 	iface->processAtCommandAsync = (gchar** (*)(FsoGsmModem*, FsoGsmAtCommand*, const gchar*, gint, int*)) fso_gsm_abstract_modem_real_processAtCommandAsync;
 	iface->processAtCommandAsync_finish = fso_gsm_abstract_modem_real_processAtCommandAsync_finish;
+	iface->sendAtCommand = (void (*)(FsoGsmModem*, FsoGsmAtCommand*, const gchar*, gint)) fso_gsm_abstract_modem_real_sendAtCommand;
 	iface->processAtPduCommandAsync = (gchar** (*)(FsoGsmModem*, FsoGsmAtCommand*, const gchar*, gint, int*)) fso_gsm_abstract_modem_real_processAtPduCommandAsync;
 	iface->processAtPduCommandAsync_finish = fso_gsm_abstract_modem_real_processAtPduCommandAsync_finish;
 	iface->registerChannel = (void (*)(FsoGsmModem*, const gchar*, FsoGsmChannel*)) fso_gsm_abstract_modem_real_registerChannel;
 	iface->advanceToState = (void (*)(FsoGsmModem*, FsoGsmModemStatus, gboolean)) fso_gsm_abstract_modem_real_advanceToState;
+	iface->advanceNetworkState = (void (*)(FsoGsmModem*, FsoGsmModemNetworkStatus)) fso_gsm_abstract_modem_real_advanceNetworkState;
 	iface->atCommandSequence = (FsoGsmAtCommandSequence* (*)(FsoGsmModem*, const gchar*, const gchar*)) fso_gsm_abstract_modem_real_atCommandSequence;
 	iface->externalStatus = (FreeSmartphoneGSMDeviceStatus (*)(FsoGsmModem*)) fso_gsm_abstract_modem_real_externalStatus;
 	iface->isAlive = (gboolean (*)(FsoGsmModem*)) fso_gsm_abstract_modem_real_isAlive;
@@ -6013,12 +6175,8 @@ static void fso_gsm_abstract_modem_finalize (GObject* obj) {
 	self = FSO_GSM_ABSTRACT_MODEM (obj);
 	_tmp0_ = ((FsoFrameworkAbstractObject*) self)->logger;
 	fso_framework_logger_debug (_tmp0_, "Destroyed");
-	_g_free0 (self->modem_type);
-	_g_free0 (self->modem_transport);
-	_g_free0 (self->modem_port);
-	_g_free0 (self->data_type);
-	_g_free0 (self->data_transport);
-	_g_free0 (self->data_port);
+	_fso_framework_transport_spec_unref0 (self->priv->_modem_transport_spec);
+	_fso_framework_transport_spec_unref0 (self->priv->_data_transport_spec);
 	_g_object_unref0 (self->modem_data);
 	_g_object_unref0 (self->channels);
 	_g_object_unref0 (self->commands);
@@ -6056,6 +6214,12 @@ static void _vala_fso_gsm_abstract_modem_get_property (GObject * object, guint p
 	FsoGsmAbstractModem * self;
 	self = FSO_GSM_ABSTRACT_MODEM (object);
 	switch (property_id) {
+		case FSO_GSM_ABSTRACT_MODEM_MODEM_TRANSPORT_SPEC:
+		fso_framework_value_set_transport_spec (value, fso_gsm_abstract_modem_get_modem_transport_spec (self));
+		break;
+		case FSO_GSM_ABSTRACT_MODEM_DATA_TRANSPORT_SPEC:
+		fso_framework_value_set_transport_spec (value, fso_gsm_abstract_modem_get_data_transport_spec (self));
+		break;
 		case FSO_GSM_ABSTRACT_MODEM_PARENT:
 		g_value_set_object (value, fso_gsm_modem_get_parent ((FsoGsmModem*) self));
 		break;
@@ -6085,6 +6249,12 @@ static void _vala_fso_gsm_abstract_modem_set_property (GObject * object, guint p
 	FsoGsmAbstractModem * self;
 	self = FSO_GSM_ABSTRACT_MODEM (object);
 	switch (property_id) {
+		case FSO_GSM_ABSTRACT_MODEM_MODEM_TRANSPORT_SPEC:
+		fso_gsm_abstract_modem_set_modem_transport_spec (self, fso_framework_value_get_transport_spec (value));
+		break;
+		case FSO_GSM_ABSTRACT_MODEM_DATA_TRANSPORT_SPEC:
+		fso_gsm_abstract_modem_set_data_transport_spec (self, fso_framework_value_get_transport_spec (value));
+		break;
 		case FSO_GSM_ABSTRACT_MODEM_PARENT:
 		fso_gsm_modem_set_parent ((FsoGsmModem*) self, g_value_get_object (value));
 		break;
@@ -6163,6 +6333,68 @@ GType fso_gsm_abstract_cdma_modem_get_type (void) {
 		g_once_init_leave (&fso_gsm_abstract_cdma_modem_type_id__volatile, fso_gsm_abstract_cdma_modem_type_id);
 	}
 	return fso_gsm_abstract_cdma_modem_type_id__volatile;
+}
+
+
+static gchar* fso_gsm_null_modem_real_repr (FsoFrameworkAbstractObject* base) {
+	FsoGsmNullModem * self;
+	gchar* result = NULL;
+	gchar* _tmp0_;
+	self = (FsoGsmNullModem*) base;
+	_tmp0_ = g_strdup ("<>");
+	result = _tmp0_;
+	return result;
+}
+
+
+static FsoGsmChannel* fso_gsm_null_modem_real_channelForCommand (FsoGsmAbstractModem* base, FsoGsmAtCommand* command, const gchar* query) {
+	FsoGsmNullModem * self;
+	FsoGsmChannel* result = NULL;
+	FsoGsmChannel* _tmp0_;
+	self = (FsoGsmNullModem*) base;
+	g_return_val_if_fail (command != NULL, NULL);
+	g_return_val_if_fail (query != NULL, NULL);
+	_tmp0_ = _g_object_ref0 (FSO_GSM_CHANNEL (NULL));
+	result = _tmp0_;
+	return result;
+}
+
+
+FsoGsmNullModem* fso_gsm_null_modem_construct (GType object_type) {
+	FsoGsmNullModem * self = NULL;
+	self = (FsoGsmNullModem*) fso_gsm_abstract_modem_construct (object_type);
+	return self;
+}
+
+
+FsoGsmNullModem* fso_gsm_null_modem_new (void) {
+	return fso_gsm_null_modem_construct (FSO_GSM_TYPE_NULL_MODEM);
+}
+
+
+static void fso_gsm_null_modem_class_init (FsoGsmNullModemClass * klass) {
+	fso_gsm_null_modem_parent_class = g_type_class_peek_parent (klass);
+	FSO_FRAMEWORK_ABSTRACT_OBJECT_CLASS (klass)->repr = fso_gsm_null_modem_real_repr;
+	FSO_GSM_ABSTRACT_MODEM_CLASS (klass)->channelForCommand = fso_gsm_null_modem_real_channelForCommand;
+}
+
+
+static void fso_gsm_null_modem_instance_init (FsoGsmNullModem * self) {
+}
+
+
+/**
+ * Dummy implementation of a modem. Should be only used for testing purpose.
+ **/
+GType fso_gsm_null_modem_get_type (void) {
+	static volatile gsize fso_gsm_null_modem_type_id__volatile = 0;
+	if (g_once_init_enter (&fso_gsm_null_modem_type_id__volatile)) {
+		static const GTypeInfo g_define_type_info = { sizeof (FsoGsmNullModemClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) fso_gsm_null_modem_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (FsoGsmNullModem), 0, (GInstanceInitFunc) fso_gsm_null_modem_instance_init, NULL };
+		GType fso_gsm_null_modem_type_id;
+		fso_gsm_null_modem_type_id = g_type_register_static (FSO_GSM_TYPE_ABSTRACT_MODEM, "FsoGsmNullModem", &g_define_type_info, 0);
+		g_once_init_leave (&fso_gsm_null_modem_type_id__volatile, fso_gsm_null_modem_type_id);
+	}
+	return fso_gsm_null_modem_type_id__volatile;
 }
 
 

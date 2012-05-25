@@ -253,8 +253,10 @@ static void dummy_modem_real_registerCustomMediators (FsoGsmAbstractModem* base,
 static FsoGsmCallHandler* dummy_modem_real_createCallHandler (FsoGsmAbstractModem* base) {
 	DummyModem * self;
 	FsoGsmCallHandler* result = NULL;
+	FsoGsmNullCallHandler* _tmp0_;
 	self = (DummyModem*) base;
-	result = NULL;
+	_tmp0_ = fso_gsm_null_call_handler_new ();
+	result = (FsoGsmCallHandler*) _tmp0_;
 	return result;
 }
 
@@ -262,8 +264,10 @@ static FsoGsmCallHandler* dummy_modem_real_createCallHandler (FsoGsmAbstractMode
 static FsoGsmSmsHandler* dummy_modem_real_createSmsHandler (FsoGsmAbstractModem* base) {
 	DummyModem * self;
 	FsoGsmSmsHandler* result = NULL;
+	FsoGsmNullSmsHandler* _tmp0_;
 	self = (DummyModem*) base;
-	result = NULL;
+	_tmp0_ = fso_gsm_null_sms_handler_new ();
+	result = (FsoGsmSmsHandler*) _tmp0_;
 	return result;
 }
 
@@ -280,8 +284,10 @@ static FsoGsmPhonebookHandler* dummy_modem_real_createPhonebookHandler (FsoGsmAb
 static FsoGsmWatchDog* dummy_modem_real_createWatchDog (FsoGsmAbstractModem* base) {
 	DummyModem * self;
 	FsoGsmWatchDog* result = NULL;
+	FsoGsmNullWatchDog* _tmp0_;
 	self = (DummyModem*) base;
-	result = NULL;
+	_tmp0_ = fso_gsm_null_watch_dog_new ();
+	result = (FsoGsmWatchDog*) _tmp0_;
 	return result;
 }
 

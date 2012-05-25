@@ -46,11 +46,37 @@ namespace FsoGsm
             return;
         }
 
-        // gather info
-        var m = theModem.createMediator<FsoGsm.NetworkGetStatus>();
         try
         {
+            var m = theModem.createMediator<FsoGsm.NetworkGetStatus>();
             yield m.run();
+
+            // advance modem status, if necessary
+            var status = m.status.lookup( "registration" ).get_string();
+            assert( theModem.logger.debug( @"triggerUpdateNetworkStatus() status = $status" ) );
+
+            switch ( status )
+            {
+                case "home":
+                case "roaming":
+                    theModem.advanceToState( Modem.Status.ALIVE_REGISTERED );
+                    theModem.advanceNetworkState( Modem.NetworkStatus.REGISTERED );
+                    break;
+                case "searching":
+                    theModem.advanceToState( Modem.Status.ALIVE_SIM_READY, true );
+                    theModem.advanceNetworkState( Modem.NetworkStatus.SEARCHING );
+                    break;
+                case "denied":
+                case "unregistered":
+                case "unknown":
+                    theModem.advanceToState( Modem.Status.ALIVE_SIM_READY, true );
+                    theModem.advanceNetworkState( Modem.NetworkStatus.UNREGISTERED );
+                    break;
+            }
+
+            // send dbus signal
+            var obj = theModem.theDevice<FreeSmartphone.GSM.Network>();
+            obj.status( m.status );
         }
         catch ( GLib.Error e )
         {
@@ -58,23 +84,6 @@ namespace FsoGsm
             inTriggerUpdateNetworkStatus = false;
             return;
         }
-
-        // advance modem status, if necessary
-        var status = m.status.lookup( "registration" ).get_string();
-        assert( theModem.logger.debug( @"triggerUpdateNetworkStatus() status = $status" ) );
-
-        if ( status == "home" || status == "roaming" )
-        {
-            theModem.advanceToState( Modem.Status.ALIVE_REGISTERED );
-        }
-        else
-        {
-            theModem.advanceToState( Modem.Status.ALIVE_SIM_READY, true );
-        }
-
-        // send dbus signal
-        var obj = theModem.theDevice<FreeSmartphone.GSM.Network>();
-        obj.status( m.status );
 
         inTriggerUpdateNetworkStatus = false;
     }
@@ -103,7 +112,7 @@ namespace FsoGsm
         }
     }
 
-    public void validateDtmfTones( string tones )
+    public void validateDtmfTones( string tones ) throws FreeSmartphone.Error
     {
         if ( tones == "" )
             throw new FreeSmartphone.Error.INVALID_PARAMETER( "Invalid DTMF tones" );
@@ -115,6 +124,38 @@ namespace FsoGsm
             {
                 throw new FreeSmartphone.Error.INVALID_PARAMETER( "Invalid DTMF tones" );
             }
+        }
+    }
+
+    public async string findProviderNameForMccMnc( string mccmnc )
+    {
+        string provider = "unknown";
+
+        try
+        {
+            var world_service = Bus.get_proxy_sync<FreeSmartphone.Data.World>( BusType.SYSTEM,
+                FsoFramework.Data.WorldServicePath, FsoFramework.Data.WorldServiceFace );
+
+            provider = yield world_service.get_provider_name_for_mcc_mnc( mccmnc );
+        }
+        catch ( GLib.Error err )
+        {
+            FsoFramework.theLogger.warning( @"Could not find and valid provider name for MCC/MNC $mccmnc" );
+        }
+
+        return provider;
+    }
+
+    public async void updateNetworkSignalStrength( int strength )
+    {
+        if ( theModem.status() == FsoGsm.Modem.Status.ALIVE_REGISTERED )
+        {
+            var obj = theModem.theDevice<FreeSmartphone.GSM.Network>();
+            obj.signal_strength( strength );
+        }
+        else
+        {
+            assert( FsoFramework.theLogger.debug( @"Ignoring signal strength update while not in ALIVE_REGISTERED state" ) );
         }
     }
 }

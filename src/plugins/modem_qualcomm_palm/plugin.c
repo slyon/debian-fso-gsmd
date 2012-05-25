@@ -369,7 +369,6 @@ void fso_register_function (GTypeModule* module) {
 	msm_sim_store_message_register_type (module);
 	msm_sim_unlock_register_type (module);
 	msm_sms_retrieve_text_messages_register_type (module);
-	msm_sms_get_size_for_text_message_register_type (module);
 	msm_sms_send_text_message_register_type (module);
 	msm_network_register_register_type (module);
 	msm_network_unregister_register_type (module);

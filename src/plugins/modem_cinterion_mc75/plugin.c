@@ -78,14 +78,20 @@ struct _CinterionMc75ModemOpenData {
 	GSimpleAsyncResult* _async_result;
 	CinterionMc75Modem* self;
 	gboolean result;
-	const gchar* _tmp0_;
-	gboolean _tmp1_;
+	FsoFrameworkTransportSpec* _tmp0_;
+	FsoFrameworkTransportSpec* _tmp1_;
 	const gchar* _tmp2_;
-	gint _tmp3_;
-	FsoFrameworkNgsmBasicMuxTransport* _tmp4_;
-	FsoFrameworkNgsmBasicMuxTransport* _tmp5_;
-	gboolean _tmp6_;
-	gboolean _tmp7_;
+	gboolean _tmp3_;
+	FsoFrameworkTransportSpec* _tmp4_;
+	FsoFrameworkTransportSpec* _tmp5_;
+	const gchar* _tmp6_;
+	FsoFrameworkTransportSpec* _tmp7_;
+	FsoFrameworkTransportSpec* _tmp8_;
+	guint _tmp9_;
+	FsoFrameworkNgsmBasicMuxTransport* _tmp10_;
+	FsoFrameworkNgsmBasicMuxTransport* _tmp11_;
+	gboolean _tmp12_;
+	gboolean _tmp13_;
 };
 
 struct _CinterionMc75ModemCloseData {
@@ -426,19 +432,25 @@ static gboolean cinterion_mc75_modem_real_open_co (CinterionMc75ModemOpenData* _
 		g_assert_not_reached ();
 	}
 	_state_0:
-	_data_->_tmp0_ = ((FsoGsmAbstractModem*) _data_->self)->modem_transport;
-	_data_->_tmp1_ = FALSE;
-	_data_->_tmp1_ = g_str_has_prefix (_data_->_tmp0_, "ngsm");
-	if (_data_->_tmp1_) {
-		_data_->_tmp2_ = ((FsoGsmAbstractModem*) _data_->self)->modem_port;
-		_data_->_tmp3_ = ((FsoGsmAbstractModem*) _data_->self)->modem_speed;
-		_data_->_tmp4_ = fso_framework_ngsm_basic_mux_transport_new (_data_->_tmp2_, (guint) _data_->_tmp3_, (guint) 64);
+	_data_->_tmp0_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) _data_->self);
+	_data_->_tmp1_ = _data_->_tmp0_;
+	_data_->_tmp2_ = _data_->_tmp1_->type;
+	_data_->_tmp3_ = FALSE;
+	_data_->_tmp3_ = g_str_has_prefix (_data_->_tmp2_, "ngsm");
+	if (_data_->_tmp3_) {
+		_data_->_tmp4_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) _data_->self);
+		_data_->_tmp5_ = _data_->_tmp4_;
+		_data_->_tmp6_ = _data_->_tmp5_->name;
+		_data_->_tmp7_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) _data_->self);
+		_data_->_tmp8_ = _data_->_tmp7_;
+		_data_->_tmp9_ = _data_->_tmp8_->speed;
+		_data_->_tmp10_ = fso_framework_ngsm_basic_mux_transport_new (_data_->_tmp6_, _data_->_tmp9_, (guint) 64);
 		_g_object_unref0 (_data_->self->priv->muxtransport);
-		_data_->self->priv->muxtransport = _data_->_tmp4_;
-		_data_->_tmp5_ = _data_->self->priv->muxtransport;
-		_data_->_tmp6_ = FALSE;
-		_data_->_tmp6_ = fso_framework_transport_open ((FsoFrameworkTransport*) _data_->_tmp5_);
-		if (!_data_->_tmp6_) {
+		_data_->self->priv->muxtransport = _data_->_tmp10_;
+		_data_->_tmp11_ = _data_->self->priv->muxtransport;
+		_data_->_tmp12_ = FALSE;
+		_data_->_tmp12_ = fso_framework_transport_open ((FsoFrameworkTransport*) _data_->_tmp11_);
+		if (!_data_->_tmp12_) {
 			_data_->result = FALSE;
 			if (_data_->_state_ == 0) {
 				g_simple_async_result_complete_in_idle (_data_->_async_result);
@@ -453,9 +465,9 @@ static gboolean cinterion_mc75_modem_real_open_co (CinterionMc75ModemOpenData* _
 	FSO_GSM_ABSTRACT_MODEM_CLASS (cinterion_mc75_modem_parent_class)->open (FSO_GSM_ABSTRACT_MODEM (_data_->self), cinterion_mc75_modem_open_ready, _data_);
 	return FALSE;
 	_state_1:
-	_data_->_tmp7_ = FALSE;
-	_data_->_tmp7_ = FSO_GSM_ABSTRACT_MODEM_CLASS (cinterion_mc75_modem_parent_class)->open_finish (FSO_GSM_ABSTRACT_MODEM (_data_->self), _data_->_res_);
-	_data_->result = _data_->_tmp7_;
+	_data_->_tmp13_ = FALSE;
+	_data_->_tmp13_ = FSO_GSM_ABSTRACT_MODEM_CLASS (cinterion_mc75_modem_parent_class)->open_finish (FSO_GSM_ABSTRACT_MODEM (_data_->self), _data_->_res_);
+	_data_->result = _data_->_tmp13_;
 	if (_data_->_state_ == 0) {
 		g_simple_async_result_complete_in_idle (_data_->_async_result);
 	} else {
@@ -544,87 +556,91 @@ static gboolean cinterion_mc75_modem_real_close_co (CinterionMc75ModemCloseData*
 
 static void cinterion_mc75_modem_real_createChannels (FsoGsmAbstractModem* base) {
 	CinterionMc75Modem * self;
-	const gchar* _tmp0_;
-	gboolean _tmp1_ = FALSE;
+	FsoFrameworkTransportSpec* _tmp0_;
+	FsoFrameworkTransportSpec* _tmp1_;
+	const gchar* _tmp2_;
+	gboolean _tmp3_ = FALSE;
 	self = (CinterionMc75Modem*) base;
-	_tmp0_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-	_tmp1_ = g_str_has_prefix (_tmp0_, "ngsm");
-	if (_tmp1_) {
-		FsoFrameworkSerialTransport* _tmp2_;
-		FsoFrameworkSerialTransport* _tmp3_;
-		FsoGsmStateBasedAtParser* _tmp4_;
-		FsoGsmStateBasedAtParser* _tmp5_;
-		FsoGsmAtChannel* _tmp6_;
-		FsoGsmAtChannel* _tmp7_;
-		FsoFrameworkSerialTransport* _tmp8_;
-		FsoFrameworkSerialTransport* _tmp9_;
-		FsoGsmStateBasedAtParser* _tmp10_;
-		FsoGsmStateBasedAtParser* _tmp11_;
-		FsoGsmAtChannel* _tmp12_;
-		FsoGsmAtChannel* _tmp13_;
-		_tmp2_ = fso_framework_serial_transport_new ("/dev/ttygsm1", (guint) 115200, TRUE, TRUE);
-		_tmp3_ = _tmp2_;
-		_tmp4_ = fso_gsm_state_based_at_parser_new ();
+	_tmp0_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = _tmp1_->type;
+	_tmp3_ = g_str_has_prefix (_tmp2_, "ngsm");
+	if (_tmp3_) {
+		FsoFrameworkSerialTransport* _tmp4_;
+		FsoFrameworkSerialTransport* _tmp5_;
+		FsoGsmStateBasedAtParser* _tmp6_;
+		FsoGsmStateBasedAtParser* _tmp7_;
+		FsoGsmAtChannel* _tmp8_;
+		FsoGsmAtChannel* _tmp9_;
+		FsoFrameworkSerialTransport* _tmp10_;
+		FsoFrameworkSerialTransport* _tmp11_;
+		FsoGsmStateBasedAtParser* _tmp12_;
+		FsoGsmStateBasedAtParser* _tmp13_;
+		FsoGsmAtChannel* _tmp14_;
+		FsoGsmAtChannel* _tmp15_;
+		_tmp4_ = fso_framework_serial_transport_new ("/dev/ttygsm1", (guint) 115200, TRUE, TRUE);
 		_tmp5_ = _tmp4_;
-		_tmp6_ = fso_gsm_at_channel_new ("main", (FsoFrameworkTransport*) _tmp3_, (FsoFrameworkParser*) _tmp5_);
+		_tmp6_ = fso_gsm_state_based_at_parser_new ();
 		_tmp7_ = _tmp6_;
+		_tmp8_ = fso_gsm_at_channel_new ("main", (FsoFrameworkTransport*) _tmp5_, (FsoFrameworkParser*) _tmp7_);
+		_tmp9_ = _tmp8_;
+		_g_object_unref0 (_tmp9_);
 		_g_object_unref0 (_tmp7_);
 		_g_object_unref0 (_tmp5_);
-		_g_object_unref0 (_tmp3_);
-		_tmp8_ = fso_framework_serial_transport_new ("/dev/ttygsm3", (guint) 115200, TRUE, TRUE);
-		_tmp9_ = _tmp8_;
-		_tmp10_ = fso_gsm_state_based_at_parser_new ();
+		_tmp10_ = fso_framework_serial_transport_new ("/dev/ttygsm3", (guint) 115200, TRUE, TRUE);
 		_tmp11_ = _tmp10_;
-		_tmp12_ = fso_gsm_at_channel_new ("call", (FsoFrameworkTransport*) _tmp9_, (FsoFrameworkParser*) _tmp11_);
+		_tmp12_ = fso_gsm_state_based_at_parser_new ();
 		_tmp13_ = _tmp12_;
+		_tmp14_ = fso_gsm_at_channel_new ("call", (FsoFrameworkTransport*) _tmp11_, (FsoFrameworkParser*) _tmp13_);
+		_tmp15_ = _tmp14_;
+		_g_object_unref0 (_tmp15_);
 		_g_object_unref0 (_tmp13_);
 		_g_object_unref0 (_tmp11_);
-		_g_object_unref0 (_tmp9_);
 		return;
 	}
 	{
 		gint i;
 		i = 0;
 		{
-			gboolean _tmp14_;
-			_tmp14_ = TRUE;
+			gboolean _tmp16_;
+			_tmp16_ = TRUE;
 			while (TRUE) {
-				gboolean _tmp15_;
-				gint _tmp17_;
-				gint _tmp18_;
-				FsoGsmLibGsm0710muxTransport* _tmp19_;
+				gboolean _tmp17_;
+				gint _tmp19_;
+				gint _tmp20_;
+				FsoGsmLibGsm0710muxTransport* _tmp21_;
 				FsoGsmLibGsm0710muxTransport* transport;
-				FsoGsmStateBasedAtParser* _tmp20_;
+				FsoGsmStateBasedAtParser* _tmp22_;
 				FsoGsmStateBasedAtParser* parser;
-				gint _tmp21_;
-				const gchar* _tmp22_;
-				FsoGsmLibGsm0710muxTransport* _tmp23_;
-				FsoGsmStateBasedAtParser* _tmp24_;
-				FsoGsmAtChannel* _tmp25_;
-				FsoGsmAtChannel* _tmp26_;
-				_tmp15_ = _tmp14_;
-				if (!_tmp15_) {
-					gint _tmp16_;
-					_tmp16_ = i;
-					i = _tmp16_ + 1;
+				gint _tmp23_;
+				const gchar* _tmp24_;
+				FsoGsmLibGsm0710muxTransport* _tmp25_;
+				FsoGsmStateBasedAtParser* _tmp26_;
+				FsoGsmAtChannel* _tmp27_;
+				FsoGsmAtChannel* _tmp28_;
+				_tmp17_ = _tmp16_;
+				if (!_tmp17_) {
+					gint _tmp18_;
+					_tmp18_ = i;
+					i = _tmp18_ + 1;
 				}
-				_tmp14_ = FALSE;
-				_tmp17_ = i;
-				if (!(_tmp17_ < G_N_ELEMENTS (CINTERION_MC75_CHANNEL_NAMES))) {
+				_tmp16_ = FALSE;
+				_tmp19_ = i;
+				if (!(_tmp19_ < G_N_ELEMENTS (CINTERION_MC75_CHANNEL_NAMES))) {
 					break;
 				}
-				_tmp18_ = i;
-				_tmp19_ = fso_gsm_lib_gsm0710mux_transport_new (_tmp18_ + 1);
-				transport = _tmp19_;
-				_tmp20_ = fso_gsm_state_based_at_parser_new ();
-				parser = _tmp20_;
-				_tmp21_ = i;
-				_tmp22_ = CINTERION_MC75_CHANNEL_NAMES[_tmp21_];
-				_tmp23_ = transport;
-				_tmp24_ = parser;
-				_tmp25_ = fso_gsm_at_channel_new (_tmp22_, (FsoFrameworkTransport*) _tmp23_, (FsoFrameworkParser*) _tmp24_);
-				_tmp26_ = _tmp25_;
-				_g_object_unref0 (_tmp26_);
+				_tmp20_ = i;
+				_tmp21_ = fso_gsm_lib_gsm0710mux_transport_new (_tmp20_ + 1);
+				transport = _tmp21_;
+				_tmp22_ = fso_gsm_state_based_at_parser_new ();
+				parser = _tmp22_;
+				_tmp23_ = i;
+				_tmp24_ = CINTERION_MC75_CHANNEL_NAMES[_tmp23_];
+				_tmp25_ = transport;
+				_tmp26_ = parser;
+				_tmp27_ = fso_gsm_at_channel_new (_tmp24_, (FsoFrameworkTransport*) _tmp25_, (FsoFrameworkParser*) _tmp26_);
+				_tmp28_ = _tmp27_;
+				_g_object_unref0 (_tmp28_);
 				_g_object_unref0 (parser);
 				_g_object_unref0 (transport);
 			}

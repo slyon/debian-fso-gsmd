@@ -29,7 +29,6 @@
 #include <radio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <fsodata.h>
 
 
 #define TYPE_SAMSUNG_NETWORK_REGISTER (samsung_network_register_get_type ())
@@ -104,7 +103,6 @@ typedef struct _SamsungNetworkGetStatus SamsungNetworkGetStatus;
 typedef struct _SamsungNetworkGetStatusClass SamsungNetworkGetStatusClass;
 typedef struct _SamsungNetworkGetStatusPrivate SamsungNetworkGetStatusPrivate;
 #define _g_hash_table_unref0(var) ((var == NULL) ? NULL : (var = (g_hash_table_unref (var), NULL)))
-#define _fso_data_mbpi_provider_unref0(var) ((var == NULL) ? NULL : (var = (fso_data_mbpi_provider_unref (var), NULL)))
 typedef struct _SamsungNetworkGetStatusRunData SamsungNetworkGetStatusRunData;
 
 #define TYPE_SAMSUNG_NETWORK_LIST_PROVIDERS (samsung_network_list_providers_get_type ())
@@ -365,54 +363,52 @@ struct _SamsungNetworkGetStatusRunData {
 	const gchar* _tmp87_;
 	GVariant* _tmp88_;
 	const gchar* _tmp89_;
-	FsoDataMBPIProvider* _tmp90_;
-	FsoDataMBPIProvider* provider_info;
+	gchar* _tmp90_;
+	gchar* provider;
 	GHashTable* _tmp91_;
 	GHashTable* _tmp92_;
 	gchar* _tmp93_;
-	FsoDataMBPIProvider* _tmp94_;
-	const gchar* _tmp95_;
-	GVariant* _tmp96_;
+	const gchar* _tmp94_;
+	GVariant* _tmp95_;
+	GHashTable* _tmp96_;
 	GHashTable* _tmp97_;
-	GHashTable* _tmp98_;
-	gchar* _tmp99_;
-	FsoDataMBPIProvider* _tmp100_;
-	const gchar* _tmp101_;
-	GVariant* _tmp102_;
+	gchar* _tmp98_;
+	const gchar* _tmp99_;
+	GVariant* _tmp100_;
+	struct ipc_net_regist_get _tmp101_;
+	SamsungIpcChannel* _tmp102_;
 	struct ipc_net_regist_get _tmp103_;
-	SamsungIpcChannel* _tmp104_;
-	struct ipc_net_regist_get _tmp105_;
-	guint8* _tmp106_;
-	gint _tmp106__length1;
-	guint8* _tmp107_;
-	gint _tmp107__length1;
-	struct ipc_message_info* _tmp108_;
+	guint8* _tmp104_;
+	gint _tmp104__length1;
+	guint8* _tmp105_;
+	gint _tmp105__length1;
+	struct ipc_message_info* _tmp106_;
+	struct ipc_message_info* _tmp107_;
+	GError* _tmp108_;
 	struct ipc_message_info* _tmp109_;
-	GError* _tmp110_;
-	struct ipc_message_info* _tmp111_;
-	guint8* _tmp112_;
-	gint _tmp112__length1;
-	GHashTable* _tmp113_;
-	GHashTable* _tmp114_;
-	gchar* _tmp115_;
-	struct ipc_net_regist* _tmp116_;
-	gint8 _tmp117_;
-	gchar* _tmp118_;
-	GVariant* _tmp119_;
-	GHashTable* _tmp120_;
-	GHashTable* _tmp121_;
-	gchar* _tmp122_;
-	struct ipc_net_regist* _tmp123_;
-	guint16 _tmp124_;
-	gchar* _tmp125_;
-	GVariant* _tmp126_;
-	GHashTable* _tmp127_;
-	GHashTable* _tmp128_;
-	gchar* _tmp129_;
-	struct ipc_net_regist* _tmp130_;
-	guint32 _tmp131_;
-	gchar* _tmp132_;
-	GVariant* _tmp133_;
+	guint8* _tmp110_;
+	gint _tmp110__length1;
+	GHashTable* _tmp111_;
+	GHashTable* _tmp112_;
+	gchar* _tmp113_;
+	struct ipc_net_regist* _tmp114_;
+	gint8 _tmp115_;
+	gchar* _tmp116_;
+	GVariant* _tmp117_;
+	GHashTable* _tmp118_;
+	GHashTable* _tmp119_;
+	gchar* _tmp120_;
+	struct ipc_net_regist* _tmp121_;
+	guint16 _tmp122_;
+	gchar* _tmp123_;
+	GVariant* _tmp124_;
+	GHashTable* _tmp125_;
+	GHashTable* _tmp126_;
+	gchar* _tmp127_;
+	struct ipc_net_regist* _tmp128_;
+	guint32 _tmp129_;
+	gchar* _tmp130_;
+	GVariant* _tmp131_;
 	GError * _inner_error_;
 };
 
@@ -483,26 +479,24 @@ struct _SamsungNetworkListProvidersRunData {
 	gchar* _tmp36_;
 	gchar* _tmp37_;
 	const gchar* _tmp38_;
-	FsoDataMBPIProvider* _tmp39_;
-	FsoDataMBPIProvider* providerInfo;
+	gchar* _tmp39_;
+	gchar* provider;
 	FsoGsmConstants* _tmp40_;
 	FsoGsmConstants* _tmp41_;
 	struct ipc_net_plmn_entry* _tmp42_;
 	gint8 _tmp43_;
 	gchar* _tmp44_;
 	gchar* _tmp45_;
-	FsoDataMBPIProvider* _tmp46_;
+	const gchar* _tmp46_;
 	const gchar* _tmp47_;
-	FsoDataMBPIProvider* _tmp48_;
-	const gchar* _tmp49_;
-	const gchar* _tmp50_;
+	const gchar* _tmp48_;
 	FreeSmartphoneGSMNetworkProvider p;
-	FreeSmartphoneGSMNetworkProvider* _tmp51_;
-	gint _tmp51__length1;
-	FreeSmartphoneGSMNetworkProvider _tmp52_;
-	FreeSmartphoneGSMNetworkProvider _tmp53_;
-	FreeSmartphoneGSMNetworkProvider* _tmp54_;
-	gint _tmp54__length1;
+	FreeSmartphoneGSMNetworkProvider* _tmp49_;
+	gint _tmp49__length1;
+	FreeSmartphoneGSMNetworkProvider _tmp50_;
+	FreeSmartphoneGSMNetworkProvider _tmp51_;
+	FreeSmartphoneGSMNetworkProvider* _tmp52_;
+	gint _tmp52__length1;
 	GError * _inner_error_;
 };
 
@@ -588,7 +582,6 @@ static GVariant* _variant_new20 (gchar* value);
 static GVariant* _variant_new21 (gchar* value);
 static GVariant* _variant_new22 (gchar* value);
 static GVariant* _variant_new23 (const gchar* value);
-FsoDataMBPIProvider* findProviderForMccMnc (const gchar* mccmnc);
 static GVariant* _variant_new24 (const gchar* value);
 static GVariant* _variant_new25 (const gchar* value);
 static GVariant* _variant_new26 (gchar* value);
@@ -1350,6 +1343,8 @@ static gboolean samsung_network_get_status_real_run_co (SamsungNetworkGetStatusR
 		goto _state_3;
 		case 4:
 		goto _state_4;
+		case 5:
+		goto _state_5;
 		default:
 		g_assert_not_reached ();
 	}
@@ -1602,46 +1597,48 @@ static gboolean samsung_network_get_status_real_run_co (SamsungNetworkGetStatusR
 		_data_->_tmp88_ = _variant_new23 (_data_->_tmp87_);
 		g_hash_table_insert (_data_->_tmp85_, _data_->_tmp86_, _data_->_tmp88_);
 		_data_->_tmp89_ = _data_->plmn;
+		_data_->_state_ = 4;
+		fso_gsm_findProviderNameForMccMnc (_data_->_tmp89_, samsung_network_get_status_run_ready, _data_);
+		return FALSE;
+		_state_4:
 		_data_->_tmp90_ = NULL;
-		_data_->_tmp90_ = findProviderForMccMnc (_data_->_tmp89_);
-		_data_->provider_info = _data_->_tmp90_;
+		_data_->_tmp90_ = fso_gsm_findProviderNameForMccMnc_finish (_data_->_res_);
+		_data_->provider = _data_->_tmp90_;
 		_data_->_tmp91_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
 		_data_->_tmp92_ = _data_->_tmp91_;
 		_data_->_tmp93_ = g_strdup ("provider");
-		_data_->_tmp94_ = _data_->provider_info;
-		_data_->_tmp95_ = _data_->_tmp94_->name;
-		_data_->_tmp96_ = _variant_new24 (_data_->_tmp95_);
-		g_hash_table_insert (_data_->_tmp92_, _data_->_tmp93_, _data_->_tmp96_);
-		_data_->_tmp97_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-		_data_->_tmp98_ = _data_->_tmp97_;
-		_data_->_tmp99_ = g_strdup ("display");
-		_data_->_tmp100_ = _data_->provider_info;
-		_data_->_tmp101_ = _data_->_tmp100_->name;
-		_data_->_tmp102_ = _variant_new25 (_data_->_tmp101_);
-		g_hash_table_insert (_data_->_tmp98_, _data_->_tmp99_, _data_->_tmp102_);
-		_fso_data_mbpi_provider_unref0 (_data_->provider_info);
+		_data_->_tmp94_ = _data_->provider;
+		_data_->_tmp95_ = _variant_new24 (_data_->_tmp94_);
+		g_hash_table_insert (_data_->_tmp92_, _data_->_tmp93_, _data_->_tmp95_);
+		_data_->_tmp96_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+		_data_->_tmp97_ = _data_->_tmp96_;
+		_data_->_tmp98_ = g_strdup ("display");
+		_data_->_tmp99_ = _data_->provider;
+		_data_->_tmp100_ = _variant_new25 (_data_->_tmp99_);
+		g_hash_table_insert (_data_->_tmp97_, _data_->_tmp98_, _data_->_tmp100_);
+		_g_free0 (_data_->provider);
 	}
-	memset (&_data_->_tmp103_, 0, sizeof (struct ipc_net_regist_get));
-	memset (&_data_->_tmp103_, 0, sizeof (struct ipc_net_regist_get));
+	memset (&_data_->_tmp101_, 0, sizeof (struct ipc_net_regist_get));
+	memset (&_data_->_tmp101_, 0, sizeof (struct ipc_net_regist_get));
 	 (&_data_->req);
-	_data_->req = _data_->_tmp103_;
+	_data_->req = _data_->_tmp101_;
 	ipc_net_regist_setup (&_data_->req, IPC_NET_SERVICE_DOMAIN_GSM);
-	_data_->_tmp104_ = _data_->channel;
-	_data_->_tmp105_ = _data_->req;
-	_data_->_tmp106_ = samsung_ipc_network_registration_get_message_get_data (&_data_->_tmp105_, &_data_->_tmp106__length1);
-	_data_->_tmp107_ = _data_->_tmp106_;
-	_data_->_tmp107__length1 = _data_->_tmp106__length1;
-	_data_->_state_ = 4;
-	samsung_ipc_channel_enqueue_async (_data_->_tmp104_, IPC_TYPE_GET, IPC_NET_REGIST, _data_->_tmp107_, _data_->_tmp107__length1, 0, 5, samsung_network_get_status_run_ready, _data_);
+	_data_->_tmp102_ = _data_->channel;
+	_data_->_tmp103_ = _data_->req;
+	_data_->_tmp104_ = samsung_ipc_network_registration_get_message_get_data (&_data_->_tmp103_, &_data_->_tmp104__length1);
+	_data_->_tmp105_ = _data_->_tmp104_;
+	_data_->_tmp105__length1 = _data_->_tmp104__length1;
+	_data_->_state_ = 5;
+	samsung_ipc_channel_enqueue_async (_data_->_tmp102_, IPC_TYPE_GET, IPC_NET_REGIST, _data_->_tmp105_, _data_->_tmp105__length1, 0, 5, samsung_network_get_status_run_ready, _data_);
 	return FALSE;
-	_state_4:
-	_data_->_tmp108_ = NULL;
-	_data_->_tmp108_ = samsung_ipc_channel_enqueue_finish (_data_->_tmp104_, _data_->_res_);
-	_data_->response = _data_->_tmp108_;
-	_data_->_tmp109_ = _data_->response;
-	if (_data_->_tmp109_ == NULL) {
-		_data_->_tmp110_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_INTERNAL_ERROR, "Could not retrieve PDP network status from modem");
-		_data_->_inner_error_ = _data_->_tmp110_;
+	_state_5:
+	_data_->_tmp106_ = NULL;
+	_data_->_tmp106_ = samsung_ipc_channel_enqueue_finish (_data_->_tmp102_, _data_->_res_);
+	_data_->response = _data_->_tmp106_;
+	_data_->_tmp107_ = _data_->response;
+	if (_data_->_tmp107_ == NULL) {
+		_data_->_tmp108_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_INTERNAL_ERROR, "Could not retrieve PDP network status from modem");
+		_data_->_inner_error_ = _data_->_tmp108_;
 		if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
 			g_error_free (_data_->_inner_error_);
@@ -1666,37 +1663,37 @@ static gboolean samsung_network_get_status_real_run_co (SamsungNetworkGetStatusR
 			return FALSE;
 		}
 	}
-	_data_->_tmp111_ = _data_->response;
-	_data_->_tmp112_ = (*_data_->_tmp111_).data;
-	_data_->_tmp112__length1 = (*_data_->_tmp111_).length;
-	_data_->reginfo = (struct ipc_net_regist*) _data_->_tmp112_;
-	_data_->_tmp113_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-	_data_->_tmp114_ = _data_->_tmp113_;
-	_data_->_tmp115_ = g_strdup ("pdp.registration");
-	_data_->_tmp116_ = _data_->reginfo;
-	_data_->_tmp117_ = (*_data_->_tmp116_).reg_state;
-	_data_->_tmp118_ = NULL;
-	_data_->_tmp118_ = networkRegistrationStateToString (_data_->_tmp117_);
-	_data_->_tmp119_ = _variant_new26 (_data_->_tmp118_);
-	g_hash_table_insert (_data_->_tmp114_, _data_->_tmp115_, _data_->_tmp119_);
-	_data_->_tmp120_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-	_data_->_tmp121_ = _data_->_tmp120_;
-	_data_->_tmp122_ = g_strdup ("pdp.lac");
-	_data_->_tmp123_ = _data_->reginfo;
-	_data_->_tmp124_ = (*_data_->_tmp123_).lac;
-	_data_->_tmp125_ = NULL;
-	_data_->_tmp125_ = g_strdup_printf ("%hu", _data_->_tmp124_);
-	_data_->_tmp126_ = _variant_new27 (_data_->_tmp125_);
-	g_hash_table_insert (_data_->_tmp121_, _data_->_tmp122_, _data_->_tmp126_);
-	_data_->_tmp127_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-	_data_->_tmp128_ = _data_->_tmp127_;
-	_data_->_tmp129_ = g_strdup ("pdp.cid");
-	_data_->_tmp130_ = _data_->reginfo;
-	_data_->_tmp131_ = (*_data_->_tmp130_).cid;
-	_data_->_tmp132_ = NULL;
-	_data_->_tmp132_ = g_strdup_printf ("%u", _data_->_tmp131_);
-	_data_->_tmp133_ = _variant_new28 (_data_->_tmp132_);
-	g_hash_table_insert (_data_->_tmp128_, _data_->_tmp129_, _data_->_tmp133_);
+	_data_->_tmp109_ = _data_->response;
+	_data_->_tmp110_ = (*_data_->_tmp109_).data;
+	_data_->_tmp110__length1 = (*_data_->_tmp109_).length;
+	_data_->reginfo = (struct ipc_net_regist*) _data_->_tmp110_;
+	_data_->_tmp111_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+	_data_->_tmp112_ = _data_->_tmp111_;
+	_data_->_tmp113_ = g_strdup ("pdp.registration");
+	_data_->_tmp114_ = _data_->reginfo;
+	_data_->_tmp115_ = (*_data_->_tmp114_).reg_state;
+	_data_->_tmp116_ = NULL;
+	_data_->_tmp116_ = networkRegistrationStateToString (_data_->_tmp115_);
+	_data_->_tmp117_ = _variant_new26 (_data_->_tmp116_);
+	g_hash_table_insert (_data_->_tmp112_, _data_->_tmp113_, _data_->_tmp117_);
+	_data_->_tmp118_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+	_data_->_tmp119_ = _data_->_tmp118_;
+	_data_->_tmp120_ = g_strdup ("pdp.lac");
+	_data_->_tmp121_ = _data_->reginfo;
+	_data_->_tmp122_ = (*_data_->_tmp121_).lac;
+	_data_->_tmp123_ = NULL;
+	_data_->_tmp123_ = g_strdup_printf ("%hu", _data_->_tmp122_);
+	_data_->_tmp124_ = _variant_new27 (_data_->_tmp123_);
+	g_hash_table_insert (_data_->_tmp119_, _data_->_tmp120_, _data_->_tmp124_);
+	_data_->_tmp125_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+	_data_->_tmp126_ = _data_->_tmp125_;
+	_data_->_tmp127_ = g_strdup ("pdp.cid");
+	_data_->_tmp128_ = _data_->reginfo;
+	_data_->_tmp129_ = (*_data_->_tmp128_).cid;
+	_data_->_tmp130_ = NULL;
+	_data_->_tmp130_ = g_strdup_printf ("%u", _data_->_tmp129_);
+	_data_->_tmp131_ = _variant_new28 (_data_->_tmp130_);
+	g_hash_table_insert (_data_->_tmp126_, _data_->_tmp127_, _data_->_tmp131_);
 	_g_free0 (_data_->plmn);
 	 (&_data_->req);
 	_g_object_unref0 (_data_->m);
@@ -1845,6 +1842,8 @@ static gboolean samsung_network_list_providers_real_run_co (SamsungNetworkListPr
 		goto _state_0;
 		case 1:
 		goto _state_1;
+		case 2:
+		goto _state_2;
 		default:
 		g_assert_not_reached ();
 	}
@@ -1964,9 +1963,13 @@ static gboolean samsung_network_list_providers_real_run_co (SamsungNetworkListPr
 					}
 				}
 				_data_->_tmp38_ = _data_->mccmnc;
+				_data_->_state_ = 2;
+				fso_gsm_findProviderNameForMccMnc (_data_->_tmp38_, samsung_network_list_providers_run_ready, _data_);
+				return FALSE;
+				_state_2:
 				_data_->_tmp39_ = NULL;
-				_data_->_tmp39_ = findProviderForMccMnc (_data_->_tmp38_);
-				_data_->providerInfo = _data_->_tmp39_;
+				_data_->_tmp39_ = fso_gsm_findProviderNameForMccMnc_finish (_data_->_res_);
+				_data_->provider = _data_->_tmp39_;
 				_data_->_tmp40_ = NULL;
 				_data_->_tmp40_ = fso_gsm_constants_instance ();
 				_data_->_tmp41_ = _data_->_tmp40_;
@@ -1975,29 +1978,27 @@ static gboolean samsung_network_list_providers_real_run_co (SamsungNetworkListPr
 				_data_->_tmp44_ = NULL;
 				_data_->_tmp44_ = fso_gsm_constants_networkProviderStatusToString (_data_->_tmp41_, ((gint) _data_->_tmp43_) - 1);
 				_data_->_tmp45_ = _data_->_tmp44_;
-				_data_->_tmp46_ = _data_->providerInfo;
-				_data_->_tmp47_ = _data_->_tmp46_->name;
-				_data_->_tmp48_ = _data_->providerInfo;
-				_data_->_tmp49_ = _data_->_tmp48_->name;
-				_data_->_tmp50_ = _data_->mccmnc;
-				free_smartphone_gsm_network_provider_init (&_data_->p, _data_->_tmp45_, _data_->_tmp47_, _data_->_tmp49_, _data_->_tmp50_, "GSM");
+				_data_->_tmp46_ = _data_->provider;
+				_data_->_tmp47_ = _data_->provider;
+				_data_->_tmp48_ = _data_->mccmnc;
+				free_smartphone_gsm_network_provider_init (&_data_->p, _data_->_tmp45_, _data_->_tmp46_, _data_->_tmp47_, _data_->_tmp48_, "GSM");
 				_g_free0 (_data_->_tmp45_);
 				_fso_gsm_constants_unref0 (_data_->_tmp41_);
-				_data_->_tmp51_ = _data_->_providers;
-				_data_->_tmp51__length1 = _data_->_providers_length1;
-				_data_->_tmp52_ = _data_->p;
-				memset (&_data_->_tmp53_, 0, sizeof (FreeSmartphoneGSMNetworkProvider));
-				free_smartphone_gsm_network_provider_copy (&_data_->_tmp52_, &_data_->_tmp53_);
-				_vala_array_add1 (&_data_->_providers, &_data_->_providers_length1, &_data_->__providers_size_, &_data_->_tmp53_);
+				_data_->_tmp49_ = _data_->_providers;
+				_data_->_tmp49__length1 = _data_->_providers_length1;
+				_data_->_tmp50_ = _data_->p;
+				memset (&_data_->_tmp51_, 0, sizeof (FreeSmartphoneGSMNetworkProvider));
+				free_smartphone_gsm_network_provider_copy (&_data_->_tmp50_, &_data_->_tmp51_);
+				_vala_array_add1 (&_data_->_providers, &_data_->_providers_length1, &_data_->__providers_size_, &_data_->_tmp51_);
 				free_smartphone_gsm_network_provider_destroy (&_data_->p);
-				_fso_data_mbpi_provider_unref0 (_data_->providerInfo);
+				_g_free0 (_data_->provider);
 				_g_free0 (_data_->mccmnc);
 			}
 		}
 	}
-	_data_->_tmp54_ = _data_->_providers;
-	_data_->_tmp54__length1 = _data_->_providers_length1;
-	fso_gsm_network_list_providers_set_providers ((FsoGsmNetworkListProviders*) _data_->self, _data_->_tmp54_, _data_->_tmp54__length1);
+	_data_->_tmp52_ = _data_->_providers;
+	_data_->_tmp52__length1 = _data_->_providers_length1;
+	fso_gsm_network_list_providers_set_providers ((FsoGsmNetworkListProviders*) _data_->self, _data_->_tmp52_, _data_->_tmp52__length1);
 	_data_->_providers = (_vala_FreeSmartphoneGSMNetworkProvider_array_free (_data_->_providers, _data_->_providers_length1), NULL);
 	_g_object_unref0 (_data_->channel);
 	if (_data_->_state_ == 0) {

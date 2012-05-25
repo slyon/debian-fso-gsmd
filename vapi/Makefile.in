@@ -66,8 +66,6 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CONNMAN_CFLAGS = @CONNMAN_CFLAGS@
-CONNMAN_LIBS = @CONNMAN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -196,8 +194,7 @@ GTESTER = gtester
 GTESTER_REPORT = gtester-report
 
 # initialize variables for unconditional += appending
-EXTRA_DIST = config.vapi connman.vapi ppp.vapi ppp.deps thread.vapi \
-	$(NULL)
+EXTRA_DIST = config.vapi ppp.vapi ppp.deps thread.vapi $(NULL)
 TEST_PROGS = 
 NULL = 
 all: all-am

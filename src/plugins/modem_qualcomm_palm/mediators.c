@@ -527,16 +527,6 @@ typedef struct _MsmCallSendDtmfClass MsmCallSendDtmfClass;
 typedef struct _MsmSmsRetrieveTextMessages MsmSmsRetrieveTextMessages;
 typedef struct _MsmSmsRetrieveTextMessagesClass MsmSmsRetrieveTextMessagesClass;
 
-#define TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE (msm_sms_get_size_for_text_message_get_type ())
-#define MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE, MsmSmsGetSizeForTextMessage))
-#define MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE, MsmSmsGetSizeForTextMessageClass))
-#define IS_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE))
-#define IS_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE))
-#define MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE, MsmSmsGetSizeForTextMessageClass))
-
-typedef struct _MsmSmsGetSizeForTextMessage MsmSmsGetSizeForTextMessage;
-typedef struct _MsmSmsGetSizeForTextMessageClass MsmSmsGetSizeForTextMessageClass;
-
 #define TYPE_MSM_SMS_SEND_TEXT_MESSAGE (msm_sms_send_text_message_get_type ())
 #define MSM_SMS_SEND_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_MSM_SMS_SEND_TEXT_MESSAGE, MsmSmsSendTextMessage))
 #define MSM_SMS_SEND_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_MSM_SMS_SEND_TEXT_MESSAGE, MsmSmsSendTextMessageClass))
@@ -730,8 +720,6 @@ GType msm_call_send_dtmf_get_type (void) G_GNUC_CONST;
 GType msm_call_send_dtmf_register_type (GTypeModule * module);
 GType msm_sms_retrieve_text_messages_get_type (void) G_GNUC_CONST;
 GType msm_sms_retrieve_text_messages_register_type (GTypeModule * module);
-GType msm_sms_get_size_for_text_message_get_type (void) G_GNUC_CONST;
-GType msm_sms_get_size_for_text_message_register_type (GTypeModule * module);
 GType msm_sms_send_text_message_get_type (void) G_GNUC_CONST;
 GType msm_sms_send_text_message_register_type (GTypeModule * module);
 GType msm_cb_set_cell_broadcast_subscriptions_get_type (void) G_GNUC_CONST;
@@ -816,7 +804,6 @@ void registerMsmMediators (GeeHashMap* table) {
 	GeeHashMap* _tmp57_;
 	GeeHashMap* _tmp58_;
 	GeeHashMap* _tmp59_;
-	GeeHashMap* _tmp60_;
 	g_return_if_fail (table != NULL);
 	_tmp0_ = table;
 	gee_abstract_map_set ((GeeAbstractMap*) _tmp0_, GINT_TO_POINTER (FSO_GSM_TYPE_DEBUG_COMMAND), GINT_TO_POINTER (TYPE_MSM_DEBUG_COMMAND));
@@ -921,25 +908,23 @@ void registerMsmMediators (GeeHashMap* table) {
 	_tmp50_ = table;
 	gee_abstract_map_set ((GeeAbstractMap*) _tmp50_, GINT_TO_POINTER (FSO_GSM_TYPE_SMS_RETRIEVE_TEXT_MESSAGES), GINT_TO_POINTER (TYPE_MSM_SMS_RETRIEVE_TEXT_MESSAGES));
 	_tmp51_ = table;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp51_, GINT_TO_POINTER (FSO_GSM_TYPE_SMS_GET_SIZE_FOR_TEXT_MESSAGE), GINT_TO_POINTER (TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE));
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp51_, GINT_TO_POINTER (FSO_GSM_TYPE_SMS_SEND_TEXT_MESSAGE), GINT_TO_POINTER (TYPE_MSM_SMS_SEND_TEXT_MESSAGE));
 	_tmp52_ = table;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp52_, GINT_TO_POINTER (FSO_GSM_TYPE_SMS_SEND_TEXT_MESSAGE), GINT_TO_POINTER (TYPE_MSM_SMS_SEND_TEXT_MESSAGE));
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp52_, GINT_TO_POINTER (FSO_GSM_TYPE_CB_SET_CELL_BROADCAST_SUBSCRIPTIONS), GINT_TO_POINTER (TYPE_MSM_CB_SET_CELL_BROADCAST_SUBSCRIPTIONS));
 	_tmp53_ = table;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp53_, GINT_TO_POINTER (FSO_GSM_TYPE_CB_SET_CELL_BROADCAST_SUBSCRIPTIONS), GINT_TO_POINTER (TYPE_MSM_CB_SET_CELL_BROADCAST_SUBSCRIPTIONS));
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp53_, GINT_TO_POINTER (FSO_GSM_TYPE_CB_GET_CELL_BROADCAST_SUBSCRIPTIONS), GINT_TO_POINTER (TYPE_MSM_CB_GET_CELL_BROADCAST_SUBSCRIPTIONS));
 	_tmp54_ = table;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp54_, GINT_TO_POINTER (FSO_GSM_TYPE_CB_GET_CELL_BROADCAST_SUBSCRIPTIONS), GINT_TO_POINTER (TYPE_MSM_CB_GET_CELL_BROADCAST_SUBSCRIPTIONS));
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp54_, GINT_TO_POINTER (FSO_GSM_TYPE_MONITOR_GET_SERVING_CELL_INFORMATION), GINT_TO_POINTER (TYPE_MSM_MONITOR_GET_SERVING_CELL_INFORMATION));
 	_tmp55_ = table;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp55_, GINT_TO_POINTER (FSO_GSM_TYPE_MONITOR_GET_SERVING_CELL_INFORMATION), GINT_TO_POINTER (TYPE_MSM_MONITOR_GET_SERVING_CELL_INFORMATION));
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp55_, GINT_TO_POINTER (FSO_GSM_TYPE_MONITOR_GET_NEIGHBOUR_CELL_INFORMATION), GINT_TO_POINTER (TYPE_MSM_MONITOR_GET_NEIGHBOUR_CELL_INFORMATION));
 	_tmp56_ = table;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp56_, GINT_TO_POINTER (FSO_GSM_TYPE_MONITOR_GET_NEIGHBOUR_CELL_INFORMATION), GINT_TO_POINTER (TYPE_MSM_MONITOR_GET_NEIGHBOUR_CELL_INFORMATION));
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp56_, GINT_TO_POINTER (FSO_GSM_TYPE_VOICE_MAILBOX_GET_NUMBER), GINT_TO_POINTER (TYPE_MSM_VOICE_MAILBOX_GET_NUMBER));
 	_tmp57_ = table;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp57_, GINT_TO_POINTER (FSO_GSM_TYPE_VOICE_MAILBOX_GET_NUMBER), GINT_TO_POINTER (TYPE_MSM_VOICE_MAILBOX_GET_NUMBER));
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp57_, GINT_TO_POINTER (FSO_GSM_TYPE_VOICE_MAILBOX_SET_NUMBER), GINT_TO_POINTER (TYPE_MSM_VOICE_MAILBOX_SET_NUMBER));
 	_tmp58_ = table;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp58_, GINT_TO_POINTER (FSO_GSM_TYPE_VOICE_MAILBOX_SET_NUMBER), GINT_TO_POINTER (TYPE_MSM_VOICE_MAILBOX_SET_NUMBER));
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp58_, GINT_TO_POINTER (FSO_GSM_TYPE_PDP_SET_CREDENTIALS), GINT_TO_POINTER (TYPE_MSM_PDP_SET_CREDENTIALS));
 	_tmp59_ = table;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp59_, GINT_TO_POINTER (FSO_GSM_TYPE_PDP_SET_CREDENTIALS), GINT_TO_POINTER (TYPE_MSM_PDP_SET_CREDENTIALS));
-	_tmp60_ = table;
-	gee_abstract_map_set ((GeeAbstractMap*) _tmp60_, GINT_TO_POINTER (FSO_GSM_TYPE_PDP_GET_CREDENTIALS), GINT_TO_POINTER (TYPE_MSM_PDP_GET_CREDENTIALS));
+	gee_abstract_map_set ((GeeAbstractMap*) _tmp59_, GINT_TO_POINTER (FSO_GSM_TYPE_PDP_GET_CREDENTIALS), GINT_TO_POINTER (TYPE_MSM_PDP_GET_CREDENTIALS));
 }
 
 

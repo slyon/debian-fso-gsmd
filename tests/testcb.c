@@ -109,7 +109,7 @@ static struct cbs* cbs_newFromHexPdu (const gchar* hexpdu, gint tpdulen) {
 		_tmp15_ = string_to_string (_tmp14_);
 		_tmp16_ = g_strconcat ("Cb.Message::newFromHexPdu: could not decode message w/ tpdulen ", _tmp13_, " and hexpdu ", _tmp15_, NULL);
 		_tmp17_ = _tmp16_;
-		g_warning ("fsogsm3rdparty.vapi:852: %s", _tmp17_);
+		g_warning ("fsogsm3rdparty.vapi:855: %s", _tmp17_);
 		_g_free0 (_tmp17_);
 		_g_free0 (_tmp13_);
 		result = NULL;
@@ -326,7 +326,7 @@ static gchar* cbs_decode_all (struct cbs* self, gchar** language) {
 	iso639 = _tmp6_;
 	if (!_tmp7_) {
 		gchar* _tmp8_;
-		g_warning ("fsogsm3rdparty.vapi:814: %s", "Cb.Message::to_string: could not decode dcs");
+		g_warning ("fsogsm3rdparty.vapi:817: %s", "Cb.Message::to_string: could not decode dcs");
 		_tmp8_ = g_strdup ("<unknown/invalid>");
 		result = _tmp8_;
 		if (language) {

@@ -17,7 +17,6 @@
 
 # GLIB - Library of useful C routines
 
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -38,8 +37,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/Makefile.decl
-noinst_PROGRAMS = $(am__EXEEXT_1)
+	$(top_srcdir)/Makefile.decl lowlevel_openmoko_la_vala.stamp \
+	plugin.c
 subdir = src/plugins/lowlevel_openmoko
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -79,20 +78,18 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(modlibexecdir)"
 LTLIBRARIES = $(modlibexec_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(top_builddir)/src/lib/libfsogsm.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-lowlevel_openmoko_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
+lowlevel_openmoko_la_DEPENDENCIES =  \
+	$(top_builddir)/src/lib/libfsogsm.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am_lowlevel_openmoko_la_OBJECTS = lowlevel_openmoko_la-plugin.lo
 lowlevel_openmoko_la_OBJECTS = $(am_lowlevel_openmoko_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 lowlevel_openmoko_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
-	$(lowlevel_openmoko_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(lowlevel_openmoko_la_CFLAGS) $(CFLAGS) \
 	$(lowlevel_openmoko_la_LDFLAGS) $(LDFLAGS) -o $@
-am__EXEEXT_1 =
-PROGRAMS = $(noinst_PROGRAMS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -116,6 +113,13 @@ LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD  " $@;
+VALACOMPILE = $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS)
+LTVALACOMPILE = $(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(VALAC) $(AM_VALAFLAGS) \
+	$(VALAFLAGS)
+AM_V_VALAC = $(am__v_VALAC_@AM_V@)
+am__v_VALAC_ = $(am__v_VALAC_@AM_DEFAULT_V@)
+am__v_VALAC_0 = @echo "  VALAC " $@;
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN   " $@;
@@ -135,8 +139,6 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CONNMAN_CFLAGS = @CONNMAN_CFLAGS@
-CONNMAN_LIBS = @CONNMAN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -265,51 +267,40 @@ GTESTER = gtester
 GTESTER_REPORT = gtester-report
 
 # initialize variables for unconditional += appending
-EXTRA_DIST = $(lowlevel_openmoko_la_VALASOURCES) \
-	$(lowlevel_openmoko_la_SOURCES) $(NULL)
+EXTRA_DIST = 
 TEST_PROGS = 
 NULL = 
 AM_CPPFLAGS = \
-	-I$(top_srcdir)/src/lib \
-	-I$(top_srcdir)/src/3rdparty \
-	$(FSO_CFLAGS) \
 	-DG_LOG_DOMAIN=\"fsogsm.lowlevel_openmoko\" \
 	$(NULL)
 
-progs_ldadd = \
-	$(top_builddir)/src/lib/libfsogsm.la \
-	$(FSO_LIBS) \
-	$(NULL)
-
-VALAC_ARGS = \
+AM_VALAFLAGS = 
+modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
+modlibexec_LTLIBRARIES = lowlevel_openmoko.la
+lowlevel_openmoko_la_SOURCES = plugin.vala
+lowlevel_openmoko_la_VALAFLAGS = \
 	--basedir $(top_srcdir) \
 	--vapidir $(top_srcdir)/src/lib \
 	--pkg glib-2.0 \
 	--pkg fsoframework-2.0 \
-	--pkg fsogsm-2.0
+	--pkg fsogsm-2.0 \
+	$(NULL)
 
+lowlevel_openmoko_la_CFLAGS = \
+	-I$(top_srcdir)/src/lib \
+	-I$(top_srcdir)/src/3rdparty \
+	$(FSO_CFLAGS) \
+	$(NULL)
 
-#
-# plugin
-#
-modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
-modlibexec_LTLIBRARIES = lowlevel_openmoko.la
-lowlevel_openmoko_la_SOURCES = plugin.c
-lowlevel_openmoko_la_VALASOURCES = plugin.vala
-lowlevel_openmoko_la_LIBADD = $(progs_ldadd)
+lowlevel_openmoko_la_LIBADD = \
+	$(top_builddir)/src/lib/libfsogsm.la \
+	$(FSO_LIBS) \
+	$(NULL)
+
 lowlevel_openmoko_la_LDFLAGS = -no-undefined -module -avoid-version
-lowlevel_openmoko_la_LIBTOOLFLAGS = --tag=disable-static
-CLEANFILES = \
-    plugin.c \
-    plugin.h \
-    *.la \
-    *.lo \
-    $(NULL)
-
-MAINTAINERCLEANFILES = \
-  Makefile.in \
-  $(NULL)
-
+# lowlevel_openmoko_la_LIBTOOLFLAGS = --tag=disable-static
+CLEANFILES = 
+MAINTAINERCLEANFILES = 
 all: all-am
 
 .SUFFIXES:
@@ -379,15 +370,6 @@ clean-modlibexecLTLIBRARIES:
 lowlevel_openmoko.la: $(lowlevel_openmoko_la_OBJECTS) $(lowlevel_openmoko_la_DEPENDENCIES) $(EXTRA_lowlevel_openmoko_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(lowlevel_openmoko_la_LINK) -rpath $(modlibexecdir) $(lowlevel_openmoko_la_OBJECTS) $(lowlevel_openmoko_la_LIBADD) $(LIBS)
 
-clean-noinstPROGRAMS:
-	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
-	echo " rm -f" $$list; \
-	rm -f $$list || exit $$?; \
-	test -n "$(EXEEXT)" || exit 0; \
-	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
-	echo " rm -f" $$list; \
-	rm -f $$list
-
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -418,11 +400,20 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 lowlevel_openmoko_la-plugin.lo: plugin.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(lowlevel_openmoko_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT lowlevel_openmoko_la-plugin.lo -MD -MP -MF $(DEPDIR)/lowlevel_openmoko_la-plugin.Tpo -c -o lowlevel_openmoko_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lowlevel_openmoko_la_CFLAGS) $(CFLAGS) -MT lowlevel_openmoko_la-plugin.lo -MD -MP -MF $(DEPDIR)/lowlevel_openmoko_la-plugin.Tpo -c -o lowlevel_openmoko_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/lowlevel_openmoko_la-plugin.Tpo $(DEPDIR)/lowlevel_openmoko_la-plugin.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='plugin.c' object='lowlevel_openmoko_la-plugin.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(lowlevel_openmoko_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o lowlevel_openmoko_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lowlevel_openmoko_la_CFLAGS) $(CFLAGS) -c -o lowlevel_openmoko_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
+$(srcdir)/plugin.c: $(srcdir)/lowlevel_openmoko_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/lowlevel_openmoko_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/lowlevel_openmoko_la_vala.stamp; \
+	fi
+$(srcdir)/lowlevel_openmoko_la_vala.stamp: $(lowlevel_openmoko_la_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(lowlevel_openmoko_la_VALAFLAGS) $(VALAFLAGS) -C $(lowlevel_openmoko_la_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -515,7 +506,7 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-local
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
+all-am: Makefile $(LTLIBRARIES)
 installdirs:
 	for dir in "$(DESTDIR)$(modlibexecdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -551,11 +542,13 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f lowlevel_openmoko_la_vala.stamp
+	-rm -f plugin.c
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-modlibexecLTLIBRARIES \
-	clean-noinstPROGRAMS mostlyclean-am
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -626,19 +619,19 @@ uninstall-am: uninstall-modlibexecLTLIBRARIES
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am check-local clean \
-	clean-generic clean-libtool clean-modlibexecLTLIBRARIES \
-	clean-noinstPROGRAMS ctags distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man \
-	install-modlibexecLTLIBRARIES install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-modlibexecLTLIBRARIES
+	clean-generic clean-libtool clean-modlibexecLTLIBRARIES ctags \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-modlibexecLTLIBRARIES \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-modlibexecLTLIBRARIES
 
 
 ### testing rules
@@ -689,9 +682,6 @@ test-report perf-report full-report:	${TEST_PROGS}
 .PHONY: test test-report perf-report full-report
 # run make test as part of make check
 check-local: test
-$(lowlevel_openmoko_la_SOURCES): $(lowlevel_openmoko_la_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

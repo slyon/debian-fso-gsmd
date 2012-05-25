@@ -37,7 +37,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/Makefile.decl
+	$(top_srcdir)/Makefile.decl smsdata.c testatcommand.c \
+	testatcommand_vala.stamp testatparser.c \
+	testatparser_vala.stamp testcb.c testcb_vala.stamp testconst.c \
+	testconst_vala.stamp testconversions.c \
+	testconversions_vala.stamp testsms.c testsms_vala.stamp \
+	testsmsstorage.c testsmsstorage_vala.stamp
 noinst_PROGRAMS = $(am__EXEEXT_1)
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -50,32 +55,51 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = testatcommand$(EXEEXT) testatparser$(EXEEXT) \
 	testcb$(EXEEXT) testconversions$(EXEEXT) testconst$(EXEEXT) \
-	testsms$(EXEEXT)
+	testsms$(EXEEXT) testsmsstorage$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_testatcommand_OBJECTS = testatcommand.$(OBJEXT)
 testatcommand_OBJECTS = $(am_testatcommand_OBJECTS)
+testatcommand_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) ../src/lib/libfsogsm.la
-testatcommand_DEPENDENCIES = $(am__DEPENDENCIES_2)
+testatcommand_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(top_builddir)/src/lib/libfsogsm.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am_testatparser_OBJECTS = testatparser.$(OBJEXT)
 testatparser_OBJECTS = $(am_testatparser_OBJECTS)
-testatparser_DEPENDENCIES = $(am__DEPENDENCIES_2)
+testatparser_LDADD = $(LDADD)
+testatparser_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(top_builddir)/src/lib/libfsogsm.la
 am_testcb_OBJECTS = testcb.$(OBJEXT)
 testcb_OBJECTS = $(am_testcb_OBJECTS)
-testcb_DEPENDENCIES = $(am__DEPENDENCIES_2)
+testcb_LDADD = $(LDADD)
+testcb_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(top_builddir)/src/lib/libfsogsm.la
 am_testconst_OBJECTS = testconst.$(OBJEXT)
 testconst_OBJECTS = $(am_testconst_OBJECTS)
-testconst_DEPENDENCIES = $(am__DEPENDENCIES_2)
+testconst_LDADD = $(LDADD)
+testconst_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(top_builddir)/src/lib/libfsogsm.la
 am_testconversions_OBJECTS = testconversions.$(OBJEXT)
 testconversions_OBJECTS = $(am_testconversions_OBJECTS)
-testconversions_DEPENDENCIES = $(am__DEPENDENCIES_2)
-am_testsms_OBJECTS = testsms.$(OBJEXT)
+testconversions_LDADD = $(LDADD)
+testconversions_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(top_builddir)/src/lib/libfsogsm.la
+am_testsms_OBJECTS = testsms.$(OBJEXT) smsdata.$(OBJEXT)
 testsms_OBJECTS = $(am_testsms_OBJECTS)
-testsms_DEPENDENCIES = $(am__DEPENDENCIES_2)
+testsms_LDADD = $(LDADD)
+testsms_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(top_builddir)/src/lib/libfsogsm.la
+am_testsmsstorage_OBJECTS = testsmsstorage.$(OBJEXT) smsdata.$(OBJEXT)
+testsmsstorage_OBJECTS = $(am_testsmsstorage_OBJECTS)
+testsmsstorage_LDADD = $(LDADD)
+testsmsstorage_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(top_builddir)/src/lib/libfsogsm.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -99,15 +123,24 @@ LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD  " $@;
+VALACOMPILE = $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS)
+LTVALACOMPILE = $(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(VALAC) $(AM_VALAFLAGS) \
+	$(VALAFLAGS)
+AM_V_VALAC = $(am__v_VALAC_@AM_V@)
+am__v_VALAC_ = $(am__v_VALAC_@AM_DEFAULT_V@)
+am__v_VALAC_0 = @echo "  VALAC " $@;
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(testatcommand_SOURCES) $(testatparser_SOURCES) \
 	$(testcb_SOURCES) $(testconst_SOURCES) \
-	$(testconversions_SOURCES) $(testsms_SOURCES)
+	$(testconversions_SOURCES) $(testsms_SOURCES) \
+	$(testsmsstorage_SOURCES)
 DIST_SOURCES = $(testatcommand_SOURCES) $(testatparser_SOURCES) \
 	$(testcb_SOURCES) $(testconst_SOURCES) \
-	$(testconversions_SOURCES) $(testsms_SOURCES)
+	$(testconversions_SOURCES) $(testsms_SOURCES) \
+	$(testsmsstorage_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -122,8 +155,6 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CONNMAN_CFLAGS = @CONNMAN_CFLAGS@
-CONNMAN_LIBS = @CONNMAN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -252,13 +283,11 @@ GTESTER = gtester
 GTESTER_REPORT = gtester-report
 
 # initialize variables for unconditional += appending
-EXTRA_DIST = $(testatcommand_VALASOURCES) $(testatparser_VALASOURCES) \
-	$(testcb_VALASOURCES) $(testconversions_VALASOURCES) \
-	$(testconst_VALASOURCES) $(testsms_VALASOURCES)
+EXTRA_DIST = 
 TEST_PROGS = testatcommand testatparser testcb testconversions \
-	testconst testsms
+	testconst testsms testsmsstorage
 NULL = 
-AM_CPPFLAGS = \
+AM_CFLAGS = \
 	-I$(top_srcdir)/src/lib \
 	-I$(top_srcdir)/src/3rdparty \
 	$(GLIB_CFLAGS) \
@@ -266,13 +295,13 @@ AM_CPPFLAGS = \
 	$(FSO_CFLAGS) \
 	$(NULL)
 
-progs_ldadd = \
+LDADD = \
 	$(GLIB_LIBS) \
 	$(GEE_LIBS) \
 	$(FSO_LIBS) \
-	../src/lib/libfsogsm.la
+	$(top_builddir)/src/lib/libfsogsm.la
 
-VALAC_ARGS = \
+AM_VALAFLAGS = \
 	--basedir $(top_srcdir) \
 	--vapidir $(top_srcdir)/src/lib \
 	--pkg posix \
@@ -280,36 +309,31 @@ VALAC_ARGS = \
 	--pkg gio-2.0 \
 	--pkg gee-1.0 \
 	--pkg fsoframework-2.0 \
+	--pkg fsobasics-2.0 \
 	--pkg fsotransport-2.0 \
 	--pkg fsogsm-2.0 \
 	--pkg fsogsm3rdparty
 
-testatcommand_VALASOURCES = testatcommand.vala
-testatcommand_SOURCES = testatcommand.c
-testatcommand_LDADD = $(progs_ldadd)
-testatparser_VALASOURCES = testatparser.vala
-testatparser_SOURCES = testatparser.c
-testatparser_LDADD = $(progs_ldadd)
-testcb_VALASOURCES = testcb.vala
-testcb_SOURCES = testcb.c
-testcb_LDADD = $(progs_ldadd)
-testconversions_VALASOURCES = testconversions.vala
-testconversions_SOURCES = testconversions.c
-testconversions_LDADD = $(progs_ldadd)
-testconst_VALASOURCES = testconst.vala
-testconst_SOURCES = testconst.c
-testconst_LDADD = $(progs_ldadd)
-testsms_VALASOURCES = testsms.vala
-testsms_SOURCES = testsms.c
-testsms_LDADD = $(progs_ldadd)
-CLEANFILES = \
-    $(TEST_PROGS) \
-    *.? \
-    $(NULL)
+testatcommand_SOURCES = testatcommand.vala
+testatparser_SOURCES = testatparser.vala
+testcb_SOURCES = testcb.vala
+testconversions_SOURCES = testconversions.vala
+testconst_SOURCES = testconst.vala
+testsms_SOURCES = testsms.vala smsdata.vala
+testsmsstorage_SOURCES = testsmsstorage.vala smsdata.vala
 
+# TEST_PROGS += testoptiongtm601
+# FIXME adding the sources from the modem plugin itself to the list of sources for
+# compilation of this test is ugly, we should rather load the plugin and use it the common
+# way.
+# testoptiongtm601_SOURCES = \
+#	$(top_srcdir)/src/plugins/modem_option_gtm601/commands.vala \
+#	testoptiongtm601.vala \
+#	$(NULL)
+CLEANFILES = 
 MAINTAINERCLEANFILES = \
-  Makefile.in \
-  $(NULL)
+	Makefile.in \
+	$(NULL)
 
 all: all-am
 
@@ -373,6 +397,9 @@ testconversions$(EXEEXT): $(testconversions_OBJECTS) $(testconversions_DEPENDENC
 testsms$(EXEEXT): $(testsms_OBJECTS) $(testsms_DEPENDENCIES) $(EXTRA_testsms_DEPENDENCIES) 
 	@rm -f testsms$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(testsms_OBJECTS) $(testsms_LDADD) $(LIBS)
+testsmsstorage$(EXEEXT): $(testsmsstorage_OBJECTS) $(testsmsstorage_DEPENDENCIES) $(EXTRA_testsmsstorage_DEPENDENCIES) 
+	@rm -f testsmsstorage$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(testsmsstorage_OBJECTS) $(testsmsstorage_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -380,12 +407,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smsdata.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testatcommand.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testatparser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testcb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testconst.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testconversions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testsms.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testsmsstorage.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -407,6 +436,79 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+$(srcdir)/testcb.c: $(srcdir)/testcb_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testcb_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testcb_vala.stamp; \
+	fi
+$(srcdir)/testcb_vala.stamp: $(testcb_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testcb_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
+$(srcdir)/testatparser.c: $(srcdir)/testatparser_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testatparser_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testatparser_vala.stamp; \
+	fi
+$(srcdir)/testatparser_vala.stamp: $(testatparser_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testatparser_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
+$(srcdir)/testsmsstorage.c: $(srcdir)/testsmsstorage_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testsmsstorage_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testsmsstorage_vala.stamp; \
+	fi
+$(srcdir)/smsdata.c: $(srcdir)/testsmsstorage_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testsmsstorage_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testsmsstorage_vala.stamp; \
+	fi
+$(srcdir)/testsmsstorage_vala.stamp: $(testsmsstorage_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testsmsstorage_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
+$(srcdir)/testsms.c: $(srcdir)/testsms_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testsms_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testsms_vala.stamp; \
+	fi
+$(srcdir)/smsdata.c: $(srcdir)/testsms_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testsms_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testsms_vala.stamp; \
+	fi
+$(srcdir)/testsms_vala.stamp: $(testsms_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testsms_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
+$(srcdir)/testconversions.c: $(srcdir)/testconversions_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testconversions_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testconversions_vala.stamp; \
+	fi
+$(srcdir)/testconversions_vala.stamp: $(testconversions_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testconversions_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
+$(srcdir)/testconst.c: $(srcdir)/testconst_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testconst_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testconst_vala.stamp; \
+	fi
+$(srcdir)/testconst_vala.stamp: $(testconst_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testconst_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
+$(srcdir)/testatcommand.c: $(srcdir)/testatcommand_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testatcommand_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testatcommand_vala.stamp; \
+	fi
+$(srcdir)/testatcommand_vala.stamp: $(testatcommand_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testatcommand_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -532,6 +634,21 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f smsdata.c
+	-rm -f testatcommand.c
+	-rm -f testatcommand_vala.stamp
+	-rm -f testatparser.c
+	-rm -f testatparser_vala.stamp
+	-rm -f testcb.c
+	-rm -f testcb_vala.stamp
+	-rm -f testconst.c
+	-rm -f testconst_vala.stamp
+	-rm -f testconversions.c
+	-rm -f testconversions_vala.stamp
+	-rm -f testsms.c
+	-rm -f testsms_vala.stamp
+	-rm -f testsmsstorage.c
+	-rm -f testsmsstorage_vala.stamp
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
@@ -669,24 +786,6 @@ test-report perf-report full-report:	${TEST_PROGS}
 .PHONY: test test-report perf-report full-report
 # run make test as part of make check
 check-local: test
-$(testatcommand_SOURCES): $(testatcommand_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-$(testatparser_SOURCES): $(testatparser_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-$(testcb_SOURCES): $(testcb_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-$(testconversions_SOURCES): $(testconversions_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-$(testconst_SOURCES): $(testconst_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
-$(testsms_SOURCES): $(testsms_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

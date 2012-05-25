@@ -214,7 +214,7 @@ static void isi_channel_real_open_data_free (gpointer _data);
 static void isi_channel_real_open (FsoFrameworkAbstractCommandQueue* base, GAsyncReadyCallback _callback_, gpointer _user_data_);
 static gboolean isi_channel_real_open_co (IsiChannelOpenData* _data_);
 static void isi_channel_open_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_);
-static void isi_channel_real_onReadFromTransport (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t);
+static void isi_channel_real_onTransportDataAvailable (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t);
 GType isi_transport_get_type (void) G_GNUC_CONST;
 GType isi_transport_register_type (GTypeModule * module);
 IsiChannel* isi_channel_new (const gchar* name, IsiTransport* transport);
@@ -355,7 +355,7 @@ static gboolean isi_channel_real_open_co (IsiChannelOpenData* _data_) {
 }
 
 
-static void isi_channel_real_onReadFromTransport (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t) {
+static void isi_channel_real_onTransportDataAvailable (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t) {
 	IsiChannel * self;
 	self = (IsiChannel*) base;
 	g_return_if_fail (t != NULL);
@@ -794,7 +794,7 @@ static void isi_channel_class_init (IsiChannelClass * klass) {
 	g_type_class_add_private (klass, sizeof (IsiChannelPrivate));
 	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->open = isi_channel_real_open;
 	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->open_finish = isi_channel_real_open_finish;
-	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->onReadFromTransport = isi_channel_real_onReadFromTransport;
+	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->onTransportDataAvailable = isi_channel_real_onTransportDataAvailable;
 	G_OBJECT_CLASS (klass)->finalize = isi_channel_finalize;
 }
 

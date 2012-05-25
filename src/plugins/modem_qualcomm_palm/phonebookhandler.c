@@ -67,6 +67,7 @@ typedef struct _MsmUnsolicitedResponseHandler MsmUnsolicitedResponseHandler;
 typedef struct _MsmUnsolicitedResponseHandlerClass MsmUnsolicitedResponseHandlerClass;
 #define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 typedef struct _msm_phonebook_handler_syncPhonebookData msm_phonebook_handler_syncPhonebookData;
+typedef struct _msm_phonebook_handler_syncWithSimData msm_phonebook_handler_syncWithSimData;
 typedef struct _msm_phonebook_handler_initializeStorageData msm_phonebook_handler_initializeStorageData;
 
 struct _MsmPhonebookHandler {
@@ -231,6 +232,14 @@ struct _msm_phonebook_handler_syncPhonebookData {
 	GError * _inner_error_;
 };
 
+struct _msm_phonebook_handler_syncWithSimData {
+	int _state_;
+	GObject* _source_object_;
+	GAsyncResult* _res_;
+	GSimpleAsyncResult* _async_result;
+	MsmPhonebookHandler* self;
+};
+
 struct _msm_phonebook_handler_initializeStorageData {
 	int _state_;
 	GObject* _source_object_;
@@ -291,6 +300,9 @@ const gchar* msmcomm_phonebook_book_type_to_string (MsmcommPhonebookBookType sel
 static void _vala_array_add1 (FreeSmartphoneGSMSIMEntry** array, int* length, int* size, const FreeSmartphoneGSMSIMEntry* value);
 static void _vala_FreeSmartphoneGSMSIMEntry_array_free (FreeSmartphoneGSMSIMEntry* array, gint array_length);
 gchar* bookTypeToCategory (MsmcommPhonebookBookType book_type);
+static void msm_phonebook_handler_real_syncWithSim_data_free (gpointer _data);
+static void msm_phonebook_handler_real_syncWithSim (FsoGsmPhonebookHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_);
+static gboolean msm_phonebook_handler_real_syncWithSim_co (msm_phonebook_handler_syncWithSimData* _data_);
 static void msm_phonebook_handler_initializeStorage_data_free (gpointer _data);
 void msm_phonebook_handler_initializeStorage (MsmPhonebookHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
 void msm_phonebook_handler_initializeStorage_finish (MsmPhonebookHandler* self, GAsyncResult* _res_);
@@ -720,6 +732,52 @@ static gboolean msm_phonebook_handler_syncPhonebook_co (msm_phonebook_handler_sy
 }
 
 
+static void msm_phonebook_handler_real_syncWithSim_data_free (gpointer _data) {
+	msm_phonebook_handler_syncWithSimData* _data_;
+	_data_ = _data;
+	_g_object_unref0 (_data_->self);
+	g_slice_free (msm_phonebook_handler_syncWithSimData, _data_);
+}
+
+
+static void msm_phonebook_handler_real_syncWithSim (FsoGsmPhonebookHandler* base, GAsyncReadyCallback _callback_, gpointer _user_data_) {
+	MsmPhonebookHandler * self;
+	msm_phonebook_handler_syncWithSimData* _data_;
+	MsmPhonebookHandler* _tmp0_;
+	self = (MsmPhonebookHandler*) base;
+	_data_ = g_slice_new0 (msm_phonebook_handler_syncWithSimData);
+	_data_->_async_result = g_simple_async_result_new (G_OBJECT (self), _callback_, _user_data_, msm_phonebook_handler_real_syncWithSim);
+	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, msm_phonebook_handler_real_syncWithSim_data_free);
+	_tmp0_ = _g_object_ref0 (self);
+	_data_->self = _tmp0_;
+	msm_phonebook_handler_real_syncWithSim_co (_data_);
+}
+
+
+static void msm_phonebook_handler_real_syncWithSim_finish (FsoGsmPhonebookHandler* base, GAsyncResult* _res_) {
+	msm_phonebook_handler_syncWithSimData* _data_;
+	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
+}
+
+
+static gboolean msm_phonebook_handler_real_syncWithSim_co (msm_phonebook_handler_syncWithSimData* _data_) {
+	switch (_data_->_state_) {
+		case 0:
+		goto _state_0;
+		default:
+		g_assert_not_reached ();
+	}
+	_state_0:
+	if (_data_->_state_ == 0) {
+		g_simple_async_result_complete_in_idle (_data_->_async_result);
+	} else {
+		g_simple_async_result_complete (_data_->_async_result);
+	}
+	g_object_unref (_data_->_async_result);
+	return FALSE;
+}
+
+
 static void msm_phonebook_handler_initializeStorage_data_free (gpointer _data) {
 	msm_phonebook_handler_initializeStorageData* _data_;
 	_data_ = _data;
@@ -878,6 +936,8 @@ static void msm_phonebook_handler_class_init (MsmPhonebookHandlerClass * klass) 
 
 static void msm_phonebook_handler_fso_gsm_phonebook_handler_interface_init (FsoGsmPhonebookHandlerIface * iface) {
 	msm_phonebook_handler_fso_gsm_phonebook_handler_parent_iface = g_type_interface_peek_parent (iface);
+	iface->syncWithSim = (void (*)(FsoGsmPhonebookHandler*)) msm_phonebook_handler_real_syncWithSim;
+	iface->syncWithSim_finish = msm_phonebook_handler_real_syncWithSim_finish;
 	iface->get_storage = msm_phonebook_handler_real_get_storage;
 	iface->set_storage = msm_phonebook_handler_real_set_storage;
 }

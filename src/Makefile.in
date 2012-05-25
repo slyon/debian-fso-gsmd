@@ -38,7 +38,6 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.decl
 @WANT_PPP_TRUE@am__append_1 = ppp
-@WANT_CONNMAN_TRUE@am__append_2 = connman
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -70,7 +69,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = 3rdparty lib plugins bin ppp connman
+DIST_SUBDIRS = 3rdparty lib plugins bin ppp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -108,8 +107,6 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CONNMAN_CFLAGS = @CONNMAN_CFLAGS@
-CONNMAN_LIBS = @CONNMAN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -242,8 +239,7 @@ EXTRA_DIST =
 TEST_PROGS = 
 NULL = 
 AUTOMAKE_OPTIONS = subdir-objects
-SUBDIRS = 3rdparty lib plugins bin $(NULL) $(am__append_1) \
-	$(am__append_2)
+SUBDIRS = 3rdparty lib plugins bin $(NULL) $(am__append_1)
 all: all-recursive
 
 .SUFFIXES:

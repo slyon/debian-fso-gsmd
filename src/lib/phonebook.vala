@@ -69,27 +69,6 @@ public class FsoGsm.PhonebookStorage : FsoFramework.AbstractObject
         FsoFramework.FileHandling.removeTree( this.storagedir );
     }
 
-    /*
-    public Gee.ArrayList<string> keys()
-    {
-        var result = new Gee.ArrayList<string>();
-        GLib.Dir dir;
-        try
-        {
-            dir = GLib.Dir.open( storagedir );
-            for ( var smshash = dir.read_name(); smshash != null; smshash = dir.read_name() )
-            {
-                result.add( smshash );
-            }
-        }
-        catch ( GLib.Error e )
-        {
-            logger.error( @"Can't access PB storage dir: $(e.message)" );
-        }
-        return result;
-    }
-    */
-
     public void writePhonebookEntry( FreeSmartphone.GSM.SIMEntry entry, string filename )
     {
         var text = @"$(entry.name):$(entry.number)";
@@ -154,7 +133,7 @@ public class FsoGsm.PhonebookStorage : FsoFramework.AbstractObject
                 var components = contents.split( ":" );
                 if ( components.length == 2 )
                 {
-                    var index = entry2.to_int();
+                    var index = int.parse( entry2 );
                     //FIXME: Use relational syntax in Vala 0.7.11
                     if ( mindex <= index && index <= maxdex )
                     {
@@ -178,99 +157,8 @@ public class FsoGsm.PhonebookStorage : FsoFramework.AbstractObject
 public interface FsoGsm.PhonebookHandler : FsoFramework.AbstractObject
 {
     public abstract PhonebookStorage storage { get; set; }
-}
 
-/**
- * @class AtPhonebookHandler
- **/
-public class FsoGsm.AtPhonebookHandler : FsoGsm.PhonebookHandler, FsoFramework.AbstractObject
-{
-    public PhonebookStorage storage { get; set; }
-
-    public AtPhonebookHandler()
-    {
-        assert( theModem != null ); // Can't create PB handler before modem
-        theModem.signalStatusChanged.connect( onModemStatusChanged );
-    }
-
-    public override string repr()
-    {
-        return storage != null ? storage.repr() : "<None>";
-    }
-
-    public void onModemStatusChanged( FsoGsm.Modem modem, FsoGsm.Modem.Status status )
-    {
-        switch ( status )
-        {
-            case Modem.Status.ALIVE_SIM_READY:
-                simIsReady();
-                break;
-            default:
-                break;
-        }
-    }
-
-    public async void simIsReady()
-    {
-        yield syncWithSim();
-    }
-
-    public T[] copy<T>( T[] array )
-    {
-        T[] result = new T[] {};
-        foreach ( T t in array )
-        {
-            result += t;
-        }
-        return result;
-    }
-
-    public async void syncWithSim()
-    {
-        // gather IMSI
-        var cimi = theModem.createAtCommand<PlusCIMI>( "+CIMI" );
-        var response = yield theModem.processAtCommandAsync( cimi, cimi.execute() );
-        if ( cimi.validate( response ) != Constants.AtResponse.VALID )
-        {
-            logger.warning( "Can't synchronize PB storage with SIM" );
-            return;
-        }
-
-        // create Storage for current IMSI
-        storage = new PhonebookStorage( cimi.value );
-
-        // retrieve all known phonebooks
-        var cmd = theModem.createAtCommand<PlusCPBS>( "+CPBS" );
-        response = yield theModem.processAtCommandAsync( cmd, cmd.test() );
-        if ( cmd.validateTest( response ) != Constants.AtResponse.VALID )
-        {
-            logger.warning( "Can't parse phonebook result" );
-            return;
-        }
-
-        // NOTE: Work around a reentrancy issue by copying the phonebooks
-        // FIXME: This has to be investigated in more detail!
-        var phonebooks = copy<string>( cmd.phonebooks );
-
-        foreach ( var pbcode in phonebooks )
-        {
-            var cpbr = theModem.createAtCommand<PlusCPBR>( "+CPBR" );
-            var answer = yield theModem.processAtCommandAsync( cpbr, cpbr.test( pbcode ) );
-            if ( cpbr.validateTest( answer ) == Constants.AtResponse.VALID )
-            {
-                assert( logger.debug( @"Found phonebook '$pbcode' w/ indices $(cpbr.min)-$(cpbr.max)" ) );
-                response = yield theModem.processAtCommandAsync( cpbr, cpbr.issue( pbcode, cpbr.min, cpbr.max ) );
-
-                var valid = cpbr.validateMulti( response );
-                if ( valid != Constants.AtResponse.VALID && valid != Constants.AtResponse.CME_ERROR_022_NOT_FOUND )
-                {
-                    logger.warning( @"Can't parse PB $pbcode" );
-                    continue;
-                }
-                storage.addPhonebook( pbcode, cpbr.min, cpbr.max, cpbr.phonebook );
-            }
-        }
-    }
+    public abstract async void syncWithSim();
 }
 
 // vim:ts=4:sw=4:expandtab

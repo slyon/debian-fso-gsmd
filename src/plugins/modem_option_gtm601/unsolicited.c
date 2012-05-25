@@ -39,6 +39,20 @@ typedef struct _Gtm601UnsolicitedResponseHandler Gtm601UnsolicitedResponseHandle
 typedef struct _Gtm601UnsolicitedResponseHandlerClass Gtm601UnsolicitedResponseHandlerClass;
 typedef struct _Gtm601UnsolicitedResponseHandlerPrivate Gtm601UnsolicitedResponseHandlerPrivate;
 
+#define GTM601_TYPE_UNDERSCORE_OSIGQ (gtm601_underscore_osigq_get_type ())
+#define GTM601_UNDERSCORE_OSIGQ(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTM601_TYPE_UNDERSCORE_OSIGQ, Gtm601UnderscoreOSIGQ))
+#define GTM601_UNDERSCORE_OSIGQ_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTM601_TYPE_UNDERSCORE_OSIGQ, Gtm601UnderscoreOSIGQClass))
+#define GTM601_IS_UNDERSCORE_OSIGQ(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTM601_TYPE_UNDERSCORE_OSIGQ))
+#define GTM601_IS_UNDERSCORE_OSIGQ_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTM601_TYPE_UNDERSCORE_OSIGQ))
+#define GTM601_UNDERSCORE_OSIGQ_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTM601_TYPE_UNDERSCORE_OSIGQ, Gtm601UnderscoreOSIGQClass))
+
+typedef struct _Gtm601UnderscoreOSIGQ Gtm601UnderscoreOSIGQ;
+typedef struct _Gtm601UnderscoreOSIGQClass Gtm601UnderscoreOSIGQClass;
+#define _g_free0(var) (var = (g_free (var), NULL))
+typedef struct _Gtm601UnderscoreOSIGQPrivate Gtm601UnderscoreOSIGQPrivate;
+#define _fso_gsm_constants_unref0(var) ((var == NULL) ? NULL : (var = (fso_gsm_constants_unref (var), NULL)))
+#define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
+
 struct _Gtm601UnsolicitedResponseHandler {
 	FsoGsmAtUnsolicitedResponseHandler parent_instance;
 	Gtm601UnsolicitedResponseHandlerPrivate * priv;
@@ -47,6 +61,17 @@ struct _Gtm601UnsolicitedResponseHandler {
 struct _Gtm601UnsolicitedResponseHandlerClass {
 	FsoGsmAtUnsolicitedResponseHandlerClass parent_class;
 	void (*dollarQCSIMSTAT) (Gtm601UnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs);
+	void (*underscoreOSIGQ) (Gtm601UnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs);
+};
+
+struct _Gtm601UnderscoreOSIGQ {
+	FsoGsmAbstractAtCommand parent_instance;
+	Gtm601UnderscoreOSIGQPrivate * priv;
+	gint strength;
+};
+
+struct _Gtm601UnderscoreOSIGQClass {
+	FsoGsmAbstractAtCommandClass parent_class;
 };
 
 
@@ -62,9 +87,14 @@ Gtm601UnsolicitedResponseHandler* gtm601_unsolicited_response_handler_new (void)
 Gtm601UnsolicitedResponseHandler* gtm601_unsolicited_response_handler_construct (GType object_type);
 void gtm601_unsolicited_response_handler_dollarQCSIMSTAT (Gtm601UnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs);
 static void _gtm601_unsolicited_response_handler_dollarQCSIMSTAT_unsolicited_response_handler_func (const gchar* prefix, const gchar* rhs, gpointer self);
+void gtm601_unsolicited_response_handler_underscoreOSIGQ (Gtm601UnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs);
+static void _gtm601_unsolicited_response_handler_underscoreOSIGQ_unsolicited_response_handler_func (const gchar* prefix, const gchar* rhs, gpointer self);
 static void gtm601_unsolicited_response_handler_real_dollarQCSIMSTAT (Gtm601UnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs);
 static gboolean ___lambda0_ (Gtm601UnsolicitedResponseHandler* self);
 static gboolean ____lambda0__gsource_func (gpointer self);
+static void gtm601_unsolicited_response_handler_real_underscoreOSIGQ (Gtm601UnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs);
+GType gtm601_underscore_osigq_get_type (void) G_GNUC_CONST;
+GType gtm601_underscore_osigq_register_type (GTypeModule * module);
 
 
 static void _gtm601_unsolicited_response_handler_dollarQCSIMSTAT_unsolicited_response_handler_func (const gchar* prefix, const gchar* rhs, gpointer self) {
@@ -72,10 +102,16 @@ static void _gtm601_unsolicited_response_handler_dollarQCSIMSTAT_unsolicited_res
 }
 
 
+static void _gtm601_unsolicited_response_handler_underscoreOSIGQ_unsolicited_response_handler_func (const gchar* prefix, const gchar* rhs, gpointer self) {
+	gtm601_unsolicited_response_handler_underscoreOSIGQ (self, prefix, rhs);
+}
+
+
 Gtm601UnsolicitedResponseHandler* gtm601_unsolicited_response_handler_construct (GType object_type) {
 	Gtm601UnsolicitedResponseHandler * self = NULL;
 	self = (Gtm601UnsolicitedResponseHandler*) fso_gsm_at_unsolicited_response_handler_construct (object_type);
 	fso_gsm_base_unsolicited_response_handler_registerUrc ((FsoGsmBaseUnsolicitedResponseHandler*) self, "$QCSIMSTAT", _gtm601_unsolicited_response_handler_dollarQCSIMSTAT_unsolicited_response_handler_func, self);
+	fso_gsm_base_unsolicited_response_handler_registerUrc ((FsoGsmBaseUnsolicitedResponseHandler*) self, "_OSIGQ", _gtm601_unsolicited_response_handler_underscoreOSIGQ_unsolicited_response_handler_func, self);
 	return self;
 }
 
@@ -86,10 +122,7 @@ Gtm601UnsolicitedResponseHandler* gtm601_unsolicited_response_handler_new (void)
 
 
 /**
-     * GTM SIM status report:
-     *
-     * $QCSIMSTAT: 1, SIM INIT COMPLETED
-     *
+     * GTM SIM status report: "$QCSIMSTAT: 1, SIM INIT COMPLETED"
      **/
 static gboolean ___lambda0_ (Gtm601UnsolicitedResponseHandler* self) {
 	gboolean result = FALSE;
@@ -132,9 +165,92 @@ void gtm601_unsolicited_response_handler_dollarQCSIMSTAT (Gtm601UnsolicitedRespo
 }
 
 
+/**
+     * GTM network signal strength report: "_OSIGQ: 8,0"
+     **/
+static const gchar* string_to_string (const gchar* self) {
+	const gchar* result = NULL;
+	g_return_val_if_fail (self != NULL, NULL);
+	result = self;
+	return result;
+}
+
+
+static void gtm601_unsolicited_response_handler_real_underscoreOSIGQ (Gtm601UnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs) {
+	FsoGsmModem* _tmp0_;
+	gpointer _tmp1_ = NULL;
+	Gtm601UnderscoreOSIGQ* cmd;
+	Gtm601UnderscoreOSIGQ* _tmp2_;
+	const gchar* _tmp3_;
+	const gchar* _tmp4_ = NULL;
+	const gchar* _tmp5_;
+	const gchar* _tmp6_ = NULL;
+	gchar* _tmp7_ = NULL;
+	gchar* _tmp8_;
+	FsoGsmConstantsAtResponse _tmp9_ = 0;
+	gboolean _tmp10_;
+	g_return_if_fail (prefix != NULL);
+	g_return_if_fail (rhs != NULL);
+	_tmp0_ = fso_gsm_theModem;
+	_tmp1_ = fso_gsm_modem_createAtCommand (_tmp0_, GTM601_TYPE_UNDERSCORE_OSIGQ, (GBoxedCopyFunc) g_object_ref, g_object_unref, "_OSIGQ");
+	cmd = (Gtm601UnderscoreOSIGQ*) _tmp1_;
+	_tmp2_ = cmd;
+	_tmp3_ = prefix;
+	_tmp4_ = string_to_string (_tmp3_);
+	_tmp5_ = rhs;
+	_tmp6_ = string_to_string (_tmp5_);
+	_tmp7_ = g_strconcat (_tmp4_, ": ", _tmp6_, NULL);
+	_tmp8_ = _tmp7_;
+	_tmp9_ = fso_gsm_abstract_at_command_validateUrc ((FsoGsmAbstractAtCommand*) _tmp2_, _tmp8_);
+	_tmp10_ = _tmp9_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID;
+	_g_free0 (_tmp8_);
+	if (_tmp10_) {
+		FsoGsmConstants* _tmp11_ = NULL;
+		FsoGsmConstants* _tmp12_;
+		Gtm601UnderscoreOSIGQ* _tmp13_;
+		gint _tmp14_;
+		gint _tmp15_ = 0;
+		gint _tmp16_;
+		gint strength;
+		gint _tmp17_;
+		_tmp11_ = fso_gsm_constants_instance ();
+		_tmp12_ = _tmp11_;
+		_tmp13_ = cmd;
+		_tmp14_ = _tmp13_->strength;
+		_tmp15_ = fso_gsm_constants_networkSignalToPercentage (_tmp12_, _tmp14_);
+		_tmp16_ = _tmp15_;
+		_fso_gsm_constants_unref0 (_tmp12_);
+		strength = _tmp16_;
+		_tmp17_ = strength;
+		fso_gsm_updateNetworkSignalStrength (_tmp17_, NULL, NULL);
+	} else {
+		FsoFrameworkLogger* _tmp18_;
+		const gchar* _tmp19_;
+		const gchar* _tmp20_ = NULL;
+		gchar* _tmp21_ = NULL;
+		gchar* _tmp22_;
+		_tmp18_ = ((FsoFrameworkAbstractObject*) self)->logger;
+		_tmp19_ = rhs;
+		_tmp20_ = string_to_string (_tmp19_);
+		_tmp21_ = g_strconcat ("Received invalid _OSIGQ message ", _tmp20_, ". Please report", NULL);
+		_tmp22_ = _tmp21_;
+		fso_framework_logger_warning (_tmp18_, _tmp22_);
+		_g_free0 (_tmp22_);
+	}
+	_g_object_unref0 (cmd);
+}
+
+
+void gtm601_unsolicited_response_handler_underscoreOSIGQ (Gtm601UnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs) {
+	g_return_if_fail (self != NULL);
+	GTM601_UNSOLICITED_RESPONSE_HANDLER_GET_CLASS (self)->underscoreOSIGQ (self, prefix, rhs);
+}
+
+
 static void gtm601_unsolicited_response_handler_class_init (Gtm601UnsolicitedResponseHandlerClass * klass) {
 	gtm601_unsolicited_response_handler_parent_class = g_type_class_peek_parent (klass);
 	GTM601_UNSOLICITED_RESPONSE_HANDLER_CLASS (klass)->dollarQCSIMSTAT = gtm601_unsolicited_response_handler_real_dollarQCSIMSTAT;
+	GTM601_UNSOLICITED_RESPONSE_HANDLER_CLASS (klass)->underscoreOSIGQ = gtm601_unsolicited_response_handler_real_underscoreOSIGQ;
 }
 
 

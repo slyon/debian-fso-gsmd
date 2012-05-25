@@ -17,8 +17,6 @@
 
 # GLIB - Library of useful C routines
 
-
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -38,16 +36,22 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = $(dist_vapi_DATA) $(fsogsminclude_HEADERS) \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/Makefile.decl
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(top_srcdir)/Makefile.decl at/atcall.c at/atcallmediators.c \
+	at/atcbmediators.c at/atchannel.c at/atcommand.c \
+	at/atcommandqueue.c at/atcommands.c at/atdebugmediators.c \
+	at/atdevicemediators.c at/atmediatorhelpers.c \
+	at/atmonitormediators.c at/atnetworkmediators.c at/atparser.c \
+	at/atpdp.c at/atpdpmediators.c at/atphonebook.c \
+	at/atsimmediators.c at/atsms.c at/atsmsmediators.c \
+	at/atunsolicited.c at/atvmmediators.c call.c channel.c codes.c \
+	consts.c fsogsm.h libfsogsm_la_vala.stamp lowlevel.c \
+	mediator.c mediatorhelpers.c modem.c muxtransport.c pdp.c \
+	phonebook.c sms.c smsstorage.c watchdog.c
 @WANT_DEBUG_TRUE@am__append_1 = -g -D DEBUG
 @WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
 @WANT_MUX_TRUE@am__append_3 = --pkg gsm0710mux-1.0
-@WANT_MUX_TRUE@am__append_4 = \
-@WANT_MUX_TRUE@	muxtransport.vala \
-@WANT_MUX_TRUE@	$(NULL)
-
+@WANT_MUX_TRUE@am__append_4 = muxtransport.vala
 subdir = src/lib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -84,24 +88,24 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(vapidir)" \
-	"$(DESTDIR)$(fsogsmincludedir)"
-LTLIBRARIES = $(lib_LTLIBRARIES)
+am__installdirs = "$(DESTDIR)$(modlibexecdir)"
+LTLIBRARIES = $(modlibexec_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libfsogsm_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am__libfsogsm_la_SOURCES_DIST = .vala.stamp fsogsm-2.0.vapi \
-	at/atcall.c at/atchannel.c at/atcommand.c at/atcommands.c \
-	at/atcommandqueue.c at/atcallmediators.c at/atcbmediators.c \
-	at/atdebugmediators.c at/atdevicemediators.c \
-	at/atmediatorhelpers.c at/atmonitormediators.c \
-	at/atnetworkmediators.c at/atpdpmediators.c \
-	at/atsimmediators.c at/atsmsmediators.c at/atvmmediators.c \
-	at/atparser.c at/atpdp.c at/atsms.c at/atunsolicited.c call.c \
-	codes.c consts.c channel.c lowlevel.c mediator.c \
-	mediatorhelpers.c modem.c phonebook.c pdp.c sms.c smsstorage.c \
-	watchdog.c muxtransport.c \
+am__libfsogsm_la_SOURCES_DIST = at/atcall.vala at/atchannel.vala \
+	at/atcommand.vala at/atcommands.vala at/atcommandqueue.vala \
+	at/atcallmediators.vala at/atcbmediators.vala \
+	at/atdebugmediators.vala at/atdevicemediators.vala \
+	at/atmediatorhelpers.vala at/atmonitormediators.vala \
+	at/atnetworkmediators.vala at/atpdpmediators.vala \
+	at/atsimmediators.vala at/atsmsmediators.vala \
+	at/atvmmediators.vala at/atparser.vala at/atpdp.vala \
+	at/atsms.vala at/atunsolicited.vala at/atphonebook.vala \
+	call.vala codes.vala consts.vala channel.vala lowlevel.vala \
+	mediator.vala mediatorhelpers.vala modem.vala phonebook.vala \
+	pdp.vala sms.vala smsstorage.vala watchdog.vala \
 	$(top_srcdir)/src/3rdparty/conversions.c \
 	$(top_srcdir)/src/3rdparty/smsutil.c \
 	$(top_srcdir)/src/3rdparty/storage.c \
@@ -116,28 +120,44 @@ am__libfsogsm_la_SOURCES_DIST = .vala.stamp fsogsm-2.0.vapi \
 	$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c \
 	$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c \
 	$(top_srcdir)/src/3rdparty/ppp/ppp_net.c \
-	$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c
+	$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c muxtransport.vala
 am__objects_1 =
-@WANT_MUX_TRUE@am__objects_2 = muxtransport.lo $(am__objects_1)
-am__objects_3 = atcall.lo atchannel.lo atcommand.lo atcommands.lo \
-	atcommandqueue.lo atcallmediators.lo atcbmediators.lo \
-	atdebugmediators.lo atdevicemediators.lo atmediatorhelpers.lo \
-	atmonitormediators.lo atnetworkmediators.lo atpdpmediators.lo \
-	atsimmediators.lo atsmsmediators.lo atvmmediators.lo \
-	atparser.lo atpdp.lo atsms.lo atunsolicited.lo call.lo \
-	codes.lo consts.lo channel.lo lowlevel.lo mediator.lo \
-	mediatorhelpers.lo modem.lo phonebook.lo pdp.lo sms.lo \
-	smsstorage.lo watchdog.lo $(am__objects_1) $(am__objects_2)
-am__objects_4 = conversions.lo smsutil.lo storage.lo util.lo \
-	crc-ccitt.lo gathdlc.lo gatio.lo gatppp.lo gatutil.lo \
-	ppp_auth.lo ppp_cp.lo ppp_ipcp.lo ppp_lcp.lo ppp_net.lo \
-	ringbuffer.lo $(am__objects_1)
-am_libfsogsm_la_OBJECTS = $(am__objects_1) $(am__objects_3) \
-	$(am__objects_4) $(am__objects_1)
+@WANT_MUX_TRUE@am__objects_2 = libfsogsm_la-muxtransport.lo
+am_libfsogsm_la_OBJECTS = libfsogsm_la-atcall.lo \
+	libfsogsm_la-atchannel.lo libfsogsm_la-atcommand.lo \
+	libfsogsm_la-atcommands.lo libfsogsm_la-atcommandqueue.lo \
+	libfsogsm_la-atcallmediators.lo libfsogsm_la-atcbmediators.lo \
+	libfsogsm_la-atdebugmediators.lo \
+	libfsogsm_la-atdevicemediators.lo \
+	libfsogsm_la-atmediatorhelpers.lo \
+	libfsogsm_la-atmonitormediators.lo \
+	libfsogsm_la-atnetworkmediators.lo \
+	libfsogsm_la-atpdpmediators.lo libfsogsm_la-atsimmediators.lo \
+	libfsogsm_la-atsmsmediators.lo libfsogsm_la-atvmmediators.lo \
+	libfsogsm_la-atparser.lo libfsogsm_la-atpdp.lo \
+	libfsogsm_la-atsms.lo libfsogsm_la-atunsolicited.lo \
+	libfsogsm_la-atphonebook.lo libfsogsm_la-call.lo \
+	libfsogsm_la-codes.lo libfsogsm_la-consts.lo \
+	libfsogsm_la-channel.lo libfsogsm_la-lowlevel.lo \
+	libfsogsm_la-mediator.lo libfsogsm_la-mediatorhelpers.lo \
+	libfsogsm_la-modem.lo libfsogsm_la-phonebook.lo \
+	libfsogsm_la-pdp.lo libfsogsm_la-sms.lo \
+	libfsogsm_la-smsstorage.lo libfsogsm_la-watchdog.lo \
+	libfsogsm_la-conversions.lo libfsogsm_la-smsutil.lo \
+	libfsogsm_la-storage.lo libfsogsm_la-util.lo \
+	libfsogsm_la-crc-ccitt.lo libfsogsm_la-gathdlc.lo \
+	libfsogsm_la-gatio.lo libfsogsm_la-gatppp.lo \
+	libfsogsm_la-gatutil.lo libfsogsm_la-ppp_auth.lo \
+	libfsogsm_la-ppp_cp.lo libfsogsm_la-ppp_ipcp.lo \
+	libfsogsm_la-ppp_lcp.lo libfsogsm_la-ppp_net.lo \
+	libfsogsm_la-ringbuffer.lo $(am__objects_1) $(am__objects_2)
 libfsogsm_la_OBJECTS = $(am_libfsogsm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
+libfsogsm_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libfsogsm_la_CFLAGS) \
+	$(CFLAGS) $(libfsogsm_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -161,13 +181,18 @@ LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD  " $@;
+VALACOMPILE = $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS)
+LTVALACOMPILE = $(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(VALAC) $(AM_VALAFLAGS) \
+	$(VALAFLAGS)
+AM_V_VALAC = $(am__v_VALAC_@AM_V@)
+am__v_VALAC_ = $(am__v_VALAC_@AM_DEFAULT_V@)
+am__v_VALAC_0 = @echo "  VALAC " $@;
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(libfsogsm_la_SOURCES)
 DIST_SOURCES = $(am__libfsogsm_la_SOURCES_DIST)
-DATA = $(dist_vapi_DATA)
-HEADERS = $(fsogsminclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -182,8 +207,6 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CONNMAN_CFLAGS = @CONNMAN_CFLAGS@
-CONNMAN_LIBS = @CONNMAN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -312,18 +335,29 @@ GTESTER = gtester
 GTESTER_REPORT = gtester-report
 
 # initialize variables for unconditional += appending
-EXTRA_DIST = $(libfsogsm_la_VALASOURCES) $(libfsogsm_la_SOURCES) \
-	$(BUILT_SOURCES)
+EXTRA_DIST = 
 TEST_PROGS = 
 NULL = 
-
-# third party
-THIRDPARTY_SOURCES = \
+AM_CFLAGS = -DG_LOG_DOMAIN=\"fsogsm.lib\" $(NULL) $(am__append_2)
+AM_VALAFLAGS = $(am__append_1)
+modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
+modlibexec_LTLIBRARIES = libfsogsm.la
+libfsogsm_la_SOURCES = at/atcall.vala at/atchannel.vala \
+	at/atcommand.vala at/atcommands.vala at/atcommandqueue.vala \
+	at/atcallmediators.vala at/atcbmediators.vala \
+	at/atdebugmediators.vala at/atdevicemediators.vala \
+	at/atmediatorhelpers.vala at/atmonitormediators.vala \
+	at/atnetworkmediators.vala at/atpdpmediators.vala \
+	at/atsimmediators.vala at/atsmsmediators.vala \
+	at/atvmmediators.vala at/atparser.vala at/atpdp.vala \
+	at/atsms.vala at/atunsolicited.vala at/atphonebook.vala \
+	call.vala codes.vala consts.vala channel.vala lowlevel.vala \
+	mediator.vala mediatorhelpers.vala modem.vala phonebook.vala \
+	pdp.vala sms.vala smsstorage.vala watchdog.vala \
 	$(top_srcdir)/src/3rdparty/conversions.c \
 	$(top_srcdir)/src/3rdparty/smsutil.c \
 	$(top_srcdir)/src/3rdparty/storage.c \
 	$(top_srcdir)/src/3rdparty/util.c \
-	\
 	$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c \
 	$(top_srcdir)/src/3rdparty/ppp/gathdlc.c \
 	$(top_srcdir)/src/3rdparty/ppp/gatio.c \
@@ -334,44 +368,24 @@ THIRDPARTY_SOURCES = \
 	$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c \
 	$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c \
 	$(top_srcdir)/src/3rdparty/ppp/ppp_net.c \
-	$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c \
-	\
+	$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c $(NULL) \
+	$(am__append_4)
+libfsogsm_la_VALAFLAGS = --basedir $(top_srcdir) --vapidir \
+	$(top_srcdir)/vapi --vapidir $(top_srcdir)/src/lib --pkg \
+	glib-2.0 --pkg gio-2.0 --pkg gee-1.0 --pkg fso-glib-1.0 --pkg \
+	fsosystem-2.0 --pkg fsoframework-2.0 --pkg fsotransport-2.0 \
+	--pkg fsogsm3rdparty --pkg config --header fsogsm.h --library \
+	fsogsm-2.0 $(NULL) $(am__append_3)
+libfsogsm_la_CFLAGS = \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/src/3rdparty \
+	-I$(top_srcdir)/src/3rdparty/ppp \
+	$(FSO_CFLAGS) \
+	$(GLIB_CFLAGS) \
+	$(GEE_CFLAGS) \
+	$(GSMMUX_CFLAGS) \
 	$(NULL)
 
-AM_CFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src/3rdparty \
-	-I$(top_srcdir)/src/3rdparty/ppp $(FSO_CFLAGS) $(GLIB_CFLAGS) \
-	$(GEE_CFLAGS) $(GSMMUX_CFLAGS) -DG_LOG_DOMAIN=\"fsogsm.lib\" \
-	$(NULL) $(am__append_2)
-VALAC_ARGS = --basedir $(top_srcdir) --vapidir $(top_srcdir)/vapi \
-	--vapidir $(top_srcdir)/src/lib --pkg glib-2.0 --pkg gio-2.0 \
-	--pkg gee-1.0 --pkg fso-glib-1.0 --pkg fsosystem-2.0 --pkg \
-	fsoframework-2.0 --pkg fsotransport-2.0 --pkg fsogsm3rdparty \
-	--pkg config --header fsogsm.h --library fsogsm-2.0 \
-	$(am__append_1) $(am__append_3)
-BUILT_SOURCES = .vala.stamp fsogsm-2.0.vapi
-lib_LTLIBRARIES = \
-	libfsogsm.la
-
-libfsogsm_la_VALASOURCES = at/atcall.vala at/atchannel.vala \
-	at/atcommand.vala at/atcommands.vala at/atcommandqueue.vala \
-	at/atcallmediators.vala at/atcbmediators.vala \
-	at/atdebugmediators.vala at/atdevicemediators.vala \
-	at/atmediatorhelpers.vala at/atmonitormediators.vala \
-	at/atnetworkmediators.vala at/atpdpmediators.vala \
-	at/atsimmediators.vala at/atsmsmediators.vala \
-	at/atvmmediators.vala at/atparser.vala at/atpdp.vala \
-	at/atsms.vala at/atunsolicited.vala call.vala codes.vala \
-	consts.vala channel.vala lowlevel.vala mediator.vala \
-	mediatorhelpers.vala modem.vala phonebook.vala pdp.vala \
-	sms.vala smsstorage.vala watchdog.vala $(NULL) $(am__append_4)
-libfsogsm_la_SOURCES = \
-	$(BUILT_SOURCES) \
-	$(libfsogsm_la_VALASOURCES:.vala=.c) \
-	$(THIRDPARTY_SOURCES) \
-	$(NULL)
-
-fsogsmincludedir = $(includedir)/fsoframework-2.0
-fsogsminclude_HEADERS = fsogsm.h
 libfsogsm_la_LIBADD = \
 	$(FSO_LIBS) \
 	$(GLIB_LIBS) \
@@ -380,23 +394,14 @@ libfsogsm_la_LIBADD = \
 	$(THIRDPARTY_LIBS) \
 	$(NULL)
 
-vapidir = $(datadir)/vala/vapi
-dist_vapi_DATA = \
-	fsogsm-2.0.vapi \
-	fsogsm-2.0.deps \
-	$(NULL)
-
-CLEANFILES = \
-	$(BUILT_SOURCES) \
-        $(libfsogsm_la_VALASOURCES:.vala=.c) \
-	$(NULL)
-
+libfsogsm_la_LDFLAGS = -no-undefined -avoid-version
+CLEANFILES = 
 MAINTAINERCLEANFILES = \
-	$(CLEANFILES) \
-	Makefile.in
+	fsogsm.h \
+	fsogsm-2.0.vapi \
+	$(NULL)
 
-all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -431,39 +436,39 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+install-modlibexecLTLIBRARIES: $(modlibexec_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
-	test -z "$(libdir)" || $(MKDIR_P) "$(DESTDIR)$(libdir)"
-	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
+	test -z "$(modlibexecdir)" || $(MKDIR_P) "$(DESTDIR)$(modlibexecdir)"
+	@list='$(modlibexec_LTLIBRARIES)'; test -n "$(modlibexecdir)" || list=; \
 	list2=; for p in $$list; do \
 	  if test -f $$p; then \
 	    list2="$$list2 $$p"; \
 	  else :; fi; \
 	done; \
 	test -z "$$list2" || { \
-	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(libdir)'"; \
-	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(libdir)"; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(modlibexecdir)'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(modlibexecdir)"; \
 	}
 
-uninstall-libLTLIBRARIES:
+uninstall-modlibexecLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)
-	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
+	@list='$(modlibexec_LTLIBRARIES)'; test -n "$(modlibexecdir)" || list=; \
 	for p in $$list; do \
 	  $(am__strip_dir) \
-	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(libdir)/$$f'"; \
-	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/$$f"; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(modlibexecdir)/$$f'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(modlibexecdir)/$$f"; \
 	done
 
-clean-libLTLIBRARIES:
-	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+clean-modlibexecLTLIBRARIES:
+	-test -z "$(modlibexec_LTLIBRARIES)" || rm -f $(modlibexec_LTLIBRARIES)
+	@list='$(modlibexec_LTLIBRARIES)'; for p in $$list; do \
 	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
 	  test "$$dir" != "$$p" || dir=.; \
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
 libfsogsm.la: $(libfsogsm_la_OBJECTS) $(libfsogsm_la_DEPENDENCIES) $(EXTRA_libfsogsm_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(LINK) -rpath $(libdir) $(libfsogsm_la_OBJECTS) $(libfsogsm_la_LIBADD) $(LIBS)
+	$(AM_V_CCLD)$(libfsogsm_la_LINK) -rpath $(modlibexecdir) $(libfsogsm_la_OBJECTS) $(libfsogsm_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -471,55 +476,56 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atcall.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atcallmediators.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atcbmediators.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atchannel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atcommand.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atcommandqueue.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atcommands.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atdebugmediators.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atdevicemediators.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atmediatorhelpers.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atmonitormediators.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atnetworkmediators.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atparser.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atpdp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atpdpmediators.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atsimmediators.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atsms.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atsmsmediators.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atunsolicited.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atvmmediators.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/call.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/channel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codes.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/consts.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/conversions.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc-ccitt.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gathdlc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gatio.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gatppp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gatutil.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lowlevel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mediator.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mediatorhelpers.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modem.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/muxtransport.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pdp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phonebook.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppp_auth.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppp_cp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppp_ipcp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppp_lcp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppp_net.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ringbuffer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sms.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smsstorage.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smsutil.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/storage.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/watchdog.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atcall.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atcallmediators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atcbmediators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atchannel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atcommand.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atcommandqueue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atcommands.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atdebugmediators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atdevicemediators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atmediatorhelpers.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atmonitormediators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atnetworkmediators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atparser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atpdp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atpdpmediators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atphonebook.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atsimmediators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atsms.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atsmsmediators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atunsolicited.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atvmmediators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-call.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-channel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-codes.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-consts.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-conversions.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-crc-ccitt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-gathdlc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-gatio.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-gatppp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-gatutil.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-lowlevel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-mediator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-mediatorhelpers.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-modem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-muxtransport.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-pdp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-phonebook.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-ppp_auth.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-ppp_cp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-ppp_ipcp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-ppp_lcp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-ppp_net.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-ringbuffer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-sms.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-smsstorage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-smsutil.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-storage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-util.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-watchdog.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -542,292 +548,545 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-atcall.lo: at/atcall.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atcall.lo -MD -MP -MF $(DEPDIR)/atcall.Tpo -c -o atcall.lo `test -f 'at/atcall.c' || echo '$(srcdir)/'`at/atcall.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atcall.Tpo $(DEPDIR)/atcall.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcall.c' object='atcall.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atcall.lo: at/atcall.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atcall.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atcall.Tpo -c -o libfsogsm_la-atcall.lo `test -f 'at/atcall.c' || echo '$(srcdir)/'`at/atcall.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atcall.Tpo $(DEPDIR)/libfsogsm_la-atcall.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcall.c' object='libfsogsm_la-atcall.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atcall.lo `test -f 'at/atcall.c' || echo '$(srcdir)/'`at/atcall.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atcall.lo `test -f 'at/atcall.c' || echo '$(srcdir)/'`at/atcall.c
 
-atchannel.lo: at/atchannel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atchannel.lo -MD -MP -MF $(DEPDIR)/atchannel.Tpo -c -o atchannel.lo `test -f 'at/atchannel.c' || echo '$(srcdir)/'`at/atchannel.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atchannel.Tpo $(DEPDIR)/atchannel.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atchannel.c' object='atchannel.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atchannel.lo: at/atchannel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atchannel.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atchannel.Tpo -c -o libfsogsm_la-atchannel.lo `test -f 'at/atchannel.c' || echo '$(srcdir)/'`at/atchannel.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atchannel.Tpo $(DEPDIR)/libfsogsm_la-atchannel.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atchannel.c' object='libfsogsm_la-atchannel.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atchannel.lo `test -f 'at/atchannel.c' || echo '$(srcdir)/'`at/atchannel.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atchannel.lo `test -f 'at/atchannel.c' || echo '$(srcdir)/'`at/atchannel.c
 
-atcommand.lo: at/atcommand.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atcommand.lo -MD -MP -MF $(DEPDIR)/atcommand.Tpo -c -o atcommand.lo `test -f 'at/atcommand.c' || echo '$(srcdir)/'`at/atcommand.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atcommand.Tpo $(DEPDIR)/atcommand.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcommand.c' object='atcommand.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atcommand.lo: at/atcommand.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atcommand.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atcommand.Tpo -c -o libfsogsm_la-atcommand.lo `test -f 'at/atcommand.c' || echo '$(srcdir)/'`at/atcommand.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atcommand.Tpo $(DEPDIR)/libfsogsm_la-atcommand.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcommand.c' object='libfsogsm_la-atcommand.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atcommand.lo `test -f 'at/atcommand.c' || echo '$(srcdir)/'`at/atcommand.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atcommand.lo `test -f 'at/atcommand.c' || echo '$(srcdir)/'`at/atcommand.c
 
-atcommands.lo: at/atcommands.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atcommands.lo -MD -MP -MF $(DEPDIR)/atcommands.Tpo -c -o atcommands.lo `test -f 'at/atcommands.c' || echo '$(srcdir)/'`at/atcommands.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atcommands.Tpo $(DEPDIR)/atcommands.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcommands.c' object='atcommands.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atcommands.lo: at/atcommands.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atcommands.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atcommands.Tpo -c -o libfsogsm_la-atcommands.lo `test -f 'at/atcommands.c' || echo '$(srcdir)/'`at/atcommands.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atcommands.Tpo $(DEPDIR)/libfsogsm_la-atcommands.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcommands.c' object='libfsogsm_la-atcommands.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atcommands.lo `test -f 'at/atcommands.c' || echo '$(srcdir)/'`at/atcommands.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atcommands.lo `test -f 'at/atcommands.c' || echo '$(srcdir)/'`at/atcommands.c
 
-atcommandqueue.lo: at/atcommandqueue.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atcommandqueue.lo -MD -MP -MF $(DEPDIR)/atcommandqueue.Tpo -c -o atcommandqueue.lo `test -f 'at/atcommandqueue.c' || echo '$(srcdir)/'`at/atcommandqueue.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atcommandqueue.Tpo $(DEPDIR)/atcommandqueue.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcommandqueue.c' object='atcommandqueue.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atcommandqueue.lo: at/atcommandqueue.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atcommandqueue.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atcommandqueue.Tpo -c -o libfsogsm_la-atcommandqueue.lo `test -f 'at/atcommandqueue.c' || echo '$(srcdir)/'`at/atcommandqueue.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atcommandqueue.Tpo $(DEPDIR)/libfsogsm_la-atcommandqueue.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcommandqueue.c' object='libfsogsm_la-atcommandqueue.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atcommandqueue.lo `test -f 'at/atcommandqueue.c' || echo '$(srcdir)/'`at/atcommandqueue.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atcommandqueue.lo `test -f 'at/atcommandqueue.c' || echo '$(srcdir)/'`at/atcommandqueue.c
 
-atcallmediators.lo: at/atcallmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atcallmediators.lo -MD -MP -MF $(DEPDIR)/atcallmediators.Tpo -c -o atcallmediators.lo `test -f 'at/atcallmediators.c' || echo '$(srcdir)/'`at/atcallmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atcallmediators.Tpo $(DEPDIR)/atcallmediators.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcallmediators.c' object='atcallmediators.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atcallmediators.lo: at/atcallmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atcallmediators.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atcallmediators.Tpo -c -o libfsogsm_la-atcallmediators.lo `test -f 'at/atcallmediators.c' || echo '$(srcdir)/'`at/atcallmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atcallmediators.Tpo $(DEPDIR)/libfsogsm_la-atcallmediators.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcallmediators.c' object='libfsogsm_la-atcallmediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atcallmediators.lo `test -f 'at/atcallmediators.c' || echo '$(srcdir)/'`at/atcallmediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atcallmediators.lo `test -f 'at/atcallmediators.c' || echo '$(srcdir)/'`at/atcallmediators.c
 
-atcbmediators.lo: at/atcbmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atcbmediators.lo -MD -MP -MF $(DEPDIR)/atcbmediators.Tpo -c -o atcbmediators.lo `test -f 'at/atcbmediators.c' || echo '$(srcdir)/'`at/atcbmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atcbmediators.Tpo $(DEPDIR)/atcbmediators.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcbmediators.c' object='atcbmediators.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atcbmediators.lo: at/atcbmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atcbmediators.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atcbmediators.Tpo -c -o libfsogsm_la-atcbmediators.lo `test -f 'at/atcbmediators.c' || echo '$(srcdir)/'`at/atcbmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atcbmediators.Tpo $(DEPDIR)/libfsogsm_la-atcbmediators.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atcbmediators.c' object='libfsogsm_la-atcbmediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atcbmediators.lo `test -f 'at/atcbmediators.c' || echo '$(srcdir)/'`at/atcbmediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atcbmediators.lo `test -f 'at/atcbmediators.c' || echo '$(srcdir)/'`at/atcbmediators.c
 
-atdebugmediators.lo: at/atdebugmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atdebugmediators.lo -MD -MP -MF $(DEPDIR)/atdebugmediators.Tpo -c -o atdebugmediators.lo `test -f 'at/atdebugmediators.c' || echo '$(srcdir)/'`at/atdebugmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atdebugmediators.Tpo $(DEPDIR)/atdebugmediators.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atdebugmediators.c' object='atdebugmediators.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atdebugmediators.lo: at/atdebugmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atdebugmediators.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atdebugmediators.Tpo -c -o libfsogsm_la-atdebugmediators.lo `test -f 'at/atdebugmediators.c' || echo '$(srcdir)/'`at/atdebugmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atdebugmediators.Tpo $(DEPDIR)/libfsogsm_la-atdebugmediators.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atdebugmediators.c' object='libfsogsm_la-atdebugmediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atdebugmediators.lo `test -f 'at/atdebugmediators.c' || echo '$(srcdir)/'`at/atdebugmediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atdebugmediators.lo `test -f 'at/atdebugmediators.c' || echo '$(srcdir)/'`at/atdebugmediators.c
 
-atdevicemediators.lo: at/atdevicemediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atdevicemediators.lo -MD -MP -MF $(DEPDIR)/atdevicemediators.Tpo -c -o atdevicemediators.lo `test -f 'at/atdevicemediators.c' || echo '$(srcdir)/'`at/atdevicemediators.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atdevicemediators.Tpo $(DEPDIR)/atdevicemediators.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atdevicemediators.c' object='atdevicemediators.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atdevicemediators.lo: at/atdevicemediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atdevicemediators.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atdevicemediators.Tpo -c -o libfsogsm_la-atdevicemediators.lo `test -f 'at/atdevicemediators.c' || echo '$(srcdir)/'`at/atdevicemediators.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atdevicemediators.Tpo $(DEPDIR)/libfsogsm_la-atdevicemediators.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atdevicemediators.c' object='libfsogsm_la-atdevicemediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atdevicemediators.lo `test -f 'at/atdevicemediators.c' || echo '$(srcdir)/'`at/atdevicemediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atdevicemediators.lo `test -f 'at/atdevicemediators.c' || echo '$(srcdir)/'`at/atdevicemediators.c
 
-atmediatorhelpers.lo: at/atmediatorhelpers.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atmediatorhelpers.lo -MD -MP -MF $(DEPDIR)/atmediatorhelpers.Tpo -c -o atmediatorhelpers.lo `test -f 'at/atmediatorhelpers.c' || echo '$(srcdir)/'`at/atmediatorhelpers.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atmediatorhelpers.Tpo $(DEPDIR)/atmediatorhelpers.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atmediatorhelpers.c' object='atmediatorhelpers.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atmediatorhelpers.lo: at/atmediatorhelpers.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atmediatorhelpers.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atmediatorhelpers.Tpo -c -o libfsogsm_la-atmediatorhelpers.lo `test -f 'at/atmediatorhelpers.c' || echo '$(srcdir)/'`at/atmediatorhelpers.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atmediatorhelpers.Tpo $(DEPDIR)/libfsogsm_la-atmediatorhelpers.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atmediatorhelpers.c' object='libfsogsm_la-atmediatorhelpers.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atmediatorhelpers.lo `test -f 'at/atmediatorhelpers.c' || echo '$(srcdir)/'`at/atmediatorhelpers.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atmediatorhelpers.lo `test -f 'at/atmediatorhelpers.c' || echo '$(srcdir)/'`at/atmediatorhelpers.c
 
-atmonitormediators.lo: at/atmonitormediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atmonitormediators.lo -MD -MP -MF $(DEPDIR)/atmonitormediators.Tpo -c -o atmonitormediators.lo `test -f 'at/atmonitormediators.c' || echo '$(srcdir)/'`at/atmonitormediators.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atmonitormediators.Tpo $(DEPDIR)/atmonitormediators.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atmonitormediators.c' object='atmonitormediators.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atmonitormediators.lo: at/atmonitormediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atmonitormediators.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atmonitormediators.Tpo -c -o libfsogsm_la-atmonitormediators.lo `test -f 'at/atmonitormediators.c' || echo '$(srcdir)/'`at/atmonitormediators.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atmonitormediators.Tpo $(DEPDIR)/libfsogsm_la-atmonitormediators.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atmonitormediators.c' object='libfsogsm_la-atmonitormediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atmonitormediators.lo `test -f 'at/atmonitormediators.c' || echo '$(srcdir)/'`at/atmonitormediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atmonitormediators.lo `test -f 'at/atmonitormediators.c' || echo '$(srcdir)/'`at/atmonitormediators.c
 
-atnetworkmediators.lo: at/atnetworkmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atnetworkmediators.lo -MD -MP -MF $(DEPDIR)/atnetworkmediators.Tpo -c -o atnetworkmediators.lo `test -f 'at/atnetworkmediators.c' || echo '$(srcdir)/'`at/atnetworkmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atnetworkmediators.Tpo $(DEPDIR)/atnetworkmediators.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atnetworkmediators.c' object='atnetworkmediators.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atnetworkmediators.lo: at/atnetworkmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atnetworkmediators.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atnetworkmediators.Tpo -c -o libfsogsm_la-atnetworkmediators.lo `test -f 'at/atnetworkmediators.c' || echo '$(srcdir)/'`at/atnetworkmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atnetworkmediators.Tpo $(DEPDIR)/libfsogsm_la-atnetworkmediators.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atnetworkmediators.c' object='libfsogsm_la-atnetworkmediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atnetworkmediators.lo `test -f 'at/atnetworkmediators.c' || echo '$(srcdir)/'`at/atnetworkmediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atnetworkmediators.lo `test -f 'at/atnetworkmediators.c' || echo '$(srcdir)/'`at/atnetworkmediators.c
 
-atpdpmediators.lo: at/atpdpmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atpdpmediators.lo -MD -MP -MF $(DEPDIR)/atpdpmediators.Tpo -c -o atpdpmediators.lo `test -f 'at/atpdpmediators.c' || echo '$(srcdir)/'`at/atpdpmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atpdpmediators.Tpo $(DEPDIR)/atpdpmediators.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atpdpmediators.c' object='atpdpmediators.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atpdpmediators.lo: at/atpdpmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atpdpmediators.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atpdpmediators.Tpo -c -o libfsogsm_la-atpdpmediators.lo `test -f 'at/atpdpmediators.c' || echo '$(srcdir)/'`at/atpdpmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atpdpmediators.Tpo $(DEPDIR)/libfsogsm_la-atpdpmediators.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atpdpmediators.c' object='libfsogsm_la-atpdpmediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atpdpmediators.lo `test -f 'at/atpdpmediators.c' || echo '$(srcdir)/'`at/atpdpmediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atpdpmediators.lo `test -f 'at/atpdpmediators.c' || echo '$(srcdir)/'`at/atpdpmediators.c
 
-atsimmediators.lo: at/atsimmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atsimmediators.lo -MD -MP -MF $(DEPDIR)/atsimmediators.Tpo -c -o atsimmediators.lo `test -f 'at/atsimmediators.c' || echo '$(srcdir)/'`at/atsimmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atsimmediators.Tpo $(DEPDIR)/atsimmediators.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atsimmediators.c' object='atsimmediators.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atsimmediators.lo: at/atsimmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atsimmediators.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atsimmediators.Tpo -c -o libfsogsm_la-atsimmediators.lo `test -f 'at/atsimmediators.c' || echo '$(srcdir)/'`at/atsimmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atsimmediators.Tpo $(DEPDIR)/libfsogsm_la-atsimmediators.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atsimmediators.c' object='libfsogsm_la-atsimmediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atsimmediators.lo `test -f 'at/atsimmediators.c' || echo '$(srcdir)/'`at/atsimmediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atsimmediators.lo `test -f 'at/atsimmediators.c' || echo '$(srcdir)/'`at/atsimmediators.c
 
-atsmsmediators.lo: at/atsmsmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atsmsmediators.lo -MD -MP -MF $(DEPDIR)/atsmsmediators.Tpo -c -o atsmsmediators.lo `test -f 'at/atsmsmediators.c' || echo '$(srcdir)/'`at/atsmsmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atsmsmediators.Tpo $(DEPDIR)/atsmsmediators.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atsmsmediators.c' object='atsmsmediators.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atsmsmediators.lo: at/atsmsmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atsmsmediators.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atsmsmediators.Tpo -c -o libfsogsm_la-atsmsmediators.lo `test -f 'at/atsmsmediators.c' || echo '$(srcdir)/'`at/atsmsmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atsmsmediators.Tpo $(DEPDIR)/libfsogsm_la-atsmsmediators.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atsmsmediators.c' object='libfsogsm_la-atsmsmediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atsmsmediators.lo `test -f 'at/atsmsmediators.c' || echo '$(srcdir)/'`at/atsmsmediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atsmsmediators.lo `test -f 'at/atsmsmediators.c' || echo '$(srcdir)/'`at/atsmsmediators.c
 
-atvmmediators.lo: at/atvmmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atvmmediators.lo -MD -MP -MF $(DEPDIR)/atvmmediators.Tpo -c -o atvmmediators.lo `test -f 'at/atvmmediators.c' || echo '$(srcdir)/'`at/atvmmediators.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atvmmediators.Tpo $(DEPDIR)/atvmmediators.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atvmmediators.c' object='atvmmediators.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atvmmediators.lo: at/atvmmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atvmmediators.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atvmmediators.Tpo -c -o libfsogsm_la-atvmmediators.lo `test -f 'at/atvmmediators.c' || echo '$(srcdir)/'`at/atvmmediators.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atvmmediators.Tpo $(DEPDIR)/libfsogsm_la-atvmmediators.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atvmmediators.c' object='libfsogsm_la-atvmmediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atvmmediators.lo `test -f 'at/atvmmediators.c' || echo '$(srcdir)/'`at/atvmmediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atvmmediators.lo `test -f 'at/atvmmediators.c' || echo '$(srcdir)/'`at/atvmmediators.c
 
-atparser.lo: at/atparser.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atparser.lo -MD -MP -MF $(DEPDIR)/atparser.Tpo -c -o atparser.lo `test -f 'at/atparser.c' || echo '$(srcdir)/'`at/atparser.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atparser.Tpo $(DEPDIR)/atparser.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atparser.c' object='atparser.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atparser.lo: at/atparser.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atparser.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atparser.Tpo -c -o libfsogsm_la-atparser.lo `test -f 'at/atparser.c' || echo '$(srcdir)/'`at/atparser.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atparser.Tpo $(DEPDIR)/libfsogsm_la-atparser.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atparser.c' object='libfsogsm_la-atparser.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atparser.lo `test -f 'at/atparser.c' || echo '$(srcdir)/'`at/atparser.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atparser.lo `test -f 'at/atparser.c' || echo '$(srcdir)/'`at/atparser.c
 
-atpdp.lo: at/atpdp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atpdp.lo -MD -MP -MF $(DEPDIR)/atpdp.Tpo -c -o atpdp.lo `test -f 'at/atpdp.c' || echo '$(srcdir)/'`at/atpdp.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atpdp.Tpo $(DEPDIR)/atpdp.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atpdp.c' object='atpdp.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atpdp.lo: at/atpdp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atpdp.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atpdp.Tpo -c -o libfsogsm_la-atpdp.lo `test -f 'at/atpdp.c' || echo '$(srcdir)/'`at/atpdp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atpdp.Tpo $(DEPDIR)/libfsogsm_la-atpdp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atpdp.c' object='libfsogsm_la-atpdp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atpdp.lo `test -f 'at/atpdp.c' || echo '$(srcdir)/'`at/atpdp.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atpdp.lo `test -f 'at/atpdp.c' || echo '$(srcdir)/'`at/atpdp.c
 
-atsms.lo: at/atsms.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atsms.lo -MD -MP -MF $(DEPDIR)/atsms.Tpo -c -o atsms.lo `test -f 'at/atsms.c' || echo '$(srcdir)/'`at/atsms.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atsms.Tpo $(DEPDIR)/atsms.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atsms.c' object='atsms.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atsms.lo: at/atsms.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atsms.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atsms.Tpo -c -o libfsogsm_la-atsms.lo `test -f 'at/atsms.c' || echo '$(srcdir)/'`at/atsms.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atsms.Tpo $(DEPDIR)/libfsogsm_la-atsms.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atsms.c' object='libfsogsm_la-atsms.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atsms.lo `test -f 'at/atsms.c' || echo '$(srcdir)/'`at/atsms.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atsms.lo `test -f 'at/atsms.c' || echo '$(srcdir)/'`at/atsms.c
 
-atunsolicited.lo: at/atunsolicited.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT atunsolicited.lo -MD -MP -MF $(DEPDIR)/atunsolicited.Tpo -c -o atunsolicited.lo `test -f 'at/atunsolicited.c' || echo '$(srcdir)/'`at/atunsolicited.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/atunsolicited.Tpo $(DEPDIR)/atunsolicited.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atunsolicited.c' object='atunsolicited.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atunsolicited.lo: at/atunsolicited.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atunsolicited.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atunsolicited.Tpo -c -o libfsogsm_la-atunsolicited.lo `test -f 'at/atunsolicited.c' || echo '$(srcdir)/'`at/atunsolicited.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atunsolicited.Tpo $(DEPDIR)/libfsogsm_la-atunsolicited.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atunsolicited.c' object='libfsogsm_la-atunsolicited.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o atunsolicited.lo `test -f 'at/atunsolicited.c' || echo '$(srcdir)/'`at/atunsolicited.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atunsolicited.lo `test -f 'at/atunsolicited.c' || echo '$(srcdir)/'`at/atunsolicited.c
 
-conversions.lo: $(top_srcdir)/src/3rdparty/conversions.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT conversions.lo -MD -MP -MF $(DEPDIR)/conversions.Tpo -c -o conversions.lo `test -f '$(top_srcdir)/src/3rdparty/conversions.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/conversions.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/conversions.Tpo $(DEPDIR)/conversions.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/conversions.c' object='conversions.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-atphonebook.lo: at/atphonebook.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atphonebook.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atphonebook.Tpo -c -o libfsogsm_la-atphonebook.lo `test -f 'at/atphonebook.c' || echo '$(srcdir)/'`at/atphonebook.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atphonebook.Tpo $(DEPDIR)/libfsogsm_la-atphonebook.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atphonebook.c' object='libfsogsm_la-atphonebook.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o conversions.lo `test -f '$(top_srcdir)/src/3rdparty/conversions.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/conversions.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atphonebook.lo `test -f 'at/atphonebook.c' || echo '$(srcdir)/'`at/atphonebook.c
 
-smsutil.lo: $(top_srcdir)/src/3rdparty/smsutil.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smsutil.lo -MD -MP -MF $(DEPDIR)/smsutil.Tpo -c -o smsutil.lo `test -f '$(top_srcdir)/src/3rdparty/smsutil.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/smsutil.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/smsutil.Tpo $(DEPDIR)/smsutil.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/smsutil.c' object='smsutil.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-call.lo: call.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-call.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-call.Tpo -c -o libfsogsm_la-call.lo `test -f 'call.c' || echo '$(srcdir)/'`call.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-call.Tpo $(DEPDIR)/libfsogsm_la-call.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='call.c' object='libfsogsm_la-call.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smsutil.lo `test -f '$(top_srcdir)/src/3rdparty/smsutil.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/smsutil.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-call.lo `test -f 'call.c' || echo '$(srcdir)/'`call.c
 
-storage.lo: $(top_srcdir)/src/3rdparty/storage.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT storage.lo -MD -MP -MF $(DEPDIR)/storage.Tpo -c -o storage.lo `test -f '$(top_srcdir)/src/3rdparty/storage.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/storage.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/storage.Tpo $(DEPDIR)/storage.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/storage.c' object='storage.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-codes.lo: codes.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-codes.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-codes.Tpo -c -o libfsogsm_la-codes.lo `test -f 'codes.c' || echo '$(srcdir)/'`codes.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-codes.Tpo $(DEPDIR)/libfsogsm_la-codes.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='codes.c' object='libfsogsm_la-codes.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o storage.lo `test -f '$(top_srcdir)/src/3rdparty/storage.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/storage.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-codes.lo `test -f 'codes.c' || echo '$(srcdir)/'`codes.c
 
-util.lo: $(top_srcdir)/src/3rdparty/util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT util.lo -MD -MP -MF $(DEPDIR)/util.Tpo -c -o util.lo `test -f '$(top_srcdir)/src/3rdparty/util.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/util.Tpo $(DEPDIR)/util.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/util.c' object='util.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-consts.lo: consts.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-consts.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-consts.Tpo -c -o libfsogsm_la-consts.lo `test -f 'consts.c' || echo '$(srcdir)/'`consts.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-consts.Tpo $(DEPDIR)/libfsogsm_la-consts.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='consts.c' object='libfsogsm_la-consts.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o util.lo `test -f '$(top_srcdir)/src/3rdparty/util.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/util.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-consts.lo `test -f 'consts.c' || echo '$(srcdir)/'`consts.c
 
-crc-ccitt.lo: $(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT crc-ccitt.lo -MD -MP -MF $(DEPDIR)/crc-ccitt.Tpo -c -o crc-ccitt.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/crc-ccitt.Tpo $(DEPDIR)/crc-ccitt.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c' object='crc-ccitt.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-channel.lo: channel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-channel.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-channel.Tpo -c -o libfsogsm_la-channel.lo `test -f 'channel.c' || echo '$(srcdir)/'`channel.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-channel.Tpo $(DEPDIR)/libfsogsm_la-channel.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='channel.c' object='libfsogsm_la-channel.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o crc-ccitt.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-channel.lo `test -f 'channel.c' || echo '$(srcdir)/'`channel.c
 
-gathdlc.lo: $(top_srcdir)/src/3rdparty/ppp/gathdlc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gathdlc.lo -MD -MP -MF $(DEPDIR)/gathdlc.Tpo -c -o gathdlc.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gathdlc.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gathdlc.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gathdlc.Tpo $(DEPDIR)/gathdlc.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/gathdlc.c' object='gathdlc.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-lowlevel.lo: lowlevel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-lowlevel.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-lowlevel.Tpo -c -o libfsogsm_la-lowlevel.lo `test -f 'lowlevel.c' || echo '$(srcdir)/'`lowlevel.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-lowlevel.Tpo $(DEPDIR)/libfsogsm_la-lowlevel.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lowlevel.c' object='libfsogsm_la-lowlevel.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gathdlc.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gathdlc.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gathdlc.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-lowlevel.lo `test -f 'lowlevel.c' || echo '$(srcdir)/'`lowlevel.c
 
-gatio.lo: $(top_srcdir)/src/3rdparty/ppp/gatio.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gatio.lo -MD -MP -MF $(DEPDIR)/gatio.Tpo -c -o gatio.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatio.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatio.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gatio.Tpo $(DEPDIR)/gatio.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/gatio.c' object='gatio.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-mediator.lo: mediator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-mediator.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-mediator.Tpo -c -o libfsogsm_la-mediator.lo `test -f 'mediator.c' || echo '$(srcdir)/'`mediator.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-mediator.Tpo $(DEPDIR)/libfsogsm_la-mediator.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediator.c' object='libfsogsm_la-mediator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gatio.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatio.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatio.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-mediator.lo `test -f 'mediator.c' || echo '$(srcdir)/'`mediator.c
 
-gatppp.lo: $(top_srcdir)/src/3rdparty/ppp/gatppp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gatppp.lo -MD -MP -MF $(DEPDIR)/gatppp.Tpo -c -o gatppp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatppp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatppp.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gatppp.Tpo $(DEPDIR)/gatppp.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/gatppp.c' object='gatppp.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-mediatorhelpers.lo: mediatorhelpers.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-mediatorhelpers.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-mediatorhelpers.Tpo -c -o libfsogsm_la-mediatorhelpers.lo `test -f 'mediatorhelpers.c' || echo '$(srcdir)/'`mediatorhelpers.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-mediatorhelpers.Tpo $(DEPDIR)/libfsogsm_la-mediatorhelpers.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediatorhelpers.c' object='libfsogsm_la-mediatorhelpers.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gatppp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatppp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatppp.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-mediatorhelpers.lo `test -f 'mediatorhelpers.c' || echo '$(srcdir)/'`mediatorhelpers.c
 
-gatutil.lo: $(top_srcdir)/src/3rdparty/ppp/gatutil.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gatutil.lo -MD -MP -MF $(DEPDIR)/gatutil.Tpo -c -o gatutil.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatutil.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatutil.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gatutil.Tpo $(DEPDIR)/gatutil.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/gatutil.c' object='gatutil.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-modem.lo: modem.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-modem.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-modem.Tpo -c -o libfsogsm_la-modem.lo `test -f 'modem.c' || echo '$(srcdir)/'`modem.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-modem.Tpo $(DEPDIR)/libfsogsm_la-modem.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='modem.c' object='libfsogsm_la-modem.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gatutil.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatutil.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatutil.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-modem.lo `test -f 'modem.c' || echo '$(srcdir)/'`modem.c
 
-ppp_auth.lo: $(top_srcdir)/src/3rdparty/ppp/ppp_auth.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ppp_auth.lo -MD -MP -MF $(DEPDIR)/ppp_auth.Tpo -c -o ppp_auth.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ppp_auth.Tpo $(DEPDIR)/ppp_auth.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c' object='ppp_auth.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-phonebook.lo: phonebook.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-phonebook.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-phonebook.Tpo -c -o libfsogsm_la-phonebook.lo `test -f 'phonebook.c' || echo '$(srcdir)/'`phonebook.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-phonebook.Tpo $(DEPDIR)/libfsogsm_la-phonebook.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='phonebook.c' object='libfsogsm_la-phonebook.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ppp_auth.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-phonebook.lo `test -f 'phonebook.c' || echo '$(srcdir)/'`phonebook.c
 
-ppp_cp.lo: $(top_srcdir)/src/3rdparty/ppp/ppp_cp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ppp_cp.lo -MD -MP -MF $(DEPDIR)/ppp_cp.Tpo -c -o ppp_cp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ppp_cp.Tpo $(DEPDIR)/ppp_cp.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c' object='ppp_cp.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-pdp.lo: pdp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-pdp.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-pdp.Tpo -c -o libfsogsm_la-pdp.lo `test -f 'pdp.c' || echo '$(srcdir)/'`pdp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-pdp.Tpo $(DEPDIR)/libfsogsm_la-pdp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pdp.c' object='libfsogsm_la-pdp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ppp_cp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-pdp.lo `test -f 'pdp.c' || echo '$(srcdir)/'`pdp.c
 
-ppp_ipcp.lo: $(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ppp_ipcp.lo -MD -MP -MF $(DEPDIR)/ppp_ipcp.Tpo -c -o ppp_ipcp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ppp_ipcp.Tpo $(DEPDIR)/ppp_ipcp.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c' object='ppp_ipcp.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-sms.lo: sms.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-sms.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-sms.Tpo -c -o libfsogsm_la-sms.lo `test -f 'sms.c' || echo '$(srcdir)/'`sms.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-sms.Tpo $(DEPDIR)/libfsogsm_la-sms.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sms.c' object='libfsogsm_la-sms.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ppp_ipcp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-sms.lo `test -f 'sms.c' || echo '$(srcdir)/'`sms.c
 
-ppp_lcp.lo: $(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ppp_lcp.lo -MD -MP -MF $(DEPDIR)/ppp_lcp.Tpo -c -o ppp_lcp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ppp_lcp.Tpo $(DEPDIR)/ppp_lcp.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c' object='ppp_lcp.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-smsstorage.lo: smsstorage.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-smsstorage.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-smsstorage.Tpo -c -o libfsogsm_la-smsstorage.lo `test -f 'smsstorage.c' || echo '$(srcdir)/'`smsstorage.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-smsstorage.Tpo $(DEPDIR)/libfsogsm_la-smsstorage.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='smsstorage.c' object='libfsogsm_la-smsstorage.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ppp_lcp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-smsstorage.lo `test -f 'smsstorage.c' || echo '$(srcdir)/'`smsstorage.c
 
-ppp_net.lo: $(top_srcdir)/src/3rdparty/ppp/ppp_net.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ppp_net.lo -MD -MP -MF $(DEPDIR)/ppp_net.Tpo -c -o ppp_net.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_net.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_net.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ppp_net.Tpo $(DEPDIR)/ppp_net.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ppp_net.c' object='ppp_net.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-watchdog.lo: watchdog.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-watchdog.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-watchdog.Tpo -c -o libfsogsm_la-watchdog.lo `test -f 'watchdog.c' || echo '$(srcdir)/'`watchdog.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-watchdog.Tpo $(DEPDIR)/libfsogsm_la-watchdog.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='watchdog.c' object='libfsogsm_la-watchdog.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ppp_net.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_net.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_net.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-watchdog.lo `test -f 'watchdog.c' || echo '$(srcdir)/'`watchdog.c
 
-ringbuffer.lo: $(top_srcdir)/src/3rdparty/ppp/ringbuffer.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ringbuffer.lo -MD -MP -MF $(DEPDIR)/ringbuffer.Tpo -c -o ringbuffer.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ringbuffer.Tpo $(DEPDIR)/ringbuffer.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c' object='ringbuffer.lo' libtool=yes @AMDEPBACKSLASH@
+libfsogsm_la-conversions.lo: $(top_srcdir)/src/3rdparty/conversions.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-conversions.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-conversions.Tpo -c -o libfsogsm_la-conversions.lo `test -f '$(top_srcdir)/src/3rdparty/conversions.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/conversions.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-conversions.Tpo $(DEPDIR)/libfsogsm_la-conversions.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/conversions.c' object='libfsogsm_la-conversions.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ringbuffer.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-conversions.lo `test -f '$(top_srcdir)/src/3rdparty/conversions.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/conversions.c
+
+libfsogsm_la-smsutil.lo: $(top_srcdir)/src/3rdparty/smsutil.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-smsutil.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-smsutil.Tpo -c -o libfsogsm_la-smsutil.lo `test -f '$(top_srcdir)/src/3rdparty/smsutil.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/smsutil.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-smsutil.Tpo $(DEPDIR)/libfsogsm_la-smsutil.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/smsutil.c' object='libfsogsm_la-smsutil.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-smsutil.lo `test -f '$(top_srcdir)/src/3rdparty/smsutil.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/smsutil.c
+
+libfsogsm_la-storage.lo: $(top_srcdir)/src/3rdparty/storage.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-storage.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-storage.Tpo -c -o libfsogsm_la-storage.lo `test -f '$(top_srcdir)/src/3rdparty/storage.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/storage.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-storage.Tpo $(DEPDIR)/libfsogsm_la-storage.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/storage.c' object='libfsogsm_la-storage.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-storage.lo `test -f '$(top_srcdir)/src/3rdparty/storage.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/storage.c
+
+libfsogsm_la-util.lo: $(top_srcdir)/src/3rdparty/util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-util.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-util.Tpo -c -o libfsogsm_la-util.lo `test -f '$(top_srcdir)/src/3rdparty/util.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-util.Tpo $(DEPDIR)/libfsogsm_la-util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/util.c' object='libfsogsm_la-util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-util.lo `test -f '$(top_srcdir)/src/3rdparty/util.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/util.c
+
+libfsogsm_la-crc-ccitt.lo: $(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-crc-ccitt.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-crc-ccitt.Tpo -c -o libfsogsm_la-crc-ccitt.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-crc-ccitt.Tpo $(DEPDIR)/libfsogsm_la-crc-ccitt.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c' object='libfsogsm_la-crc-ccitt.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-crc-ccitt.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/crc-ccitt.c
+
+libfsogsm_la-gathdlc.lo: $(top_srcdir)/src/3rdparty/ppp/gathdlc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-gathdlc.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-gathdlc.Tpo -c -o libfsogsm_la-gathdlc.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gathdlc.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gathdlc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-gathdlc.Tpo $(DEPDIR)/libfsogsm_la-gathdlc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/gathdlc.c' object='libfsogsm_la-gathdlc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-gathdlc.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gathdlc.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gathdlc.c
+
+libfsogsm_la-gatio.lo: $(top_srcdir)/src/3rdparty/ppp/gatio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-gatio.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-gatio.Tpo -c -o libfsogsm_la-gatio.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatio.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatio.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-gatio.Tpo $(DEPDIR)/libfsogsm_la-gatio.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/gatio.c' object='libfsogsm_la-gatio.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-gatio.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatio.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatio.c
+
+libfsogsm_la-gatppp.lo: $(top_srcdir)/src/3rdparty/ppp/gatppp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-gatppp.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-gatppp.Tpo -c -o libfsogsm_la-gatppp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatppp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatppp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-gatppp.Tpo $(DEPDIR)/libfsogsm_la-gatppp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/gatppp.c' object='libfsogsm_la-gatppp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-gatppp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatppp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatppp.c
+
+libfsogsm_la-gatutil.lo: $(top_srcdir)/src/3rdparty/ppp/gatutil.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-gatutil.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-gatutil.Tpo -c -o libfsogsm_la-gatutil.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatutil.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatutil.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-gatutil.Tpo $(DEPDIR)/libfsogsm_la-gatutil.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/gatutil.c' object='libfsogsm_la-gatutil.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-gatutil.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/gatutil.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/gatutil.c
+
+libfsogsm_la-ppp_auth.lo: $(top_srcdir)/src/3rdparty/ppp/ppp_auth.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-ppp_auth.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-ppp_auth.Tpo -c -o libfsogsm_la-ppp_auth.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-ppp_auth.Tpo $(DEPDIR)/libfsogsm_la-ppp_auth.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c' object='libfsogsm_la-ppp_auth.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-ppp_auth.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_auth.c
+
+libfsogsm_la-ppp_cp.lo: $(top_srcdir)/src/3rdparty/ppp/ppp_cp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-ppp_cp.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-ppp_cp.Tpo -c -o libfsogsm_la-ppp_cp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-ppp_cp.Tpo $(DEPDIR)/libfsogsm_la-ppp_cp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c' object='libfsogsm_la-ppp_cp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-ppp_cp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_cp.c
+
+libfsogsm_la-ppp_ipcp.lo: $(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-ppp_ipcp.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-ppp_ipcp.Tpo -c -o libfsogsm_la-ppp_ipcp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-ppp_ipcp.Tpo $(DEPDIR)/libfsogsm_la-ppp_ipcp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c' object='libfsogsm_la-ppp_ipcp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-ppp_ipcp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_ipcp.c
+
+libfsogsm_la-ppp_lcp.lo: $(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-ppp_lcp.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-ppp_lcp.Tpo -c -o libfsogsm_la-ppp_lcp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-ppp_lcp.Tpo $(DEPDIR)/libfsogsm_la-ppp_lcp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c' object='libfsogsm_la-ppp_lcp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-ppp_lcp.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_lcp.c
+
+libfsogsm_la-ppp_net.lo: $(top_srcdir)/src/3rdparty/ppp/ppp_net.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-ppp_net.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-ppp_net.Tpo -c -o libfsogsm_la-ppp_net.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_net.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_net.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-ppp_net.Tpo $(DEPDIR)/libfsogsm_la-ppp_net.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ppp_net.c' object='libfsogsm_la-ppp_net.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-ppp_net.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ppp_net.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ppp_net.c
+
+libfsogsm_la-ringbuffer.lo: $(top_srcdir)/src/3rdparty/ppp/ringbuffer.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-ringbuffer.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-ringbuffer.Tpo -c -o libfsogsm_la-ringbuffer.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-ringbuffer.Tpo $(DEPDIR)/libfsogsm_la-ringbuffer.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c' object='libfsogsm_la-ringbuffer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-ringbuffer.lo `test -f '$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/ppp/ringbuffer.c
+
+libfsogsm_la-muxtransport.lo: muxtransport.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-muxtransport.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-muxtransport.Tpo -c -o libfsogsm_la-muxtransport.lo `test -f 'muxtransport.c' || echo '$(srcdir)/'`muxtransport.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-muxtransport.Tpo $(DEPDIR)/libfsogsm_la-muxtransport.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='muxtransport.c' object='libfsogsm_la-muxtransport.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-muxtransport.lo `test -f 'muxtransport.c' || echo '$(srcdir)/'`muxtransport.c
+$(srcdir)/at/atcall.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atchannel.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atcommand.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atcommands.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atcommandqueue.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atcallmediators.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atcbmediators.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atdebugmediators.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atdevicemediators.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atmediatorhelpers.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atmonitormediators.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atnetworkmediators.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atpdpmediators.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atsimmediators.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atsmsmediators.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atvmmediators.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atparser.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atpdp.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atsms.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atunsolicited.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/at/atphonebook.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/call.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/codes.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/consts.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/channel.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/lowlevel.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/mediator.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/mediatorhelpers.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/modem.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/phonebook.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/pdp.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/sms.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/smsstorage.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/watchdog.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/muxtransport.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/fsogsm.h: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/libfsogsm_la_vala.stamp: $(libfsogsm_la_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(libfsogsm_la_VALAFLAGS) $(VALAFLAGS) -C $(libfsogsm_la_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-dist_vapiDATA: $(dist_vapi_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(vapidir)" || $(MKDIR_P) "$(DESTDIR)$(vapidir)"
-	@list='$(dist_vapi_DATA)'; test -n "$(vapidir)" || list=; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(vapidir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(vapidir)" || exit $$?; \
-	done
-
-uninstall-dist_vapiDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(dist_vapi_DATA)'; test -n "$(vapidir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(vapidir)'; $(am__uninstall_files_from_dir)
-install-fsogsmincludeHEADERS: $(fsogsminclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(fsogsmincludedir)" || $(MKDIR_P) "$(DESTDIR)$(fsogsmincludedir)"
-	@list='$(fsogsminclude_HEADERS)'; test -n "$(fsogsmincludedir)" || list=; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(fsogsmincludedir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(fsogsmincludedir)" || exit $$?; \
-	done
-
-uninstall-fsogsmincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(fsogsminclude_HEADERS)'; test -n "$(fsogsmincludedir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(fsogsmincludedir)'; $(am__uninstall_files_from_dir)
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -913,15 +1172,13 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-local
-check: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) check-am
-all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
+check: check-am
+all-am: Makefile $(LTLIBRARIES)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(vapidir)" "$(DESTDIR)$(fsogsmincludedir)"; do \
+	for dir in "$(DESTDIR)$(modlibexecdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) install-am
+install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -952,11 +1209,47 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+	-rm -f at/atcall.c
+	-rm -f at/atcallmediators.c
+	-rm -f at/atcbmediators.c
+	-rm -f at/atchannel.c
+	-rm -f at/atcommand.c
+	-rm -f at/atcommandqueue.c
+	-rm -f at/atcommands.c
+	-rm -f at/atdebugmediators.c
+	-rm -f at/atdevicemediators.c
+	-rm -f at/atmediatorhelpers.c
+	-rm -f at/atmonitormediators.c
+	-rm -f at/atnetworkmediators.c
+	-rm -f at/atparser.c
+	-rm -f at/atpdp.c
+	-rm -f at/atpdpmediators.c
+	-rm -f at/atphonebook.c
+	-rm -f at/atsimmediators.c
+	-rm -f at/atsms.c
+	-rm -f at/atsmsmediators.c
+	-rm -f at/atunsolicited.c
+	-rm -f at/atvmmediators.c
+	-rm -f call.c
+	-rm -f channel.c
+	-rm -f codes.c
+	-rm -f consts.c
+	-rm -f fsogsm.h
+	-rm -f libfsogsm_la_vala.stamp
+	-rm -f lowlevel.c
+	-rm -f mediator.c
+	-rm -f mediatorhelpers.c
+	-rm -f modem.c
+	-rm -f muxtransport.c
+	-rm -f pdp.c
+	-rm -f phonebook.c
+	-rm -f sms.c
+	-rm -f smsstorage.c
+	-rm -f watchdog.c
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
+clean-am: clean-generic clean-libtool clean-modlibexecLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -977,13 +1270,13 @@ info: info-am
 
 info-am:
 
-install-data-am: install-dist_vapiDATA install-fsogsmincludeHEADERS
+install-data-am:
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-libLTLIBRARIES
+install-exec-am: install-modlibexecLTLIBRARIES
 
 install-html: install-html-am
 
@@ -1023,27 +1316,24 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-dist_vapiDATA uninstall-fsogsmincludeHEADERS \
-	uninstall-libLTLIBRARIES
+uninstall-am: uninstall-modlibexecLTLIBRARIES
 
-.MAKE: all check check-am install install-am install-strip
+.MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am check-local clean \
-	clean-generic clean-libLTLIBRARIES clean-libtool ctags \
+	clean-generic clean-libtool clean-modlibexecLTLIBRARIES ctags \
 	distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
-	install-data-am install-dist_vapiDATA install-dvi \
-	install-dvi-am install-exec install-exec-am \
-	install-fsogsmincludeHEADERS install-html install-html-am \
-	install-info install-info-am install-libLTLIBRARIES \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-dist_vapiDATA \
-	uninstall-fsogsmincludeHEADERS uninstall-libLTLIBRARIES
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-modlibexecLTLIBRARIES \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-modlibexecLTLIBRARIES
 
 
 ### testing rules
@@ -1094,11 +1384,6 @@ test-report perf-report full-report:	${TEST_PROGS}
 .PHONY: test test-report perf-report full-report
 # run make test as part of make check
 check-local: test
-	$(NULL)
-
-$(BUILT_SOURCES): $(libfsogsm_la_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
