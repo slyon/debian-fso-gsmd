@@ -4,6 +4,7 @@
 /*
  * Copyright (C) 2011 Klaus 'mrmoku' Kurzmann
  * Copyright (C) 2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2012 Lukas 'Slyon' Märdian <lukasmaerdian@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,8 +28,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fsotransport.h>
-#include <gee.h>
 #include <fsobasics.h>
+#include <gee.h>
 #include <fsoframework.h>
 
 
@@ -45,6 +46,7 @@ typedef struct _Gtm601ModemPrivate Gtm601ModemPrivate;
 #define _fso_gsm_at_command_sequence_unref0(var) ((var == NULL) ? NULL : (var = (fso_gsm_at_command_sequence_unref (var), NULL)))
 #define _g_free0(var) (var = (g_free (var), NULL))
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
+#define _fso_framework_transport_spec_unref0(var) ((var == NULL) ? NULL : (var = (fso_framework_transport_spec_unref (var), NULL)))
 
 #define GTM601_TYPE_UNSOLICITED_RESPONSE_HANDLER (gtm601_unsolicited_response_handler_get_type ())
 #define GTM601_UNSOLICITED_RESPONSE_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTM601_TYPE_UNSOLICITED_RESPONSE_HANDLER, Gtm601UnsolicitedResponseHandler))
@@ -55,26 +57,6 @@ typedef struct _Gtm601ModemPrivate Gtm601ModemPrivate;
 
 typedef struct _Gtm601UnsolicitedResponseHandler Gtm601UnsolicitedResponseHandler;
 typedef struct _Gtm601UnsolicitedResponseHandlerClass Gtm601UnsolicitedResponseHandlerClass;
-
-#define GTM601_TYPE_UNDERSCORE_OWANCALL (gtm601_underscore_owancall_get_type ())
-#define GTM601_UNDERSCORE_OWANCALL(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTM601_TYPE_UNDERSCORE_OWANCALL, Gtm601UnderscoreOWANCALL))
-#define GTM601_UNDERSCORE_OWANCALL_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTM601_TYPE_UNDERSCORE_OWANCALL, Gtm601UnderscoreOWANCALLClass))
-#define GTM601_IS_UNDERSCORE_OWANCALL(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTM601_TYPE_UNDERSCORE_OWANCALL))
-#define GTM601_IS_UNDERSCORE_OWANCALL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTM601_TYPE_UNDERSCORE_OWANCALL))
-#define GTM601_UNDERSCORE_OWANCALL_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTM601_TYPE_UNDERSCORE_OWANCALL, Gtm601UnderscoreOWANCALLClass))
-
-typedef struct _Gtm601UnderscoreOWANCALL Gtm601UnderscoreOWANCALL;
-typedef struct _Gtm601UnderscoreOWANCALLClass Gtm601UnderscoreOWANCALLClass;
-
-#define GTM601_TYPE_UNDERSCORE_OWANDATA (gtm601_underscore_owandata_get_type ())
-#define GTM601_UNDERSCORE_OWANDATA(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTM601_TYPE_UNDERSCORE_OWANDATA, Gtm601UnderscoreOWANDATA))
-#define GTM601_UNDERSCORE_OWANDATA_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTM601_TYPE_UNDERSCORE_OWANDATA, Gtm601UnderscoreOWANDATAClass))
-#define GTM601_IS_UNDERSCORE_OWANDATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTM601_TYPE_UNDERSCORE_OWANDATA))
-#define GTM601_IS_UNDERSCORE_OWANDATA_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTM601_TYPE_UNDERSCORE_OWANDATA))
-#define GTM601_UNDERSCORE_OWANDATA_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTM601_TYPE_UNDERSCORE_OWANDATA, Gtm601UnderscoreOWANDATAClass))
-
-typedef struct _Gtm601UnderscoreOWANDATA Gtm601UnderscoreOWANDATA;
-typedef struct _Gtm601UnderscoreOWANDATAClass Gtm601UnderscoreOWANDATAClass;
 
 struct _Gtm601Modem {
 	FsoGsmAbstractModem parent_instance;
@@ -95,6 +77,7 @@ enum  {
 	GTM601_MODEM_DUMMY_PROPERTY
 };
 #define GTM601_MODEM_CHANNEL_NAME "main"
+#define GTM601_MODEM_URC_CHANNEL_NAME "urc"
 static gchar* gtm601_modem_real_repr (FsoFrameworkAbstractObject* base);
 static void gtm601_modem_real_configureData (FsoGsmAbstractModem* base);
 static void gtm601_modem_real_createChannels (FsoGsmAbstractModem* base);
@@ -108,12 +91,11 @@ GType gtm601_unsolicited_response_handler_get_type (void) G_GNUC_CONST;
 GType gtm601_unsolicited_response_handler_register_type (GTypeModule * module);
 static void gtm601_modem_real_registerCustomAtCommands (FsoGsmAbstractModem* base, GeeHashMap* commands);
 void gtm601_registerCustomAtCommands (GeeHashMap* table);
-GType gtm601_underscore_owancall_get_type (void) G_GNUC_CONST;
-GType gtm601_underscore_owancall_register_type (GTypeModule * module);
-GType gtm601_underscore_owandata_get_type (void) G_GNUC_CONST;
-GType gtm601_underscore_owandata_register_type (GTypeModule * module);
+static void gtm601_modem_onModemStatusChange (Gtm601Modem* self, FsoGsmModemStatus status);
 Gtm601Modem* gtm601_modem_new (void);
 Gtm601Modem* gtm601_modem_construct (GType object_type);
+static GObject * gtm601_modem_constructor (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties);
+static void _gtm601_modem_onModemStatusChange_fso_gsm_modem_signal_status_changed (FsoGsmModem* _sender, FsoGsmModemStatus status, gpointer self);
 gchar* fso_factory_function (FsoFrameworkSubsystem* subsystem, GError** error);
 void fso_register_function (GTypeModule* module);
 static void _vala_array_destroy (gpointer array, gint array_length, GDestroyNotify destroy_func);
@@ -140,10 +122,10 @@ static void gtm601_modem_real_configureData (FsoGsmAbstractModem* base) {
 	FsoGsmAtCommandSequence* _tmp4_ = NULL;
 	FsoGsmAtCommandSequence* _tmp5_;
 	gchar* _tmp6_;
-	gchar** _tmp7_ = NULL;
-	gchar** _tmp8_;
-	gint _tmp8__length1;
-	gchar* _tmp9_;
+	gchar* _tmp7_;
+	gchar** _tmp8_ = NULL;
+	gchar** _tmp9_;
+	gint _tmp9__length1;
 	gchar* _tmp10_;
 	gchar* _tmp11_;
 	gchar* _tmp12_;
@@ -151,36 +133,37 @@ static void gtm601_modem_real_configureData (FsoGsmAbstractModem* base) {
 	gchar* _tmp14_;
 	gchar* _tmp15_;
 	gchar* _tmp16_;
-	gchar** _tmp17_ = NULL;
-	gchar** _tmp18_;
-	gint _tmp18__length1;
-	FsoGsmAtCommandSequence* _tmp19_;
+	gchar* _tmp17_;
+	gchar** _tmp18_ = NULL;
+	gchar** _tmp19_;
+	gint _tmp19__length1;
 	FsoGsmAtCommandSequence* _tmp20_;
-	const gchar* _tmp21_ = NULL;
-	FsoGsmModemData* _tmp22_;
-	gboolean _tmp23_;
-	const gchar* _tmp24_;
-	gchar* _tmp25_;
-	gchar* cnmiCommand;
+	FsoGsmAtCommandSequence* _tmp21_;
+	const gchar* _tmp22_ = NULL;
+	FsoGsmModemData* _tmp23_;
+	gboolean _tmp24_;
+	const gchar* _tmp25_;
 	gchar* _tmp26_;
+	gchar* cnmiCommand;
 	gchar* _tmp27_;
-	gchar** _tmp28_ = NULL;
-	gchar** _tmp29_;
-	gint _tmp29__length1;
-	FsoGsmAtCommandSequence* _tmp30_;
+	gchar* _tmp28_;
+	gchar** _tmp29_ = NULL;
+	gchar** _tmp30_;
+	gint _tmp30__length1;
 	FsoGsmAtCommandSequence* _tmp31_;
-	gchar* _tmp32_;
-	gchar** _tmp33_ = NULL;
-	gchar** _tmp34_;
-	gint _tmp34__length1;
-	FsoGsmAtCommandSequence* _tmp35_;
+	FsoGsmAtCommandSequence* _tmp32_;
+	gchar* _tmp33_;
+	gchar** _tmp34_ = NULL;
+	gchar** _tmp35_;
+	gint _tmp35__length1;
 	FsoGsmAtCommandSequence* _tmp36_;
-	gchar* _tmp37_;
-	gchar** _tmp38_ = NULL;
-	gchar** _tmp39_;
-	gint _tmp39__length1;
-	FsoGsmAtCommandSequence* _tmp40_;
+	FsoGsmAtCommandSequence* _tmp37_;
+	gchar* _tmp38_;
+	gchar** _tmp39_ = NULL;
+	gchar** _tmp40_;
+	gint _tmp40__length1;
 	FsoGsmAtCommandSequence* _tmp41_;
+	FsoGsmAtCommandSequence* _tmp42_;
 	self = (Gtm601Modem*) base;
 	_tmp0_ = ((FsoGsmAbstractModem*) self)->modem_data;
 	g_assert (_tmp0_ != NULL);
@@ -192,105 +175,148 @@ static void gtm601_modem_real_configureData (FsoGsmAbstractModem* base) {
 	_tmp4_ = fso_gsm_modem_atCommandSequence (_tmp3_, "MODEM", "init");
 	_tmp5_ = _tmp4_;
 	_tmp6_ = g_strdup ("$QCSIMSTAT=1");
-	_tmp7_ = g_new0 (gchar*, 1 + 1);
-	_tmp7_[0] = _tmp6_;
-	_tmp8_ = _tmp7_;
-	_tmp8__length1 = 1;
-	fso_gsm_at_command_sequence_append (_tmp5_, _tmp8_, 1);
-	_tmp8_ = (_vala_array_free (_tmp8_, _tmp8__length1, (GDestroyNotify) g_free), NULL);
+	_tmp7_ = g_strdup ("_OSQI=1");
+	_tmp8_ = g_new0 (gchar*, 2 + 1);
+	_tmp8_[0] = _tmp6_;
+	_tmp8_[1] = _tmp7_;
+	_tmp9_ = _tmp8_;
+	_tmp9__length1 = 2;
+	fso_gsm_at_command_sequence_append (_tmp5_, _tmp9_, 2);
+	_tmp9_ = (_vala_array_free (_tmp9_, _tmp9__length1, (GDestroyNotify) g_free), NULL);
 	_fso_gsm_at_command_sequence_unref0 (_tmp5_);
-	_tmp9_ = g_strdup ("+CGEREP=2,1");
-	_tmp10_ = g_strdup ("+CGREG=2");
-	_tmp11_ = g_strdup ("+CLIP=1");
-	_tmp12_ = g_strdup ("+CREG=2");
-	_tmp13_ = g_strdup ("+COLP=0");
-	_tmp14_ = g_strdup ("+CSSN=1,1");
-	_tmp15_ = g_strdup ("+CTZU=1");
-	_tmp16_ = g_strdup ("+CTZR=1");
-	_tmp17_ = g_new0 (gchar*, 8 + 1);
-	_tmp17_[0] = _tmp9_;
-	_tmp17_[1] = _tmp10_;
-	_tmp17_[2] = _tmp11_;
-	_tmp17_[3] = _tmp12_;
-	_tmp17_[4] = _tmp13_;
-	_tmp17_[5] = _tmp14_;
-	_tmp17_[6] = _tmp15_;
-	_tmp17_[7] = _tmp16_;
-	_tmp18_ = _tmp17_;
-	_tmp18__length1 = 8;
-	_tmp19_ = fso_gsm_at_command_sequence_new (_tmp18_, 8);
-	_tmp20_ = _tmp19_;
-	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "main", "init", _tmp20_);
-	_fso_gsm_at_command_sequence_unref0 (_tmp20_);
-	_tmp18_ = (_vala_array_free (_tmp18_, _tmp18__length1, (GDestroyNotify) g_free), NULL);
-	_tmp22_ = ((FsoGsmAbstractModem*) self)->modem_data;
-	_tmp23_ = _tmp22_->simBuffersSms;
-	if (_tmp23_) {
-		_tmp21_ = "+CNMI=2,1,2,1,1";
+	_tmp10_ = g_strdup ("+CGEREP=2,1");
+	_tmp11_ = g_strdup ("+CGREG=2");
+	_tmp12_ = g_strdup ("+CLIP=1");
+	_tmp13_ = g_strdup ("+CREG=2");
+	_tmp14_ = g_strdup ("+COLP=0");
+	_tmp15_ = g_strdup ("+CSSN=1,1");
+	_tmp16_ = g_strdup ("+CTZU=1");
+	_tmp17_ = g_strdup ("+CTZR=1");
+	_tmp18_ = g_new0 (gchar*, 8 + 1);
+	_tmp18_[0] = _tmp10_;
+	_tmp18_[1] = _tmp11_;
+	_tmp18_[2] = _tmp12_;
+	_tmp18_[3] = _tmp13_;
+	_tmp18_[4] = _tmp14_;
+	_tmp18_[5] = _tmp15_;
+	_tmp18_[6] = _tmp16_;
+	_tmp18_[7] = _tmp17_;
+	_tmp19_ = _tmp18_;
+	_tmp19__length1 = 8;
+	_tmp20_ = fso_gsm_at_command_sequence_new (_tmp19_, 8);
+	_tmp21_ = _tmp20_;
+	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "main", "init", _tmp21_);
+	_fso_gsm_at_command_sequence_unref0 (_tmp21_);
+	_tmp19_ = (_vala_array_free (_tmp19_, _tmp19__length1, (GDestroyNotify) g_free), NULL);
+	_tmp23_ = ((FsoGsmAbstractModem*) self)->modem_data;
+	_tmp24_ = _tmp23_->simBuffersSms;
+	if (_tmp24_) {
+		_tmp22_ = "+CNMI=2,1,2,1,1";
 	} else {
-		_tmp21_ = "+CNMI=2,2,2,1,1";
+		_tmp22_ = "+CNMI=2,2,2,1,1";
 	}
-	_tmp24_ = _tmp21_;
-	_tmp25_ = g_strdup (_tmp24_);
-	cnmiCommand = _tmp25_;
-	_tmp26_ = g_strdup (cnmiCommand);
-	_tmp27_ = g_strdup ("+CSMS=1");
-	_tmp28_ = g_new0 (gchar*, 2 + 1);
-	_tmp28_[0] = _tmp26_;
-	_tmp28_[1] = _tmp27_;
-	_tmp29_ = _tmp28_;
-	_tmp29__length1 = 2;
-	_tmp30_ = fso_gsm_at_command_sequence_new (_tmp29_, 2);
-	_tmp31_ = _tmp30_;
-	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "main", "registered", _tmp31_);
-	_fso_gsm_at_command_sequence_unref0 (_tmp31_);
-	_tmp29_ = (_vala_array_free (_tmp29_, _tmp29__length1, (GDestroyNotify) g_free), NULL);
-	_tmp32_ = g_strdup ("_OSQI=0");
-	_tmp33_ = g_new0 (gchar*, 1 + 1);
-	_tmp33_[0] = _tmp32_;
-	_tmp34_ = _tmp33_;
-	_tmp34__length1 = 1;
-	_tmp35_ = fso_gsm_at_command_sequence_new (_tmp34_, 1);
-	_tmp36_ = _tmp35_;
-	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "main", "suspend", _tmp36_);
-	_fso_gsm_at_command_sequence_unref0 (_tmp36_);
-	_tmp34_ = (_vala_array_free (_tmp34_, _tmp34__length1, (GDestroyNotify) g_free), NULL);
-	_tmp37_ = g_strdup ("_OSQI=1");
-	_tmp38_ = g_new0 (gchar*, 1 + 1);
-	_tmp38_[0] = _tmp37_;
-	_tmp39_ = _tmp38_;
-	_tmp39__length1 = 1;
-	_tmp40_ = fso_gsm_at_command_sequence_new (_tmp39_, 1);
-	_tmp41_ = _tmp40_;
-	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "main", "resume", _tmp41_);
-	_fso_gsm_at_command_sequence_unref0 (_tmp41_);
-	_tmp39_ = (_vala_array_free (_tmp39_, _tmp39__length1, (GDestroyNotify) g_free), NULL);
+	_tmp25_ = _tmp22_;
+	_tmp26_ = g_strdup (_tmp25_);
+	cnmiCommand = _tmp26_;
+	_tmp27_ = g_strdup (cnmiCommand);
+	_tmp28_ = g_strdup ("+CSMS=1");
+	_tmp29_ = g_new0 (gchar*, 2 + 1);
+	_tmp29_[0] = _tmp27_;
+	_tmp29_[1] = _tmp28_;
+	_tmp30_ = _tmp29_;
+	_tmp30__length1 = 2;
+	_tmp31_ = fso_gsm_at_command_sequence_new (_tmp30_, 2);
+	_tmp32_ = _tmp31_;
+	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "main", "registered", _tmp32_);
+	_fso_gsm_at_command_sequence_unref0 (_tmp32_);
+	_tmp30_ = (_vala_array_free (_tmp30_, _tmp30__length1, (GDestroyNotify) g_free), NULL);
+	_tmp33_ = g_strdup ("_OSQI=0");
+	_tmp34_ = g_new0 (gchar*, 1 + 1);
+	_tmp34_[0] = _tmp33_;
+	_tmp35_ = _tmp34_;
+	_tmp35__length1 = 1;
+	_tmp36_ = fso_gsm_at_command_sequence_new (_tmp35_, 1);
+	_tmp37_ = _tmp36_;
+	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "main", "suspend", _tmp37_);
+	_fso_gsm_at_command_sequence_unref0 (_tmp37_);
+	_tmp35_ = (_vala_array_free (_tmp35_, _tmp35__length1, (GDestroyNotify) g_free), NULL);
+	_tmp38_ = g_strdup ("_OSQI=1");
+	_tmp39_ = g_new0 (gchar*, 1 + 1);
+	_tmp39_[0] = _tmp38_;
+	_tmp40_ = _tmp39_;
+	_tmp40__length1 = 1;
+	_tmp41_ = fso_gsm_at_command_sequence_new (_tmp40_, 1);
+	_tmp42_ = _tmp41_;
+	fso_gsm_modem_registerAtCommandSequence ((FsoGsmModem*) self, "main", "resume", _tmp42_);
+	_fso_gsm_at_command_sequence_unref0 (_tmp42_);
+	_tmp40_ = (_vala_array_free (_tmp40_, _tmp40__length1, (GDestroyNotify) g_free), NULL);
 	_g_free0 (cnmiCommand);
 }
 
 
 static void gtm601_modem_real_createChannels (FsoGsmAbstractModem* base) {
 	Gtm601Modem * self;
-	const gchar* _tmp0_;
-	const gchar* _tmp1_;
-	gint _tmp2_;
-	FsoFrameworkTransport* _tmp3_ = NULL;
+	FsoFrameworkTransportSpec* _tmp0_;
+	FsoFrameworkTransportSpec* _tmp1_;
+	FsoFrameworkTransport* _tmp2_ = NULL;
 	FsoFrameworkTransport* transport;
-	FsoGsmStateBasedAtParser* _tmp4_;
+	FsoGsmStateBasedAtParser* _tmp3_;
 	FsoGsmStateBasedAtParser* parser;
-	FsoGsmAtChannel* _tmp5_;
+	FsoFrameworkTransport* _tmp4_;
+	FsoGsmStateBasedAtParser* _tmp5_;
 	FsoGsmAtChannel* _tmp6_;
+	FsoGsmAtChannel* _tmp7_;
+	FsoFrameworkSmartKeyFile* _tmp8_;
+	gchar* _tmp9_ = NULL;
+	gchar* modem_urc_access;
+	const gchar* _tmp10_;
+	gint _tmp11_;
+	gint _tmp12_;
 	self = (Gtm601Modem*) base;
-	_tmp0_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-	_tmp1_ = ((FsoGsmAbstractModem*) self)->modem_port;
-	_tmp2_ = ((FsoGsmAbstractModem*) self)->modem_speed;
-	_tmp3_ = fso_framework_transport_create (_tmp0_, _tmp1_, (guint) _tmp2_, TRUE, TRUE);
-	transport = _tmp3_;
-	_tmp4_ = fso_gsm_state_based_at_parser_new ();
-	parser = _tmp4_;
-	_tmp5_ = fso_gsm_at_channel_new (GTM601_MODEM_CHANNEL_NAME, transport, (FsoFrameworkParser*) parser);
-	_tmp6_ = _tmp5_;
-	_g_object_unref0 (_tmp6_);
+	_tmp0_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = fso_framework_transport_spec_create (_tmp1_);
+	transport = _tmp2_;
+	_tmp3_ = fso_gsm_state_based_at_parser_new ();
+	parser = _tmp3_;
+	_tmp4_ = transport;
+	_tmp5_ = parser;
+	_tmp6_ = fso_gsm_at_channel_new (GTM601_MODEM_CHANNEL_NAME, _tmp4_, (FsoFrameworkParser*) _tmp5_);
+	_tmp7_ = _tmp6_;
+	_g_object_unref0 (_tmp7_);
+	_tmp8_ = fso_framework_theConfig;
+	_tmp9_ = fso_framework_smart_key_file_stringValue (_tmp8_, "fsogsm.modem_option_gtm601", "modem_urc_access", "");
+	modem_urc_access = _tmp9_;
+	_tmp10_ = modem_urc_access;
+	_tmp11_ = strlen (_tmp10_);
+	_tmp12_ = _tmp11_;
+	if (_tmp12_ > 0) {
+		const gchar* _tmp13_;
+		FsoFrameworkTransportSpec* _tmp14_ = NULL;
+		FsoFrameworkTransportSpec* _tmp15_;
+		FsoFrameworkTransport* _tmp16_ = NULL;
+		FsoGsmStateBasedAtParser* _tmp17_;
+		FsoFrameworkTransport* _tmp18_;
+		FsoGsmStateBasedAtParser* _tmp19_;
+		FsoGsmAtChannel* _tmp20_;
+		FsoGsmAtChannel* _tmp21_;
+		_tmp13_ = modem_urc_access;
+		_tmp14_ = fso_framework_transport_spec_parse (_tmp13_);
+		_tmp15_ = _tmp14_;
+		_tmp16_ = fso_framework_transport_spec_create (_tmp15_);
+		_g_object_unref0 (transport);
+		transport = _tmp16_;
+		_fso_framework_transport_spec_unref0 (_tmp15_);
+		_tmp17_ = fso_gsm_state_based_at_parser_new ();
+		_g_object_unref0 (parser);
+		parser = _tmp17_;
+		_tmp18_ = transport;
+		_tmp19_ = parser;
+		_tmp20_ = fso_gsm_at_channel_new (GTM601_MODEM_URC_CHANNEL_NAME, _tmp18_, (FsoFrameworkParser*) _tmp19_);
+		_tmp21_ = _tmp20_;
+		_g_object_unref0 (_tmp21_);
+	}
+	_g_free0 (modem_urc_access);
 	_g_object_unref0 (parser);
 	_g_object_unref0 (transport);
 }
@@ -334,35 +360,48 @@ static FsoGsmUnsolicitedResponseHandler* gtm601_modem_real_createUnsolicitedHand
 
 static void gtm601_modem_real_registerCustomAtCommands (FsoGsmAbstractModem* base, GeeHashMap* commands) {
 	Gtm601Modem * self;
-	FsoGsmModem* _tmp0_;
-	gpointer _tmp1_ = NULL;
-	FsoGsmPlusCOPS* plusCops;
-	GeeHashMap* _tmp2_;
-	FsoGsmModem* _tmp3_;
-	gpointer _tmp4_ = NULL;
-	Gtm601UnderscoreOWANCALL* cmd;
-	FsoGsmModem* _tmp5_;
-	gpointer _tmp6_ = NULL;
-	Gtm601UnderscoreOWANDATA* cmd2;
+	GeeHashMap* _tmp0_;
 	self = (Gtm601Modem*) base;
 	g_return_if_fail (commands != NULL);
-	_tmp0_ = fso_gsm_theModem;
-	_tmp1_ = fso_gsm_modem_createAtCommand (_tmp0_, FSO_GSM_TYPE_PLUS_COPS, (GBoxedCopyFunc) g_object_ref, g_object_unref, "+COPS");
-	plusCops = (FsoGsmPlusCOPS*) _tmp1_;
 	fso_gsm_plus_cops_providerNameDeliveredInConfiguredCharset = TRUE;
-	_tmp2_ = commands;
-	gtm601_registerCustomAtCommands (_tmp2_);
-	_tmp3_ = fso_gsm_theModem;
-	_tmp4_ = fso_gsm_modem_createAtCommand (_tmp3_, GTM601_TYPE_UNDERSCORE_OWANCALL, (GBoxedCopyFunc) g_object_ref, g_object_unref, "_OWANCALL");
-	cmd = (Gtm601UnderscoreOWANCALL*) _tmp4_;
-	fso_framework_data_sharing_setValueForKey ("Gtm601.OWANCALL", cmd);
-	_tmp5_ = fso_gsm_theModem;
-	_tmp6_ = fso_gsm_modem_createAtCommand (_tmp5_, GTM601_TYPE_UNDERSCORE_OWANDATA, (GBoxedCopyFunc) g_object_ref, g_object_unref, "_OWANDATA");
-	cmd2 = (Gtm601UnderscoreOWANDATA*) _tmp6_;
-	fso_framework_data_sharing_setValueForKey ("Gtm601.OWANDATA", cmd2);
-	_g_object_unref0 (cmd2);
-	_g_object_unref0 (cmd);
-	_g_object_unref0 (plusCops);
+	_tmp0_ = commands;
+	gtm601_registerCustomAtCommands (_tmp0_);
+}
+
+
+static gpointer _g_object_ref0 (gpointer self) {
+	return self ? g_object_ref (self) : NULL;
+}
+
+
+static void gtm601_modem_onModemStatusChange (Gtm601Modem* self, FsoGsmModemStatus status) {
+	FsoGsmModemStatus _tmp0_;
+	g_return_if_fail (self != NULL);
+	_tmp0_ = status;
+	switch (_tmp0_) {
+		case FSO_GSM_MODEM_STATUS_RESUMING:
+		{
+			FsoGsmModem* _tmp1_;
+			FsoGsmSmsHandler* _tmp2_;
+			FsoGsmSmsHandler* _tmp3_;
+			FsoGsmAtSmsHandler* _tmp4_;
+			FsoGsmAtSmsHandler* smshandler;
+			FsoGsmAtSmsHandler* _tmp5_;
+			_tmp1_ = fso_gsm_theModem;
+			_tmp2_ = fso_gsm_modem_get_smshandler (_tmp1_);
+			_tmp3_ = _tmp2_;
+			_tmp4_ = _g_object_ref0 (FSO_GSM_IS_AT_SMS_HANDLER (_tmp3_) ? ((FsoGsmAtSmsHandler*) _tmp3_) : NULL);
+			smshandler = _tmp4_;
+			_tmp5_ = smshandler;
+			fso_gsm_abstract_sms_handler_syncWithSim ((FsoGsmAbstractSmsHandler*) _tmp5_, NULL, NULL);
+			_g_object_unref0 (smshandler);
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
 }
 
 
@@ -378,6 +417,28 @@ Gtm601Modem* gtm601_modem_new (void) {
 }
 
 
+static void _gtm601_modem_onModemStatusChange_fso_gsm_modem_signal_status_changed (FsoGsmModem* _sender, FsoGsmModemStatus status, gpointer self) {
+	gtm601_modem_onModemStatusChange (self, status);
+}
+
+
+static GObject * gtm601_modem_constructor (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties) {
+	GObject * obj;
+	GObjectClass * parent_class;
+	Gtm601Modem * self;
+	FsoGsmModem* _tmp0_;
+	FsoGsmModem* _tmp1_;
+	parent_class = G_OBJECT_CLASS (gtm601_modem_parent_class);
+	obj = parent_class->constructor (type, n_construct_properties, construct_properties);
+	self = GTM601_MODEM (obj);
+	_tmp0_ = fso_gsm_theModem;
+	g_assert (_tmp0_ != NULL);
+	_tmp1_ = fso_gsm_theModem;
+	g_signal_connect_object (_tmp1_, "signal-status-changed", (GCallback) _gtm601_modem_onModemStatusChange_fso_gsm_modem_signal_status_changed, self, 0);
+	return obj;
+}
+
+
 static void gtm601_modem_class_init (Gtm601ModemClass * klass) {
 	gtm601_modem_parent_class = g_type_class_peek_parent (klass);
 	FSO_FRAMEWORK_ABSTRACT_OBJECT_CLASS (klass)->repr = gtm601_modem_real_repr;
@@ -387,6 +448,7 @@ static void gtm601_modem_class_init (Gtm601ModemClass * klass) {
 	FSO_GSM_ABSTRACT_MODEM_CLASS (klass)->registerCustomMediators = gtm601_modem_real_registerCustomMediators;
 	FSO_GSM_ABSTRACT_MODEM_CLASS (klass)->createUnsolicitedHandler = gtm601_modem_real_createUnsolicitedHandler;
 	FSO_GSM_ABSTRACT_MODEM_CLASS (klass)->registerCustomAtCommands = gtm601_modem_real_registerCustomAtCommands;
+	G_OBJECT_CLASS (klass)->constructor = gtm601_modem_constructor;
 }
 
 
@@ -437,7 +499,14 @@ void fso_register_function (GTypeModule* module) {
 	gtm601_plus_chup_register_type (module);
 	gtm601_underscore_owancall_register_type (module);
 	gtm601_underscore_owandata_register_type (module);
+	gtm601_ext_plus_ceer_register_type (module);
+	gtm601_underscore_osigq_register_type (module);
+	gtm601_underscore_opsys_register_type (module);
+	gtm601_at_call_send_dtmf_register_type (module);
+	gtm601_at_network_list_providers_register_type (module);
+	gtm601_at_sim_get_service_center_number_register_type (module);
 	gtm601_unsolicited_response_handler_register_type (module);
+	pdp_option_gtm601_register_type (module);
 }
 
 

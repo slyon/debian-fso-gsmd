@@ -29,6 +29,8 @@
 #include <string.h>
 #include <fsotransport.h>
 #include <gee.h>
+#include <smsutil.h>
+#include <conversions.h>
 
 
 #define FSO_GSM_TYPE_MEDIATOR (fso_gsm_mediator_get_type ())
@@ -90,6 +92,8 @@ typedef struct _FsoGsmChannel FsoGsmChannel;
 typedef struct _FsoGsmChannelIface FsoGsmChannelIface;
 
 #define FSO_GSM_MODEM_TYPE_STATUS (fso_gsm_modem_status_get_type ())
+
+#define FSO_GSM_MODEM_TYPE_NETWORK_STATUS (fso_gsm_modem_network_status_get_type ())
 
 #define FSO_GSM_TYPE_AT_COMMAND_SEQUENCE (fso_gsm_at_command_sequence_get_type ())
 #define FSO_GSM_AT_COMMAND_SEQUENCE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_AT_COMMAND_SEQUENCE, FsoGsmAtCommandSequence))
@@ -165,15 +169,13 @@ typedef struct _FsoGsmSmsHandlerIface FsoGsmSmsHandlerIface;
 typedef struct _WrapHexPdu WrapHexPdu;
 typedef struct _WrapHexPduClass WrapHexPduClass;
 
-#define FSO_GSM_TYPE_SMS_STORAGE (fso_gsm_sms_storage_get_type ())
-#define FSO_GSM_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorage))
-#define FSO_GSM_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
-#define FSO_GSM_IS_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_SMS_STORAGE))
-#define FSO_GSM_IS_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_SMS_STORAGE))
-#define FSO_GSM_SMS_STORAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
+#define FSO_GSM_TYPE_ISMS_STORAGE (fso_gsm_isms_storage_get_type ())
+#define FSO_GSM_ISMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ISMS_STORAGE, FsoGsmISmsStorage))
+#define FSO_GSM_IS_ISMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ISMS_STORAGE))
+#define FSO_GSM_ISMS_STORAGE_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_ISMS_STORAGE, FsoGsmISmsStorageIface))
 
-typedef struct _FsoGsmSmsStorage FsoGsmSmsStorage;
-typedef struct _FsoGsmSmsStorageClass FsoGsmSmsStorageClass;
+typedef struct _FsoGsmISmsStorage FsoGsmISmsStorage;
+typedef struct _FsoGsmISmsStorageIface FsoGsmISmsStorageIface;
 
 #define FSO_GSM_TYPE_PHONEBOOK_HANDLER (fso_gsm_phonebook_handler_get_type ())
 #define FSO_GSM_PHONEBOOK_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PHONEBOOK_HANDLER, FsoGsmPhonebookHandler))
@@ -201,15 +203,23 @@ typedef struct _FsoGsmPhonebookStorageClass FsoGsmPhonebookStorageClass;
 typedef struct _FsoGsmWatchDog FsoGsmWatchDog;
 typedef struct _FsoGsmWatchDogIface FsoGsmWatchDogIface;
 
-#define FSO_GSM_TYPE_PDP_HANDLER (fso_gsm_pdp_handler_get_type ())
-#define FSO_GSM_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandler))
-#define FSO_GSM_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
-#define FSO_GSM_IS_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_PDP_HANDLER))
-#define FSO_GSM_IS_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_PDP_HANDLER))
-#define FSO_GSM_PDP_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
+#define FSO_GSM_TYPE_IPDP_HANDLER (fso_gsm_ipdp_handler_get_type ())
+#define FSO_GSM_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandler))
+#define FSO_GSM_IS_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_IPDP_HANDLER))
+#define FSO_GSM_IPDP_HANDLER_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandlerIface))
 
-typedef struct _FsoGsmPdpHandler FsoGsmPdpHandler;
-typedef struct _FsoGsmPdpHandlerClass FsoGsmPdpHandlerClass;
+typedef struct _FsoGsmIPdpHandler FsoGsmIPdpHandler;
+typedef struct _FsoGsmIPdpHandlerIface FsoGsmIPdpHandlerIface;
+
+#define FSO_GSM_TYPE_ROUTE_INFO (fso_gsm_route_info_get_type ())
+#define FSO_GSM_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfo))
+#define FSO_GSM_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
+#define FSO_GSM_IS_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ROUTE_INFO))
+#define FSO_GSM_IS_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_ROUTE_INFO))
+#define FSO_GSM_ROUTE_INFO_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
+
+typedef struct _FsoGsmRouteInfo FsoGsmRouteInfo;
+typedef struct _FsoGsmRouteInfoClass FsoGsmRouteInfoClass;
 
 #define FSO_GSM_TYPE_ABSTRACT_AT_COMMAND (fso_gsm_abstract_at_command_get_type ())
 #define FSO_GSM_ABSTRACT_AT_COMMAND(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ABSTRACT_AT_COMMAND, FsoGsmAbstractAtCommand))
@@ -268,7 +278,6 @@ typedef struct _FsoGsmAtNetworkGetStatusPrivate FsoGsmAtNetworkGetStatusPrivate;
 
 typedef struct _FsoGsmPlusCREG FsoGsmPlusCREG;
 typedef struct _FsoGsmPlusCREGClass FsoGsmPlusCREGClass;
-typedef struct _FsoGsmPlusCREGPrivate FsoGsmPlusCREGPrivate;
 
 #define FSO_GSM_TYPE_CONSTANTS (fso_gsm_constants_get_type ())
 #define FSO_GSM_CONSTANTS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_CONSTANTS, FsoGsmConstants))
@@ -279,6 +288,7 @@ typedef struct _FsoGsmPlusCREGPrivate FsoGsmPlusCREGPrivate;
 
 typedef struct _FsoGsmConstants FsoGsmConstants;
 typedef struct _FsoGsmConstantsClass FsoGsmConstantsClass;
+typedef struct _FsoGsmPlusCREGPrivate FsoGsmPlusCREGPrivate;
 #define _fso_gsm_constants_unref0(var) ((var == NULL) ? NULL : (var = (fso_gsm_constants_unref (var), NULL)))
 
 #define FSO_GSM_TYPE_PLUS_COPS (fso_gsm_plus_cops_get_type ())
@@ -534,6 +544,13 @@ typedef enum  {
 	FSO_GSM_MODEM_STATUS_CLOSING
 } FsoGsmModemStatus;
 
+typedef enum  {
+	FSO_GSM_MODEM_NETWORK_STATUS_UNKNOWN,
+	FSO_GSM_MODEM_NETWORK_STATUS_UNREGISTERED,
+	FSO_GSM_MODEM_NETWORK_STATUS_SEARCHING,
+	FSO_GSM_MODEM_NETWORK_STATUS_REGISTERED
+} FsoGsmModemNetworkStatus;
+
 struct _FsoGsmAtCommandQueueCommandIface {
 	GTypeInterface parent_iface;
 	guint (*get_retry) (FsoGsmAtCommandQueueCommand* self);
@@ -748,6 +765,19 @@ struct _FsoGsmCallHandlerIface {
 	void (*releaseAll_finish) (FsoGsmCallHandler* self, GAsyncResult* _res_, GError** error);
 };
 
+struct _FsoGsmISmsStorageIface {
+	GTypeInterface parent_iface;
+	void (*clean) (FsoGsmISmsStorage* self);
+	gint (*addSms) (FsoGsmISmsStorage* self, struct sms* message);
+	GeeArrayList* (*keys) (FsoGsmISmsStorage* self);
+	void (*message) (FsoGsmISmsStorage* self, const gchar* key, gint index, FreeSmartphoneGSMSIMMessage* result);
+	FreeSmartphoneGSMSIMMessage* (*messagebook) (FsoGsmISmsStorage* self, int* result_length1);
+	guint16 (*lastReferenceNumber) (FsoGsmISmsStorage* self);
+	guint16 (*increasingReferenceNumber) (FsoGsmISmsStorage* self);
+	void (*storeTransactionIndizesForSentMessage) (FsoGsmISmsStorage* self, GeeArrayList* hexpdus);
+	gint (*confirmReceivedMessage) (FsoGsmISmsStorage* self, gint netreference);
+};
+
 struct _FsoGsmSmsHandlerIface {
 	GTypeInterface parent_iface;
 	void (*handleIncomingSmsOnSim) (FsoGsmSmsHandler* self, guint index, GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -760,12 +790,14 @@ struct _FsoGsmSmsHandlerIface {
 	guint16 (*nextReferenceNumber) (FsoGsmSmsHandler* self);
 	GeeArrayList* (*formatTextMessage) (FsoGsmSmsHandler* self, const gchar* number, const gchar* contents, gboolean requestReport);
 	void (*storeTransactionIndizesForSentMessage) (FsoGsmSmsHandler* self, GeeArrayList* hexpdus);
-	FsoGsmSmsStorage* (*get_storage) (FsoGsmSmsHandler* self);
-	void (*set_storage) (FsoGsmSmsHandler* self, FsoGsmSmsStorage* value);
+	FsoGsmISmsStorage* (*get_storage) (FsoGsmSmsHandler* self);
+	void (*set_storage) (FsoGsmSmsHandler* self, FsoGsmISmsStorage* value);
 };
 
 struct _FsoGsmPhonebookHandlerIface {
 	GTypeInterface parent_iface;
+	void (*syncWithSim) (FsoGsmPhonebookHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*syncWithSim_finish) (FsoGsmPhonebookHandler* self, GAsyncResult* _res_);
 	FsoGsmPhonebookStorage* (*get_storage) (FsoGsmPhonebookHandler* self);
 	void (*set_storage) (FsoGsmPhonebookHandler* self, FsoGsmPhonebookStorage* value);
 };
@@ -774,6 +806,25 @@ struct _FsoGsmWatchDogIface {
 	GTypeInterface parent_iface;
 	void (*check) (FsoGsmWatchDog* self);
 	void (*resetUnlockMarker) (FsoGsmWatchDog* self);
+};
+
+struct _FsoGsmIPdpHandlerIface {
+	GTypeInterface parent_iface;
+	void (*activate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*activate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
+	void (*deactivate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*deactivate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
+	void (*statusUpdate) (FsoGsmIPdpHandler* self, const gchar* status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*statusUpdate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	void (*connectedWithNewDefaultRoute) (FsoGsmIPdpHandler* self, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*connectedWithNewDefaultRoute_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	void (*disconnected) (FsoGsmIPdpHandler* self);
+	void (*syncStatus) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*syncStatus_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	FreeSmartphoneGSMContextStatus (*get_status) (FsoGsmIPdpHandler* self);
+	void (*set_status) (FsoGsmIPdpHandler* self, FreeSmartphoneGSMContextStatus value);
+	GHashTable* (*get_properties) (FsoGsmIPdpHandler* self);
+	void (*set_properties) (FsoGsmIPdpHandler* self, GHashTable* value);
 };
 
 struct _FsoGsmModemIface {
@@ -791,6 +842,7 @@ struct _FsoGsmModemIface {
 	void (*setFunctionality_finish) (FsoGsmModem* self, GAsyncResult* _res_, GError** error);
 	void (*registerChannel) (FsoGsmModem* self, const gchar* name, FsoGsmChannel* channel);
 	void (*advanceToState) (FsoGsmModem* self, FsoGsmModemStatus status, gboolean force);
+	void (*advanceNetworkState) (FsoGsmModem* self, FsoGsmModemNetworkStatus status);
 	FsoGsmAtCommandSequence* (*atCommandSequence) (FsoGsmModem* self, const gchar* channel, const gchar* purpose);
 	gpointer (*createMediator) (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, GError** error);
 	gpointer (*createAtCommand) (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, const gchar* command);
@@ -801,8 +853,10 @@ struct _FsoGsmModemIface {
 	gchar** (*processAtCommandAsync_finish) (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
 	void (*processAtPduCommandAsync) (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries, GAsyncReadyCallback _callback_, gpointer _user_data_);
 	gchar** (*processAtPduCommandAsync_finish) (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
+	void (*sendAtCommand) (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries);
 	FsoGsmChannel* (*channel) (FsoGsmModem* self, const gchar* category);
 	FsoGsmModemStatus (*status) (FsoGsmModem* self);
+	FsoGsmModemNetworkStatus (*network_status) (FsoGsmModem* self);
 	FreeSmartphoneGSMDeviceStatus (*externalStatus) (FsoGsmModem* self);
 	FsoGsmModemData* (*data) (FsoGsmModem* self);
 	void (*registerAtCommandSequence) (FsoGsmModem* self, const gchar* channel, const gchar* purpose, FsoGsmAtCommandSequence* sequence);
@@ -817,8 +871,8 @@ struct _FsoGsmModemIface {
 	void (*set_pbhandler) (FsoGsmModem* self, FsoGsmPhonebookHandler* value);
 	FsoGsmWatchDog* (*get_watchdog) (FsoGsmModem* self);
 	void (*set_watchdog) (FsoGsmModem* self, FsoGsmWatchDog* value);
-	FsoGsmPdpHandler* (*get_pdphandler) (FsoGsmModem* self);
-	void (*set_pdphandler) (FsoGsmModem* self, FsoGsmPdpHandler* value);
+	FsoGsmIPdpHandler* (*get_pdphandler) (FsoGsmModem* self);
+	void (*set_pdphandler) (FsoGsmModem* self, FsoGsmIPdpHandler* value);
 };
 
 struct _FsoGsmAbstractAtCommand {
@@ -928,7 +982,6 @@ struct _FsoGsmPlusCOPS {
 	gint mode;
 	gchar* oper;
 	gchar* act;
-	gint status;
 	FreeSmartphoneGSMNetworkProvider* providers;
 	gint providers_length1;
 };
@@ -962,280 +1015,305 @@ struct _FsoGsmAtNetworkGetStatusRunData {
 	GHashTable* _tmp3_;
 	GVariant* strvalue;
 	GVariant* intvalue;
-	FsoGsmModem* _tmp4_;
-	gpointer _tmp5_;
-	FsoGsmPlusCSQ* csq;
-	FsoGsmModem* _tmp6_;
-	FsoGsmPlusCSQ* _tmp7_;
-	FsoGsmPlusCSQ* _tmp8_;
-	gchar* _tmp9_;
+	GHashTable* _tmp4_;
+	GHashTable* _tmp5_;
+	gchar* _tmp6_;
+	GVariant* _tmp7_;
+	GHashTable* _tmp8_;
+	GHashTable* _tmp9_;
 	gchar* _tmp10_;
-	gint _tmp11_;
-	gchar** _tmp12_;
-	gchar** _tmp13_;
-	gint _tmp13__length1;
+	GVariant* _tmp11_;
+	GHashTable* _tmp12_;
+	GHashTable* _tmp13_;
+	gchar* _tmp14_;
+	GVariant* _tmp15_;
+	FsoGsmModem* _tmp16_;
+	gpointer _tmp17_;
+	FsoGsmPlusCSQ* csq;
+	FsoGsmModem* _tmp18_;
+	FsoGsmPlusCSQ* _tmp19_;
+	FsoGsmPlusCSQ* _tmp20_;
+	gchar* _tmp21_;
+	gchar* _tmp22_;
+	gint _tmp23_;
+	gchar** _tmp24_;
+	gchar** _tmp25_;
+	gint _tmp25__length1;
 	gchar** response;
 	gint response_length1;
 	gint _response_size_;
-	FsoGsmPlusCSQ* _tmp14_;
-	gchar** _tmp15_;
-	gint _tmp15__length1;
-	FsoGsmConstantsAtResponse _tmp16_;
-	FsoGsmPlusCSQ* _tmp17_;
-	gint _tmp18_;
-	GVariant* _tmp19_;
-	GHashTable* _tmp20_;
-	GHashTable* _tmp21_;
-	gchar* _tmp22_;
-	GVariant* _tmp23_;
-	GVariant* _tmp24_;
-	FsoGsmModem* _tmp25_;
-	gpointer _tmp26_;
+	FsoGsmPlusCSQ* _tmp26_;
+	gchar** _tmp27_;
+	gint _tmp27__length1;
+	FsoGsmConstantsAtResponse _tmp28_;
+	FsoGsmPlusCSQ* _tmp29_;
+	gint _tmp30_;
+	GVariant* _tmp31_;
+	GHashTable* _tmp32_;
+	GHashTable* _tmp33_;
+	gchar* _tmp34_;
+	GVariant* _tmp35_;
+	GVariant* _tmp36_;
+	FsoGsmModem* _tmp37_;
+	gpointer _tmp38_;
 	FsoGsmPlusCREG* creg;
-	FsoGsmModem* _tmp27_;
-	FsoGsmPlusCREG* _tmp28_;
-	FsoGsmPlusCREG* _tmp29_;
-	gchar* _tmp30_;
-	gchar* _tmp31_;
-	gint _tmp32_;
-	gchar** _tmp33_;
-	gchar** _tmp34_;
-	gint _tmp34__length1;
+	FsoGsmModem* _tmp39_;
+	FsoGsmPlusCREG* _tmp40_;
+	FsoGsmPlusCREG* _tmp41_;
+	gchar* _tmp42_;
+	gchar* _tmp43_;
+	gint _tmp44_;
+	gchar** _tmp45_;
+	gchar** _tmp46_;
+	gint _tmp46__length1;
 	gchar** cregResult;
 	gint cregResult_length1;
 	gint _cregResult_size_;
-	FsoGsmPlusCREG* _tmp35_;
-	gchar** _tmp36_;
-	gint _tmp36__length1;
-	FsoGsmConstantsAtResponse _tmp37_;
-	FsoGsmModem* _tmp38_;
-	FsoGsmPlusCREG* _tmp39_;
-	FsoGsmPlusCREG* _tmp40_;
-	FsoGsmPlusCREG* _tmp41_;
-	gint _tmp42_;
-	gchar* _tmp43_;
-	gchar* _tmp44_;
-	gint _tmp45_;
-	gchar** _tmp46_;
-	gchar** _tmp47_;
-	gint _tmp47__length1;
-	gchar** cregResult2;
-	gint cregResult2_length1;
-	gint _cregResult2_size_;
-	FsoGsmPlusCREG* _tmp48_;
-	gchar** _tmp49_;
-	gint _tmp49__length1;
-	FsoGsmConstantsAtResponse _tmp50_;
+	FsoGsmPlusCREG* _tmp47_;
+	gchar** _tmp48_;
+	gint _tmp48__length1;
+	FsoGsmConstantsAtResponse _tmp49_;
+	FsoGsmConstants* _tmp50_;
 	FsoGsmConstants* _tmp51_;
-	FsoGsmConstants* _tmp52_;
-	FsoGsmPlusCREG* _tmp53_;
-	gint _tmp54_;
-	gchar* _tmp55_;
-	GVariant* _tmp56_;
+	FsoGsmPlusCREG* _tmp52_;
+	gint _tmp53_;
+	gchar* _tmp54_;
+	GVariant* _tmp55_;
+	GHashTable* _tmp56_;
 	GHashTable* _tmp57_;
-	GHashTable* _tmp58_;
-	gchar* _tmp59_;
+	gchar* _tmp58_;
+	GVariant* _tmp59_;
 	GVariant* _tmp60_;
-	GVariant* _tmp61_;
-	FsoGsmPlusCREG* _tmp62_;
-	const gchar* _tmp63_;
-	GVariant* _tmp64_;
-	GHashTable* _tmp65_;
-	GHashTable* _tmp66_;
-	gchar* _tmp67_;
+	FsoGsmPlusCREG* _tmp61_;
+	const gchar* _tmp62_;
+	GHashTable* _tmp63_;
+	GHashTable* _tmp64_;
+	gchar* _tmp65_;
+	FsoGsmPlusCREG* _tmp66_;
+	const gchar* _tmp67_;
 	GVariant* _tmp68_;
 	GVariant* _tmp69_;
 	FsoGsmPlusCREG* _tmp70_;
 	const gchar* _tmp71_;
-	GVariant* _tmp72_;
+	GHashTable* _tmp72_;
 	GHashTable* _tmp73_;
-	GHashTable* _tmp74_;
-	gchar* _tmp75_;
-	GVariant* _tmp76_;
+	gchar* _tmp74_;
+	FsoGsmPlusCREG* _tmp75_;
+	const gchar* _tmp76_;
 	GVariant* _tmp77_;
-	FsoGsmModem* _tmp78_;
-	gpointer _tmp79_;
+	GVariant* _tmp78_;
+	FsoGsmModem* _tmp79_;
+	gpointer _tmp80_;
 	FsoGsmPlusCOPS* cops;
-	FsoGsmModem* _tmp80_;
-	FsoGsmPlusCOPS* _tmp81_;
+	FsoGsmModem* _tmp81_;
 	FsoGsmPlusCOPS* _tmp82_;
-	gchar* _tmp83_;
+	FsoGsmPlusCOPS* _tmp83_;
 	gchar* _tmp84_;
-	gint _tmp85_;
-	gchar** _tmp86_;
+	gchar* _tmp85_;
+	gint _tmp86_;
 	gchar** _tmp87_;
-	gint _tmp87__length1;
+	gchar** _tmp88_;
+	gint _tmp88__length1;
+	gchar** copsResult3;
+	gint copsResult3_length1;
+	gint _copsResult3_size_;
+	FsoGsmPlusCOPS* _tmp89_;
+	gchar** _tmp90_;
+	gint _tmp90__length1;
+	FsoGsmConstantsAtResponse _tmp91_;
+	FsoGsmPlusCOPS* _tmp92_;
+	const gchar* _tmp93_;
+	GVariant* _tmp94_;
+	GHashTable* _tmp95_;
+	GHashTable* _tmp96_;
+	gchar* _tmp97_;
+	GVariant* _tmp98_;
+	GVariant* _tmp99_;
+	FsoGsmModem* _tmp100_;
+	FsoGsmPlusCOPS* _tmp101_;
+	FsoGsmPlusCOPS* _tmp102_;
+	gchar* _tmp103_;
+	gchar* _tmp104_;
+	gint _tmp105_;
+	gchar** _tmp106_;
+	gchar** _tmp107_;
+	gint _tmp107__length1;
 	gchar** copsResult;
 	gint copsResult_length1;
 	gint _copsResult_size_;
-	FsoGsmPlusCOPS* _tmp88_;
-	gchar** _tmp89_;
-	gint _tmp89__length1;
-	FsoGsmConstantsAtResponse _tmp90_;
-	FsoGsmConstants* _tmp91_;
-	FsoGsmConstants* _tmp92_;
-	FsoGsmPlusCOPS* _tmp93_;
-	gint _tmp94_;
-	gchar* _tmp95_;
-	GVariant* _tmp96_;
-	GHashTable* _tmp97_;
-	GHashTable* _tmp98_;
-	gchar* _tmp99_;
-	GVariant* _tmp100_;
-	GVariant* _tmp101_;
-	FsoGsmPlusCOPS* _tmp102_;
-	const gchar* _tmp103_;
-	GVariant* _tmp104_;
-	GHashTable* _tmp105_;
-	GHashTable* _tmp106_;
-	gchar* _tmp107_;
-	GVariant* _tmp108_;
-	GVariant* _tmp109_;
-	GHashTable* _tmp110_;
-	GHashTable* _tmp111_;
-	gchar* _tmp112_;
-	GVariant* _tmp113_;
-	GVariant* _tmp114_;
-	GHashTable* _tmp115_;
-	GHashTable* _tmp116_;
-	gchar* _tmp117_;
-	GVariant* _tmp118_;
-	GVariant* _tmp119_;
-	FsoGsmPlusCOPS* _tmp120_;
-	const gchar* _tmp121_;
-	GVariant* _tmp122_;
-	GHashTable* _tmp123_;
-	GHashTable* _tmp124_;
-	gchar* _tmp125_;
-	GVariant* _tmp126_;
-	GVariant* _tmp127_;
-	FsoGsmPlusCOPS* _tmp128_;
-	gchar** _tmp129_;
-	gint _tmp129__length1;
-	FsoGsmConstantsAtResponse _tmp130_;
+	FsoGsmPlusCOPS* _tmp108_;
+	gchar** _tmp109_;
+	gint _tmp109__length1;
+	FsoGsmConstantsAtResponse _tmp110_;
+	FsoGsmConstants* _tmp111_;
+	FsoGsmConstants* _tmp112_;
+	FsoGsmPlusCOPS* _tmp113_;
+	gint _tmp114_;
+	gchar* _tmp115_;
+	GVariant* _tmp116_;
+	GHashTable* _tmp117_;
+	GHashTable* _tmp118_;
+	gchar* _tmp119_;
+	GVariant* _tmp120_;
+	GVariant* _tmp121_;
+	FsoGsmPlusCOPS* _tmp122_;
+	const gchar* _tmp123_;
+	GVariant* _tmp124_;
+	GVariant* _tmp125_;
+	GHashTable* _tmp126_;
+	GHashTable* _tmp127_;
+	gchar* _tmp128_;
+	GVariant* _tmp129_;
+	GVariant* _tmp130_;
 	GHashTable* _tmp131_;
 	GHashTable* _tmp132_;
 	gchar* _tmp133_;
 	GVariant* _tmp134_;
-	FsoGsmModem* _tmp135_;
-	FsoGsmPlusCOPS* _tmp136_;
-	FsoGsmPlusCOPS* _tmp137_;
+	GVariant* _tmp135_;
+	GHashTable* _tmp136_;
+	GHashTable* _tmp137_;
 	gchar* _tmp138_;
-	gchar* _tmp139_;
-	gint _tmp140_;
-	gchar** _tmp141_;
-	gchar** _tmp142_;
-	gint _tmp142__length1;
+	GVariant* _tmp139_;
+	GVariant* _tmp140_;
+	FsoGsmPlusCOPS* _tmp141_;
+	const gchar* _tmp142_;
+	GVariant* _tmp143_;
+	GHashTable* _tmp144_;
+	GHashTable* _tmp145_;
+	gchar* _tmp146_;
+	GVariant* _tmp147_;
+	GVariant* _tmp148_;
+	FsoGsmPlusCOPS* _tmp149_;
+	gchar** _tmp150_;
+	gint _tmp150__length1;
+	FsoGsmConstantsAtResponse _tmp151_;
+	GHashTable* _tmp152_;
+	GHashTable* _tmp153_;
+	gchar* _tmp154_;
+	GVariant* _tmp155_;
+	FsoGsmModem* _tmp156_;
+	FsoGsmPlusCOPS* _tmp157_;
+	FsoGsmPlusCOPS* _tmp158_;
+	gchar* _tmp159_;
+	gchar* _tmp160_;
+	gint _tmp161_;
+	gchar** _tmp162_;
+	gchar** _tmp163_;
+	gint _tmp163__length1;
 	gchar** copsResult2;
 	gint copsResult2_length1;
 	gint _copsResult2_size_;
-	FsoGsmPlusCOPS* _tmp143_;
-	gchar** _tmp144_;
-	gint _tmp144__length1;
-	FsoGsmConstantsAtResponse _tmp145_;
-	FsoGsmPlusCOPS* _tmp146_;
-	const gchar* _tmp147_;
-	FsoGsmPlusCOPS* _tmp148_;
-	const gchar* _tmp149_;
-	GVariant* _tmp150_;
-	GHashTable* _tmp151_;
-	GHashTable* _tmp152_;
-	gchar* _tmp153_;
-	GVariant* _tmp154_;
-	GVariant* _tmp155_;
-	GHashTable* _tmp156_;
-	GHashTable* _tmp157_;
-	gchar* _tmp158_;
-	GVariant* _tmp159_;
-	GVariant* _tmp160_;
-	FsoGsmModem* _tmp161_;
-	FsoGsmPlusCOPS* _tmp162_;
-	FsoGsmPlusCOPS* _tmp163_;
-	gchar* _tmp164_;
-	gchar* _tmp165_;
-	gint _tmp166_;
-	gchar** _tmp167_;
-	gchar** _tmp168_;
-	gint _tmp168__length1;
-	gchar** copsResult3;
-	gint copsResult3_length1;
-	gint _copsResult3_size_;
+	FsoGsmPlusCOPS* _tmp164_;
+	gchar** _tmp165_;
+	gint _tmp165__length1;
+	FsoGsmConstantsAtResponse _tmp166_;
+	FsoGsmPlusCOPS* _tmp167_;
+	const gchar* _tmp168_;
 	FsoGsmPlusCOPS* _tmp169_;
-	gchar** _tmp170_;
-	gint _tmp170__length1;
-	FsoGsmConstantsAtResponse _tmp171_;
-	FsoGsmPlusCOPS* _tmp172_;
-	const gchar* _tmp173_;
-	GVariant* _tmp174_;
-	GHashTable* _tmp175_;
-	GHashTable* _tmp176_;
-	gchar* _tmp177_;
-	GVariant* _tmp178_;
-	GVariant* _tmp179_;
-	FsoGsmModem* _tmp180_;
-	gpointer _tmp181_;
+	const gchar* _tmp170_;
+	GVariant* _tmp171_;
+	GHashTable* _tmp172_;
+	GHashTable* _tmp173_;
+	gchar* _tmp174_;
+	GVariant* _tmp175_;
+	GVariant* _tmp176_;
+	GHashTable* _tmp177_;
+	GHashTable* _tmp178_;
+	gchar* _tmp179_;
+	GVariant* _tmp180_;
+	GVariant* _tmp181_;
+	GHashTable* _tmp182_;
+	GHashTable* _tmp183_;
+	gconstpointer _tmp184_;
+	GHashTable* _tmp185_;
+	GHashTable* _tmp186_;
+	gconstpointer _tmp187_;
+	GVariant* _tmp188_;
+	GVariant* code;
+	GVariant* _tmp189_;
+	GVariant* _tmp190_;
+	const gchar* _tmp191_;
+	gchar* _tmp192_;
+	gchar* provider;
+	GHashTable* _tmp193_;
+	GHashTable* _tmp194_;
+	gchar* _tmp195_;
+	const gchar* _tmp196_;
+	GVariant* _tmp197_;
+	GHashTable* _tmp198_;
+	GHashTable* _tmp199_;
+	gchar* _tmp200_;
+	const gchar* _tmp201_;
+	GVariant* _tmp202_;
+	GHashTable* _tmp203_;
+	GHashTable* _tmp204_;
+	gchar* _tmp205_;
+	const gchar* _tmp206_;
+	GVariant* _tmp207_;
+	FsoGsmModem* _tmp208_;
+	gpointer _tmp209_;
 	FsoGsmPlusCGREG* cgreg;
-	FsoGsmModem* _tmp182_;
-	FsoGsmPlusCGREG* _tmp183_;
-	FsoGsmPlusCGREG* _tmp184_;
-	gchar* _tmp185_;
-	gchar* _tmp186_;
-	gint _tmp187_;
-	gchar** _tmp188_;
-	gchar** _tmp189_;
-	gint _tmp189__length1;
+	FsoGsmModem* _tmp210_;
+	FsoGsmPlusCGREG* _tmp211_;
+	FsoGsmPlusCGREG* _tmp212_;
+	gchar* _tmp213_;
+	gchar* _tmp214_;
+	gint _tmp215_;
+	gchar** _tmp216_;
+	gchar** _tmp217_;
+	gint _tmp217__length1;
 	gchar** cgregResult;
 	gint cgregResult_length1;
 	gint _cgregResult_size_;
-	FsoGsmPlusCGREG* _tmp190_;
-	gchar** _tmp191_;
-	gint _tmp191__length1;
-	FsoGsmConstantsAtResponse _tmp192_;
-	FsoGsmModem* _tmp193_;
-	FsoGsmPlusCGREG* _tmp194_;
-	FsoGsmPlusCGREG* _tmp195_;
-	FsoGsmPlusCGREG* _tmp196_;
-	gint _tmp197_;
-	gchar* _tmp198_;
-	gchar* _tmp199_;
-	gint _tmp200_;
-	gchar** _tmp201_;
-	gchar** _tmp202_;
-	gint _tmp202__length1;
+	FsoGsmPlusCGREG* _tmp218_;
+	gchar** _tmp219_;
+	gint _tmp219__length1;
+	FsoGsmConstantsAtResponse _tmp220_;
+	FsoGsmModem* _tmp221_;
+	FsoGsmPlusCGREG* _tmp222_;
+	FsoGsmPlusCGREG* _tmp223_;
+	FsoGsmPlusCGREG* _tmp224_;
+	gint _tmp225_;
+	gchar* _tmp226_;
+	gchar* _tmp227_;
+	gint _tmp228_;
+	gchar** _tmp229_;
+	gchar** _tmp230_;
+	gint _tmp230__length1;
 	gchar** cgregResult2;
 	gint cgregResult2_length1;
 	gint _cgregResult2_size_;
-	FsoGsmPlusCGREG* _tmp203_;
-	gchar** _tmp204_;
-	gint _tmp204__length1;
-	FsoGsmConstantsAtResponse _tmp205_;
-	FsoGsmConstants* _tmp206_;
-	FsoGsmConstants* _tmp207_;
-	FsoGsmPlusCGREG* _tmp208_;
-	gint _tmp209_;
-	gchar* _tmp210_;
-	GVariant* _tmp211_;
-	GHashTable* _tmp212_;
-	GHashTable* _tmp213_;
-	gchar* _tmp214_;
-	GVariant* _tmp215_;
-	GVariant* _tmp216_;
-	FsoGsmPlusCGREG* _tmp217_;
-	const gchar* _tmp218_;
-	GVariant* _tmp219_;
-	GHashTable* _tmp220_;
-	GHashTable* _tmp221_;
-	gchar* _tmp222_;
-	GVariant* _tmp223_;
-	GVariant* _tmp224_;
-	FsoGsmPlusCGREG* _tmp225_;
-	const gchar* _tmp226_;
-	GVariant* _tmp227_;
-	GHashTable* _tmp228_;
-	GHashTable* _tmp229_;
-	gchar* _tmp230_;
-	GVariant* _tmp231_;
-	GVariant* _tmp232_;
+	FsoGsmPlusCGREG* _tmp231_;
+	gchar** _tmp232_;
+	gint _tmp232__length1;
+	FsoGsmConstantsAtResponse _tmp233_;
+	FsoGsmConstants* _tmp234_;
+	FsoGsmConstants* _tmp235_;
+	FsoGsmPlusCGREG* _tmp236_;
+	gint _tmp237_;
+	gchar* _tmp238_;
+	GVariant* _tmp239_;
+	GHashTable* _tmp240_;
+	GHashTable* _tmp241_;
+	gchar* _tmp242_;
+	GVariant* _tmp243_;
+	GVariant* _tmp244_;
+	FsoGsmPlusCGREG* _tmp245_;
+	const gchar* _tmp246_;
+	GVariant* _tmp247_;
+	GHashTable* _tmp248_;
+	GHashTable* _tmp249_;
+	gchar* _tmp250_;
+	GVariant* _tmp251_;
+	GVariant* _tmp252_;
+	FsoGsmPlusCGREG* _tmp253_;
+	const gchar* _tmp254_;
+	GVariant* _tmp255_;
+	GHashTable* _tmp256_;
+	GHashTable* _tmp257_;
+	gchar* _tmp258_;
+	GVariant* _tmp259_;
+	GVariant* _tmp260_;
 };
 
 struct _FsoGsmNetworkListProviders {
@@ -1540,6 +1618,7 @@ static void fso_gsm_at_network_get_signal_strength_real_run (FsoGsmNetworkGetSig
 static gboolean fso_gsm_at_network_get_signal_strength_real_run_co (FsoGsmAtNetworkGetSignalStrengthRunData* _data_);
 GType fso_gsm_channel_get_type (void) G_GNUC_CONST;
 GType fso_gsm_modem_status_get_type (void) G_GNUC_CONST;
+GType fso_gsm_modem_network_status_get_type (void) G_GNUC_CONST;
 gpointer fso_gsm_at_command_sequence_ref (gpointer instance);
 void fso_gsm_at_command_sequence_unref (gpointer instance);
 GParamSpec* fso_gsm_param_spec_at_command_sequence (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
@@ -1561,12 +1640,19 @@ void value_set_wrap_hex_pdu (GValue* value, gpointer v_object);
 void value_take_wrap_hex_pdu (GValue* value, gpointer v_object);
 gpointer value_get_wrap_hex_pdu (const GValue* value);
 GType wrap_hex_pdu_get_type (void) G_GNUC_CONST;
-GType fso_gsm_sms_storage_get_type (void) G_GNUC_CONST;
+GType fso_gsm_isms_storage_get_type (void) G_GNUC_CONST;
 GType fso_gsm_sms_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_phonebook_storage_get_type (void) G_GNUC_CONST;
 GType fso_gsm_phonebook_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_watch_dog_get_type (void) G_GNUC_CONST;
-GType fso_gsm_pdp_handler_get_type (void) G_GNUC_CONST;
+gpointer fso_gsm_route_info_ref (gpointer instance);
+void fso_gsm_route_info_unref (gpointer instance);
+GParamSpec* fso_gsm_param_spec_route_info (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
+void fso_gsm_value_set_route_info (GValue* value, gpointer v_object);
+void fso_gsm_value_take_route_info (GValue* value, gpointer v_object);
+gpointer fso_gsm_value_get_route_info (const GValue* value);
+GType fso_gsm_route_info_get_type (void) G_GNUC_CONST;
+GType fso_gsm_ipdp_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_modem_get_type (void) G_GNUC_CONST;
 gpointer fso_gsm_modem_createAtCommand (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, const gchar* command);
 GType fso_gsm_abstract_at_command_get_type (void) G_GNUC_CONST;
@@ -1592,13 +1678,15 @@ static gboolean fso_gsm_at_network_get_status_real_run_co (FsoGsmAtNetworkGetSta
 static void _g_free0_ (gpointer var);
 static void _g_variant_unref0_ (gpointer var);
 void fso_gsm_network_get_status_set_status (FsoGsmNetworkGetStatus* self, GHashTable* value);
+GHashTable* fso_gsm_network_get_status_get_status (FsoGsmNetworkGetStatus* self);
+static GVariant* _variant_new24 (const gchar* value);
+static GVariant* _variant_new25 (const gchar* value);
+static GVariant* _variant_new26 (const gchar* value);
 static void fso_gsm_at_network_get_status_run_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_);
 FsoGsmConstantsAtResponse fso_gsm_abstract_at_command_validate (FsoGsmAbstractAtCommand* self, gchar** response, int response_length1);
-static GVariant* _variant_new24 (gint value);
-GHashTable* fso_gsm_network_get_status_get_status (FsoGsmNetworkGetStatus* self);
+static GVariant* _variant_new27 (gint value);
 GType fso_gsm_plus_creg_get_type (void) G_GNUC_CONST;
 gchar* fso_gsm_plus_creg_query (FsoGsmPlusCREG* self);
-gchar* fso_gsm_plus_creg_queryFull (FsoGsmPlusCREG* self, gint restoreMode);
 gpointer fso_gsm_constants_ref (gpointer instance);
 void fso_gsm_constants_unref (gpointer instance);
 GParamSpec* fso_gsm_param_spec_constants (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
@@ -1608,25 +1696,28 @@ gpointer fso_gsm_value_get_constants (const GValue* value);
 GType fso_gsm_constants_get_type (void) G_GNUC_CONST;
 FsoGsmConstants* fso_gsm_constants_instance (void);
 gchar* fso_gsm_constants_networkRegistrationStatusToString (FsoGsmConstants* self, gint code);
-static GVariant* _variant_new25 (gchar* value);
-static GVariant* _variant_new26 (const gchar* value);
-static GVariant* _variant_new27 (const gchar* value);
+static GVariant* _variant_new28 (gchar* value);
 GType fso_gsm_plus_cops_get_type (void) G_GNUC_CONST;
 GType fso_gsm_plus_cops_format_get_type (void) G_GNUC_CONST;
 gchar* fso_gsm_plus_cops_query (FsoGsmPlusCOPS* self, FsoGsmPlusCOPSFormat format);
-gchar* fso_gsm_constants_networkRegistrationModeToString (FsoGsmConstants* self, gint code);
-static GVariant* _variant_new28 (gchar* value);
 static GVariant* _variant_new29 (const gchar* value);
-static GVariant* _variant_new30 (const gchar* value);
+gchar* fso_gsm_constants_networkRegistrationModeToString (FsoGsmConstants* self, gint code);
+static GVariant* _variant_new30 (gchar* value);
 static GVariant* _variant_new31 (const gchar* value);
 static GVariant* _variant_new32 (const gchar* value);
 static GVariant* _variant_new33 (const gchar* value);
+static GVariant* _variant_new34 (const gchar* value);
+void fso_gsm_findProviderNameForMccMnc (const gchar* mccmnc, GAsyncReadyCallback _callback_, gpointer _user_data_);
+gchar* fso_gsm_findProviderNameForMccMnc_finish (GAsyncResult* _res_);
+static GVariant* _variant_new35 (const gchar* value);
+static GVariant* _variant_new36 (const gchar* value);
+static GVariant* _variant_new37 (const gchar* value);
 GType fso_gsm_plus_cgreg_get_type (void) G_GNUC_CONST;
 gchar* fso_gsm_plus_cgreg_query (FsoGsmPlusCGREG* self);
 gchar* fso_gsm_plus_cgreg_queryFull (FsoGsmPlusCGREG* self, gint restoreMode);
-static GVariant* _variant_new34 (gchar* value);
-static GVariant* _variant_new35 (const gchar* value);
-static GVariant* _variant_new36 (const gchar* value);
+static GVariant* _variant_new38 (gchar* value);
+static GVariant* _variant_new39 (const gchar* value);
+static GVariant* _variant_new40 (const gchar* value);
 FsoGsmAtNetworkGetStatus* fso_gsm_at_network_get_status_new (void);
 FsoGsmAtNetworkGetStatus* fso_gsm_at_network_get_status_construct (GType object_type);
 FsoGsmNetworkGetStatus* fso_gsm_network_get_status_construct (GType object_type);
@@ -1910,26 +2001,12 @@ static void _g_variant_unref0_ (gpointer var) {
 }
 
 
-static void fso_gsm_at_network_get_status_run_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_) {
-	FsoGsmAtNetworkGetStatusRunData* _data_;
-	_data_ = _user_data_;
-	_data_->_source_object_ = source_object;
-	_data_->_res_ = _res_;
-	fso_gsm_at_network_get_status_real_run_co (_data_);
+static GVariant* _variant_new24 (const gchar* value) {
+	return g_variant_ref_sink (g_variant_new_string (value));
 }
 
 
-static GVariant* _variant_new24 (gint value) {
-	return g_variant_ref_sink (g_variant_new_int32 (value));
-}
-
-
-static gpointer _g_variant_ref0 (gpointer self) {
-	return self ? g_variant_ref (self) : NULL;
-}
-
-
-static GVariant* _variant_new25 (gchar* value) {
+static GVariant* _variant_new25 (const gchar* value) {
 	return g_variant_ref_sink (g_variant_new_string (value));
 }
 
@@ -1939,8 +2016,22 @@ static GVariant* _variant_new26 (const gchar* value) {
 }
 
 
-static GVariant* _variant_new27 (const gchar* value) {
-	return g_variant_ref_sink (g_variant_new_string (value));
+static void fso_gsm_at_network_get_status_run_ready (GObject* source_object, GAsyncResult* _res_, gpointer _user_data_) {
+	FsoGsmAtNetworkGetStatusRunData* _data_;
+	_data_ = _user_data_;
+	_data_->_source_object_ = source_object;
+	_data_->_res_ = _res_;
+	fso_gsm_at_network_get_status_real_run_co (_data_);
+}
+
+
+static GVariant* _variant_new27 (gint value) {
+	return g_variant_ref_sink (g_variant_new_int32 (value));
+}
+
+
+static gpointer _g_variant_ref0 (gpointer self) {
+	return self ? g_variant_ref (self) : NULL;
 }
 
 
@@ -1954,7 +2045,7 @@ static GVariant* _variant_new29 (const gchar* value) {
 }
 
 
-static GVariant* _variant_new30 (const gchar* value) {
+static GVariant* _variant_new30 (gchar* value) {
 	return g_variant_ref_sink (g_variant_new_string (value));
 }
 
@@ -1974,7 +2065,7 @@ static GVariant* _variant_new33 (const gchar* value) {
 }
 
 
-static GVariant* _variant_new34 (gchar* value) {
+static GVariant* _variant_new34 (const gchar* value) {
 	return g_variant_ref_sink (g_variant_new_string (value));
 }
 
@@ -1985,6 +2076,26 @@ static GVariant* _variant_new35 (const gchar* value) {
 
 
 static GVariant* _variant_new36 (const gchar* value) {
+	return g_variant_ref_sink (g_variant_new_string (value));
+}
+
+
+static GVariant* _variant_new37 (const gchar* value) {
+	return g_variant_ref_sink (g_variant_new_string (value));
+}
+
+
+static GVariant* _variant_new38 (gchar* value) {
+	return g_variant_ref_sink (g_variant_new_string (value));
+}
+
+
+static GVariant* _variant_new39 (const gchar* value) {
+	return g_variant_ref_sink (g_variant_new_string (value));
+}
+
+
+static GVariant* _variant_new40 (const gchar* value) {
 	return g_variant_ref_sink (g_variant_new_string (value));
 }
 
@@ -2019,426 +2130,462 @@ static gboolean fso_gsm_at_network_get_status_real_run_co (FsoGsmAtNetworkGetSta
 	_data_->_tmp3_ = _data_->_tmp2_;
 	fso_gsm_network_get_status_set_status ((FsoGsmNetworkGetStatus*) _data_->self, _data_->_tmp3_);
 	_g_hash_table_unref0 (_data_->_tmp3_);
-	_data_->_tmp4_ = fso_gsm_theModem;
-	_data_->_tmp5_ = NULL;
-	_data_->_tmp5_ = fso_gsm_modem_createAtCommand (_data_->_tmp4_, FSO_GSM_TYPE_PLUS_CSQ, (GBoxedCopyFunc) g_object_ref, g_object_unref, "+CSQ");
-	_data_->csq = (FsoGsmPlusCSQ*) _data_->_tmp5_;
-	_data_->_tmp6_ = fso_gsm_theModem;
-	_data_->_tmp7_ = _data_->csq;
-	_data_->_tmp8_ = _data_->csq;
-	_data_->_tmp9_ = NULL;
-	_data_->_tmp9_ = fso_gsm_plus_csq_execute (_data_->_tmp8_);
-	_data_->_tmp10_ = _data_->_tmp9_;
-	_data_->_tmp11_ = 0;
+	_data_->_tmp4_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+	_data_->_tmp5_ = _data_->_tmp4_;
+	_data_->_tmp6_ = g_strdup ("registration");
+	_data_->_tmp7_ = _variant_new24 ("unknown");
+	g_hash_table_insert (_data_->_tmp5_, _data_->_tmp6_, _data_->_tmp7_);
+	_data_->_tmp8_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+	_data_->_tmp9_ = _data_->_tmp8_;
+	_data_->_tmp10_ = g_strdup ("mode");
+	_data_->_tmp11_ = _variant_new25 ("unknown");
+	g_hash_table_insert (_data_->_tmp9_, _data_->_tmp10_, _data_->_tmp11_);
+	_data_->_tmp12_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+	_data_->_tmp13_ = _data_->_tmp12_;
+	_data_->_tmp14_ = g_strdup ("act");
+	_data_->_tmp15_ = _variant_new26 ("unknown");
+	g_hash_table_insert (_data_->_tmp13_, _data_->_tmp14_, _data_->_tmp15_);
+	_data_->_tmp16_ = fso_gsm_theModem;
+	_data_->_tmp17_ = NULL;
+	_data_->_tmp17_ = fso_gsm_modem_createAtCommand (_data_->_tmp16_, FSO_GSM_TYPE_PLUS_CSQ, (GBoxedCopyFunc) g_object_ref, g_object_unref, "+CSQ");
+	_data_->csq = (FsoGsmPlusCSQ*) _data_->_tmp17_;
+	_data_->_tmp18_ = fso_gsm_theModem;
+	_data_->_tmp19_ = _data_->csq;
+	_data_->_tmp20_ = _data_->csq;
+	_data_->_tmp21_ = NULL;
+	_data_->_tmp21_ = fso_gsm_plus_csq_execute (_data_->_tmp20_);
+	_data_->_tmp22_ = _data_->_tmp21_;
+	_data_->_tmp23_ = 0;
 	_data_->_state_ = 1;
-	fso_gsm_modem_processAtCommandAsync (_data_->_tmp6_, (FsoGsmAtCommand*) _data_->_tmp7_, _data_->_tmp10_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
+	fso_gsm_modem_processAtCommandAsync (_data_->_tmp18_, (FsoGsmAtCommand*) _data_->_tmp19_, _data_->_tmp22_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
 	return FALSE;
 	_state_1:
-	_data_->_tmp12_ = NULL;
-	_data_->_tmp12_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp6_, _data_->_res_, &_data_->_tmp11_);
-	_data_->_tmp13_ = _data_->_tmp12_;
-	_data_->_tmp13__length1 = _data_->_tmp11_;
-	_g_free0 (_data_->_tmp10_);
-	_data_->response = _data_->_tmp13_;
-	_data_->response_length1 = _data_->_tmp13__length1;
+	_data_->_tmp24_ = NULL;
+	_data_->_tmp24_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp18_, _data_->_res_, &_data_->_tmp23_);
+	_data_->_tmp25_ = _data_->_tmp24_;
+	_data_->_tmp25__length1 = _data_->_tmp23_;
+	_g_free0 (_data_->_tmp22_);
+	_data_->response = _data_->_tmp25_;
+	_data_->response_length1 = _data_->_tmp25__length1;
 	_data_->_response_size_ = _data_->response_length1;
-	_data_->_tmp14_ = _data_->csq;
-	_data_->_tmp15_ = _data_->response;
-	_data_->_tmp15__length1 = _data_->response_length1;
-	_data_->_tmp16_ = 0;
-	_data_->_tmp16_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp14_, _data_->_tmp15_, _data_->_tmp15__length1);
-	if (_data_->_tmp16_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
-		_data_->_tmp17_ = _data_->csq;
-		_data_->_tmp18_ = _data_->_tmp17_->signal;
-		_data_->_tmp19_ = _variant_new24 (_data_->_tmp18_);
+	_data_->_tmp26_ = _data_->csq;
+	_data_->_tmp27_ = _data_->response;
+	_data_->_tmp27__length1 = _data_->response_length1;
+	_data_->_tmp28_ = 0;
+	_data_->_tmp28_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp26_, _data_->_tmp27_, _data_->_tmp27__length1);
+	if (_data_->_tmp28_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
+		_data_->_tmp29_ = _data_->csq;
+		_data_->_tmp30_ = _data_->_tmp29_->signal;
+		_data_->_tmp31_ = _variant_new27 (_data_->_tmp30_);
 		_g_variant_unref0 (_data_->intvalue);
-		_data_->intvalue = _data_->_tmp19_;
-		_data_->_tmp20_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-		_data_->_tmp21_ = _data_->_tmp20_;
-		_data_->_tmp22_ = g_strdup ("strength");
-		_data_->_tmp23_ = _data_->intvalue;
-		_data_->_tmp24_ = _g_variant_ref0 (_data_->_tmp23_);
-		g_hash_table_insert (_data_->_tmp21_, _data_->_tmp22_, _data_->_tmp24_);
+		_data_->intvalue = _data_->_tmp31_;
+		_data_->_tmp32_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+		_data_->_tmp33_ = _data_->_tmp32_;
+		_data_->_tmp34_ = g_strdup ("strength");
+		_data_->_tmp35_ = _data_->intvalue;
+		_data_->_tmp36_ = _g_variant_ref0 (_data_->_tmp35_);
+		g_hash_table_insert (_data_->_tmp33_, _data_->_tmp34_, _data_->_tmp36_);
 	}
-	_data_->_tmp25_ = fso_gsm_theModem;
-	_data_->_tmp26_ = NULL;
-	_data_->_tmp26_ = fso_gsm_modem_createAtCommand (_data_->_tmp25_, FSO_GSM_TYPE_PLUS_CREG, (GBoxedCopyFunc) g_object_ref, g_object_unref, "+CREG");
-	_data_->creg = (FsoGsmPlusCREG*) _data_->_tmp26_;
-	_data_->_tmp27_ = fso_gsm_theModem;
-	_data_->_tmp28_ = _data_->creg;
-	_data_->_tmp29_ = _data_->creg;
-	_data_->_tmp30_ = NULL;
-	_data_->_tmp30_ = fso_gsm_plus_creg_query (_data_->_tmp29_);
-	_data_->_tmp31_ = _data_->_tmp30_;
-	_data_->_tmp32_ = 0;
+	_data_->_tmp37_ = fso_gsm_theModem;
+	_data_->_tmp38_ = NULL;
+	_data_->_tmp38_ = fso_gsm_modem_createAtCommand (_data_->_tmp37_, FSO_GSM_TYPE_PLUS_CREG, (GBoxedCopyFunc) g_object_ref, g_object_unref, "+CREG");
+	_data_->creg = (FsoGsmPlusCREG*) _data_->_tmp38_;
+	_data_->_tmp39_ = fso_gsm_theModem;
+	_data_->_tmp40_ = _data_->creg;
+	_data_->_tmp41_ = _data_->creg;
+	_data_->_tmp42_ = NULL;
+	_data_->_tmp42_ = fso_gsm_plus_creg_query (_data_->_tmp41_);
+	_data_->_tmp43_ = _data_->_tmp42_;
+	_data_->_tmp44_ = 0;
 	_data_->_state_ = 2;
-	fso_gsm_modem_processAtCommandAsync (_data_->_tmp27_, (FsoGsmAtCommand*) _data_->_tmp28_, _data_->_tmp31_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
+	fso_gsm_modem_processAtCommandAsync (_data_->_tmp39_, (FsoGsmAtCommand*) _data_->_tmp40_, _data_->_tmp43_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
 	return FALSE;
 	_state_2:
-	_data_->_tmp33_ = NULL;
-	_data_->_tmp33_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp27_, _data_->_res_, &_data_->_tmp32_);
-	_data_->_tmp34_ = _data_->_tmp33_;
-	_data_->_tmp34__length1 = _data_->_tmp32_;
-	_g_free0 (_data_->_tmp31_);
-	_data_->cregResult = _data_->_tmp34_;
-	_data_->cregResult_length1 = _data_->_tmp34__length1;
+	_data_->_tmp45_ = NULL;
+	_data_->_tmp45_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp39_, _data_->_res_, &_data_->_tmp44_);
+	_data_->_tmp46_ = _data_->_tmp45_;
+	_data_->_tmp46__length1 = _data_->_tmp44_;
+	_g_free0 (_data_->_tmp43_);
+	_data_->cregResult = _data_->_tmp46_;
+	_data_->cregResult_length1 = _data_->_tmp46__length1;
 	_data_->_cregResult_size_ = _data_->cregResult_length1;
-	_data_->_tmp35_ = _data_->creg;
-	_data_->_tmp36_ = _data_->cregResult;
-	_data_->_tmp36__length1 = _data_->cregResult_length1;
-	_data_->_tmp37_ = 0;
-	_data_->_tmp37_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp35_, _data_->_tmp36_, _data_->_tmp36__length1);
-	if (_data_->_tmp37_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
-		_data_->_tmp38_ = fso_gsm_theModem;
-		_data_->_tmp39_ = _data_->creg;
-		_data_->_tmp40_ = _data_->creg;
-		_data_->_tmp41_ = _data_->creg;
-		_data_->_tmp42_ = _data_->_tmp41_->mode;
-		_data_->_tmp43_ = NULL;
-		_data_->_tmp43_ = fso_gsm_plus_creg_queryFull (_data_->_tmp40_, _data_->_tmp42_);
-		_data_->_tmp44_ = _data_->_tmp43_;
-		_data_->_tmp45_ = 0;
-		_data_->_state_ = 3;
-		fso_gsm_modem_processAtCommandAsync (_data_->_tmp38_, (FsoGsmAtCommand*) _data_->_tmp39_, _data_->_tmp44_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
-		return FALSE;
-		_state_3:
-		_data_->_tmp46_ = NULL;
-		_data_->_tmp46_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp38_, _data_->_res_, &_data_->_tmp45_);
-		_data_->_tmp47_ = _data_->_tmp46_;
-		_data_->_tmp47__length1 = _data_->_tmp45_;
-		_g_free0 (_data_->_tmp44_);
-		_data_->cregResult2 = _data_->_tmp47_;
-		_data_->cregResult2_length1 = _data_->_tmp47__length1;
-		_data_->_cregResult2_size_ = _data_->cregResult2_length1;
-		_data_->_tmp48_ = _data_->creg;
-		_data_->_tmp49_ = _data_->cregResult2;
-		_data_->_tmp49__length1 = _data_->cregResult2_length1;
-		_data_->_tmp50_ = 0;
-		_data_->_tmp50_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp48_, _data_->_tmp49_, _data_->_tmp49__length1);
-		if (_data_->_tmp50_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
-			_data_->_tmp51_ = NULL;
-			_data_->_tmp51_ = fso_gsm_constants_instance ();
-			_data_->_tmp52_ = _data_->_tmp51_;
-			_data_->_tmp53_ = _data_->creg;
-			_data_->_tmp54_ = _data_->_tmp53_->status;
-			_data_->_tmp55_ = NULL;
-			_data_->_tmp55_ = fso_gsm_constants_networkRegistrationStatusToString (_data_->_tmp52_, _data_->_tmp54_);
-			_data_->_tmp56_ = _variant_new25 (_data_->_tmp55_);
-			_g_variant_unref0 (_data_->strvalue);
-			_data_->strvalue = _data_->_tmp56_;
-			_fso_gsm_constants_unref0 (_data_->_tmp52_);
-			_data_->_tmp57_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-			_data_->_tmp58_ = _data_->_tmp57_;
-			_data_->_tmp59_ = g_strdup ("registration");
-			_data_->_tmp60_ = _data_->strvalue;
-			_data_->_tmp61_ = _g_variant_ref0 (_data_->_tmp60_);
-			g_hash_table_insert (_data_->_tmp58_, _data_->_tmp59_, _data_->_tmp61_);
-			_data_->_tmp62_ = _data_->creg;
-			_data_->_tmp63_ = _data_->_tmp62_->lac;
-			_data_->_tmp64_ = _variant_new26 (_data_->_tmp63_);
-			_g_variant_unref0 (_data_->strvalue);
-			_data_->strvalue = _data_->_tmp64_;
-			_data_->_tmp65_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-			_data_->_tmp66_ = _data_->_tmp65_;
-			_data_->_tmp67_ = g_strdup ("lac");
-			_data_->_tmp68_ = _data_->strvalue;
-			_data_->_tmp69_ = _g_variant_ref0 (_data_->_tmp68_);
-			g_hash_table_insert (_data_->_tmp66_, _data_->_tmp67_, _data_->_tmp69_);
-			_data_->_tmp70_ = _data_->creg;
-			_data_->_tmp71_ = _data_->_tmp70_->cid;
-			_data_->_tmp72_ = _variant_new27 (_data_->_tmp71_);
-			_g_variant_unref0 (_data_->strvalue);
-			_data_->strvalue = _data_->_tmp72_;
-			_data_->_tmp73_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-			_data_->_tmp74_ = _data_->_tmp73_;
-			_data_->_tmp75_ = g_strdup ("cid");
-			_data_->_tmp76_ = _data_->strvalue;
-			_data_->_tmp77_ = _g_variant_ref0 (_data_->_tmp76_);
-			g_hash_table_insert (_data_->_tmp74_, _data_->_tmp75_, _data_->_tmp77_);
+	_data_->_tmp47_ = _data_->creg;
+	_data_->_tmp48_ = _data_->cregResult;
+	_data_->_tmp48__length1 = _data_->cregResult_length1;
+	_data_->_tmp49_ = 0;
+	_data_->_tmp49_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp47_, _data_->_tmp48_, _data_->_tmp48__length1);
+	if (_data_->_tmp49_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
+		_data_->_tmp50_ = NULL;
+		_data_->_tmp50_ = fso_gsm_constants_instance ();
+		_data_->_tmp51_ = _data_->_tmp50_;
+		_data_->_tmp52_ = _data_->creg;
+		_data_->_tmp53_ = _data_->_tmp52_->status;
+		_data_->_tmp54_ = NULL;
+		_data_->_tmp54_ = fso_gsm_constants_networkRegistrationStatusToString (_data_->_tmp51_, _data_->_tmp53_);
+		_data_->_tmp55_ = _variant_new28 (_data_->_tmp54_);
+		_g_variant_unref0 (_data_->strvalue);
+		_data_->strvalue = _data_->_tmp55_;
+		_fso_gsm_constants_unref0 (_data_->_tmp51_);
+		_data_->_tmp56_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+		_data_->_tmp57_ = _data_->_tmp56_;
+		_data_->_tmp58_ = g_strdup ("registration");
+		_data_->_tmp59_ = _data_->strvalue;
+		_data_->_tmp60_ = _g_variant_ref0 (_data_->_tmp59_);
+		g_hash_table_insert (_data_->_tmp57_, _data_->_tmp58_, _data_->_tmp60_);
+		_data_->_tmp61_ = _data_->creg;
+		_data_->_tmp62_ = _data_->_tmp61_->lac;
+		if (g_strcmp0 (_data_->_tmp62_, "") != 0) {
+			_data_->_tmp63_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp64_ = _data_->_tmp63_;
+			_data_->_tmp65_ = g_strdup ("lac");
+			_data_->_tmp66_ = _data_->creg;
+			_data_->_tmp67_ = _data_->_tmp66_->lac;
+			_data_->_tmp68_ = g_variant_new_string (_data_->_tmp67_);
+			_data_->_tmp69_ = g_variant_ref_sink (_data_->_tmp68_);
+			g_hash_table_insert (_data_->_tmp64_, _data_->_tmp65_, _data_->_tmp69_);
 		}
-		_data_->cregResult2 = (_vala_array_free (_data_->cregResult2, _data_->cregResult2_length1, (GDestroyNotify) g_free), NULL);
+		_data_->_tmp70_ = _data_->creg;
+		_data_->_tmp71_ = _data_->_tmp70_->cid;
+		if (g_strcmp0 (_data_->_tmp71_, "") != 0) {
+			_data_->_tmp72_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp73_ = _data_->_tmp72_;
+			_data_->_tmp74_ = g_strdup ("cid");
+			_data_->_tmp75_ = _data_->creg;
+			_data_->_tmp76_ = _data_->_tmp75_->cid;
+			_data_->_tmp77_ = g_variant_new_string (_data_->_tmp76_);
+			_data_->_tmp78_ = g_variant_ref_sink (_data_->_tmp77_);
+			g_hash_table_insert (_data_->_tmp73_, _data_->_tmp74_, _data_->_tmp78_);
+		}
 	}
-	_data_->_tmp78_ = fso_gsm_theModem;
-	_data_->_tmp79_ = NULL;
-	_data_->_tmp79_ = fso_gsm_modem_createAtCommand (_data_->_tmp78_, FSO_GSM_TYPE_PLUS_COPS, (GBoxedCopyFunc) g_object_ref, g_object_unref, "+COPS");
-	_data_->cops = (FsoGsmPlusCOPS*) _data_->_tmp79_;
-	_data_->_tmp80_ = fso_gsm_theModem;
-	_data_->_tmp81_ = _data_->cops;
+	_data_->_tmp79_ = fso_gsm_theModem;
+	_data_->_tmp80_ = NULL;
+	_data_->_tmp80_ = fso_gsm_modem_createAtCommand (_data_->_tmp79_, FSO_GSM_TYPE_PLUS_COPS, (GBoxedCopyFunc) g_object_ref, g_object_unref, "+COPS");
+	_data_->cops = (FsoGsmPlusCOPS*) _data_->_tmp80_;
+	_data_->_tmp81_ = fso_gsm_theModem;
 	_data_->_tmp82_ = _data_->cops;
-	_data_->_tmp83_ = NULL;
-	_data_->_tmp83_ = fso_gsm_plus_cops_query (_data_->_tmp82_, FSO_GSM_PLUS_COPS_FORMAT_ALPHANUMERIC);
-	_data_->_tmp84_ = _data_->_tmp83_;
-	_data_->_tmp85_ = 0;
+	_data_->_tmp83_ = _data_->cops;
+	_data_->_tmp84_ = NULL;
+	_data_->_tmp84_ = fso_gsm_plus_cops_query (_data_->_tmp83_, FSO_GSM_PLUS_COPS_FORMAT_NUMERIC);
+	_data_->_tmp85_ = _data_->_tmp84_;
+	_data_->_tmp86_ = 0;
+	_data_->_state_ = 3;
+	fso_gsm_modem_processAtCommandAsync (_data_->_tmp81_, (FsoGsmAtCommand*) _data_->_tmp82_, _data_->_tmp85_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
+	return FALSE;
+	_state_3:
+	_data_->_tmp87_ = NULL;
+	_data_->_tmp87_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp81_, _data_->_res_, &_data_->_tmp86_);
+	_data_->_tmp88_ = _data_->_tmp87_;
+	_data_->_tmp88__length1 = _data_->_tmp86_;
+	_g_free0 (_data_->_tmp85_);
+	_data_->copsResult3 = _data_->_tmp88_;
+	_data_->copsResult3_length1 = _data_->_tmp88__length1;
+	_data_->_copsResult3_size_ = _data_->copsResult3_length1;
+	_data_->_tmp89_ = _data_->cops;
+	_data_->_tmp90_ = _data_->copsResult3;
+	_data_->_tmp90__length1 = _data_->copsResult3_length1;
+	_data_->_tmp91_ = 0;
+	_data_->_tmp91_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp89_, _data_->_tmp90_, _data_->_tmp90__length1);
+	if (_data_->_tmp91_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
+		_data_->_tmp92_ = _data_->cops;
+		_data_->_tmp93_ = _data_->_tmp92_->oper;
+		_data_->_tmp94_ = _variant_new29 (_data_->_tmp93_);
+		_g_variant_unref0 (_data_->strvalue);
+		_data_->strvalue = _data_->_tmp94_;
+		_data_->_tmp95_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+		_data_->_tmp96_ = _data_->_tmp95_;
+		_data_->_tmp97_ = g_strdup ("code");
+		_data_->_tmp98_ = _data_->strvalue;
+		_data_->_tmp99_ = _g_variant_ref0 (_data_->_tmp98_);
+		g_hash_table_insert (_data_->_tmp96_, _data_->_tmp97_, _data_->_tmp99_);
+	}
+	_data_->_tmp100_ = fso_gsm_theModem;
+	_data_->_tmp101_ = _data_->cops;
+	_data_->_tmp102_ = _data_->cops;
+	_data_->_tmp103_ = NULL;
+	_data_->_tmp103_ = fso_gsm_plus_cops_query (_data_->_tmp102_, FSO_GSM_PLUS_COPS_FORMAT_ALPHANUMERIC);
+	_data_->_tmp104_ = _data_->_tmp103_;
+	_data_->_tmp105_ = 0;
 	_data_->_state_ = 4;
-	fso_gsm_modem_processAtCommandAsync (_data_->_tmp80_, (FsoGsmAtCommand*) _data_->_tmp81_, _data_->_tmp84_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
+	fso_gsm_modem_processAtCommandAsync (_data_->_tmp100_, (FsoGsmAtCommand*) _data_->_tmp101_, _data_->_tmp104_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
 	return FALSE;
 	_state_4:
-	_data_->_tmp86_ = NULL;
-	_data_->_tmp86_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp80_, _data_->_res_, &_data_->_tmp85_);
-	_data_->_tmp87_ = _data_->_tmp86_;
-	_data_->_tmp87__length1 = _data_->_tmp85_;
-	_g_free0 (_data_->_tmp84_);
-	_data_->copsResult = _data_->_tmp87_;
-	_data_->copsResult_length1 = _data_->_tmp87__length1;
+	_data_->_tmp106_ = NULL;
+	_data_->_tmp106_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp100_, _data_->_res_, &_data_->_tmp105_);
+	_data_->_tmp107_ = _data_->_tmp106_;
+	_data_->_tmp107__length1 = _data_->_tmp105_;
+	_g_free0 (_data_->_tmp104_);
+	_data_->copsResult = _data_->_tmp107_;
+	_data_->copsResult_length1 = _data_->_tmp107__length1;
 	_data_->_copsResult_size_ = _data_->copsResult_length1;
-	_data_->_tmp88_ = _data_->cops;
-	_data_->_tmp89_ = _data_->copsResult;
-	_data_->_tmp89__length1 = _data_->copsResult_length1;
-	_data_->_tmp90_ = 0;
-	_data_->_tmp90_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp88_, _data_->_tmp89_, _data_->_tmp89__length1);
-	if (_data_->_tmp90_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
-		_data_->_tmp91_ = NULL;
-		_data_->_tmp91_ = fso_gsm_constants_instance ();
-		_data_->_tmp92_ = _data_->_tmp91_;
-		_data_->_tmp93_ = _data_->cops;
-		_data_->_tmp94_ = _data_->_tmp93_->mode;
-		_data_->_tmp95_ = NULL;
-		_data_->_tmp95_ = fso_gsm_constants_networkRegistrationModeToString (_data_->_tmp92_, _data_->_tmp94_);
-		_data_->_tmp96_ = _variant_new28 (_data_->_tmp95_);
+	_data_->_tmp108_ = _data_->cops;
+	_data_->_tmp109_ = _data_->copsResult;
+	_data_->_tmp109__length1 = _data_->copsResult_length1;
+	_data_->_tmp110_ = 0;
+	_data_->_tmp110_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp108_, _data_->_tmp109_, _data_->_tmp109__length1);
+	if (_data_->_tmp110_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
+		_data_->_tmp111_ = NULL;
+		_data_->_tmp111_ = fso_gsm_constants_instance ();
+		_data_->_tmp112_ = _data_->_tmp111_;
+		_data_->_tmp113_ = _data_->cops;
+		_data_->_tmp114_ = _data_->_tmp113_->mode;
+		_data_->_tmp115_ = NULL;
+		_data_->_tmp115_ = fso_gsm_constants_networkRegistrationModeToString (_data_->_tmp112_, _data_->_tmp114_);
+		_data_->_tmp116_ = _variant_new30 (_data_->_tmp115_);
 		_g_variant_unref0 (_data_->strvalue);
-		_data_->strvalue = _data_->_tmp96_;
-		_fso_gsm_constants_unref0 (_data_->_tmp92_);
-		_data_->_tmp97_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-		_data_->_tmp98_ = _data_->_tmp97_;
-		_data_->_tmp99_ = g_strdup ("mode");
-		_data_->_tmp100_ = _data_->strvalue;
-		_data_->_tmp101_ = _g_variant_ref0 (_data_->_tmp100_);
-		g_hash_table_insert (_data_->_tmp98_, _data_->_tmp99_, _data_->_tmp101_);
-		_data_->_tmp102_ = _data_->cops;
-		_data_->_tmp103_ = _data_->_tmp102_->oper;
-		_data_->_tmp104_ = _variant_new29 (_data_->_tmp103_);
+		_data_->strvalue = _data_->_tmp116_;
+		_fso_gsm_constants_unref0 (_data_->_tmp112_);
+		_data_->_tmp117_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+		_data_->_tmp118_ = _data_->_tmp117_;
+		_data_->_tmp119_ = g_strdup ("mode");
+		_data_->_tmp120_ = _data_->strvalue;
+		_data_->_tmp121_ = _g_variant_ref0 (_data_->_tmp120_);
+		g_hash_table_insert (_data_->_tmp118_, _data_->_tmp119_, _data_->_tmp121_);
+		_data_->_tmp122_ = _data_->cops;
+		_data_->_tmp123_ = _data_->_tmp122_->oper;
+		_data_->_tmp124_ = _variant_new31 (_data_->_tmp123_);
 		_g_variant_unref0 (_data_->strvalue);
-		_data_->strvalue = _data_->_tmp104_;
-		_data_->_tmp105_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-		_data_->_tmp106_ = _data_->_tmp105_;
-		_data_->_tmp107_ = g_strdup ("provider");
-		_data_->_tmp108_ = _data_->strvalue;
-		_data_->_tmp109_ = _g_variant_ref0 (_data_->_tmp108_);
-		g_hash_table_insert (_data_->_tmp106_, _data_->_tmp107_, _data_->_tmp109_);
-		_data_->_tmp110_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-		_data_->_tmp111_ = _data_->_tmp110_;
-		_data_->_tmp112_ = g_strdup ("network");
-		_data_->_tmp113_ = _data_->strvalue;
-		_data_->_tmp114_ = _g_variant_ref0 (_data_->_tmp113_);
-		g_hash_table_insert (_data_->_tmp111_, _data_->_tmp112_, _data_->_tmp114_);
-		_data_->_tmp115_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-		_data_->_tmp116_ = _data_->_tmp115_;
-		_data_->_tmp117_ = g_strdup ("display");
-		_data_->_tmp118_ = _data_->strvalue;
-		_data_->_tmp119_ = _g_variant_ref0 (_data_->_tmp118_);
-		g_hash_table_insert (_data_->_tmp116_, _data_->_tmp117_, _data_->_tmp119_);
-		_data_->_tmp120_ = _data_->cops;
-		_data_->_tmp121_ = _data_->_tmp120_->act;
-		_data_->_tmp122_ = _variant_new30 (_data_->_tmp121_);
-		_g_variant_unref0 (_data_->strvalue);
-		_data_->strvalue = _data_->_tmp122_;
-		_data_->_tmp123_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-		_data_->_tmp124_ = _data_->_tmp123_;
-		_data_->_tmp125_ = g_strdup ("act");
-		_data_->_tmp126_ = _data_->strvalue;
-		_data_->_tmp127_ = _g_variant_ref0 (_data_->_tmp126_);
-		g_hash_table_insert (_data_->_tmp124_, _data_->_tmp125_, _data_->_tmp127_);
-	} else {
-		_data_->_tmp128_ = _data_->cops;
-		_data_->_tmp129_ = _data_->copsResult;
-		_data_->_tmp129__length1 = _data_->copsResult_length1;
-		_data_->_tmp130_ = 0;
-		_data_->_tmp130_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp128_, _data_->_tmp129_, _data_->_tmp129__length1);
-		if (_data_->_tmp130_ == FSO_GSM_CONSTANTS_AT_RESPONSE_CME_ERROR_030_NO_NETWORK_SERVICE) {
+		_data_->strvalue = _data_->_tmp124_;
+		_data_->_tmp125_ = _data_->strvalue;
+		if (_data_->_tmp125_ != "") {
+			_data_->_tmp126_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp127_ = _data_->_tmp126_;
+			_data_->_tmp128_ = g_strdup ("provider");
+			_data_->_tmp129_ = _data_->strvalue;
+			_data_->_tmp130_ = _g_variant_ref0 (_data_->_tmp129_);
+			g_hash_table_insert (_data_->_tmp127_, _data_->_tmp128_, _data_->_tmp130_);
 			_data_->_tmp131_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
 			_data_->_tmp132_ = _data_->_tmp131_;
-			_data_->_tmp133_ = g_strdup ("registration");
-			_data_->_tmp134_ = _variant_new31 ("unregistered");
-			g_hash_table_insert (_data_->_tmp132_, _data_->_tmp133_, _data_->_tmp134_);
+			_data_->_tmp133_ = g_strdup ("network");
+			_data_->_tmp134_ = _data_->strvalue;
+			_data_->_tmp135_ = _g_variant_ref0 (_data_->_tmp134_);
+			g_hash_table_insert (_data_->_tmp132_, _data_->_tmp133_, _data_->_tmp135_);
+			_data_->_tmp136_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp137_ = _data_->_tmp136_;
+			_data_->_tmp138_ = g_strdup ("display");
+			_data_->_tmp139_ = _data_->strvalue;
+			_data_->_tmp140_ = _g_variant_ref0 (_data_->_tmp139_);
+			g_hash_table_insert (_data_->_tmp137_, _data_->_tmp138_, _data_->_tmp140_);
+		}
+		_data_->_tmp141_ = _data_->cops;
+		_data_->_tmp142_ = _data_->_tmp141_->act;
+		_data_->_tmp143_ = _variant_new32 (_data_->_tmp142_);
+		_g_variant_unref0 (_data_->strvalue);
+		_data_->strvalue = _data_->_tmp143_;
+		_data_->_tmp144_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+		_data_->_tmp145_ = _data_->_tmp144_;
+		_data_->_tmp146_ = g_strdup ("act");
+		_data_->_tmp147_ = _data_->strvalue;
+		_data_->_tmp148_ = _g_variant_ref0 (_data_->_tmp147_);
+		g_hash_table_insert (_data_->_tmp145_, _data_->_tmp146_, _data_->_tmp148_);
+	} else {
+		_data_->_tmp149_ = _data_->cops;
+		_data_->_tmp150_ = _data_->copsResult;
+		_data_->_tmp150__length1 = _data_->copsResult_length1;
+		_data_->_tmp151_ = 0;
+		_data_->_tmp151_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp149_, _data_->_tmp150_, _data_->_tmp150__length1);
+		if (_data_->_tmp151_ == FSO_GSM_CONSTANTS_AT_RESPONSE_CME_ERROR_030_NO_NETWORK_SERVICE) {
+			_data_->_tmp152_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp153_ = _data_->_tmp152_;
+			_data_->_tmp154_ = g_strdup ("registration");
+			_data_->_tmp155_ = _variant_new33 ("unregistered");
+			g_hash_table_insert (_data_->_tmp153_, _data_->_tmp154_, _data_->_tmp155_);
 		}
 	}
-	_data_->_tmp135_ = fso_gsm_theModem;
-	_data_->_tmp136_ = _data_->cops;
-	_data_->_tmp137_ = _data_->cops;
-	_data_->_tmp138_ = NULL;
-	_data_->_tmp138_ = fso_gsm_plus_cops_query (_data_->_tmp137_, FSO_GSM_PLUS_COPS_FORMAT_ALPHANUMERIC_SHORT);
-	_data_->_tmp139_ = _data_->_tmp138_;
-	_data_->_tmp140_ = 0;
+	_data_->_tmp156_ = fso_gsm_theModem;
+	_data_->_tmp157_ = _data_->cops;
+	_data_->_tmp158_ = _data_->cops;
+	_data_->_tmp159_ = NULL;
+	_data_->_tmp159_ = fso_gsm_plus_cops_query (_data_->_tmp158_, FSO_GSM_PLUS_COPS_FORMAT_ALPHANUMERIC_SHORT);
+	_data_->_tmp160_ = _data_->_tmp159_;
+	_data_->_tmp161_ = 0;
 	_data_->_state_ = 5;
-	fso_gsm_modem_processAtCommandAsync (_data_->_tmp135_, (FsoGsmAtCommand*) _data_->_tmp136_, _data_->_tmp139_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
+	fso_gsm_modem_processAtCommandAsync (_data_->_tmp156_, (FsoGsmAtCommand*) _data_->_tmp157_, _data_->_tmp160_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
 	return FALSE;
 	_state_5:
-	_data_->_tmp141_ = NULL;
-	_data_->_tmp141_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp135_, _data_->_res_, &_data_->_tmp140_);
-	_data_->_tmp142_ = _data_->_tmp141_;
-	_data_->_tmp142__length1 = _data_->_tmp140_;
-	_g_free0 (_data_->_tmp139_);
-	_data_->copsResult2 = _data_->_tmp142_;
-	_data_->copsResult2_length1 = _data_->_tmp142__length1;
+	_data_->_tmp162_ = NULL;
+	_data_->_tmp162_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp156_, _data_->_res_, &_data_->_tmp161_);
+	_data_->_tmp163_ = _data_->_tmp162_;
+	_data_->_tmp163__length1 = _data_->_tmp161_;
+	_g_free0 (_data_->_tmp160_);
+	_data_->copsResult2 = _data_->_tmp163_;
+	_data_->copsResult2_length1 = _data_->_tmp163__length1;
 	_data_->_copsResult2_size_ = _data_->copsResult2_length1;
-	_data_->_tmp143_ = _data_->cops;
-	_data_->_tmp144_ = _data_->copsResult2;
-	_data_->_tmp144__length1 = _data_->copsResult2_length1;
-	_data_->_tmp145_ = 0;
-	_data_->_tmp145_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp143_, _data_->_tmp144_, _data_->_tmp144__length1);
-	if (_data_->_tmp145_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
-		_data_->_tmp146_ = _data_->cops;
-		_data_->_tmp147_ = _data_->_tmp146_->oper;
-		if (g_strcmp0 (_data_->_tmp147_, "") != 0) {
-			_data_->_tmp148_ = _data_->cops;
-			_data_->_tmp149_ = _data_->_tmp148_->oper;
-			_data_->_tmp150_ = _variant_new32 (_data_->_tmp149_);
+	_data_->_tmp164_ = _data_->cops;
+	_data_->_tmp165_ = _data_->copsResult2;
+	_data_->_tmp165__length1 = _data_->copsResult2_length1;
+	_data_->_tmp166_ = 0;
+	_data_->_tmp166_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp164_, _data_->_tmp165_, _data_->_tmp165__length1);
+	if (_data_->_tmp166_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
+		_data_->_tmp167_ = _data_->cops;
+		_data_->_tmp168_ = _data_->_tmp167_->oper;
+		if (g_strcmp0 (_data_->_tmp168_, "") != 0) {
+			_data_->_tmp169_ = _data_->cops;
+			_data_->_tmp170_ = _data_->_tmp169_->oper;
+			_data_->_tmp171_ = _variant_new34 (_data_->_tmp170_);
 			_g_variant_unref0 (_data_->strvalue);
-			_data_->strvalue = _data_->_tmp150_;
-			_data_->_tmp151_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-			_data_->_tmp152_ = _data_->_tmp151_;
-			_data_->_tmp153_ = g_strdup ("display");
-			_data_->_tmp154_ = _data_->strvalue;
-			_data_->_tmp155_ = _g_variant_ref0 (_data_->_tmp154_);
-			g_hash_table_insert (_data_->_tmp152_, _data_->_tmp153_, _data_->_tmp155_);
-			_data_->_tmp156_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-			_data_->_tmp157_ = _data_->_tmp156_;
-			_data_->_tmp158_ = g_strdup ("network");
-			_data_->_tmp159_ = _data_->strvalue;
-			_data_->_tmp160_ = _g_variant_ref0 (_data_->_tmp159_);
-			g_hash_table_insert (_data_->_tmp157_, _data_->_tmp158_, _data_->_tmp160_);
+			_data_->strvalue = _data_->_tmp171_;
+			_data_->_tmp172_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp173_ = _data_->_tmp172_;
+			_data_->_tmp174_ = g_strdup ("display");
+			_data_->_tmp175_ = _data_->strvalue;
+			_data_->_tmp176_ = _g_variant_ref0 (_data_->_tmp175_);
+			g_hash_table_insert (_data_->_tmp173_, _data_->_tmp174_, _data_->_tmp176_);
+			_data_->_tmp177_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp178_ = _data_->_tmp177_;
+			_data_->_tmp179_ = g_strdup ("network");
+			_data_->_tmp180_ = _data_->strvalue;
+			_data_->_tmp181_ = _g_variant_ref0 (_data_->_tmp180_);
+			g_hash_table_insert (_data_->_tmp178_, _data_->_tmp179_, _data_->_tmp181_);
 		}
 	}
-	_data_->_tmp161_ = fso_gsm_theModem;
-	_data_->_tmp162_ = _data_->cops;
-	_data_->_tmp163_ = _data_->cops;
-	_data_->_tmp164_ = NULL;
-	_data_->_tmp164_ = fso_gsm_plus_cops_query (_data_->_tmp163_, FSO_GSM_PLUS_COPS_FORMAT_NUMERIC);
-	_data_->_tmp165_ = _data_->_tmp164_;
-	_data_->_tmp166_ = 0;
-	_data_->_state_ = 6;
-	fso_gsm_modem_processAtCommandAsync (_data_->_tmp161_, (FsoGsmAtCommand*) _data_->_tmp162_, _data_->_tmp165_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
-	return FALSE;
-	_state_6:
-	_data_->_tmp167_ = NULL;
-	_data_->_tmp167_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp161_, _data_->_res_, &_data_->_tmp166_);
-	_data_->_tmp168_ = _data_->_tmp167_;
-	_data_->_tmp168__length1 = _data_->_tmp166_;
-	_g_free0 (_data_->_tmp165_);
-	_data_->copsResult3 = _data_->_tmp168_;
-	_data_->copsResult3_length1 = _data_->_tmp168__length1;
-	_data_->_copsResult3_size_ = _data_->copsResult3_length1;
-	_data_->_tmp169_ = _data_->cops;
-	_data_->_tmp170_ = _data_->copsResult3;
-	_data_->_tmp170__length1 = _data_->copsResult3_length1;
-	_data_->_tmp171_ = 0;
-	_data_->_tmp171_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp169_, _data_->_tmp170_, _data_->_tmp170__length1);
-	if (_data_->_tmp171_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
-		_data_->_tmp172_ = _data_->cops;
-		_data_->_tmp173_ = _data_->_tmp172_->oper;
-		_data_->_tmp174_ = _variant_new33 (_data_->_tmp173_);
-		_g_variant_unref0 (_data_->strvalue);
-		_data_->strvalue = _data_->_tmp174_;
-		_data_->_tmp175_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-		_data_->_tmp176_ = _data_->_tmp175_;
-		_data_->_tmp177_ = g_strdup ("code");
-		_data_->_tmp178_ = _data_->strvalue;
-		_data_->_tmp179_ = _g_variant_ref0 (_data_->_tmp178_);
-		g_hash_table_insert (_data_->_tmp176_, _data_->_tmp177_, _data_->_tmp179_);
+	_data_->_tmp182_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+	_data_->_tmp183_ = _data_->_tmp182_;
+	_data_->_tmp184_ = NULL;
+	_data_->_tmp184_ = g_hash_table_lookup (_data_->_tmp183_, "provider");
+	if (((GVariant*) _data_->_tmp184_) == NULL) {
+		_data_->_tmp185_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+		_data_->_tmp186_ = _data_->_tmp185_;
+		_data_->_tmp187_ = NULL;
+		_data_->_tmp187_ = g_hash_table_lookup (_data_->_tmp186_, "code");
+		_data_->_tmp188_ = _g_variant_ref0 ((GVariant*) _data_->_tmp187_);
+		_data_->code = _data_->_tmp188_;
+		_data_->_tmp189_ = _data_->code;
+		if (_data_->_tmp189_ != NULL) {
+			_data_->_tmp190_ = _data_->code;
+			_data_->_tmp191_ = NULL;
+			_data_->_tmp191_ = g_variant_get_string (_data_->_tmp190_, NULL);
+			_data_->_state_ = 6;
+			fso_gsm_findProviderNameForMccMnc (_data_->_tmp191_, fso_gsm_at_network_get_status_run_ready, _data_);
+			return FALSE;
+			_state_6:
+			_data_->_tmp192_ = NULL;
+			_data_->_tmp192_ = fso_gsm_findProviderNameForMccMnc_finish (_data_->_res_);
+			_data_->provider = _data_->_tmp192_;
+			_data_->_tmp193_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp194_ = _data_->_tmp193_;
+			_data_->_tmp195_ = g_strdup ("provider");
+			_data_->_tmp196_ = _data_->provider;
+			_data_->_tmp197_ = _variant_new35 (_data_->_tmp196_);
+			g_hash_table_insert (_data_->_tmp194_, _data_->_tmp195_, _data_->_tmp197_);
+			_data_->_tmp198_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp199_ = _data_->_tmp198_;
+			_data_->_tmp200_ = g_strdup ("display");
+			_data_->_tmp201_ = _data_->provider;
+			_data_->_tmp202_ = _variant_new36 (_data_->_tmp201_);
+			g_hash_table_insert (_data_->_tmp199_, _data_->_tmp200_, _data_->_tmp202_);
+			_data_->_tmp203_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp204_ = _data_->_tmp203_;
+			_data_->_tmp205_ = g_strdup ("network");
+			_data_->_tmp206_ = _data_->provider;
+			_data_->_tmp207_ = _variant_new37 (_data_->_tmp206_);
+			g_hash_table_insert (_data_->_tmp204_, _data_->_tmp205_, _data_->_tmp207_);
+			_g_free0 (_data_->provider);
+		}
+		_g_variant_unref0 (_data_->code);
 	}
-	_data_->_tmp180_ = fso_gsm_theModem;
-	_data_->_tmp181_ = NULL;
-	_data_->_tmp181_ = fso_gsm_modem_createAtCommand (_data_->_tmp180_, FSO_GSM_TYPE_PLUS_CGREG, (GBoxedCopyFunc) g_object_ref, g_object_unref, "+CGREG");
-	_data_->cgreg = (FsoGsmPlusCGREG*) _data_->_tmp181_;
-	_data_->_tmp182_ = fso_gsm_theModem;
-	_data_->_tmp183_ = _data_->cgreg;
-	_data_->_tmp184_ = _data_->cgreg;
-	_data_->_tmp185_ = NULL;
-	_data_->_tmp185_ = fso_gsm_plus_cgreg_query (_data_->_tmp184_);
-	_data_->_tmp186_ = _data_->_tmp185_;
-	_data_->_tmp187_ = 0;
+	_data_->_tmp208_ = fso_gsm_theModem;
+	_data_->_tmp209_ = NULL;
+	_data_->_tmp209_ = fso_gsm_modem_createAtCommand (_data_->_tmp208_, FSO_GSM_TYPE_PLUS_CGREG, (GBoxedCopyFunc) g_object_ref, g_object_unref, "+CGREG");
+	_data_->cgreg = (FsoGsmPlusCGREG*) _data_->_tmp209_;
+	_data_->_tmp210_ = fso_gsm_theModem;
+	_data_->_tmp211_ = _data_->cgreg;
+	_data_->_tmp212_ = _data_->cgreg;
+	_data_->_tmp213_ = NULL;
+	_data_->_tmp213_ = fso_gsm_plus_cgreg_query (_data_->_tmp212_);
+	_data_->_tmp214_ = _data_->_tmp213_;
+	_data_->_tmp215_ = 0;
 	_data_->_state_ = 7;
-	fso_gsm_modem_processAtCommandAsync (_data_->_tmp182_, (FsoGsmAtCommand*) _data_->_tmp183_, _data_->_tmp186_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
+	fso_gsm_modem_processAtCommandAsync (_data_->_tmp210_, (FsoGsmAtCommand*) _data_->_tmp211_, _data_->_tmp214_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
 	return FALSE;
 	_state_7:
-	_data_->_tmp188_ = NULL;
-	_data_->_tmp188_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp182_, _data_->_res_, &_data_->_tmp187_);
-	_data_->_tmp189_ = _data_->_tmp188_;
-	_data_->_tmp189__length1 = _data_->_tmp187_;
-	_g_free0 (_data_->_tmp186_);
-	_data_->cgregResult = _data_->_tmp189_;
-	_data_->cgregResult_length1 = _data_->_tmp189__length1;
+	_data_->_tmp216_ = NULL;
+	_data_->_tmp216_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp210_, _data_->_res_, &_data_->_tmp215_);
+	_data_->_tmp217_ = _data_->_tmp216_;
+	_data_->_tmp217__length1 = _data_->_tmp215_;
+	_g_free0 (_data_->_tmp214_);
+	_data_->cgregResult = _data_->_tmp217_;
+	_data_->cgregResult_length1 = _data_->_tmp217__length1;
 	_data_->_cgregResult_size_ = _data_->cgregResult_length1;
-	_data_->_tmp190_ = _data_->cgreg;
-	_data_->_tmp191_ = _data_->cgregResult;
-	_data_->_tmp191__length1 = _data_->cgregResult_length1;
-	_data_->_tmp192_ = 0;
-	_data_->_tmp192_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp190_, _data_->_tmp191_, _data_->_tmp191__length1);
-	if (_data_->_tmp192_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
-		_data_->_tmp193_ = fso_gsm_theModem;
-		_data_->_tmp194_ = _data_->cgreg;
-		_data_->_tmp195_ = _data_->cgreg;
-		_data_->_tmp196_ = _data_->cgreg;
-		_data_->_tmp197_ = _data_->_tmp196_->mode;
-		_data_->_tmp198_ = NULL;
-		_data_->_tmp198_ = fso_gsm_plus_cgreg_queryFull (_data_->_tmp195_, _data_->_tmp197_);
-		_data_->_tmp199_ = _data_->_tmp198_;
-		_data_->_tmp200_ = 0;
+	_data_->_tmp218_ = _data_->cgreg;
+	_data_->_tmp219_ = _data_->cgregResult;
+	_data_->_tmp219__length1 = _data_->cgregResult_length1;
+	_data_->_tmp220_ = 0;
+	_data_->_tmp220_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp218_, _data_->_tmp219_, _data_->_tmp219__length1);
+	if (_data_->_tmp220_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
+		_data_->_tmp221_ = fso_gsm_theModem;
+		_data_->_tmp222_ = _data_->cgreg;
+		_data_->_tmp223_ = _data_->cgreg;
+		_data_->_tmp224_ = _data_->cgreg;
+		_data_->_tmp225_ = _data_->_tmp224_->mode;
+		_data_->_tmp226_ = NULL;
+		_data_->_tmp226_ = fso_gsm_plus_cgreg_queryFull (_data_->_tmp223_, _data_->_tmp225_);
+		_data_->_tmp227_ = _data_->_tmp226_;
+		_data_->_tmp228_ = 0;
 		_data_->_state_ = 8;
-		fso_gsm_modem_processAtCommandAsync (_data_->_tmp193_, (FsoGsmAtCommand*) _data_->_tmp194_, _data_->_tmp199_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
+		fso_gsm_modem_processAtCommandAsync (_data_->_tmp221_, (FsoGsmAtCommand*) _data_->_tmp222_, _data_->_tmp227_, FSO_GSM_MODEM_DEFAULT_RETRIES, fso_gsm_at_network_get_status_run_ready, _data_);
 		return FALSE;
 		_state_8:
-		_data_->_tmp201_ = NULL;
-		_data_->_tmp201_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp193_, _data_->_res_, &_data_->_tmp200_);
-		_data_->_tmp202_ = _data_->_tmp201_;
-		_data_->_tmp202__length1 = _data_->_tmp200_;
-		_g_free0 (_data_->_tmp199_);
-		_data_->cgregResult2 = _data_->_tmp202_;
-		_data_->cgregResult2_length1 = _data_->_tmp202__length1;
+		_data_->_tmp229_ = NULL;
+		_data_->_tmp229_ = fso_gsm_modem_processAtCommandAsync_finish (_data_->_tmp221_, _data_->_res_, &_data_->_tmp228_);
+		_data_->_tmp230_ = _data_->_tmp229_;
+		_data_->_tmp230__length1 = _data_->_tmp228_;
+		_g_free0 (_data_->_tmp227_);
+		_data_->cgregResult2 = _data_->_tmp230_;
+		_data_->cgregResult2_length1 = _data_->_tmp230__length1;
 		_data_->_cgregResult2_size_ = _data_->cgregResult2_length1;
-		_data_->_tmp203_ = _data_->cgreg;
-		_data_->_tmp204_ = _data_->cgregResult2;
-		_data_->_tmp204__length1 = _data_->cgregResult2_length1;
-		_data_->_tmp205_ = 0;
-		_data_->_tmp205_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp203_, _data_->_tmp204_, _data_->_tmp204__length1);
-		if (_data_->_tmp205_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
-			_data_->_tmp206_ = NULL;
-			_data_->_tmp206_ = fso_gsm_constants_instance ();
-			_data_->_tmp207_ = _data_->_tmp206_;
-			_data_->_tmp208_ = _data_->cgreg;
-			_data_->_tmp209_ = _data_->_tmp208_->status;
-			_data_->_tmp210_ = NULL;
-			_data_->_tmp210_ = fso_gsm_constants_networkRegistrationStatusToString (_data_->_tmp207_, _data_->_tmp209_);
-			_data_->_tmp211_ = _variant_new34 (_data_->_tmp210_);
+		_data_->_tmp231_ = _data_->cgreg;
+		_data_->_tmp232_ = _data_->cgregResult2;
+		_data_->_tmp232__length1 = _data_->cgregResult2_length1;
+		_data_->_tmp233_ = 0;
+		_data_->_tmp233_ = fso_gsm_abstract_at_command_validate ((FsoGsmAbstractAtCommand*) _data_->_tmp231_, _data_->_tmp232_, _data_->_tmp232__length1);
+		if (_data_->_tmp233_ == FSO_GSM_CONSTANTS_AT_RESPONSE_VALID) {
+			_data_->_tmp234_ = NULL;
+			_data_->_tmp234_ = fso_gsm_constants_instance ();
+			_data_->_tmp235_ = _data_->_tmp234_;
+			_data_->_tmp236_ = _data_->cgreg;
+			_data_->_tmp237_ = _data_->_tmp236_->status;
+			_data_->_tmp238_ = NULL;
+			_data_->_tmp238_ = fso_gsm_constants_networkRegistrationStatusToString (_data_->_tmp235_, _data_->_tmp237_);
+			_data_->_tmp239_ = _variant_new38 (_data_->_tmp238_);
 			_g_variant_unref0 (_data_->strvalue);
-			_data_->strvalue = _data_->_tmp211_;
-			_fso_gsm_constants_unref0 (_data_->_tmp207_);
-			_data_->_tmp212_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-			_data_->_tmp213_ = _data_->_tmp212_;
-			_data_->_tmp214_ = g_strdup ("pdp.registration");
-			_data_->_tmp215_ = _data_->strvalue;
-			_data_->_tmp216_ = _g_variant_ref0 (_data_->_tmp215_);
-			g_hash_table_insert (_data_->_tmp213_, _data_->_tmp214_, _data_->_tmp216_);
-			_data_->_tmp217_ = _data_->cgreg;
-			_data_->_tmp218_ = _data_->_tmp217_->lac;
-			_data_->_tmp219_ = _variant_new35 (_data_->_tmp218_);
+			_data_->strvalue = _data_->_tmp239_;
+			_fso_gsm_constants_unref0 (_data_->_tmp235_);
+			_data_->_tmp240_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp241_ = _data_->_tmp240_;
+			_data_->_tmp242_ = g_strdup ("pdp.registration");
+			_data_->_tmp243_ = _data_->strvalue;
+			_data_->_tmp244_ = _g_variant_ref0 (_data_->_tmp243_);
+			g_hash_table_insert (_data_->_tmp241_, _data_->_tmp242_, _data_->_tmp244_);
+			_data_->_tmp245_ = _data_->cgreg;
+			_data_->_tmp246_ = _data_->_tmp245_->lac;
+			_data_->_tmp247_ = _variant_new39 (_data_->_tmp246_);
 			_g_variant_unref0 (_data_->strvalue);
-			_data_->strvalue = _data_->_tmp219_;
-			_data_->_tmp220_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-			_data_->_tmp221_ = _data_->_tmp220_;
-			_data_->_tmp222_ = g_strdup ("pdp.lac");
-			_data_->_tmp223_ = _data_->strvalue;
-			_data_->_tmp224_ = _g_variant_ref0 (_data_->_tmp223_);
-			g_hash_table_insert (_data_->_tmp221_, _data_->_tmp222_, _data_->_tmp224_);
-			_data_->_tmp225_ = _data_->cgreg;
-			_data_->_tmp226_ = _data_->_tmp225_->cid;
-			_data_->_tmp227_ = _variant_new36 (_data_->_tmp226_);
+			_data_->strvalue = _data_->_tmp247_;
+			_data_->_tmp248_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp249_ = _data_->_tmp248_;
+			_data_->_tmp250_ = g_strdup ("pdp.lac");
+			_data_->_tmp251_ = _data_->strvalue;
+			_data_->_tmp252_ = _g_variant_ref0 (_data_->_tmp251_);
+			g_hash_table_insert (_data_->_tmp249_, _data_->_tmp250_, _data_->_tmp252_);
+			_data_->_tmp253_ = _data_->cgreg;
+			_data_->_tmp254_ = _data_->_tmp253_->cid;
+			_data_->_tmp255_ = _variant_new40 (_data_->_tmp254_);
 			_g_variant_unref0 (_data_->strvalue);
-			_data_->strvalue = _data_->_tmp227_;
-			_data_->_tmp228_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
-			_data_->_tmp229_ = _data_->_tmp228_;
-			_data_->_tmp230_ = g_strdup ("pdp.cid");
-			_data_->_tmp231_ = _data_->strvalue;
-			_data_->_tmp232_ = _g_variant_ref0 (_data_->_tmp231_);
-			g_hash_table_insert (_data_->_tmp229_, _data_->_tmp230_, _data_->_tmp232_);
+			_data_->strvalue = _data_->_tmp255_;
+			_data_->_tmp256_ = fso_gsm_network_get_status_get_status ((FsoGsmNetworkGetStatus*) _data_->self);
+			_data_->_tmp257_ = _data_->_tmp256_;
+			_data_->_tmp258_ = g_strdup ("pdp.cid");
+			_data_->_tmp259_ = _data_->strvalue;
+			_data_->_tmp260_ = _g_variant_ref0 (_data_->_tmp259_);
+			g_hash_table_insert (_data_->_tmp257_, _data_->_tmp258_, _data_->_tmp260_);
 		}
 		_data_->cgregResult2 = (_vala_array_free (_data_->cgregResult2, _data_->cgregResult2_length1, (GDestroyNotify) g_free), NULL);
 	}
 	_data_->cgregResult = (_vala_array_free (_data_->cgregResult, _data_->cgregResult_length1, (GDestroyNotify) g_free), NULL);
 	_g_object_unref0 (_data_->cgreg);
-	_data_->copsResult3 = (_vala_array_free (_data_->copsResult3, _data_->copsResult3_length1, (GDestroyNotify) g_free), NULL);
 	_data_->copsResult2 = (_vala_array_free (_data_->copsResult2, _data_->copsResult2_length1, (GDestroyNotify) g_free), NULL);
 	_data_->copsResult = (_vala_array_free (_data_->copsResult, _data_->copsResult_length1, (GDestroyNotify) g_free), NULL);
+	_data_->copsResult3 = (_vala_array_free (_data_->copsResult3, _data_->copsResult3_length1, (GDestroyNotify) g_free), NULL);
 	_g_object_unref0 (_data_->cops);
 	_data_->cregResult = (_vala_array_free (_data_->cregResult, _data_->cregResult_length1, (GDestroyNotify) g_free), NULL);
 	_g_object_unref0 (_data_->creg);

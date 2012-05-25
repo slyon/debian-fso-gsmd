@@ -81,6 +81,9 @@ class DBusService.Device :
             case "option_gtm601":
                 typename = "Gtm601Modem";
                 break;
+            case "phonesim":
+                typename = "PhonesimModem";
+                break;
             default:
                 logger.error( @"Unsupported modem_type $modemtype" );
                 return;
@@ -755,6 +758,7 @@ class DBusService.Device :
     public async void send_dtmf( string tones ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error, DBusError, IOError
     {
         checkAvailability( FsoGsm.Modem.Status.ALIVE_REGISTERED );
+        FsoGsm.validateDtmfTones( tones );
         var m = modem.createMediator<FsoGsm.CallSendDtmf>();
         yield m.run( tones );
     }

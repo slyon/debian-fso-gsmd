@@ -256,117 +256,129 @@ static const gchar* string_to_string (const gchar* self) {
 static void freescale_neptune_modem_real_createChannels (FsoGsmAbstractModem* base) {
 	FreescaleNeptuneModem * self;
 	FsoFrameworkLogger* _tmp0_;
-	const gchar* _tmp1_;
+	FsoFrameworkTransportSpec* _tmp1_;
+	FsoFrameworkTransportSpec* _tmp2_;
+	const gchar* _tmp3_;
 	self = (FreescaleNeptuneModem*) base;
 	_tmp0_ = ((FsoFrameworkAbstractObject*) self)->logger;
 	fso_framework_logger_info (_tmp0_, "Create Freescale Neptune channels");
-	_tmp1_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-	if (g_strcmp0 (_tmp1_, "serial") == 0) {
-		FsoFrameworkSmartKeyFile* _tmp2_;
-		gchar* _tmp3_ = NULL;
+	_tmp1_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+	_tmp2_ = _tmp1_;
+	_tmp3_ = _tmp2_->type;
+	if (g_strcmp0 (_tmp3_, "serial") == 0) {
+		FsoFrameworkSmartKeyFile* _tmp4_;
+		gchar* _tmp5_ = NULL;
 		gchar* muxnode_prefix;
-		_tmp2_ = ((FsoFrameworkAbstractObject*) self)->config;
-		_tmp3_ = fso_framework_smart_key_file_stringValue (_tmp2_, FREESCALE_NEPTUNE_MODULE_NAME, "muxnode_prefix", "");
-		muxnode_prefix = _tmp3_;
+		_tmp4_ = ((FsoFrameworkAbstractObject*) self)->config;
+		_tmp5_ = fso_framework_smart_key_file_stringValue (_tmp4_, FREESCALE_NEPTUNE_MODULE_NAME, "muxnode_prefix", "");
+		muxnode_prefix = _tmp5_;
 		{
 			gint i;
 			i = 0;
 			{
-				gboolean _tmp4_;
-				_tmp4_ = TRUE;
+				gboolean _tmp6_;
+				_tmp6_ = TRUE;
 				while (TRUE) {
-					gboolean _tmp5_;
-					gint _tmp7_;
-					gint _tmp8_;
-					const gchar* _tmp9_;
-					gchar* _tmp10_;
+					gboolean _tmp7_;
+					gint _tmp9_;
+					gint _tmp10_;
+					const gchar* _tmp11_;
+					gchar* _tmp12_;
 					gchar* channel;
-					FsoFrameworkSmartKeyFile* _tmp11_;
-					const gchar* _tmp12_;
-					const gchar* _tmp13_ = NULL;
-					gchar* _tmp14_ = NULL;
-					gchar* _tmp15_;
+					FsoFrameworkSmartKeyFile* _tmp13_;
+					const gchar* _tmp14_;
+					const gchar* _tmp15_ = NULL;
 					gchar* _tmp16_ = NULL;
 					gchar* _tmp17_;
+					gchar* _tmp18_ = NULL;
+					gchar* _tmp19_;
 					gchar* dlci;
-					const gchar* _tmp18_;
-					_tmp5_ = _tmp4_;
-					if (!_tmp5_) {
-						gint _tmp6_;
-						_tmp6_ = i;
-						i = _tmp6_ + 1;
+					const gchar* _tmp20_;
+					_tmp7_ = _tmp6_;
+					if (!_tmp7_) {
+						gint _tmp8_;
+						_tmp8_ = i;
+						i = _tmp8_ + 1;
 					}
-					_tmp4_ = FALSE;
-					_tmp7_ = i;
-					if (!(_tmp7_ < G_N_ELEMENTS (FREESCALE_NEPTUNE_CHANNEL_NAMES))) {
+					_tmp6_ = FALSE;
+					_tmp9_ = i;
+					if (!(_tmp9_ < G_N_ELEMENTS (FREESCALE_NEPTUNE_CHANNEL_NAMES))) {
 						break;
 					}
-					_tmp8_ = i;
-					_tmp9_ = FREESCALE_NEPTUNE_CHANNEL_NAMES[_tmp8_];
-					_tmp10_ = g_strdup (_tmp9_);
-					channel = _tmp10_;
-					_tmp11_ = ((FsoFrameworkAbstractObject*) self)->config;
-					_tmp12_ = channel;
-					_tmp13_ = string_to_string (_tmp12_);
-					_tmp14_ = g_strconcat ("dlci_", _tmp13_, NULL);
-					_tmp15_ = _tmp14_;
-					_tmp16_ = fso_framework_smart_key_file_stringValue (_tmp11_, FREESCALE_NEPTUNE_MODULE_NAME, _tmp15_, "");
+					_tmp10_ = i;
+					_tmp11_ = FREESCALE_NEPTUNE_CHANNEL_NAMES[_tmp10_];
+					_tmp12_ = g_strdup (_tmp11_);
+					channel = _tmp12_;
+					_tmp13_ = ((FsoFrameworkAbstractObject*) self)->config;
+					_tmp14_ = channel;
+					_tmp15_ = string_to_string (_tmp14_);
+					_tmp16_ = g_strconcat ("dlci_", _tmp15_, NULL);
 					_tmp17_ = _tmp16_;
-					_g_free0 (_tmp15_);
-					dlci = _tmp17_;
-					_tmp18_ = dlci;
-					if (g_strcmp0 (_tmp18_, "") != 0) {
-						const gchar* _tmp19_;
-						const gchar* _tmp20_ = NULL;
+					_tmp18_ = fso_framework_smart_key_file_stringValue (_tmp13_, FREESCALE_NEPTUNE_MODULE_NAME, _tmp17_, "");
+					_tmp19_ = _tmp18_;
+					_g_free0 (_tmp17_);
+					dlci = _tmp19_;
+					_tmp20_ = dlci;
+					if (g_strcmp0 (_tmp20_, "") != 0) {
 						const gchar* _tmp21_;
 						const gchar* _tmp22_ = NULL;
-						gchar* _tmp23_ = NULL;
+						const gchar* _tmp23_;
+						const gchar* _tmp24_ = NULL;
+						gchar* _tmp25_ = NULL;
 						gchar* muxnode;
-						const gchar* _tmp24_;
-						const gchar* _tmp25_;
-						gint _tmp26_;
-						FsoFrameworkTransport* _tmp27_ = NULL;
-						FsoFrameworkTransport* transport;
+						FsoFrameworkTransportSpec* _tmp26_;
+						FsoFrameworkTransportSpec* _tmp27_;
 						const gchar* _tmp28_;
-						FsoFrameworkTransport* _tmp29_;
-						FsoGsmStateBasedAtParser* _tmp30_;
-						FsoGsmStateBasedAtParser* _tmp31_;
-						FsoGsmAtChannel* _tmp32_;
-						FsoGsmAtChannel* _tmp33_;
-						_tmp19_ = muxnode_prefix;
-						_tmp20_ = string_to_string (_tmp19_);
-						_tmp21_ = dlci;
+						const gchar* _tmp29_;
+						FsoFrameworkTransportSpec* _tmp30_;
+						FsoFrameworkTransportSpec* _tmp31_;
+						guint _tmp32_;
+						FsoFrameworkTransport* _tmp33_ = NULL;
+						FsoFrameworkTransport* transport;
+						const gchar* _tmp34_;
+						FsoFrameworkTransport* _tmp35_;
+						FsoGsmStateBasedAtParser* _tmp36_;
+						FsoGsmStateBasedAtParser* _tmp37_;
+						FsoGsmAtChannel* _tmp38_;
+						FsoGsmAtChannel* _tmp39_;
+						_tmp21_ = muxnode_prefix;
 						_tmp22_ = string_to_string (_tmp21_);
-						_tmp23_ = g_strconcat (_tmp20_, _tmp22_, NULL);
-						muxnode = _tmp23_;
-						_tmp24_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-						_tmp25_ = muxnode;
-						_tmp26_ = ((FsoGsmAbstractModem*) self)->modem_speed;
-						_tmp27_ = fso_framework_transport_create (_tmp24_, _tmp25_, (guint) _tmp26_, TRUE, TRUE);
-						transport = _tmp27_;
-						_tmp28_ = channel;
-						_tmp29_ = transport;
-						_tmp30_ = fso_gsm_state_based_at_parser_new ();
+						_tmp23_ = dlci;
+						_tmp24_ = string_to_string (_tmp23_);
+						_tmp25_ = g_strconcat (_tmp22_, _tmp24_, NULL);
+						muxnode = _tmp25_;
+						_tmp26_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+						_tmp27_ = _tmp26_;
+						_tmp28_ = _tmp27_->name;
+						_tmp29_ = muxnode;
+						_tmp30_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
 						_tmp31_ = _tmp30_;
-						_tmp32_ = fso_gsm_at_channel_new (_tmp28_, _tmp29_, (FsoFrameworkParser*) _tmp31_);
-						_tmp33_ = _tmp32_;
-						_g_object_unref0 (_tmp33_);
-						_g_object_unref0 (_tmp31_);
+						_tmp32_ = _tmp31_->speed;
+						_tmp33_ = fso_framework_transport_create (_tmp28_, _tmp29_, _tmp32_, TRUE, TRUE);
+						transport = _tmp33_;
+						_tmp34_ = channel;
+						_tmp35_ = transport;
+						_tmp36_ = fso_gsm_state_based_at_parser_new ();
+						_tmp37_ = _tmp36_;
+						_tmp38_ = fso_gsm_at_channel_new (_tmp34_, _tmp35_, (FsoFrameworkParser*) _tmp37_);
+						_tmp39_ = _tmp38_;
+						_g_object_unref0 (_tmp39_);
+						_g_object_unref0 (_tmp37_);
 						_g_object_unref0 (transport);
 						_g_free0 (muxnode);
 					} else {
-						FsoFrameworkLogger* _tmp34_;
-						const gchar* _tmp35_;
-						const gchar* _tmp36_ = NULL;
-						gchar* _tmp37_ = NULL;
-						gchar* _tmp38_;
-						_tmp34_ = ((FsoFrameworkAbstractObject*) self)->logger;
-						_tmp35_ = channel;
-						_tmp36_ = string_to_string (_tmp35_);
-						_tmp37_ = g_strconcat ("No dlci for channel '", _tmp36_, "'", NULL);
-						_tmp38_ = _tmp37_;
-						fso_framework_logger_warning (_tmp34_, _tmp38_);
-						_g_free0 (_tmp38_);
+						FsoFrameworkLogger* _tmp40_;
+						const gchar* _tmp41_;
+						const gchar* _tmp42_ = NULL;
+						gchar* _tmp43_ = NULL;
+						gchar* _tmp44_;
+						_tmp40_ = ((FsoFrameworkAbstractObject*) self)->logger;
+						_tmp41_ = channel;
+						_tmp42_ = string_to_string (_tmp41_);
+						_tmp43_ = g_strconcat ("No dlci for channel '", _tmp42_, "'", NULL);
+						_tmp44_ = _tmp43_;
+						fso_framework_logger_warning (_tmp40_, _tmp44_);
+						_g_free0 (_tmp44_);
 					}
 					_g_free0 (dlci);
 					_g_free0 (channel);
@@ -375,106 +387,122 @@ static void freescale_neptune_modem_real_createChannels (FsoGsmAbstractModem* ba
 		}
 		_g_free0 (muxnode_prefix);
 	} else {
-		const gchar* _tmp39_;
-		_tmp39_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-		if (g_strcmp0 (_tmp39_, "tcp") == 0) {
+		FsoFrameworkTransportSpec* _tmp45_;
+		FsoFrameworkTransportSpec* _tmp46_;
+		const gchar* _tmp47_;
+		_tmp45_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+		_tmp46_ = _tmp45_;
+		_tmp47_ = _tmp46_->type;
+		if (g_strcmp0 (_tmp47_, "tcp") == 0) {
 			{
 				gint i;
 				i = 0;
 				{
-					gboolean _tmp40_;
-					_tmp40_ = TRUE;
+					gboolean _tmp48_;
+					_tmp48_ = TRUE;
 					while (TRUE) {
-						gboolean _tmp41_;
-						gint _tmp43_;
-						gint _tmp44_;
-						const gchar* _tmp45_;
-						gchar* _tmp46_;
+						gboolean _tmp49_;
+						gint _tmp51_;
+						gint _tmp52_;
+						const gchar* _tmp53_;
+						gchar* _tmp54_;
 						gchar* channel;
-						FsoFrameworkSmartKeyFile* _tmp47_;
-						const gchar* _tmp48_;
-						const gchar* _tmp49_ = NULL;
-						gchar* _tmp50_ = NULL;
-						gchar* _tmp51_;
-						gint _tmp52_ = 0;
-						gint _tmp53_;
+						FsoFrameworkSmartKeyFile* _tmp55_;
+						const gchar* _tmp56_;
+						const gchar* _tmp57_ = NULL;
+						gchar* _tmp58_ = NULL;
+						gchar* _tmp59_;
+						gint _tmp60_ = 0;
+						gint _tmp61_;
 						gint dlci;
-						gint _tmp54_;
-						_tmp41_ = _tmp40_;
-						if (!_tmp41_) {
-							gint _tmp42_;
-							_tmp42_ = i;
-							i = _tmp42_ + 1;
+						gint _tmp62_;
+						_tmp49_ = _tmp48_;
+						if (!_tmp49_) {
+							gint _tmp50_;
+							_tmp50_ = i;
+							i = _tmp50_ + 1;
 						}
-						_tmp40_ = FALSE;
-						_tmp43_ = i;
-						if (!(_tmp43_ < G_N_ELEMENTS (FREESCALE_NEPTUNE_CHANNEL_NAMES))) {
+						_tmp48_ = FALSE;
+						_tmp51_ = i;
+						if (!(_tmp51_ < G_N_ELEMENTS (FREESCALE_NEPTUNE_CHANNEL_NAMES))) {
 							break;
 						}
-						_tmp44_ = i;
-						_tmp45_ = FREESCALE_NEPTUNE_CHANNEL_NAMES[_tmp44_];
-						_tmp46_ = g_strdup (_tmp45_);
-						channel = _tmp46_;
-						_tmp47_ = ((FsoFrameworkAbstractObject*) self)->config;
-						_tmp48_ = channel;
-						_tmp49_ = string_to_string (_tmp48_);
-						_tmp50_ = g_strconcat ("dlci_", _tmp49_, NULL);
-						_tmp51_ = _tmp50_;
-						_tmp52_ = fso_framework_smart_key_file_intValue (_tmp47_, FREESCALE_NEPTUNE_MODULE_NAME, _tmp51_, 0);
-						_tmp53_ = _tmp52_;
-						_g_free0 (_tmp51_);
-						dlci = _tmp53_;
-						_tmp54_ = dlci;
-						if (_tmp54_ > 0) {
-							const gchar* _tmp55_;
-							const gchar* _tmp56_;
-							gint _tmp57_;
-							gint _tmp58_;
-							FsoFrameworkTransport* _tmp59_ = NULL;
+						_tmp52_ = i;
+						_tmp53_ = FREESCALE_NEPTUNE_CHANNEL_NAMES[_tmp52_];
+						_tmp54_ = g_strdup (_tmp53_);
+						channel = _tmp54_;
+						_tmp55_ = ((FsoFrameworkAbstractObject*) self)->config;
+						_tmp56_ = channel;
+						_tmp57_ = string_to_string (_tmp56_);
+						_tmp58_ = g_strconcat ("dlci_", _tmp57_, NULL);
+						_tmp59_ = _tmp58_;
+						_tmp60_ = fso_framework_smart_key_file_intValue (_tmp55_, FREESCALE_NEPTUNE_MODULE_NAME, _tmp59_, 0);
+						_tmp61_ = _tmp60_;
+						_g_free0 (_tmp59_);
+						dlci = _tmp61_;
+						_tmp62_ = dlci;
+						if (_tmp62_ > 0) {
+							FsoFrameworkTransportSpec* _tmp63_;
+							FsoFrameworkTransportSpec* _tmp64_;
+							const gchar* _tmp65_;
+							FsoFrameworkTransportSpec* _tmp66_;
+							FsoFrameworkTransportSpec* _tmp67_;
+							const gchar* _tmp68_;
+							FsoFrameworkTransportSpec* _tmp69_;
+							FsoFrameworkTransportSpec* _tmp70_;
+							guint _tmp71_;
+							gint _tmp72_;
+							FsoFrameworkTransport* _tmp73_ = NULL;
 							FsoFrameworkTransport* transport;
-							const gchar* _tmp60_;
-							FsoFrameworkTransport* _tmp61_;
-							FsoGsmStateBasedAtParser* _tmp62_;
-							FsoGsmStateBasedAtParser* _tmp63_;
-							FsoGsmAtChannel* _tmp64_;
-							FsoGsmAtChannel* _tmp65_;
-							_tmp55_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-							_tmp56_ = ((FsoGsmAbstractModem*) self)->modem_port;
-							_tmp57_ = ((FsoGsmAbstractModem*) self)->modem_speed;
-							_tmp58_ = dlci;
-							_tmp59_ = fso_framework_transport_create (_tmp55_, _tmp56_, (guint) (_tmp57_ + _tmp58_), TRUE, TRUE);
-							transport = _tmp59_;
-							_tmp60_ = channel;
-							_tmp61_ = transport;
-							_tmp62_ = fso_gsm_state_based_at_parser_new ();
-							_tmp63_ = _tmp62_;
-							_tmp64_ = fso_gsm_at_channel_new (_tmp60_, _tmp61_, (FsoFrameworkParser*) _tmp63_);
-							_tmp65_ = _tmp64_;
-							_g_object_unref0 (_tmp65_);
-							_g_object_unref0 (_tmp63_);
+							const gchar* _tmp74_;
+							FsoFrameworkTransport* _tmp75_;
+							FsoGsmStateBasedAtParser* _tmp76_;
+							FsoGsmStateBasedAtParser* _tmp77_;
+							FsoGsmAtChannel* _tmp78_;
+							FsoGsmAtChannel* _tmp79_;
+							_tmp63_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+							_tmp64_ = _tmp63_;
+							_tmp65_ = _tmp64_->type;
+							_tmp66_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+							_tmp67_ = _tmp66_;
+							_tmp68_ = _tmp67_->name;
+							_tmp69_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+							_tmp70_ = _tmp69_;
+							_tmp71_ = _tmp70_->speed;
+							_tmp72_ = dlci;
+							_tmp73_ = fso_framework_transport_create (_tmp65_, _tmp68_, _tmp71_ + _tmp72_, TRUE, TRUE);
+							transport = _tmp73_;
+							_tmp74_ = channel;
+							_tmp75_ = transport;
+							_tmp76_ = fso_gsm_state_based_at_parser_new ();
+							_tmp77_ = _tmp76_;
+							_tmp78_ = fso_gsm_at_channel_new (_tmp74_, _tmp75_, (FsoFrameworkParser*) _tmp77_);
+							_tmp79_ = _tmp78_;
+							_g_object_unref0 (_tmp79_);
+							_g_object_unref0 (_tmp77_);
 							_g_object_unref0 (transport);
 						} else {
-							FsoFrameworkLogger* _tmp66_;
-							const gchar* _tmp67_;
-							const gchar* _tmp68_ = NULL;
-							gchar* _tmp69_ = NULL;
-							gchar* _tmp70_;
-							_tmp66_ = ((FsoFrameworkAbstractObject*) self)->logger;
-							_tmp67_ = channel;
-							_tmp68_ = string_to_string (_tmp67_);
-							_tmp69_ = g_strconcat ("No dlci for channel '", _tmp68_, "'", NULL);
-							_tmp70_ = _tmp69_;
-							fso_framework_logger_warning (_tmp66_, _tmp70_);
-							_g_free0 (_tmp70_);
+							FsoFrameworkLogger* _tmp80_;
+							const gchar* _tmp81_;
+							const gchar* _tmp82_ = NULL;
+							gchar* _tmp83_ = NULL;
+							gchar* _tmp84_;
+							_tmp80_ = ((FsoFrameworkAbstractObject*) self)->logger;
+							_tmp81_ = channel;
+							_tmp82_ = string_to_string (_tmp81_);
+							_tmp83_ = g_strconcat ("No dlci for channel '", _tmp82_, "'", NULL);
+							_tmp84_ = _tmp83_;
+							fso_framework_logger_warning (_tmp80_, _tmp84_);
+							_g_free0 (_tmp84_);
 						}
 						_g_free0 (channel);
 					}
 				}
 			}
 		} else {
-			FsoFrameworkLogger* _tmp71_;
-			_tmp71_ = ((FsoFrameworkAbstractObject*) self)->logger;
-			fso_framework_logger_error (_tmp71_, "This modem only supports serial or TCP transports");
+			FsoFrameworkLogger* _tmp85_;
+			_tmp85_ = ((FsoFrameworkAbstractObject*) self)->logger;
+			fso_framework_logger_error (_tmp85_, "This modem only supports serial or TCP transports");
 		}
 	}
 }

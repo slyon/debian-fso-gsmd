@@ -29,8 +29,6 @@
 #include <string.h>
 #include <fsotransport.h>
 #include <radio.h>
-#include <fsodata.h>
-#include <gee.h>
 
 #define _g_free0(var) (var = (g_free (var), NULL))
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
@@ -44,8 +42,6 @@
 
 typedef struct _SamsungIpcChannel SamsungIpcChannel;
 typedef struct _SamsungIpcChannelClass SamsungIpcChannelClass;
-#define _fso_data_mbpi_provider_unref0(var) ((var == NULL) ? NULL : (var = (fso_data_mbpi_provider_unref (var), NULL)))
-#define _fso_data_mbpi_country_unref0(var) ((var == NULL) ? NULL : (var = (fso_data_mbpi_country_unref (var), NULL)))
 
 
 
@@ -58,7 +54,6 @@ gint16 samsung_ipc_channel_get_phone_pwr_state (SamsungIpcChannel* self);
 gchar* networkRegistrationStateToString (gint8 reg_state);
 gchar* networkAccessTechnologyToString (gint8 act);
 gchar* ipAddrFromByteArray (guint8* data, gint size);
-FsoDataMBPIProvider* findProviderForMccMnc (const gchar* mccmnc);
 
 
 void updateSimAuthStatus (FreeSmartphoneGSMSIMAuthStatus status) {
@@ -350,169 +345,6 @@ gchar* ipAddrFromByteArray (guint8* data, gint size) {
 	_tmp9_ = _tmp8_[3];
 	_tmp10_ = g_strdup_printf ("%i.%i.%i.%i", (gint) _tmp3_, (gint) _tmp5_, (gint) _tmp7_, (gint) _tmp9_);
 	result = _tmp10_;
-	return result;
-}
-
-
-static gpointer _g_object_ref0 (gpointer self) {
-	return self ? g_object_ref (self) : NULL;
-}
-
-
-static gpointer _fso_data_mbpi_provider_ref0 (gpointer self) {
-	return self ? fso_data_mbpi_provider_ref (self) : NULL;
-}
-
-
-FsoDataMBPIProvider* findProviderForMccMnc (const gchar* mccmnc) {
-	FsoDataMBPIProvider* result = NULL;
-	gchar* _tmp0_;
-	FsoDataMBPIProvider* _tmp1_ = NULL;
-	FsoDataMBPIProvider* _result_;
-	FsoDataMBPIDatabase* _tmp2_ = NULL;
-	FsoDataMBPIDatabase* mbpi;
-	g_return_val_if_fail (mccmnc != NULL, NULL);
-	_tmp0_ = g_strdup ("unkown");
-	_tmp1_ = fso_data_mbpi_provider_new ();
-	_g_free0 (_tmp1_->name);
-	_tmp1_->name = _tmp0_;
-	_result_ = _tmp1_;
-	_tmp2_ = fso_data_mbpi_database_instance ();
-	mbpi = _tmp2_;
-	{
-		FsoDataMBPIDatabase* _tmp3_ = NULL;
-		FsoDataMBPIDatabase* _tmp4_;
-		GeeMap* _tmp5_ = NULL;
-		GeeMap* _tmp6_;
-		GeeCollection* _tmp7_;
-		GeeCollection* _tmp8_;
-		GeeCollection* _tmp9_;
-		GeeIterator* _tmp10_ = NULL;
-		GeeIterator* _tmp11_;
-		GeeIterator* _country_it;
-		_tmp3_ = fso_data_mbpi_database_instance ();
-		_tmp4_ = _tmp3_;
-		_tmp5_ = fso_data_mbpi_database_allCountries (_tmp4_);
-		_tmp6_ = _tmp5_;
-		_tmp7_ = gee_map_get_values (_tmp6_);
-		_tmp8_ = _tmp7_;
-		_tmp9_ = _tmp8_;
-		_tmp10_ = gee_iterable_iterator ((GeeIterable*) _tmp9_);
-		_tmp11_ = _tmp10_;
-		_g_object_unref0 (_tmp9_);
-		_g_object_unref0 (_tmp6_);
-		_g_object_unref0 (_tmp4_);
-		_country_it = _tmp11_;
-		while (TRUE) {
-			GeeIterator* _tmp12_;
-			gboolean _tmp13_ = FALSE;
-			GeeIterator* _tmp14_;
-			gpointer _tmp15_ = NULL;
-			FsoDataMBPICountry* country;
-			_tmp12_ = _country_it;
-			_tmp13_ = gee_iterator_next (_tmp12_);
-			if (!_tmp13_) {
-				break;
-			}
-			_tmp14_ = _country_it;
-			_tmp15_ = gee_iterator_get (_tmp14_);
-			country = (FsoDataMBPICountry*) _tmp15_;
-			{
-				FsoDataMBPICountry* _tmp16_;
-				GeeHashMap* _tmp17_;
-				GeeCollection* _tmp18_;
-				GeeCollection* _tmp19_;
-				GeeCollection* _tmp20_;
-				GeeIterator* _tmp21_ = NULL;
-				GeeIterator* _tmp22_;
-				GeeIterator* _provider_it;
-				_tmp16_ = country;
-				_tmp17_ = _tmp16_->providers;
-				_tmp18_ = gee_abstract_map_get_values ((GeeMap*) _tmp17_);
-				_tmp19_ = _tmp18_;
-				_tmp20_ = _tmp19_;
-				_tmp21_ = gee_iterable_iterator ((GeeIterable*) _tmp20_);
-				_tmp22_ = _tmp21_;
-				_g_object_unref0 (_tmp20_);
-				_provider_it = _tmp22_;
-				while (TRUE) {
-					GeeIterator* _tmp23_;
-					gboolean _tmp24_ = FALSE;
-					GeeIterator* _tmp25_;
-					gpointer _tmp26_ = NULL;
-					FsoDataMBPIProvider* provider;
-					_tmp23_ = _provider_it;
-					_tmp24_ = gee_iterator_next (_tmp23_);
-					if (!_tmp24_) {
-						break;
-					}
-					_tmp25_ = _provider_it;
-					_tmp26_ = gee_iterator_get (_tmp25_);
-					provider = (FsoDataMBPIProvider*) _tmp26_;
-					{
-						FsoDataMBPIProvider* _tmp27_;
-						GeeArrayList* _tmp28_;
-						GeeArrayList* _tmp29_;
-						GeeArrayList* _code_list;
-						GeeArrayList* _tmp30_;
-						gint _tmp31_;
-						gint _tmp32_;
-						gint _code_size;
-						gint _code_index;
-						_tmp27_ = provider;
-						_tmp28_ = _tmp27_->codes;
-						_tmp29_ = _g_object_ref0 (_tmp28_);
-						_code_list = _tmp29_;
-						_tmp30_ = _code_list;
-						_tmp31_ = gee_abstract_collection_get_size ((GeeCollection*) _tmp30_);
-						_tmp32_ = _tmp31_;
-						_code_size = _tmp32_;
-						_code_index = -1;
-						while (TRUE) {
-							gint _tmp33_;
-							gint _tmp34_;
-							gint _tmp35_;
-							GeeArrayList* _tmp36_;
-							gint _tmp37_;
-							gpointer _tmp38_ = NULL;
-							gchar* code;
-							const gchar* _tmp39_;
-							const gchar* _tmp40_;
-							_tmp33_ = _code_index;
-							_code_index = _tmp33_ + 1;
-							_tmp34_ = _code_index;
-							_tmp35_ = _code_size;
-							if (!(_tmp34_ < _tmp35_)) {
-								break;
-							}
-							_tmp36_ = _code_list;
-							_tmp37_ = _code_index;
-							_tmp38_ = gee_abstract_list_get ((GeeAbstractList*) _tmp36_, _tmp37_);
-							code = (gchar*) _tmp38_;
-							_tmp39_ = code;
-							_tmp40_ = mccmnc;
-							if (g_strcmp0 (_tmp39_, _tmp40_) == 0) {
-								FsoDataMBPIProvider* _tmp41_;
-								FsoDataMBPIProvider* _tmp42_;
-								_tmp41_ = provider;
-								_tmp42_ = _fso_data_mbpi_provider_ref0 (_tmp41_);
-								_fso_data_mbpi_provider_unref0 (_result_);
-								_result_ = _tmp42_;
-							}
-							_g_free0 (code);
-						}
-						_g_object_unref0 (_code_list);
-					}
-					_fso_data_mbpi_provider_unref0 (provider);
-				}
-				_g_object_unref0 (_provider_it);
-			}
-			_fso_data_mbpi_country_unref0 (country);
-		}
-		_g_object_unref0 (_country_it);
-	}
-	result = _result_;
-	_g_object_unref0 (mbpi);
 	return result;
 }
 

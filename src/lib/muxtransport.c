@@ -43,7 +43,6 @@ typedef struct _FsoGsmLibGsm0710muxTransportClass FsoGsmLibGsm0710muxTransportCl
 typedef struct _FsoGsmLibGsm0710muxTransportPrivate FsoGsmLibGsm0710muxTransportPrivate;
 #define _gsm0710mux_channel_info_unref0(var) ((var == NULL) ? NULL : (var = (gsm0710mux_channel_info_unref (var), NULL)))
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
-#define _fso_framework_transport_spec_unref0(var) ((var == NULL) ? NULL : (var = (fso_framework_transport_spec_unref (var), NULL)))
 #define _g_free0(var) (var = (g_free (var), NULL))
 #define _g_error_free0(var) ((var == NULL) ? NULL : (var = (g_error_free (var), NULL)))
 typedef struct _fso_gsm_lib_gsm0710mux_transport_openAsyncData fso_gsm_lib_gsm0710mux_transport_openAsyncData;
@@ -187,11 +186,6 @@ static gpointer _g_object_ref0 (gpointer self) {
 }
 
 
-static gpointer _fso_framework_transport_spec_ref0 (gpointer self) {
-	return self ? fso_framework_transport_spec_ref (self) : NULL;
-}
-
-
 static const gchar* string_to_string (const gchar* self) {
 	const gchar* result = NULL;
 	g_return_val_if_fail (self != NULL, NULL);
@@ -226,24 +220,21 @@ FsoGsmLibGsm0710muxTransport* fso_gsm_lib_gsm0710mux_transport_construct (GType 
 	gboolean _tmp4_ = FALSE;
 	gboolean hasAutoSession;
 	FsoFrameworkDelegateTransport* _tmp5_;
-	FsoFrameworkTransportSpec* _tmp6_;
-	FsoFrameworkTransportSpec* tspec;
-	FsoFrameworkDelegateTransport* _tmp7_;
-	FsoFrameworkTransport* _tmp8_;
-	FsoFrameworkTransportSpec* _tmp9_;
-	gint _tmp10_;
-	gint _tmp11_;
+	FsoFrameworkDelegateTransport* _tmp6_;
+	FsoFrameworkTransport* _tmp7_;
+	gint _tmp8_;
+	gint _tmp9_;
+	gchar* _tmp10_ = NULL;
+	gchar* _tmp11_;
 	gchar* _tmp12_ = NULL;
-	gchar* _tmp13_;
-	gchar* _tmp14_ = NULL;
-	Gsm0710muxChannelInfo* _tmp15_ = NULL;
-	FsoFrameworkLogger* _tmp16_;
-	const gchar* _tmp17_ = NULL;
+	Gsm0710muxChannelInfo* _tmp13_ = NULL;
+	FsoFrameworkLogger* _tmp14_;
+	const gchar* _tmp15_ = NULL;
+	gchar* _tmp16_ = NULL;
+	gchar* _tmp17_;
 	gchar* _tmp18_ = NULL;
 	gchar* _tmp19_;
-	gchar* _tmp20_ = NULL;
-	gchar* _tmp21_;
-	gboolean _tmp22_ = FALSE;
+	gboolean _tmp20_ = FALSE;
 	self = (FsoGsmLibGsm0710muxTransport*) fso_framework_base_transport_construct (object_type, "LibGsm0710muxTransport", (guint) 0, TRUE, TRUE);
 	_tmp0_ = g_new0 (gchar, 1024);
 	self->priv->muxbuffer = (g_free (self->priv->muxbuffer), NULL);
@@ -261,38 +252,32 @@ FsoGsmLibGsm0710muxTransport* fso_gsm_lib_gsm0710mux_transport_construct (GType 
 	_tmp5_ = fso_framework_delegate_transport_new (_fso_gsm_lib_gsm0710mux_transport_delegateWrite_fso_framework_transport_data_func, self, _fso_gsm_lib_gsm0710mux_transport_delegateRead_fso_framework_transport_data_func, self, _fso_gsm_lib_gsm0710mux_transport_delegateHup_fso_framework_transport_func, self, _fso_gsm_lib_gsm0710mux_transport_delegateOpen_fso_framework_transport_bool_func, self, _fso_gsm_lib_gsm0710mux_transport_delegateClose_fso_framework_transport_func, self, _fso_gsm_lib_gsm0710mux_transport_delegateFreeze_fso_framework_transport_int_func, self, _fso_gsm_lib_gsm0710mux_transport_delegateThaw_fso_framework_transport_func, self);
 	_g_object_unref0 (self->priv->tdelegate);
 	self->priv->tdelegate = _tmp5_;
-	_tmp6_ = fso_framework_transport_spec_new ("foo", "bar", (guint) 0, TRUE, TRUE);
-	tspec = _tmp6_;
-	_tmp7_ = self->priv->tdelegate;
-	_tmp8_ = _g_object_ref0 ((FsoFrameworkTransport*) _tmp7_);
-	_g_object_unref0 (tspec->transport);
-	tspec->transport = _tmp8_;
-	_tmp9_ = _fso_framework_transport_spec_ref0 (tspec);
-	_tmp10_ = channel;
-	_tmp11_ = channel;
-	_tmp12_ = g_strdup_printf ("%i", _tmp11_);
-	_tmp13_ = _tmp12_;
-	_tmp14_ = g_strconcat ("fsogsmd:", _tmp13_, NULL);
-	_tmp15_ = gsm0710mux_channel_info_new ();
-	_fso_framework_transport_spec_unref0 (_tmp15_->tspec);
-	_tmp15_->tspec = _tmp9_;
-	_tmp15_->number = _tmp10_;
-	_g_free0 (_tmp15_->consumer);
-	_tmp15_->consumer = _tmp14_;
+	_tmp6_ = self->priv->tdelegate;
+	_tmp7_ = _g_object_ref0 ((FsoFrameworkTransport*) _tmp6_);
+	_tmp8_ = channel;
+	_tmp9_ = channel;
+	_tmp10_ = g_strdup_printf ("%i", _tmp9_);
+	_tmp11_ = _tmp10_;
+	_tmp12_ = g_strconcat ("fsogsmd:", _tmp11_, NULL);
+	_tmp13_ = gsm0710mux_channel_info_new ();
+	_g_object_unref0 (_tmp13_->transport);
+	_tmp13_->transport = _tmp7_;
+	_tmp13_->number = _tmp8_;
+	_g_free0 (_tmp13_->consumer);
+	_tmp13_->consumer = _tmp12_;
 	_gsm0710mux_channel_info_unref0 (self->priv->channelinfo);
-	self->priv->channelinfo = _tmp15_;
-	_g_free0 (_tmp13_);
-	_tmp16_ = ((FsoFrameworkTransport*) self)->logger;
-	_tmp17_ = string_to_string (version);
-	_tmp18_ = bool_to_string (hasAutoSession);
+	self->priv->channelinfo = _tmp13_;
+	_g_free0 (_tmp11_);
+	_tmp14_ = ((FsoFrameworkTransport*) self)->logger;
+	_tmp15_ = string_to_string (version);
+	_tmp16_ = bool_to_string (hasAutoSession);
+	_tmp17_ = _tmp16_;
+	_tmp18_ = g_strconcat ("Created. Using libgsm0710mux version ", _tmp15_, "; autosession is ", _tmp17_, NULL);
 	_tmp19_ = _tmp18_;
-	_tmp20_ = g_strconcat ("Created. Using libgsm0710mux version ", _tmp17_, "; autosession is ", _tmp19_, NULL);
-	_tmp21_ = _tmp20_;
-	_tmp22_ = fso_framework_logger_debug (_tmp16_, _tmp21_);
-	g_assert (_tmp22_);
-	_g_free0 (_tmp21_);
+	_tmp20_ = fso_framework_logger_debug (_tmp14_, _tmp19_);
+	g_assert (_tmp20_);
 	_g_free0 (_tmp19_);
-	_fso_framework_transport_spec_unref0 (tspec);
+	_g_free0 (_tmp17_);
 	_g_free0 (version);
 	return self;
 }
@@ -414,15 +399,15 @@ static gboolean fso_gsm_lib_gsm0710mux_transport_real_openAsync_co (fso_gsm_lib_
 		gsm0710mux_manager_allocChannel_finish (_data_->_tmp0_, _data_->_res_, &_data_->_inner_error_);
 		if (_data_->_inner_error_ != NULL) {
 			if (_data_->_inner_error_->domain == GSM0710MUX_MUXER_ERROR) {
-				goto __catch61_gsm0710mux_muxer_error;
+				goto __catch64_gsm0710mux_muxer_error;
 			}
 			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 			g_clear_error (&_data_->_inner_error_);
 			return FALSE;
 		}
 	}
-	goto __finally61;
-	__catch61_gsm0710mux_muxer_error:
+	goto __finally64;
+	__catch64_gsm0710mux_muxer_error:
 	{
 		_data_->e = _data_->_inner_error_;
 		_data_->_inner_error_ = NULL;
@@ -452,7 +437,7 @@ static gboolean fso_gsm_lib_gsm0710mux_transport_real_openAsync_co (fso_gsm_lib_
 		g_object_unref (_data_->_async_result);
 		return FALSE;
 	}
-	__finally61:
+	__finally64:
 	if (_data_->_inner_error_ != NULL) {
 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 		g_clear_error (&_data_->_inner_error_);
@@ -518,12 +503,10 @@ static gint fso_gsm_lib_gsm0710mux_transport_real_write (FsoFrameworkTransport* 
 	gint _tmp3__length1;
 	void* _tmp4_;
 	gint _tmp5_;
-	FsoFrameworkDelegateTransport* _tmp6_;
-	FsoFrameworkTransportFunc _tmp7_;
-	void* _tmp7__target;
-	FsoFrameworkDelegateTransport* _tmp8_;
+	FsoFrameworkITransportDelegate* _tmp6_;
+	FsoFrameworkDelegateTransport* _tmp7_;
+	gint _tmp8_;
 	gint _tmp9_;
-	gint _tmp10_;
 	self = (FsoGsmLibGsm0710muxTransport*) base;
 	_tmp0_ = self->priv->length;
 	g_assert (_tmp0_ == 0);
@@ -536,15 +519,13 @@ static gint fso_gsm_lib_gsm0710mux_transport_real_write (FsoFrameworkTransport* 
 	_tmp4_ = data;
 	_tmp5_ = length;
 	memcpy (_tmp3_, _tmp4_, (gsize) _tmp5_);
-	_tmp6_ = self->priv->tdelegate;
-	_tmp7_ = ((FsoFrameworkBaseTransport*) _tmp6_)->readfunc;
-	_tmp7__target = ((FsoFrameworkBaseTransport*) _tmp6_)->readfunc_target;
-	_tmp8_ = self->priv->tdelegate;
-	_tmp7_ ((FsoFrameworkTransport*) _tmp8_, _tmp7__target);
-	_tmp9_ = self->priv->length;
-	g_assert (_tmp9_ == 0);
-	_tmp10_ = length;
-	result = _tmp10_;
+	_tmp6_ = ((FsoFrameworkBaseTransport*) self)->_delegate;
+	_tmp7_ = self->priv->tdelegate;
+	fso_framework_itransport_delegate_onTransportDataAvailable (_tmp6_, (FsoFrameworkTransport*) _tmp7_);
+	_tmp8_ = self->priv->length;
+	g_assert (_tmp8_ == 0);
+	_tmp9_ = length;
+	result = _tmp9_;
 	return result;
 }
 
@@ -581,15 +562,15 @@ static void fso_gsm_lib_gsm0710mux_transport_real_close (FsoFrameworkTransport* 
 			gsm0710mux_manager_releaseChannel (_tmp1_, _tmp3_, &_inner_error_);
 			if (_inner_error_ != NULL) {
 				if (_inner_error_->domain == GSM0710MUX_MUXER_ERROR) {
-					goto __catch62_gsm0710mux_muxer_error;
+					goto __catch65_gsm0710mux_muxer_error;
 				}
 				g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 				g_clear_error (&_inner_error_);
 				return;
 			}
 		}
-		goto __finally62;
-		__catch62_gsm0710mux_muxer_error:
+		goto __finally65;
+		__catch65_gsm0710mux_muxer_error:
 		{
 			GError* e = NULL;
 			FsoFrameworkLogger* _tmp4_;
@@ -619,7 +600,7 @@ static void fso_gsm_lib_gsm0710mux_transport_real_close (FsoFrameworkTransport* 
 			_g_free0 (_tmp8_);
 			_g_error_free0 (e);
 		}
-		__finally62:
+		__finally65:
 		if (_inner_error_ != NULL) {
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
 			g_clear_error (&_inner_error_);
@@ -640,18 +621,14 @@ gboolean fso_gsm_lib_gsm0710mux_transport_delegateOpen (FsoGsmLibGsm0710muxTrans
 
 
 void fso_gsm_lib_gsm0710mux_transport_delegateClose (FsoGsmLibGsm0710muxTransport* self, FsoFrameworkTransport* t) {
-	FsoFrameworkTransportFunc _tmp0_;
-	void* _tmp0__target;
+	FsoFrameworkITransportDelegate* _tmp0_;
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (t != NULL);
-	_tmp0_ = ((FsoFrameworkBaseTransport*) self)->hupfunc;
-	_tmp0__target = ((FsoFrameworkBaseTransport*) self)->hupfunc_target;
+	_tmp0_ = ((FsoFrameworkBaseTransport*) self)->_delegate;
 	if (_tmp0_ != NULL) {
-		FsoFrameworkTransportFunc _tmp1_;
-		void* _tmp1__target;
-		_tmp1_ = ((FsoFrameworkBaseTransport*) self)->hupfunc;
-		_tmp1__target = ((FsoFrameworkBaseTransport*) self)->hupfunc_target;
-		_tmp1_ ((FsoFrameworkTransport*) self, _tmp1__target);
+		FsoFrameworkITransportDelegate* _tmp1_;
+		_tmp1_ = ((FsoFrameworkBaseTransport*) self)->_delegate;
+		fso_framework_itransport_delegate_onTransportHangup (_tmp1_, (FsoFrameworkTransport*) self);
 	} else {
 		FsoFrameworkLogger* _tmp2_;
 		_tmp2_ = ((FsoFrameworkTransport*) self)->logger;
@@ -675,8 +652,7 @@ gint fso_gsm_lib_gsm0710mux_transport_delegateWrite (FsoGsmLibGsm0710muxTranspor
 		void* _tmp4_;
 		gint _tmp5_;
 		gint _tmp6_;
-		FsoFrameworkTransportFunc _tmp7_;
-		void* _tmp7__target;
+		FsoFrameworkITransportDelegate* _tmp7_;
 		gint _tmp8_;
 		gint _tmp9_;
 		_tmp1_ = self->priv->length;
@@ -690,9 +666,8 @@ gint fso_gsm_lib_gsm0710mux_transport_delegateWrite (FsoGsmLibGsm0710muxTranspor
 		memcpy (_tmp3_, _tmp4_, (gsize) _tmp5_);
 		_tmp6_ = length;
 		self->priv->length = _tmp6_;
-		_tmp7_ = ((FsoFrameworkBaseTransport*) self)->readfunc;
-		_tmp7__target = ((FsoFrameworkBaseTransport*) self)->readfunc_target;
-		_tmp7_ ((FsoFrameworkTransport*) self, _tmp7__target);
+		_tmp7_ = ((FsoFrameworkBaseTransport*) self)->_delegate;
+		fso_framework_itransport_delegate_onTransportDataAvailable (_tmp7_, (FsoFrameworkTransport*) self);
 		_tmp8_ = self->priv->length;
 		g_assert (_tmp8_ == 0);
 		_tmp9_ = length;
@@ -811,7 +786,7 @@ void fso_gsm_lib_gsm0710mux_transport_startForwardingToPPP (FsoGsmLibGsm0710muxT
 	_tmp5_ = _tmp4_;
 	_tmp6_ = g_strconcat ("START FORWARDING TO PPP VIA ", _tmp2_, " <--> ", _tmp5_, NULL);
 	_tmp7_ = _tmp6_;
-	g_message ("muxtransport.vala:265: %s", _tmp7_);
+	g_message ("muxtransport.vala:262: %s", _tmp7_);
 	_g_free0 (_tmp7_);
 	_g_free0 (_tmp5_);
 	_g_free0 (_tmp2_);
@@ -831,7 +806,7 @@ void fso_gsm_lib_gsm0710mux_transport_startForwardingToPPP (FsoGsmLibGsm0710muxT
 void fso_gsm_lib_gsm0710mux_transport_stopForwardingToPPP (FsoGsmLibGsm0710muxTransport* self) {
 	FsoFrameworkAsyncReactorChannel* _tmp0_;
 	g_return_if_fail (self != NULL);
-	g_message ("muxtransport.vala:276: %s", "STOP FORWARDING TO PPP");
+	g_message ("muxtransport.vala:273: %s", "STOP FORWARDING TO PPP");
 	_tmp0_ = self->priv->pppOut;
 	if (_tmp0_ == NULL) {
 		return;
@@ -862,10 +837,10 @@ void fso_gsm_lib_gsm0710mux_transport_onDataFromPPP (FsoGsmLibGsm0710muxTranspor
 	}
 	_tmp3_ = _tmp0_;
 	if (_tmp3_) {
-		g_message ("muxtransport.vala:288: EOF FROM PPP");
+		g_message ("muxtransport.vala:285: EOF FROM PPP");
 		return;
 	}
-	g_message ("muxtransport.vala:291: ON DATA FROM PPP");
+	g_message ("muxtransport.vala:288: ON DATA FROM PPP");
 	_tmp4_ = data;
 	_tmp5_ = length;
 	_tmp6_ = fso_framework_transport_write ((FsoFrameworkTransport*) self, _tmp4_, (gint) _tmp5_);

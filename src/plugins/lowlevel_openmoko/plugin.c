@@ -101,31 +101,28 @@ static gboolean low_level_openmoko_real_poweron (FsoGsmLowLevel* base) {
 	const gchar* _tmp0_;
 	const gchar* _tmp2_;
 	FsoGsmAbstractModem* _tmp3_;
-	const gchar* _tmp4_;
-	FsoGsmAbstractModem* _tmp5_;
-	const gchar* _tmp6_;
-	FsoGsmAbstractModem* _tmp7_;
-	gint _tmp8_;
-	FsoFrameworkTransport* _tmp9_ = NULL;
+	FsoFrameworkTransportSpec* _tmp4_;
+	FsoFrameworkTransportSpec* _tmp5_;
+	FsoFrameworkTransport* _tmp6_ = NULL;
 	FsoFrameworkTransport* transport;
-	FsoFrameworkTransport* _tmp10_;
-	FsoFrameworkTransport* _tmp11_;
-	gboolean _tmp12_ = FALSE;
-	gchar* _tmp13_ = NULL;
+	FsoFrameworkTransport* _tmp7_;
+	FsoFrameworkTransport* _tmp8_;
+	gboolean _tmp9_ = FALSE;
+	gchar* _tmp10_ = NULL;
 	gchar* buf;
 	gint buf_length1;
 	gint _buf_size_;
+	FsoFrameworkTransport* _tmp11_;
+	gchar* _tmp12_;
+	gint _tmp12__length1;
+	gint _tmp13_ = 0;
+	gint bread;
 	FsoFrameworkTransport* _tmp14_;
 	gchar* _tmp15_;
 	gint _tmp15__length1;
 	gint _tmp16_ = 0;
-	gint bread;
-	FsoFrameworkTransport* _tmp17_;
-	gchar* _tmp18_;
-	gint _tmp18__length1;
-	gint _tmp19_ = 0;
 	guint i;
-	FsoFrameworkTransport* _tmp87_;
+	FsoFrameworkTransport* _tmp84_;
 	self = (LowLevelOpenmoko*) base;
 	_tmp0_ = self->priv->powerNode;
 	if (g_strcmp0 (_tmp0_, "unknown") == 0) {
@@ -141,248 +138,245 @@ static gboolean low_level_openmoko_real_poweron (FsoGsmLowLevel* base) {
 	fso_framework_file_handling_write ("1\n", _tmp2_, FALSE);
 	g_usleep ((gulong) (1000 * 1000));
 	_tmp3_ = self->priv->modem;
-	_tmp4_ = _tmp3_->modem_transport;
-	_tmp5_ = self->priv->modem;
-	_tmp6_ = _tmp5_->modem_port;
-	_tmp7_ = self->priv->modem;
-	_tmp8_ = _tmp7_->modem_speed;
-	_tmp9_ = fso_framework_transport_create (_tmp4_, _tmp6_, (guint) _tmp8_, TRUE, TRUE);
-	transport = _tmp9_;
-	_tmp10_ = transport;
-	fso_framework_transport_open (_tmp10_);
-	_tmp11_ = transport;
-	_tmp12_ = fso_framework_transport_isOpen (_tmp11_);
-	g_assert (_tmp12_);
-	_tmp13_ = g_new0 (gchar, 512);
-	buf = _tmp13_;
+	_tmp4_ = fso_gsm_abstract_modem_get_modem_transport_spec (_tmp3_);
+	_tmp5_ = _tmp4_;
+	_tmp6_ = fso_framework_transport_spec_create (_tmp5_);
+	transport = _tmp6_;
+	_tmp7_ = transport;
+	fso_framework_transport_open (_tmp7_);
+	_tmp8_ = transport;
+	_tmp9_ = fso_framework_transport_isOpen (_tmp8_);
+	g_assert (_tmp9_);
+	_tmp10_ = g_new0 (gchar, 512);
+	buf = _tmp10_;
 	buf_length1 = 512;
 	_buf_size_ = buf_length1;
+	_tmp11_ = transport;
+	_tmp12_ = buf;
+	_tmp12__length1 = buf_length1;
+	_tmp13_ = fso_framework_transport_writeAndRead (_tmp11_, "AT\r\n", 4, _tmp12_, 512, 0);
+	bread = _tmp13_;
 	_tmp14_ = transport;
 	_tmp15_ = buf;
 	_tmp15__length1 = buf_length1;
 	_tmp16_ = fso_framework_transport_writeAndRead (_tmp14_, "AT\r\n", 4, _tmp15_, 512, 0);
 	bread = _tmp16_;
-	_tmp17_ = transport;
-	_tmp18_ = buf;
-	_tmp18__length1 = buf_length1;
-	_tmp19_ = fso_framework_transport_writeAndRead (_tmp17_, "AT\r\n", 4, _tmp18_, 512, 0);
-	bread = _tmp19_;
 	i = (guint) 0;
 	while (TRUE) {
+		guint _tmp17_;
+		FsoFrameworkTransport* _tmp18_;
+		FsoFrameworkTransport* _tmp19_;
 		guint _tmp20_;
-		FsoFrameworkTransport* _tmp21_;
-		FsoFrameworkTransport* _tmp22_;
-		guint _tmp23_;
-		gchar* _tmp24_ = NULL;
-		gchar* _tmp25_;
-		gchar* _tmp26_ = NULL;
-		gchar* _tmp27_;
-		FsoFrameworkTransport* _tmp28_;
-		gchar* _tmp29_;
-		gint _tmp29__length1;
-		gint _tmp30_ = 0;
+		gchar* _tmp21_ = NULL;
+		gchar* _tmp22_;
+		gchar* _tmp23_ = NULL;
+		gchar* _tmp24_;
+		FsoFrameworkTransport* _tmp25_;
+		gchar* _tmp26_;
+		gint _tmp26__length1;
+		gint _tmp27_ = 0;
+		gchar* _tmp28_;
+		gint _tmp28__length1;
+		gint _tmp29_;
+		gchar _tmp30_;
 		gchar* _tmp31_;
 		gint _tmp31__length1;
-		gint _tmp32_;
-		gchar _tmp33_;
-		gchar* _tmp34_;
-		gint _tmp34__length1;
-		gchar* _tmp35_ = NULL;
+		gchar* _tmp32_ = NULL;
 		gchar* displayString;
+		gboolean _tmp33_ = FALSE;
+		gboolean _tmp34_ = FALSE;
+		gboolean _tmp35_ = FALSE;
 		gboolean _tmp36_ = FALSE;
-		gboolean _tmp37_ = FALSE;
-		gboolean _tmp38_ = FALSE;
-		gboolean _tmp39_ = FALSE;
-		gint _tmp40_;
-		gboolean _tmp44_;
-		gboolean _tmp48_;
-		gboolean _tmp52_;
-		gboolean _tmp56_;
-		_tmp20_ = i;
-		i = _tmp20_ + 1;
-		if (!(_tmp20_ < LOW_LEVEL_OPENMOKO_POWERUP_RETRIES)) {
+		gint _tmp37_;
+		gboolean _tmp41_;
+		gboolean _tmp45_;
+		gboolean _tmp49_;
+		gboolean _tmp53_;
+		_tmp17_ = i;
+		i = _tmp17_ + 1;
+		if (!(_tmp17_ < LOW_LEVEL_OPENMOKO_POWERUP_RETRIES)) {
 			break;
 		}
-		_tmp21_ = transport;
-		fso_framework_transport_drain (_tmp21_);
-		_tmp22_ = transport;
-		fso_framework_transport_flush (_tmp22_);
-		_tmp23_ = i;
-		_tmp24_ = g_strdup_printf ("%u", _tmp23_);
-		_tmp25_ = _tmp24_;
-		_tmp26_ = g_strconcat (" --- while loop ENTER; i = ", _tmp25_, NULL);
-		_tmp27_ = _tmp26_;
-		g_debug ("plugin.vala:81: %s", _tmp27_);
-		_g_free0 (_tmp27_);
-		_g_free0 (_tmp25_);
-		_tmp28_ = transport;
-		_tmp29_ = buf;
-		_tmp29__length1 = buf_length1;
-		_tmp30_ = fso_framework_transport_writeAndRead (_tmp28_, "ATE0Q0V1\r\n", 10, _tmp29_, 512, 5000);
-		bread = _tmp30_;
+		_tmp18_ = transport;
+		fso_framework_transport_drain (_tmp18_);
+		_tmp19_ = transport;
+		fso_framework_transport_flush (_tmp19_);
+		_tmp20_ = i;
+		_tmp21_ = g_strdup_printf ("%u", _tmp20_);
+		_tmp22_ = _tmp21_;
+		_tmp23_ = g_strconcat (" --- while loop ENTER; i = ", _tmp22_, NULL);
+		_tmp24_ = _tmp23_;
+		g_debug ("plugin.vala:81: %s", _tmp24_);
+		_g_free0 (_tmp24_);
+		_g_free0 (_tmp22_);
+		_tmp25_ = transport;
+		_tmp26_ = buf;
+		_tmp26__length1 = buf_length1;
+		_tmp27_ = fso_framework_transport_writeAndRead (_tmp25_, "ATE0Q0V1\r\n", 10, _tmp26_, 512, 5000);
+		bread = _tmp27_;
+		_tmp28_ = buf;
+		_tmp28__length1 = buf_length1;
+		_tmp29_ = bread;
+		_tmp28_[_tmp29_] = '\0';
+		_tmp30_ = _tmp28_[_tmp29_];
 		_tmp31_ = buf;
 		_tmp31__length1 = buf_length1;
-		_tmp32_ = bread;
-		_tmp31_[_tmp32_] = '\0';
-		_tmp33_ = _tmp31_[_tmp32_];
-		_tmp34_ = buf;
-		_tmp34__length1 = buf_length1;
-		_tmp35_ = g_strescape ((const gchar*) _tmp34_, "");
-		displayString = _tmp35_;
-		_tmp40_ = bread;
-		if (_tmp40_ > 3) {
-			gchar* _tmp41_;
-			gint _tmp41__length1;
-			gint _tmp42_;
-			gchar _tmp43_;
-			_tmp41_ = buf;
-			_tmp41__length1 = buf_length1;
-			_tmp42_ = bread;
-			_tmp43_ = _tmp41_[_tmp42_ - 1];
-			_tmp39_ = _tmp43_ == '\n';
-		} else {
-			_tmp39_ = FALSE;
-		}
-		_tmp44_ = _tmp39_;
-		if (_tmp44_) {
-			gchar* _tmp45_;
-			gint _tmp45__length1;
-			gint _tmp46_;
-			gchar _tmp47_;
-			_tmp45_ = buf;
-			_tmp45__length1 = buf_length1;
-			_tmp46_ = bread;
-			_tmp47_ = _tmp45_[_tmp46_ - 2];
-			_tmp38_ = _tmp47_ == '\r';
-		} else {
-			_tmp38_ = FALSE;
-		}
-		_tmp48_ = _tmp38_;
-		if (_tmp48_) {
-			gchar* _tmp49_;
-			gint _tmp49__length1;
-			gint _tmp50_;
-			gchar _tmp51_;
-			_tmp49_ = buf;
-			_tmp49__length1 = buf_length1;
-			_tmp50_ = bread;
-			_tmp51_ = _tmp49_[_tmp50_ - 3];
-			_tmp37_ = _tmp51_ == 'K';
-		} else {
-			_tmp37_ = FALSE;
-		}
-		_tmp52_ = _tmp37_;
-		if (_tmp52_) {
-			gchar* _tmp53_;
-			gint _tmp53__length1;
-			gint _tmp54_;
-			gchar _tmp55_;
-			_tmp53_ = buf;
-			_tmp53__length1 = buf_length1;
-			_tmp54_ = bread;
-			_tmp55_ = _tmp53_[_tmp54_ - 4];
-			_tmp36_ = _tmp55_ == 'O';
+		_tmp32_ = g_strescape ((const gchar*) _tmp31_, "");
+		displayString = _tmp32_;
+		_tmp37_ = bread;
+		if (_tmp37_ > 3) {
+			gchar* _tmp38_;
+			gint _tmp38__length1;
+			gint _tmp39_;
+			gchar _tmp40_;
+			_tmp38_ = buf;
+			_tmp38__length1 = buf_length1;
+			_tmp39_ = bread;
+			_tmp40_ = _tmp38_[_tmp39_ - 1];
+			_tmp36_ = _tmp40_ == '\n';
 		} else {
 			_tmp36_ = FALSE;
 		}
-		_tmp56_ = _tmp36_;
-		if (_tmp56_) {
-			FsoFrameworkTransport* _tmp57_;
-			gchar* _tmp58_;
-			gint _tmp58__length1;
-			gint _tmp59_ = 0;
+		_tmp41_ = _tmp36_;
+		if (_tmp41_) {
+			gchar* _tmp42_;
+			gint _tmp42__length1;
+			gint _tmp43_;
+			gchar _tmp44_;
+			_tmp42_ = buf;
+			_tmp42__length1 = buf_length1;
+			_tmp43_ = bread;
+			_tmp44_ = _tmp42_[_tmp43_ - 2];
+			_tmp35_ = _tmp44_ == '\r';
+		} else {
+			_tmp35_ = FALSE;
+		}
+		_tmp45_ = _tmp35_;
+		if (_tmp45_) {
+			gchar* _tmp46_;
+			gint _tmp46__length1;
+			gint _tmp47_;
+			gchar _tmp48_;
+			_tmp46_ = buf;
+			_tmp46__length1 = buf_length1;
+			_tmp47_ = bread;
+			_tmp48_ = _tmp46_[_tmp47_ - 3];
+			_tmp34_ = _tmp48_ == 'K';
+		} else {
+			_tmp34_ = FALSE;
+		}
+		_tmp49_ = _tmp34_;
+		if (_tmp49_) {
+			gchar* _tmp50_;
+			gint _tmp50__length1;
+			gint _tmp51_;
+			gchar _tmp52_;
+			_tmp50_ = buf;
+			_tmp50__length1 = buf_length1;
+			_tmp51_ = bread;
+			_tmp52_ = _tmp50_[_tmp51_ - 4];
+			_tmp33_ = _tmp52_ == 'O';
+		} else {
+			_tmp33_ = FALSE;
+		}
+		_tmp53_ = _tmp33_;
+		if (_tmp53_) {
+			FsoFrameworkTransport* _tmp54_;
+			gchar* _tmp55_;
+			gint _tmp55__length1;
+			gint _tmp56_ = 0;
+			gchar* _tmp57_;
+			gint _tmp57__length1;
+			gint _tmp58_;
+			gchar _tmp59_;
 			gchar* _tmp60_;
 			gint _tmp60__length1;
-			gint _tmp61_;
-			gchar _tmp62_;
-			gchar* _tmp63_;
-			gint _tmp63__length1;
-			gchar* _tmp64_ = NULL;
+			gchar* _tmp61_ = NULL;
+			gboolean _tmp62_ = FALSE;
+			gboolean _tmp63_ = FALSE;
+			gboolean _tmp64_ = FALSE;
 			gboolean _tmp65_ = FALSE;
-			gboolean _tmp66_ = FALSE;
-			gboolean _tmp67_ = FALSE;
-			gboolean _tmp68_ = FALSE;
-			gint _tmp69_;
-			gboolean _tmp73_;
-			gboolean _tmp77_;
-			gboolean _tmp81_;
-			gboolean _tmp85_;
-			_tmp57_ = transport;
-			_tmp58_ = buf;
-			_tmp58__length1 = buf_length1;
-			_tmp59_ = fso_framework_transport_writeAndRead (_tmp57_, "AT%SLEEP=2\r\n", 12, _tmp58_, 512, 5000);
-			bread = _tmp59_;
+			gint _tmp66_;
+			gboolean _tmp70_;
+			gboolean _tmp74_;
+			gboolean _tmp78_;
+			gboolean _tmp82_;
+			_tmp54_ = transport;
+			_tmp55_ = buf;
+			_tmp55__length1 = buf_length1;
+			_tmp56_ = fso_framework_transport_writeAndRead (_tmp54_, "AT%SLEEP=2\r\n", 12, _tmp55_, 512, 5000);
+			bread = _tmp56_;
+			_tmp57_ = buf;
+			_tmp57__length1 = buf_length1;
+			_tmp58_ = bread;
+			_tmp57_[_tmp58_] = '\0';
+			_tmp59_ = _tmp57_[_tmp58_];
 			_tmp60_ = buf;
 			_tmp60__length1 = buf_length1;
-			_tmp61_ = bread;
-			_tmp60_[_tmp61_] = '\0';
-			_tmp62_ = _tmp60_[_tmp61_];
-			_tmp63_ = buf;
-			_tmp63__length1 = buf_length1;
-			_tmp64_ = g_strescape ((const gchar*) _tmp63_, "");
+			_tmp61_ = g_strescape ((const gchar*) _tmp60_, "");
 			_g_free0 (displayString);
-			displayString = _tmp64_;
-			_tmp69_ = bread;
-			if (_tmp69_ > 3) {
-				gchar* _tmp70_;
-				gint _tmp70__length1;
-				gint _tmp71_;
-				gchar _tmp72_;
-				_tmp70_ = buf;
-				_tmp70__length1 = buf_length1;
-				_tmp71_ = bread;
-				_tmp72_ = _tmp70_[_tmp71_ - 1];
-				_tmp68_ = _tmp72_ == '\n';
-			} else {
-				_tmp68_ = FALSE;
-			}
-			_tmp73_ = _tmp68_;
-			if (_tmp73_) {
-				gchar* _tmp74_;
-				gint _tmp74__length1;
-				gint _tmp75_;
-				gchar _tmp76_;
-				_tmp74_ = buf;
-				_tmp74__length1 = buf_length1;
-				_tmp75_ = bread;
-				_tmp76_ = _tmp74_[_tmp75_ - 2];
-				_tmp67_ = _tmp76_ == '\r';
-			} else {
-				_tmp67_ = FALSE;
-			}
-			_tmp77_ = _tmp67_;
-			if (_tmp77_) {
-				gchar* _tmp78_;
-				gint _tmp78__length1;
-				gint _tmp79_;
-				gchar _tmp80_;
-				_tmp78_ = buf;
-				_tmp78__length1 = buf_length1;
-				_tmp79_ = bread;
-				_tmp80_ = _tmp78_[_tmp79_ - 3];
-				_tmp66_ = _tmp80_ == 'K';
-			} else {
-				_tmp66_ = FALSE;
-			}
-			_tmp81_ = _tmp66_;
-			if (_tmp81_) {
-				gchar* _tmp82_;
-				gint _tmp82__length1;
-				gint _tmp83_;
-				gchar _tmp84_;
-				_tmp82_ = buf;
-				_tmp82__length1 = buf_length1;
-				_tmp83_ = bread;
-				_tmp84_ = _tmp82_[_tmp83_ - 4];
-				_tmp65_ = _tmp84_ == 'O';
+			displayString = _tmp61_;
+			_tmp66_ = bread;
+			if (_tmp66_ > 3) {
+				gchar* _tmp67_;
+				gint _tmp67__length1;
+				gint _tmp68_;
+				gchar _tmp69_;
+				_tmp67_ = buf;
+				_tmp67__length1 = buf_length1;
+				_tmp68_ = bread;
+				_tmp69_ = _tmp67_[_tmp68_ - 1];
+				_tmp65_ = _tmp69_ == '\n';
 			} else {
 				_tmp65_ = FALSE;
 			}
-			_tmp85_ = _tmp65_;
-			if (_tmp85_) {
-				FsoFrameworkTransport* _tmp86_;
-				_tmp86_ = transport;
-				fso_framework_transport_close (_tmp86_);
+			_tmp70_ = _tmp65_;
+			if (_tmp70_) {
+				gchar* _tmp71_;
+				gint _tmp71__length1;
+				gint _tmp72_;
+				gchar _tmp73_;
+				_tmp71_ = buf;
+				_tmp71__length1 = buf_length1;
+				_tmp72_ = bread;
+				_tmp73_ = _tmp71_[_tmp72_ - 2];
+				_tmp64_ = _tmp73_ == '\r';
+			} else {
+				_tmp64_ = FALSE;
+			}
+			_tmp74_ = _tmp64_;
+			if (_tmp74_) {
+				gchar* _tmp75_;
+				gint _tmp75__length1;
+				gint _tmp76_;
+				gchar _tmp77_;
+				_tmp75_ = buf;
+				_tmp75__length1 = buf_length1;
+				_tmp76_ = bread;
+				_tmp77_ = _tmp75_[_tmp76_ - 3];
+				_tmp63_ = _tmp77_ == 'K';
+			} else {
+				_tmp63_ = FALSE;
+			}
+			_tmp78_ = _tmp63_;
+			if (_tmp78_) {
+				gchar* _tmp79_;
+				gint _tmp79__length1;
+				gint _tmp80_;
+				gchar _tmp81_;
+				_tmp79_ = buf;
+				_tmp79__length1 = buf_length1;
+				_tmp80_ = bread;
+				_tmp81_ = _tmp79_[_tmp80_ - 4];
+				_tmp62_ = _tmp81_ == 'O';
+			} else {
+				_tmp62_ = FALSE;
+			}
+			_tmp82_ = _tmp62_;
+			if (_tmp82_) {
+				FsoFrameworkTransport* _tmp83_;
+				_tmp83_ = transport;
+				fso_framework_transport_close (_tmp83_);
 				result = TRUE;
 				_g_free0 (displayString);
 				buf = (g_free (buf), NULL);
@@ -392,8 +386,8 @@ static gboolean low_level_openmoko_real_poweron (FsoGsmLowLevel* base) {
 		}
 		_g_free0 (displayString);
 	}
-	_tmp87_ = transport;
-	fso_framework_transport_close (_tmp87_);
+	_tmp84_ = transport;
+	fso_framework_transport_close (_tmp84_);
 	result = FALSE;
 	buf = (g_free (buf), NULL);
 	_g_object_unref0 (transport);

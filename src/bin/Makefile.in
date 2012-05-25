@@ -37,7 +37,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/Makefile.decl
+	$(top_srcdir)/Makefile.decl fsogsmd_vala.stamp main.c
 sbin_PROGRAMS = fsogsmd$(EXEEXT)
 subdir = src/bin
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -50,9 +50,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(sbindir)"
 PROGRAMS = $(sbin_PROGRAMS)
-am__objects_1 =
-am__objects_2 = main.$(OBJEXT) $(am__objects_1)
-am_fsogsmd_OBJECTS = $(am__objects_2) $(am__objects_1)
+am_fsogsmd_OBJECTS = fsogsmd-main.$(OBJEXT)
 fsogsmd_OBJECTS = $(am_fsogsmd_OBJECTS)
 am__DEPENDENCIES_1 =
 fsogsmd_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -60,6 +58,9 @@ fsogsmd_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
+fsogsmd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(fsogsmd_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -83,6 +84,13 @@ LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD  " $@;
+VALACOMPILE = $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS)
+LTVALACOMPILE = $(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(VALAC) $(AM_VALAFLAGS) \
+	$(VALAFLAGS)
+AM_V_VALAC = $(am__v_VALAC_@AM_V@)
+am__v_VALAC_ = $(am__v_VALAC_@AM_DEFAULT_V@)
+am__v_VALAC_0 = @echo "  VALAC " $@;
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN   " $@;
@@ -102,8 +110,6 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CONNMAN_CFLAGS = @CONNMAN_CFLAGS@
-CONNMAN_LIBS = @CONNMAN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -232,24 +238,28 @@ GTESTER = gtester
 GTESTER_REPORT = gtester-report
 
 # initialize variables for unconditional += appending
-EXTRA_DIST = $(fsogsmd_VALASOURCES) $(fsogsmd_SOURCES) \
-	$(BUILT_SOURCES) $(NULL)
+EXTRA_DIST = 
 TEST_PROGS = 
 NULL = 
-INCLUDES = \
-	$(FSO_CFLAGS) \
-	$(GLIB_CFLAGS) \
+AM_CFLAGS = \
 	-include $(CONFIG_HEADER) \
 	-DG_LOG_DOMAIN=\"fsogsm\" \
 	$(NULL)
 
-BUILT_SOURCES = .vala.stamp
-fsogsmd_VALASOURCES = \
-	main.vala \
+AM_VALAFLAGS = 
+fsogsmd_SOURCES = main.vala
+fsogsmd_VALAFLAGS = \
+	--vapidir $(top_srcdir)/vapi \
+	--pkg posix \
+	--pkg gio-2.0 \
+	--pkg fsoframework-2.0 \
+	--save-temps \
+	--basedir $(top_srcdir) \
 	$(NULL)
 
-fsogsmd_SOURCES = \
-	$(fsogsmd_VALASOURCES:.vala=.c) \
+fsogsmd_CFLAGS = \
+	$(FSO_CFLAGS) \
+	$(GLIB_CFLAGS) \
 	$(NULL)
 
 fsogsmd_LDADD = \
@@ -257,18 +267,12 @@ fsogsmd_LDADD = \
 	$(GLIB_LIBS) \
 	$(NULL)
 
-CLEANFILES = \
-	*.c \
-	*.h \
-	$(BUILT_SOURCES) \
-	$(NULL)
-
+CLEANFILES = 
 MAINTAINERCLEANFILES = \
 	Makefile.in \
 	$(NULL)
 
-all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -348,7 +352,7 @@ clean-sbinPROGRAMS:
 	rm -f $$list
 fsogsmd$(EXEEXT): $(fsogsmd_OBJECTS) $(fsogsmd_DEPENDENCIES) $(EXTRA_fsogsmd_DEPENDENCIES) 
 	@rm -f fsogsmd$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(fsogsmd_OBJECTS) $(fsogsmd_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(fsogsmd_LINK) $(fsogsmd_OBJECTS) $(fsogsmd_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -356,7 +360,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fsogsmd-main.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -378,6 +382,29 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+fsogsmd-main.o: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fsogsmd_CFLAGS) $(CFLAGS) -MT fsogsmd-main.o -MD -MP -MF $(DEPDIR)/fsogsmd-main.Tpo -c -o fsogsmd-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/fsogsmd-main.Tpo $(DEPDIR)/fsogsmd-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='fsogsmd-main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fsogsmd_CFLAGS) $(CFLAGS) -c -o fsogsmd-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+
+fsogsmd-main.obj: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fsogsmd_CFLAGS) $(CFLAGS) -MT fsogsmd-main.obj -MD -MP -MF $(DEPDIR)/fsogsmd-main.Tpo -c -o fsogsmd-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/fsogsmd-main.Tpo $(DEPDIR)/fsogsmd-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='fsogsmd-main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fsogsmd_CFLAGS) $(CFLAGS) -c -o fsogsmd-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+$(srcdir)/main.c: $(srcdir)/fsogsmd_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/fsogsmd_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/fsogsmd_vala.stamp; \
+	fi
+$(srcdir)/fsogsmd_vala.stamp: $(fsogsmd_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(fsogsmd_VALAFLAGS) $(VALAFLAGS) -C $(fsogsmd_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -469,15 +496,13 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-local
-check: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) check-am
+check: check-am
 all-am: Makefile $(PROGRAMS)
 installdirs:
 	for dir in "$(DESTDIR)$(sbindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) install-am
+install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -508,7 +533,8 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+	-rm -f fsogsmd_vala.stamp
+	-rm -f main.c
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
@@ -581,7 +607,7 @@ ps-am:
 
 uninstall-am: uninstall-sbinPROGRAMS
 
-.MAKE: all check check-am install install-am install-strip
+.MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am check-local clean \
 	clean-generic clean-libtool clean-sbinPROGRAMS ctags distclean \
@@ -646,15 +672,6 @@ test-report perf-report full-report:	${TEST_PROGS}
 .PHONY: test test-report perf-report full-report
 # run make test as part of make check
 check-local: test
-
-$(BUILT_SOURCES): $(fsogsmd_VALASOURCES)
-	$(VALAC) -C --vapidir vapi \
-				--pkg posix \
-				--pkg gio-2.0 \
-				--pkg fsoframework-2.0 \
-				--save-temps \
-				--basedir $(top_srcdir) $^
-	touch $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

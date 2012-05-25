@@ -117,6 +117,8 @@ typedef struct _FsoGsmModemIface FsoGsmModemIface;
 
 #define FSO_GSM_MODEM_TYPE_STATUS (fso_gsm_modem_status_get_type ())
 
+#define FSO_GSM_MODEM_TYPE_NETWORK_STATUS (fso_gsm_modem_network_status_get_type ())
+
 #define FSO_GSM_TYPE_AT_COMMAND_SEQUENCE (fso_gsm_at_command_sequence_get_type ())
 #define FSO_GSM_AT_COMMAND_SEQUENCE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_AT_COMMAND_SEQUENCE, FsoGsmAtCommandSequence))
 #define FSO_GSM_AT_COMMAND_SEQUENCE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_AT_COMMAND_SEQUENCE, FsoGsmAtCommandSequenceClass))
@@ -173,15 +175,13 @@ typedef struct _FsoGsmSmsHandlerIface FsoGsmSmsHandlerIface;
 typedef struct _WrapHexPdu WrapHexPdu;
 typedef struct _WrapHexPduClass WrapHexPduClass;
 
-#define FSO_GSM_TYPE_SMS_STORAGE (fso_gsm_sms_storage_get_type ())
-#define FSO_GSM_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorage))
-#define FSO_GSM_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
-#define FSO_GSM_IS_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_SMS_STORAGE))
-#define FSO_GSM_IS_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_SMS_STORAGE))
-#define FSO_GSM_SMS_STORAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
+#define FSO_GSM_TYPE_ISMS_STORAGE (fso_gsm_isms_storage_get_type ())
+#define FSO_GSM_ISMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ISMS_STORAGE, FsoGsmISmsStorage))
+#define FSO_GSM_IS_ISMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ISMS_STORAGE))
+#define FSO_GSM_ISMS_STORAGE_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_ISMS_STORAGE, FsoGsmISmsStorageIface))
 
-typedef struct _FsoGsmSmsStorage FsoGsmSmsStorage;
-typedef struct _FsoGsmSmsStorageClass FsoGsmSmsStorageClass;
+typedef struct _FsoGsmISmsStorage FsoGsmISmsStorage;
+typedef struct _FsoGsmISmsStorageIface FsoGsmISmsStorageIface;
 
 #define FSO_GSM_TYPE_PHONEBOOK_HANDLER (fso_gsm_phonebook_handler_get_type ())
 #define FSO_GSM_PHONEBOOK_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PHONEBOOK_HANDLER, FsoGsmPhonebookHandler))
@@ -209,15 +209,23 @@ typedef struct _FsoGsmPhonebookStorageClass FsoGsmPhonebookStorageClass;
 typedef struct _FsoGsmWatchDog FsoGsmWatchDog;
 typedef struct _FsoGsmWatchDogIface FsoGsmWatchDogIface;
 
-#define FSO_GSM_TYPE_PDP_HANDLER (fso_gsm_pdp_handler_get_type ())
-#define FSO_GSM_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandler))
-#define FSO_GSM_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
-#define FSO_GSM_IS_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_PDP_HANDLER))
-#define FSO_GSM_IS_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_PDP_HANDLER))
-#define FSO_GSM_PDP_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
+#define FSO_GSM_TYPE_IPDP_HANDLER (fso_gsm_ipdp_handler_get_type ())
+#define FSO_GSM_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandler))
+#define FSO_GSM_IS_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_IPDP_HANDLER))
+#define FSO_GSM_IPDP_HANDLER_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandlerIface))
 
-typedef struct _FsoGsmPdpHandler FsoGsmPdpHandler;
-typedef struct _FsoGsmPdpHandlerClass FsoGsmPdpHandlerClass;
+typedef struct _FsoGsmIPdpHandler FsoGsmIPdpHandler;
+typedef struct _FsoGsmIPdpHandlerIface FsoGsmIPdpHandlerIface;
+
+#define FSO_GSM_TYPE_ROUTE_INFO (fso_gsm_route_info_get_type ())
+#define FSO_GSM_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfo))
+#define FSO_GSM_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
+#define FSO_GSM_IS_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ROUTE_INFO))
+#define FSO_GSM_IS_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_ROUTE_INFO))
+#define FSO_GSM_ROUTE_INFO_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
+
+typedef struct _FsoGsmRouteInfo FsoGsmRouteInfo;
+typedef struct _FsoGsmRouteInfoClass FsoGsmRouteInfoClass;
 
 #define FSO_GSM_TYPE_ABSTRACT_AT_COMMAND (fso_gsm_abstract_at_command_get_type ())
 #define FSO_GSM_ABSTRACT_AT_COMMAND(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ABSTRACT_AT_COMMAND, FsoGsmAbstractAtCommand))
@@ -790,6 +798,8 @@ typedef struct _FsoGsmPlusCPWDPrivate FsoGsmPlusCPWDPrivate;
 typedef struct _FsoGsmPlusCREG FsoGsmPlusCREG;
 typedef struct _FsoGsmPlusCREGClass FsoGsmPlusCREGClass;
 typedef struct _FsoGsmPlusCREGPrivate FsoGsmPlusCREGPrivate;
+
+#define FSO_GSM_PLUS_CREG_TYPE_MODE (fso_gsm_plus_creg_mode_get_type ())
 
 #define FSO_GSM_TYPE_PLUS_CRSM (fso_gsm_plus_crsm_get_type ())
 #define FSO_GSM_PLUS_CRSM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PLUS_CRSM, FsoGsmPlusCRSM))
@@ -2371,23 +2381,15 @@ typedef struct _FsoGsmStateBasedAtParserPrivate FsoGsmStateBasedAtParserPrivate;
 
 #define FSO_GSM_STATE_BASED_AT_PARSER_TYPE_STATE (fso_gsm_state_based_at_parser_state_get_type ())
 
-#define FSO_GSM_TYPE_IPDP_HANDLER (fso_gsm_ipdp_handler_get_type ())
-#define FSO_GSM_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandler))
-#define FSO_GSM_IS_IPDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_IPDP_HANDLER))
-#define FSO_GSM_IPDP_HANDLER_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), FSO_GSM_TYPE_IPDP_HANDLER, FsoGsmIPdpHandlerIface))
+#define FSO_GSM_TYPE_PDP_HANDLER (fso_gsm_pdp_handler_get_type ())
+#define FSO_GSM_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandler))
+#define FSO_GSM_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
+#define FSO_GSM_IS_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_PDP_HANDLER))
+#define FSO_GSM_IS_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_PDP_HANDLER))
+#define FSO_GSM_PDP_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_PDP_HANDLER, FsoGsmPdpHandlerClass))
 
-typedef struct _FsoGsmIPdpHandler FsoGsmIPdpHandler;
-typedef struct _FsoGsmIPdpHandlerIface FsoGsmIPdpHandlerIface;
-
-#define FSO_GSM_TYPE_ROUTE_INFO (fso_gsm_route_info_get_type ())
-#define FSO_GSM_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfo))
-#define FSO_GSM_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
-#define FSO_GSM_IS_ROUTE_INFO(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ROUTE_INFO))
-#define FSO_GSM_IS_ROUTE_INFO_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_ROUTE_INFO))
-#define FSO_GSM_ROUTE_INFO_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_ROUTE_INFO, FsoGsmRouteInfoClass))
-
-typedef struct _FsoGsmRouteInfo FsoGsmRouteInfo;
-typedef struct _FsoGsmRouteInfoClass FsoGsmRouteInfoClass;
+typedef struct _FsoGsmPdpHandler FsoGsmPdpHandler;
+typedef struct _FsoGsmPdpHandlerClass FsoGsmPdpHandlerClass;
 typedef struct _FsoGsmPdpHandlerPrivate FsoGsmPdpHandlerPrivate;
 
 #define FSO_GSM_TYPE_AT_PDP_HANDLER (fso_gsm_at_pdp_handler_get_type ())
@@ -2400,6 +2402,17 @@ typedef struct _FsoGsmPdpHandlerPrivate FsoGsmPdpHandlerPrivate;
 typedef struct _FsoGsmAtPdpHandler FsoGsmAtPdpHandler;
 typedef struct _FsoGsmAtPdpHandlerClass FsoGsmAtPdpHandlerClass;
 typedef struct _FsoGsmAtPdpHandlerPrivate FsoGsmAtPdpHandlerPrivate;
+
+#define FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER (fso_gsm_abstract_sms_handler_get_type ())
+#define FSO_GSM_ABSTRACT_SMS_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER, FsoGsmAbstractSmsHandler))
+#define FSO_GSM_ABSTRACT_SMS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER, FsoGsmAbstractSmsHandlerClass))
+#define FSO_GSM_IS_ABSTRACT_SMS_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER))
+#define FSO_GSM_IS_ABSTRACT_SMS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER))
+#define FSO_GSM_ABSTRACT_SMS_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER, FsoGsmAbstractSmsHandlerClass))
+
+typedef struct _FsoGsmAbstractSmsHandler FsoGsmAbstractSmsHandler;
+typedef struct _FsoGsmAbstractSmsHandlerClass FsoGsmAbstractSmsHandlerClass;
+typedef struct _FsoGsmAbstractSmsHandlerPrivate FsoGsmAbstractSmsHandlerPrivate;
 
 #define FSO_GSM_TYPE_AT_SMS_HANDLER (fso_gsm_at_sms_handler_get_type ())
 #define FSO_GSM_AT_SMS_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_AT_SMS_HANDLER, FsoGsmAtSmsHandler))
@@ -2441,8 +2454,30 @@ typedef struct _FsoGsmBaseUnsolicitedResponseHandlerPrivate FsoGsmBaseUnsolicite
 typedef struct _FsoGsmAtUnsolicitedResponseHandler FsoGsmAtUnsolicitedResponseHandler;
 typedef struct _FsoGsmAtUnsolicitedResponseHandlerClass FsoGsmAtUnsolicitedResponseHandlerClass;
 typedef struct _FsoGsmAtUnsolicitedResponseHandlerPrivate FsoGsmAtUnsolicitedResponseHandlerPrivate;
+
+#define FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER (fso_gsm_at_phonebook_handler_get_type ())
+#define FSO_GSM_AT_PHONEBOOK_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER, FsoGsmAtPhonebookHandler))
+#define FSO_GSM_AT_PHONEBOOK_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER, FsoGsmAtPhonebookHandlerClass))
+#define FSO_GSM_IS_AT_PHONEBOOK_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER))
+#define FSO_GSM_IS_AT_PHONEBOOK_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER))
+#define FSO_GSM_AT_PHONEBOOK_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER, FsoGsmAtPhonebookHandlerClass))
+
+typedef struct _FsoGsmAtPhonebookHandler FsoGsmAtPhonebookHandler;
+typedef struct _FsoGsmAtPhonebookHandlerClass FsoGsmAtPhonebookHandlerClass;
+typedef struct _FsoGsmAtPhonebookHandlerPrivate FsoGsmAtPhonebookHandlerPrivate;
 typedef struct _FsoGsmCallPrivate FsoGsmCallPrivate;
 typedef struct _FsoGsmCallInfoPrivate FsoGsmCallInfoPrivate;
+
+#define FSO_GSM_TYPE_NULL_CALL_HANDLER (fso_gsm_null_call_handler_get_type ())
+#define FSO_GSM_NULL_CALL_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_NULL_CALL_HANDLER, FsoGsmNullCallHandler))
+#define FSO_GSM_NULL_CALL_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_NULL_CALL_HANDLER, FsoGsmNullCallHandlerClass))
+#define FSO_GSM_IS_NULL_CALL_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_NULL_CALL_HANDLER))
+#define FSO_GSM_IS_NULL_CALL_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_NULL_CALL_HANDLER))
+#define FSO_GSM_NULL_CALL_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_NULL_CALL_HANDLER, FsoGsmNullCallHandlerClass))
+
+typedef struct _FsoGsmNullCallHandler FsoGsmNullCallHandler;
+typedef struct _FsoGsmNullCallHandlerClass FsoGsmNullCallHandlerClass;
+typedef struct _FsoGsmNullCallHandlerPrivate FsoGsmNullCallHandlerPrivate;
 
 #define FSO_GSM_TYPE_CONSTANTS (fso_gsm_constants_get_type ())
 #define FSO_GSM_CONSTANTS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_CONSTANTS, FsoGsmConstants))
@@ -2556,33 +2591,87 @@ typedef struct _FsoGsmAbstractGsmModemPrivate FsoGsmAbstractGsmModemPrivate;
 typedef struct _FsoGsmAbstractCdmaModem FsoGsmAbstractCdmaModem;
 typedef struct _FsoGsmAbstractCdmaModemClass FsoGsmAbstractCdmaModemClass;
 typedef struct _FsoGsmAbstractCdmaModemPrivate FsoGsmAbstractCdmaModemPrivate;
+
+#define FSO_GSM_TYPE_NULL_MODEM (fso_gsm_null_modem_get_type ())
+#define FSO_GSM_NULL_MODEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_NULL_MODEM, FsoGsmNullModem))
+#define FSO_GSM_NULL_MODEM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_NULL_MODEM, FsoGsmNullModemClass))
+#define FSO_GSM_IS_NULL_MODEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_NULL_MODEM))
+#define FSO_GSM_IS_NULL_MODEM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_NULL_MODEM))
+#define FSO_GSM_NULL_MODEM_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_NULL_MODEM, FsoGsmNullModemClass))
+
+typedef struct _FsoGsmNullModem FsoGsmNullModem;
+typedef struct _FsoGsmNullModemClass FsoGsmNullModemClass;
+typedef struct _FsoGsmNullModemPrivate FsoGsmNullModemPrivate;
 typedef struct _FsoGsmPhonebookStoragePrivate FsoGsmPhonebookStoragePrivate;
-
-#define FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER (fso_gsm_at_phonebook_handler_get_type ())
-#define FSO_GSM_AT_PHONEBOOK_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER, FsoGsmAtPhonebookHandler))
-#define FSO_GSM_AT_PHONEBOOK_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER, FsoGsmAtPhonebookHandlerClass))
-#define FSO_GSM_IS_AT_PHONEBOOK_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER))
-#define FSO_GSM_IS_AT_PHONEBOOK_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER))
-#define FSO_GSM_AT_PHONEBOOK_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_AT_PHONEBOOK_HANDLER, FsoGsmAtPhonebookHandlerClass))
-
-typedef struct _FsoGsmAtPhonebookHandler FsoGsmAtPhonebookHandler;
-typedef struct _FsoGsmAtPhonebookHandlerClass FsoGsmAtPhonebookHandlerClass;
-typedef struct _FsoGsmAtPhonebookHandlerPrivate FsoGsmAtPhonebookHandlerPrivate;
 typedef struct _FsoGsmRouteInfoPrivate FsoGsmRouteInfoPrivate;
+
+#define FSO_GSM_TYPE_NULL_PDP_HANDLER (fso_gsm_null_pdp_handler_get_type ())
+#define FSO_GSM_NULL_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_NULL_PDP_HANDLER, FsoGsmNullPdpHandler))
+#define FSO_GSM_NULL_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_NULL_PDP_HANDLER, FsoGsmNullPdpHandlerClass))
+#define FSO_GSM_IS_NULL_PDP_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_NULL_PDP_HANDLER))
+#define FSO_GSM_IS_NULL_PDP_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_NULL_PDP_HANDLER))
+#define FSO_GSM_NULL_PDP_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_NULL_PDP_HANDLER, FsoGsmNullPdpHandlerClass))
+
+typedef struct _FsoGsmNullPdpHandler FsoGsmNullPdpHandler;
+typedef struct _FsoGsmNullPdpHandlerClass FsoGsmNullPdpHandlerClass;
+typedef struct _FsoGsmNullPdpHandlerPrivate FsoGsmNullPdpHandlerPrivate;
 typedef struct _WrapSmsPrivate WrapSmsPrivate;
 typedef struct _WrapHexPduPrivate WrapHexPduPrivate;
 
-#define FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER (fso_gsm_abstract_sms_handler_get_type ())
-#define FSO_GSM_ABSTRACT_SMS_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER, FsoGsmAbstractSmsHandler))
-#define FSO_GSM_ABSTRACT_SMS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER, FsoGsmAbstractSmsHandlerClass))
-#define FSO_GSM_IS_ABSTRACT_SMS_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER))
-#define FSO_GSM_IS_ABSTRACT_SMS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER))
-#define FSO_GSM_ABSTRACT_SMS_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_ABSTRACT_SMS_HANDLER, FsoGsmAbstractSmsHandlerClass))
+#define FSO_GSM_TYPE_NULL_SMS_HANDLER (fso_gsm_null_sms_handler_get_type ())
+#define FSO_GSM_NULL_SMS_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_NULL_SMS_HANDLER, FsoGsmNullSmsHandler))
+#define FSO_GSM_NULL_SMS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_NULL_SMS_HANDLER, FsoGsmNullSmsHandlerClass))
+#define FSO_GSM_IS_NULL_SMS_HANDLER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_NULL_SMS_HANDLER))
+#define FSO_GSM_IS_NULL_SMS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_NULL_SMS_HANDLER))
+#define FSO_GSM_NULL_SMS_HANDLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_NULL_SMS_HANDLER, FsoGsmNullSmsHandlerClass))
 
-typedef struct _FsoGsmAbstractSmsHandler FsoGsmAbstractSmsHandler;
-typedef struct _FsoGsmAbstractSmsHandlerClass FsoGsmAbstractSmsHandlerClass;
-typedef struct _FsoGsmAbstractSmsHandlerPrivate FsoGsmAbstractSmsHandlerPrivate;
+typedef struct _FsoGsmNullSmsHandler FsoGsmNullSmsHandler;
+typedef struct _FsoGsmNullSmsHandlerClass FsoGsmNullSmsHandlerClass;
+typedef struct _FsoGsmNullSmsHandlerPrivate FsoGsmNullSmsHandlerPrivate;
+
+#define FSO_GSM_TYPE_SMS_STORAGE_FACTORY (fso_gsm_sms_storage_factory_get_type ())
+#define FSO_GSM_SMS_STORAGE_FACTORY(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_SMS_STORAGE_FACTORY, FsoGsmSmsStorageFactory))
+#define FSO_GSM_SMS_STORAGE_FACTORY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_SMS_STORAGE_FACTORY, FsoGsmSmsStorageFactoryClass))
+#define FSO_GSM_IS_SMS_STORAGE_FACTORY(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_SMS_STORAGE_FACTORY))
+#define FSO_GSM_IS_SMS_STORAGE_FACTORY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_SMS_STORAGE_FACTORY))
+#define FSO_GSM_SMS_STORAGE_FACTORY_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_SMS_STORAGE_FACTORY, FsoGsmSmsStorageFactoryClass))
+
+typedef struct _FsoGsmSmsStorageFactory FsoGsmSmsStorageFactory;
+typedef struct _FsoGsmSmsStorageFactoryClass FsoGsmSmsStorageFactoryClass;
+typedef struct _FsoGsmSmsStorageFactoryPrivate FsoGsmSmsStorageFactoryPrivate;
+
+#define FSO_GSM_TYPE_NULL_SMS_STORAGE (fso_gsm_null_sms_storage_get_type ())
+#define FSO_GSM_NULL_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_NULL_SMS_STORAGE, FsoGsmNullSmsStorage))
+#define FSO_GSM_NULL_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_NULL_SMS_STORAGE, FsoGsmNullSmsStorageClass))
+#define FSO_GSM_IS_NULL_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_NULL_SMS_STORAGE))
+#define FSO_GSM_IS_NULL_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_NULL_SMS_STORAGE))
+#define FSO_GSM_NULL_SMS_STORAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_NULL_SMS_STORAGE, FsoGsmNullSmsStorageClass))
+
+typedef struct _FsoGsmNullSmsStorage FsoGsmNullSmsStorage;
+typedef struct _FsoGsmNullSmsStorageClass FsoGsmNullSmsStorageClass;
+typedef struct _FsoGsmNullSmsStoragePrivate FsoGsmNullSmsStoragePrivate;
+
+#define FSO_GSM_TYPE_SMS_STORAGE (fso_gsm_sms_storage_get_type ())
+#define FSO_GSM_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorage))
+#define FSO_GSM_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
+#define FSO_GSM_IS_SMS_STORAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_SMS_STORAGE))
+#define FSO_GSM_IS_SMS_STORAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_SMS_STORAGE))
+#define FSO_GSM_SMS_STORAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_SMS_STORAGE, FsoGsmSmsStorageClass))
+
+typedef struct _FsoGsmSmsStorage FsoGsmSmsStorage;
+typedef struct _FsoGsmSmsStorageClass FsoGsmSmsStorageClass;
 typedef struct _FsoGsmSmsStoragePrivate FsoGsmSmsStoragePrivate;
+
+#define FSO_GSM_TYPE_NULL_WATCH_DOG (fso_gsm_null_watch_dog_get_type ())
+#define FSO_GSM_NULL_WATCH_DOG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_NULL_WATCH_DOG, FsoGsmNullWatchDog))
+#define FSO_GSM_NULL_WATCH_DOG_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), FSO_GSM_TYPE_NULL_WATCH_DOG, FsoGsmNullWatchDogClass))
+#define FSO_GSM_IS_NULL_WATCH_DOG(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FSO_GSM_TYPE_NULL_WATCH_DOG))
+#define FSO_GSM_IS_NULL_WATCH_DOG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), FSO_GSM_TYPE_NULL_WATCH_DOG))
+#define FSO_GSM_NULL_WATCH_DOG_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), FSO_GSM_TYPE_NULL_WATCH_DOG, FsoGsmNullWatchDogClass))
+
+typedef struct _FsoGsmNullWatchDog FsoGsmNullWatchDog;
+typedef struct _FsoGsmNullWatchDogClass FsoGsmNullWatchDogClass;
+typedef struct _FsoGsmNullWatchDogPrivate FsoGsmNullWatchDogPrivate;
 
 #define FSO_GSM_TYPE_GENERIC_WATCH_DOG (fso_gsm_generic_watch_dog_get_type ())
 #define FSO_GSM_GENERIC_WATCH_DOG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FSO_GSM_TYPE_GENERIC_WATCH_DOG, FsoGsmGenericWatchDog))
@@ -2713,6 +2802,13 @@ typedef enum  {
 	FSO_GSM_MODEM_STATUS_RESUMING,
 	FSO_GSM_MODEM_STATUS_CLOSING
 } FsoGsmModemStatus;
+
+typedef enum  {
+	FSO_GSM_MODEM_NETWORK_STATUS_UNKNOWN,
+	FSO_GSM_MODEM_NETWORK_STATUS_UNREGISTERED,
+	FSO_GSM_MODEM_NETWORK_STATUS_SEARCHING,
+	FSO_GSM_MODEM_NETWORK_STATUS_REGISTERED
+} FsoGsmModemNetworkStatus;
 
 struct _FsoGsmAtCommandQueueCommandIface {
 	GTypeInterface parent_iface;
@@ -2910,6 +3006,19 @@ struct _FsoGsmAtCommandIface {
 	FsoGsmConstantsAtResponse (*validateMulti) (FsoGsmAtCommand* self, gchar** response, int response_length1);
 };
 
+struct _FsoGsmISmsStorageIface {
+	GTypeInterface parent_iface;
+	void (*clean) (FsoGsmISmsStorage* self);
+	gint (*addSms) (FsoGsmISmsStorage* self, struct sms* message);
+	GeeArrayList* (*keys) (FsoGsmISmsStorage* self);
+	void (*message) (FsoGsmISmsStorage* self, const gchar* key, gint index, FreeSmartphoneGSMSIMMessage* result);
+	FreeSmartphoneGSMSIMMessage* (*messagebook) (FsoGsmISmsStorage* self, int* result_length1);
+	guint16 (*lastReferenceNumber) (FsoGsmISmsStorage* self);
+	guint16 (*increasingReferenceNumber) (FsoGsmISmsStorage* self);
+	void (*storeTransactionIndizesForSentMessage) (FsoGsmISmsStorage* self, GeeArrayList* hexpdus);
+	gint (*confirmReceivedMessage) (FsoGsmISmsStorage* self, gint netreference);
+};
+
 struct _FsoGsmSmsHandlerIface {
 	GTypeInterface parent_iface;
 	void (*handleIncomingSmsOnSim) (FsoGsmSmsHandler* self, guint index, GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -2922,12 +3031,14 @@ struct _FsoGsmSmsHandlerIface {
 	guint16 (*nextReferenceNumber) (FsoGsmSmsHandler* self);
 	GeeArrayList* (*formatTextMessage) (FsoGsmSmsHandler* self, const gchar* number, const gchar* contents, gboolean requestReport);
 	void (*storeTransactionIndizesForSentMessage) (FsoGsmSmsHandler* self, GeeArrayList* hexpdus);
-	FsoGsmSmsStorage* (*get_storage) (FsoGsmSmsHandler* self);
-	void (*set_storage) (FsoGsmSmsHandler* self, FsoGsmSmsStorage* value);
+	FsoGsmISmsStorage* (*get_storage) (FsoGsmSmsHandler* self);
+	void (*set_storage) (FsoGsmSmsHandler* self, FsoGsmISmsStorage* value);
 };
 
 struct _FsoGsmPhonebookHandlerIface {
 	GTypeInterface parent_iface;
+	void (*syncWithSim) (FsoGsmPhonebookHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*syncWithSim_finish) (FsoGsmPhonebookHandler* self, GAsyncResult* _res_);
 	FsoGsmPhonebookStorage* (*get_storage) (FsoGsmPhonebookHandler* self);
 	void (*set_storage) (FsoGsmPhonebookHandler* self, FsoGsmPhonebookStorage* value);
 };
@@ -2936,6 +3047,25 @@ struct _FsoGsmWatchDogIface {
 	GTypeInterface parent_iface;
 	void (*check) (FsoGsmWatchDog* self);
 	void (*resetUnlockMarker) (FsoGsmWatchDog* self);
+};
+
+struct _FsoGsmIPdpHandlerIface {
+	GTypeInterface parent_iface;
+	void (*activate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*activate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
+	void (*deactivate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*deactivate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
+	void (*statusUpdate) (FsoGsmIPdpHandler* self, const gchar* status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*statusUpdate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	void (*connectedWithNewDefaultRoute) (FsoGsmIPdpHandler* self, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*connectedWithNewDefaultRoute_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	void (*disconnected) (FsoGsmIPdpHandler* self);
+	void (*syncStatus) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*syncStatus_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+	FreeSmartphoneGSMContextStatus (*get_status) (FsoGsmIPdpHandler* self);
+	void (*set_status) (FsoGsmIPdpHandler* self, FreeSmartphoneGSMContextStatus value);
+	GHashTable* (*get_properties) (FsoGsmIPdpHandler* self);
+	void (*set_properties) (FsoGsmIPdpHandler* self, GHashTable* value);
 };
 
 struct _FsoGsmModemIface {
@@ -2953,6 +3083,7 @@ struct _FsoGsmModemIface {
 	void (*setFunctionality_finish) (FsoGsmModem* self, GAsyncResult* _res_, GError** error);
 	void (*registerChannel) (FsoGsmModem* self, const gchar* name, FsoGsmChannel* channel);
 	void (*advanceToState) (FsoGsmModem* self, FsoGsmModemStatus status, gboolean force);
+	void (*advanceNetworkState) (FsoGsmModem* self, FsoGsmModemNetworkStatus status);
 	FsoGsmAtCommandSequence* (*atCommandSequence) (FsoGsmModem* self, const gchar* channel, const gchar* purpose);
 	gpointer (*createMediator) (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, GError** error);
 	gpointer (*createAtCommand) (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, const gchar* command);
@@ -2963,8 +3094,10 @@ struct _FsoGsmModemIface {
 	gchar** (*processAtCommandAsync_finish) (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
 	void (*processAtPduCommandAsync) (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries, GAsyncReadyCallback _callback_, gpointer _user_data_);
 	gchar** (*processAtPduCommandAsync_finish) (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
+	void (*sendAtCommand) (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries);
 	FsoGsmChannel* (*channel) (FsoGsmModem* self, const gchar* category);
 	FsoGsmModemStatus (*status) (FsoGsmModem* self);
+	FsoGsmModemNetworkStatus (*network_status) (FsoGsmModem* self);
 	FreeSmartphoneGSMDeviceStatus (*externalStatus) (FsoGsmModem* self);
 	FsoGsmModemData* (*data) (FsoGsmModem* self);
 	void (*registerAtCommandSequence) (FsoGsmModem* self, const gchar* channel, const gchar* purpose, FsoGsmAtCommandSequence* sequence);
@@ -2979,8 +3112,8 @@ struct _FsoGsmModemIface {
 	void (*set_pbhandler) (FsoGsmModem* self, FsoGsmPhonebookHandler* value);
 	FsoGsmWatchDog* (*get_watchdog) (FsoGsmModem* self);
 	void (*set_watchdog) (FsoGsmModem* self, FsoGsmWatchDog* value);
-	FsoGsmPdpHandler* (*get_pdphandler) (FsoGsmModem* self);
-	void (*set_pdphandler) (FsoGsmModem* self, FsoGsmPdpHandler* value);
+	FsoGsmIPdpHandler* (*get_pdphandler) (FsoGsmModem* self);
+	void (*set_pdphandler) (FsoGsmModem* self, FsoGsmIPdpHandler* value);
 };
 
 struct _FsoGsmAbstractAtCommand {
@@ -3477,7 +3610,6 @@ struct _FsoGsmPlusCOPS {
 	gint mode;
 	gchar* oper;
 	gchar* act;
-	gint status;
 	FreeSmartphoneGSMNetworkProvider* providers;
 	gint providers_length1;
 };
@@ -3577,6 +3709,12 @@ struct _FsoGsmPlusCREG {
 struct _FsoGsmPlusCREGClass {
 	FsoGsmAbstractAtCommandClass parent_class;
 };
+
+typedef enum  {
+	FSO_GSM_PLUS_CREG_MODE_DISABLE = 0,
+	FSO_GSM_PLUS_CREG_MODE_ENABLE_WITH_NETORK_REGISTRATION = 1,
+	FSO_GSM_PLUS_CREG_MODE_ENABLE_WITH_NETORK_REGISTRATION_AND_LOCATION = 2
+} FsoGsmPlusCREGMode;
 
 struct _FsoGsmPlusCRSM {
 	FsoGsmAbstractAtCommand parent_instance;
@@ -5044,19 +5182,6 @@ typedef enum  {
 	FSO_GSM_STATE_BASED_AT_PARSER_STATE_INLINE_R
 } FsoGsmStateBasedAtParserState;
 
-struct _FsoGsmIPdpHandlerIface {
-	GTypeInterface parent_iface;
-	void (*activate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	void (*activate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
-	void (*deactivate) (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	void (*deactivate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_, GError** error);
-	void (*statusUpdate) (FsoGsmIPdpHandler* self, const gchar* status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	void (*statusUpdate_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
-	void (*connectedWithNewDefaultRoute) (FsoGsmIPdpHandler* self, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	void (*connectedWithNewDefaultRoute_finish) (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
-	void (*disconnected) (FsoGsmIPdpHandler* self);
-};
-
 struct _FsoGsmPdpHandler {
 	FsoFrameworkAbstractObject parent_instance;
 	FsoGsmPdpHandlerPrivate * priv;
@@ -5091,13 +5216,30 @@ struct _FsoGsmAtPdpHandlerClass {
 	void (*shutdownTransport) (FsoGsmAtPdpHandler* self);
 };
 
-struct _FsoGsmAtSmsHandler {
+struct _FsoGsmAbstractSmsHandler {
 	FsoFrameworkAbstractObject parent_instance;
+	FsoGsmAbstractSmsHandlerPrivate * priv;
+};
+
+struct _FsoGsmAbstractSmsHandlerClass {
+	FsoFrameworkAbstractObjectClass parent_class;
+	void (*retrieveImsiFromSIM) (FsoGsmAbstractSmsHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	gchar* (*retrieveImsiFromSIM_finish) (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_);
+	void (*fillStorageWithMessageFromSIM) (FsoGsmAbstractSmsHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*fillStorageWithMessageFromSIM_finish) (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_);
+	void (*readSmsMessageFromSIM) (FsoGsmAbstractSmsHandler* self, guint index, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	gboolean (*readSmsMessageFromSIM_finish) (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_, gchar** hexpdu, gint* tpdulen);
+	void (*acknowledgeSmsMessage) (FsoGsmAbstractSmsHandler* self, gint id, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	gboolean (*acknowledgeSmsMessage_finish) (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_);
+};
+
+struct _FsoGsmAtSmsHandler {
+	FsoGsmAbstractSmsHandler parent_instance;
 	FsoGsmAtSmsHandlerPrivate * priv;
 };
 
 struct _FsoGsmAtSmsHandlerClass {
-	FsoFrameworkAbstractObjectClass parent_class;
+	FsoGsmAbstractSmsHandlerClass parent_class;
 };
 
 typedef void (*UnsolicitedResponseHandlerFunc) (const gchar* prefix, const gchar* rhs, void* user_data);
@@ -5142,6 +5284,15 @@ struct _FsoGsmAtUnsolicitedResponseHandlerClass {
 	void (*plusCMT) (FsoGsmAtUnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs, const gchar* pdu);
 };
 
+struct _FsoGsmAtPhonebookHandler {
+	FsoFrameworkAbstractObject parent_instance;
+	FsoGsmAtPhonebookHandlerPrivate * priv;
+};
+
+struct _FsoGsmAtPhonebookHandlerClass {
+	FsoFrameworkAbstractObjectClass parent_class;
+};
+
 struct _FsoGsmCall {
 	GTypeInstance parent_instance;
 	volatile int ref_count;
@@ -5162,6 +5313,15 @@ struct _FsoGsmCallInfo {
 
 struct _FsoGsmCallInfoClass {
 	GObjectClass parent_class;
+};
+
+struct _FsoGsmNullCallHandler {
+	FsoFrameworkAbstractObject parent_instance;
+	FsoGsmNullCallHandlerPrivate * priv;
+};
+
+struct _FsoGsmNullCallHandlerClass {
+	FsoFrameworkAbstractObjectClass parent_class;
 };
 
 struct _FsoGsmConstants {
@@ -5301,15 +5461,8 @@ struct _FsoGsmModemDataClass {
 struct _FsoGsmAbstractModem {
 	FsoFrameworkAbstractObject parent_instance;
 	FsoGsmAbstractModemPrivate * priv;
-	gchar* modem_type;
-	gchar* modem_transport;
-	gchar* modem_port;
-	gint modem_speed;
-	gchar* data_type;
-	gchar* data_transport;
-	gchar* data_port;
-	gint data_speed;
 	FsoGsmModemStatus modem_status;
+	FsoGsmModemNetworkStatus modem_network_status;
 	FsoGsmModemData* modem_data;
 	GeeHashMap* channels;
 	GeeHashMap* commands;
@@ -5368,21 +5521,21 @@ struct _FsoGsmAbstractCdmaModemClass {
 	FsoGsmAbstractModemClass parent_class;
 };
 
+struct _FsoGsmNullModem {
+	FsoGsmAbstractModem parent_instance;
+	FsoGsmNullModemPrivate * priv;
+};
+
+struct _FsoGsmNullModemClass {
+	FsoGsmAbstractModemClass parent_class;
+};
+
 struct _FsoGsmPhonebookStorage {
 	FsoFrameworkAbstractObject parent_instance;
 	FsoGsmPhonebookStoragePrivate * priv;
 };
 
 struct _FsoGsmPhonebookStorageClass {
-	FsoFrameworkAbstractObjectClass parent_class;
-};
-
-struct _FsoGsmAtPhonebookHandler {
-	FsoFrameworkAbstractObject parent_instance;
-	FsoGsmAtPhonebookHandlerPrivate * priv;
-};
-
-struct _FsoGsmAtPhonebookHandlerClass {
 	FsoFrameworkAbstractObjectClass parent_class;
 };
 
@@ -5403,11 +5556,20 @@ struct _FsoGsmRouteInfoClass {
 	void (*finalize) (FsoGsmRouteInfo *self);
 };
 
+struct _FsoGsmNullPdpHandler {
+	FsoFrameworkAbstractObject parent_instance;
+	FsoGsmNullPdpHandlerPrivate * priv;
+};
+
+struct _FsoGsmNullPdpHandlerClass {
+	FsoFrameworkAbstractObjectClass parent_class;
+};
+
 struct _WrapSms {
 	GTypeInstance parent_instance;
 	volatile int ref_count;
 	WrapSmsPrivate * priv;
-	structsms* message;
+	struct sms* message;
 	gint index;
 };
 
@@ -5430,21 +5592,33 @@ struct _WrapHexPduClass {
 	void (*finalize) (WrapHexPdu *self);
 };
 
-struct _FsoGsmAbstractSmsHandler {
+struct _FsoGsmNullSmsHandler {
 	FsoFrameworkAbstractObject parent_instance;
-	FsoGsmAbstractSmsHandlerPrivate * priv;
+	FsoGsmNullSmsHandlerPrivate * priv;
 };
 
-struct _FsoGsmAbstractSmsHandlerClass {
+struct _FsoGsmNullSmsHandlerClass {
 	FsoFrameworkAbstractObjectClass parent_class;
-	void (*retrieveImsiFromSIM) (FsoGsmAbstractSmsHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	gchar* (*retrieveImsiFromSIM_finish) (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_);
-	void (*fillStorageWithMessageFromSIM) (FsoGsmAbstractSmsHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	void (*fillStorageWithMessageFromSIM_finish) (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_);
-	void (*readSmsMessageFromSIM) (FsoGsmAbstractSmsHandler* self, guint index, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	gboolean (*readSmsMessageFromSIM_finish) (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_, gchar** hexpdu, gint* tpdulen);
-	void (*acknowledgeSmsMessage) (FsoGsmAbstractSmsHandler* self, gint id, GAsyncReadyCallback _callback_, gpointer _user_data_);
-	gboolean (*acknowledgeSmsMessage_finish) (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_);
+};
+
+struct _FsoGsmSmsStorageFactory {
+	GTypeInstance parent_instance;
+	volatile int ref_count;
+	FsoGsmSmsStorageFactoryPrivate * priv;
+};
+
+struct _FsoGsmSmsStorageFactoryClass {
+	GTypeClass parent_class;
+	void (*finalize) (FsoGsmSmsStorageFactory *self);
+};
+
+struct _FsoGsmNullSmsStorage {
+	FsoFrameworkAbstractObject parent_instance;
+	FsoGsmNullSmsStoragePrivate * priv;
+};
+
+struct _FsoGsmNullSmsStorageClass {
+	FsoFrameworkAbstractObjectClass parent_class;
 };
 
 struct _FsoGsmSmsStorage {
@@ -5454,6 +5628,15 @@ struct _FsoGsmSmsStorage {
 
 struct _FsoGsmSmsStorageClass {
 	FsoFrameworkAbstractObjectClass parent_class;
+};
+
+struct _FsoGsmNullWatchDog {
+	GObject parent_instance;
+	FsoGsmNullWatchDogPrivate * priv;
+};
+
+struct _FsoGsmNullWatchDogClass {
+	GObjectClass parent_class;
 };
 
 struct _FsoGsmGenericWatchDog {
@@ -5498,6 +5681,7 @@ GType fso_gsm_at_channel_get_type (void) G_GNUC_CONST;
 FsoGsmAtChannel* fso_gsm_at_channel_new (const gchar* name, FsoFrameworkTransport* transport, FsoFrameworkParser* parser);
 FsoGsmAtChannel* fso_gsm_at_channel_construct (GType object_type, const gchar* name, FsoFrameworkTransport* transport, FsoFrameworkParser* parser);
 GType fso_gsm_modem_status_get_type (void) G_GNUC_CONST;
+GType fso_gsm_modem_network_status_get_type (void) G_GNUC_CONST;
 gpointer fso_gsm_at_command_sequence_ref (gpointer instance);
 void fso_gsm_at_command_sequence_unref (gpointer instance);
 GParamSpec* fso_gsm_param_spec_at_command_sequence (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
@@ -5517,12 +5701,19 @@ void value_set_wrap_hex_pdu (GValue* value, gpointer v_object);
 void value_take_wrap_hex_pdu (GValue* value, gpointer v_object);
 gpointer value_get_wrap_hex_pdu (const GValue* value);
 GType wrap_hex_pdu_get_type (void) G_GNUC_CONST;
-GType fso_gsm_sms_storage_get_type (void) G_GNUC_CONST;
+GType fso_gsm_isms_storage_get_type (void) G_GNUC_CONST;
 GType fso_gsm_sms_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_phonebook_storage_get_type (void) G_GNUC_CONST;
 GType fso_gsm_phonebook_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_watch_dog_get_type (void) G_GNUC_CONST;
-GType fso_gsm_pdp_handler_get_type (void) G_GNUC_CONST;
+gpointer fso_gsm_route_info_ref (gpointer instance);
+void fso_gsm_route_info_unref (gpointer instance);
+GParamSpec* fso_gsm_param_spec_route_info (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
+void fso_gsm_value_set_route_info (GValue* value, gpointer v_object);
+void fso_gsm_value_take_route_info (GValue* value, gpointer v_object);
+gpointer fso_gsm_value_get_route_info (const GValue* value);
+GType fso_gsm_route_info_get_type (void) G_GNUC_CONST;
+GType fso_gsm_ipdp_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_modem_get_type (void) G_GNUC_CONST;
 void fso_gsm_at_channel_onModemStatusChanged (FsoGsmAtChannel* self, FsoGsmModem* modem, FsoGsmModemStatus status);
 guint fso_gsm_at_command_get_timeout (FsoGsmAtCommand* self);
@@ -5768,11 +5959,11 @@ FsoGsmPlusCPWD* fso_gsm_plus_cpwd_construct (GType object_type);
 gchar* fso_gsm_plus_cpwd_issue (FsoGsmPlusCPWD* self, const gchar* facility, const gchar* p1, const gchar* p2);
 gchar* fso_gsm_plus_cpwd_query (FsoGsmPlusCPWD* self);
 GType fso_gsm_plus_creg_get_type (void) G_GNUC_CONST;
+GType fso_gsm_plus_creg_mode_get_type (void) G_GNUC_CONST;
 FsoGsmPlusCREG* fso_gsm_plus_creg_new (void);
 FsoGsmPlusCREG* fso_gsm_plus_creg_construct (GType object_type);
 gchar* fso_gsm_plus_creg_query (FsoGsmPlusCREG* self);
-gchar* fso_gsm_plus_creg_issue (FsoGsmPlusCREG* self, gint mode);
-gchar* fso_gsm_plus_creg_queryFull (FsoGsmPlusCREG* self, gint restoreMode);
+gchar* fso_gsm_plus_creg_issue (FsoGsmPlusCREG* self, FsoGsmPlusCREGMode mode);
 GType fso_gsm_plus_crsm_get_type (void) G_GNUC_CONST;
 FsoGsmPlusCRSM* fso_gsm_plus_crsm_new (void);
 FsoGsmPlusCRSM* fso_gsm_plus_crsm_construct (GType object_type);
@@ -5814,7 +6005,6 @@ GType fso_gsm_plus_gcap_get_type (void) G_GNUC_CONST;
 FsoGsmPlusGCAP* fso_gsm_plus_gcap_new (void);
 FsoGsmPlusGCAP* fso_gsm_plus_gcap_construct (GType object_type);
 GType fso_gsm_plus_vts_get_type (void) G_GNUC_CONST;
-#define FSO_GSM_PLUS_VTS_DTMF_VALID_CHARS "0123456789ABC+#"
 gchar* fso_gsm_plus_vts_issue (FsoGsmPlusVTS* self, const gchar* tones);
 FsoGsmPlusVTS* fso_gsm_plus_vts_new (void);
 FsoGsmPlusVTS* fso_gsm_plus_vts_construct (GType object_type);
@@ -5840,11 +6030,8 @@ FsoGsmAtCommandHandler* fso_gsm_at_command_handler_construct (GType object_type,
 #define FSO_GSM_AT_COMMAND_QUEUE_COMMAND_QUEUE_BUFFER_SIZE 4096
 FsoGsmAtCommandQueue* fso_gsm_at_command_queue_new (FsoFrameworkTransport* transport, FsoFrameworkParser* parser);
 FsoGsmAtCommandQueue* fso_gsm_at_command_queue_construct (GType object_type, FsoFrameworkTransport* transport, FsoFrameworkParser* parser);
-gboolean fso_gsm_at_command_queue_haveCommand (FsoGsmAtCommandQueue* self);
-gboolean fso_gsm_at_command_queue_isExpectedPrefix (FsoGsmAtCommandQueue* self, const gchar* line);
-void fso_gsm_at_command_queue_onParserCompletedSolicited (FsoGsmAtCommandQueue* self, gchar** response, int response_length1);
-void fso_gsm_at_command_queue_onParserCompletedUnsolicited (FsoGsmAtCommandQueue* self, gchar** response, int response_length1);
 void fso_gsm_at_command_queue_onSolicitedResponse (FsoGsmAtCommandQueue* self, FsoGsmAtCommandHandler* bundle, gchar** response, int response_length1);
+void fso_gsm_at_command_queue_enqueue (FsoGsmAtCommandQueue* self, FsoGsmAtCommandQueueCommand* command, const gchar* request, gint retries);
 void fso_gsm_at_command_queue_enqueueAsync (FsoGsmAtCommandQueue* self, FsoGsmAtCommandQueueCommand* command, const gchar* request, gint retries, gint timeout, GAsyncReadyCallback _callback_, gpointer _user_data_);
 gchar** fso_gsm_at_command_queue_enqueueAsync_finish (FsoGsmAtCommandQueue* self, GAsyncResult* _res_, int* result_length1);
 FsoGsmAtCommandSequence* fso_gsm_at_command_sequence_new (gchar** commands, int commands_length1);
@@ -5960,6 +6147,7 @@ FsoGsmAtDeviceSetSpeakerVolume* fso_gsm_at_device_set_speaker_volume_construct (
 void fso_gsm_checkResponseOk (FsoGsmAtCommand* command, gchar** response, int response_length1, GError** error);
 FsoGsmConstantsAtResponse fso_gsm_checkResponseExpected (FsoGsmAtCommand* command, gchar** response, int response_length1, FsoGsmConstantsAtResponse* expected, int expected_length1, GError** error);
 void fso_gsm_checkResponseConnect (FsoGsmAtCommand* command, gchar** response, int response_length1, GError** error);
+void fso_gsm_checkTestResponseValid (FsoGsmAtCommand* command, gchar** response, int response_length1, GError** error);
 void fso_gsm_checkResponseValid (FsoGsmAtCommand* command, gchar** response, int response_length1, GError** error);
 void fso_gsm_checkMultiResponseValid (FsoGsmAtCommand* command, gchar** response, int response_length1, GError** error);
 void fso_gsm_gatherSimOperators (GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -6140,14 +6328,7 @@ FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endoflineSurelySolic
 FsoGsmStateBasedAtParserState fso_gsm_state_based_at_parser_endoflineSurelyUnsolicited (FsoGsmStateBasedAtParser* self);
 FsoGsmStateBasedAtParser* fso_gsm_state_based_at_parser_new (void);
 FsoGsmStateBasedAtParser* fso_gsm_state_based_at_parser_construct (GType object_type);
-gpointer fso_gsm_route_info_ref (gpointer instance);
-void fso_gsm_route_info_unref (gpointer instance);
-GParamSpec* fso_gsm_param_spec_route_info (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
-void fso_gsm_value_set_route_info (GValue* value, gpointer v_object);
-void fso_gsm_value_take_route_info (GValue* value, gpointer v_object);
-gpointer fso_gsm_value_get_route_info (const GValue* value);
-GType fso_gsm_route_info_get_type (void) G_GNUC_CONST;
-GType fso_gsm_ipdp_handler_get_type (void) G_GNUC_CONST;
+GType fso_gsm_pdp_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_at_pdp_handler_get_type (void) G_GNUC_CONST;
 #define FSO_GSM_AT_PDP_HANDLER_PPP_LOG_FILE "/var/log/ppp.log"
 #define FSO_GSM_AT_PDP_HANDLER_WAIT_FOR_PPP_COMING_UP 2
@@ -6163,17 +6344,10 @@ void fso_gsm_at_pdp_handler_shutdownTransport (FsoGsmAtPdpHandler* self);
 gchar* fso_gsm_at_pdp_handler_uintToIp4Address (FsoGsmAtPdpHandler* self, guint32 address);
 FsoGsmAtPdpHandler* fso_gsm_at_pdp_handler_new (void);
 FsoGsmAtPdpHandler* fso_gsm_at_pdp_handler_construct (GType object_type);
+GType fso_gsm_abstract_sms_handler_get_type (void) G_GNUC_CONST;
 GType fso_gsm_at_sms_handler_get_type (void) G_GNUC_CONST;
 FsoGsmAtSmsHandler* fso_gsm_at_sms_handler_new (void);
 FsoGsmAtSmsHandler* fso_gsm_at_sms_handler_construct (GType object_type);
-void fso_gsm_at_sms_handler_onModemStatusChanged (FsoGsmAtSmsHandler* self, FsoGsmModem* modem, FsoGsmModemStatus status);
-void fso_gsm_at_sms_handler_simIsReady (FsoGsmAtSmsHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-void fso_gsm_at_sms_handler_simIsReady_finish (FsoGsmAtSmsHandler* self, GAsyncResult* _res_);
-void fso_gsm_at_sms_handler_syncWithSim (FsoGsmAtSmsHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-void fso_gsm_at_sms_handler_syncWithSim_finish (FsoGsmAtSmsHandler* self, GAsyncResult* _res_);
-void _fso_gsm_at_sms_handler_handleIncomingSms (FsoGsmAtSmsHandler* self, const gchar* hexpdu, gint tpdulen, GAsyncReadyCallback _callback_, gpointer _user_data_);
-void _fso_gsm_at_sms_handler_handleIncomingSms_finish (FsoGsmAtSmsHandler* self, GAsyncResult* _res_);
-void _fso_gsm_at_sms_handler_handleIncomingSmsReport (FsoGsmAtSmsHandler* self, structsms* sms);
 GType fso_gsm_unsolicited_response_handler_get_type (void) G_GNUC_CONST;
 gboolean fso_gsm_unsolicited_response_handler_dispatch (FsoGsmUnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs, const gchar* pdu);
 GType fso_gsm_base_unsolicited_response_handler_get_type (void) G_GNUC_CONST;
@@ -6201,6 +6375,9 @@ void fso_gsm_at_unsolicited_response_handler_no_carrier (FsoGsmAtUnsolicitedResp
 void fso_gsm_at_unsolicited_response_handler_plusCDS (FsoGsmAtUnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs, const gchar* pdu);
 void fso_gsm_at_unsolicited_response_handler_plusCBM (FsoGsmAtUnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs, const gchar* pdu);
 void fso_gsm_at_unsolicited_response_handler_plusCMT (FsoGsmAtUnsolicitedResponseHandler* self, const gchar* prefix, const gchar* rhs, const gchar* pdu);
+GType fso_gsm_at_phonebook_handler_get_type (void) G_GNUC_CONST;
+FsoGsmAtPhonebookHandler* fso_gsm_at_phonebook_handler_new (void);
+FsoGsmAtPhonebookHandler* fso_gsm_at_phonebook_handler_construct (GType object_type);
 FsoGsmCall* fso_gsm_call_new_newFromDetail (FreeSmartphoneGSMCallDetail* detail);
 FsoGsmCall* fso_gsm_call_construct_newFromDetail (GType object_type, FreeSmartphoneGSMCallDetail* detail);
 FsoGsmCall* fso_gsm_call_new_newFromId (gint id);
@@ -6232,6 +6409,9 @@ void fso_gsm_call_handler_release (FsoGsmCallHandler* self, gint id, GAsyncReady
 void fso_gsm_call_handler_release_finish (FsoGsmCallHandler* self, GAsyncResult* _res_, GError** error);
 void fso_gsm_call_handler_releaseAll (FsoGsmCallHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
 void fso_gsm_call_handler_releaseAll_finish (FsoGsmCallHandler* self, GAsyncResult* _res_, GError** error);
+GType fso_gsm_null_call_handler_get_type (void) G_GNUC_CONST;
+FsoGsmNullCallHandler* fso_gsm_null_call_handler_new (void);
+FsoGsmNullCallHandler* fso_gsm_null_call_handler_construct (GType object_type);
 void fso_gsm_abstract_call_handler_handleIncomingCall (FsoGsmAbstractCallHandler* self, FsoGsmCallInfo* call_info);
 void fso_gsm_abstract_call_handler_handleConnectingCall (FsoGsmAbstractCallHandler* self, FsoGsmCallInfo* call_info);
 void fso_gsm_abstract_call_handler_handleEndingCall (FsoGsmAbstractCallHandler* self, FsoGsmCallInfo* call_info);
@@ -6583,7 +6763,11 @@ FsoGsmVoiceMailboxSetNumber* fso_gsm_voice_mailbox_set_number_construct (GType o
 void fso_gsm_triggerUpdateNetworkStatus (GAsyncReadyCallback _callback_, gpointer _user_data_);
 void fso_gsm_triggerUpdateNetworkStatus_finish (GAsyncResult* _res_);
 void fso_gsm_validatePhoneNumber (const gchar* number, GError** error);
-void fso_gsm_validateDtmfTones (const gchar* tones);
+void fso_gsm_validateDtmfTones (const gchar* tones, GError** error);
+void fso_gsm_findProviderNameForMccMnc (const gchar* mccmnc, GAsyncReadyCallback _callback_, gpointer _user_data_);
+gchar* fso_gsm_findProviderNameForMccMnc_finish (GAsyncResult* _res_);
+void fso_gsm_updateNetworkSignalStrength (gint strength, GAsyncReadyCallback _callback_, gpointer _user_data_);
+void fso_gsm_updateNetworkSignalStrength_finish (GAsyncResult* _res_);
 extern FsoGsmModem* fso_gsm_theModem;
 #define FSO_GSM_CONFIG_SECTION "fsogsm"
 extern GList* fso_gsm_theServiceDependencies;
@@ -6630,6 +6814,7 @@ void fso_gsm_modem_setFunctionality (FsoGsmModem* self, const gchar* level, gboo
 void fso_gsm_modem_setFunctionality_finish (FsoGsmModem* self, GAsyncResult* _res_, GError** error);
 void fso_gsm_modem_registerChannel (FsoGsmModem* self, const gchar* name, FsoGsmChannel* channel);
 void fso_gsm_modem_advanceToState (FsoGsmModem* self, FsoGsmModemStatus status, gboolean force);
+void fso_gsm_modem_advanceNetworkState (FsoGsmModem* self, FsoGsmModemNetworkStatus status);
 FsoGsmAtCommandSequence* fso_gsm_modem_atCommandSequence (FsoGsmModem* self, const gchar* channel, const gchar* purpose);
 gpointer fso_gsm_modem_createMediator (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, GError** error);
 gpointer fso_gsm_modem_createAtCommand (FsoGsmModem* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, const gchar* command);
@@ -6640,8 +6825,10 @@ void fso_gsm_modem_processAtCommandAsync (FsoGsmModem* self, FsoGsmAtCommand* co
 gchar** fso_gsm_modem_processAtCommandAsync_finish (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
 void fso_gsm_modem_processAtPduCommandAsync (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries, GAsyncReadyCallback _callback_, gpointer _user_data_);
 gchar** fso_gsm_modem_processAtPduCommandAsync_finish (FsoGsmModem* self, GAsyncResult* _res_, int* result_length1);
+void fso_gsm_modem_sendAtCommand (FsoGsmModem* self, FsoGsmAtCommand* command, const gchar* request, gint retries);
 FsoGsmChannel* fso_gsm_modem_channel (FsoGsmModem* self, const gchar* category);
 FsoGsmModemStatus fso_gsm_modem_status (FsoGsmModem* self);
+FsoGsmModemNetworkStatus fso_gsm_modem_network_status (FsoGsmModem* self);
 FreeSmartphoneGSMDeviceStatus fso_gsm_modem_externalStatus (FsoGsmModem* self);
 FsoGsmModemData* fso_gsm_modem_data (FsoGsmModem* self);
 void fso_gsm_modem_registerAtCommandSequence (FsoGsmModem* self, const gchar* channel, const gchar* purpose, FsoGsmAtCommandSequence* sequence);
@@ -6657,8 +6844,8 @@ FsoGsmPhonebookHandler* fso_gsm_modem_get_pbhandler (FsoGsmModem* self);
 void fso_gsm_modem_set_pbhandler (FsoGsmModem* self, FsoGsmPhonebookHandler* value);
 FsoGsmWatchDog* fso_gsm_modem_get_watchdog (FsoGsmModem* self);
 void fso_gsm_modem_set_watchdog (FsoGsmModem* self, FsoGsmWatchDog* value);
-FsoGsmPdpHandler* fso_gsm_modem_get_pdphandler (FsoGsmModem* self);
-void fso_gsm_modem_set_pdphandler (FsoGsmModem* self, FsoGsmPdpHandler* value);
+FsoGsmIPdpHandler* fso_gsm_modem_get_pdphandler (FsoGsmModem* self);
+void fso_gsm_modem_set_pdphandler (FsoGsmModem* self, FsoGsmIPdpHandler* value);
 FsoGsmModemData* fso_gsm_modem_data_new (void);
 FsoGsmModemData* fso_gsm_modem_data_construct (GType object_type);
 GType fso_gsm_abstract_modem_get_type (void) G_GNUC_CONST;
@@ -6692,10 +6879,15 @@ void fso_gsm_abstract_modem_processUnsolicitedResponse (FsoGsmAbstractModem* sel
 GType fso_gsm_abstract_modem_mediatorFactory (FsoGsmAbstractModem* self, GType mediator, GError** error);
 FsoGsmAtCommand* fso_gsm_abstract_modem_atCommandFactory (FsoGsmAbstractModem* self, const gchar* command, GError** error);
 FsoGsmAbstractModem* fso_gsm_abstract_modem_construct (GType object_type);
+FsoFrameworkTransportSpec* fso_gsm_abstract_modem_get_modem_transport_spec (FsoGsmAbstractModem* self);
+FsoFrameworkTransportSpec* fso_gsm_abstract_modem_get_data_transport_spec (FsoGsmAbstractModem* self);
 GType fso_gsm_abstract_gsm_modem_get_type (void) G_GNUC_CONST;
 FsoGsmAbstractGsmModem* fso_gsm_abstract_gsm_modem_construct (GType object_type);
 GType fso_gsm_abstract_cdma_modem_get_type (void) G_GNUC_CONST;
 FsoGsmAbstractCdmaModem* fso_gsm_abstract_cdma_modem_construct (GType object_type);
+GType fso_gsm_null_modem_get_type (void) G_GNUC_CONST;
+FsoGsmNullModem* fso_gsm_null_modem_new (void);
+FsoGsmNullModem* fso_gsm_null_modem_construct (GType object_type);
 #define FSO_GSM_PB_STORAGE_DEFAULT_STORAGE_DIR "/tmp/fsogsmd/pb"
 #define FSO_GSM_PB_STORAGE_DIRECTORY_PERMISSIONS ((((((((gint) S_IRUSR) | S_IWUSR) | S_IXUSR) | S_IRGRP) | S_IXGRP) | S_IROTH) | S_IXOTH)
 void fso_gsm_phonebook_storage_setStorageDir (const gchar* dirname);
@@ -6705,17 +6897,10 @@ void fso_gsm_phonebook_storage_clean (FsoGsmPhonebookStorage* self);
 void fso_gsm_phonebook_storage_writePhonebookEntry (FsoGsmPhonebookStorage* self, FreeSmartphoneGSMSIMEntry* entry, const gchar* filename);
 void fso_gsm_phonebook_storage_addPhonebook (FsoGsmPhonebookStorage* self, const gchar* cat, gint mindex, gint maxdex, FreeSmartphoneGSMSIMEntry* phonebook, int phonebook_length1);
 FreeSmartphoneGSMSIMEntry* fso_gsm_phonebook_storage_phonebook (FsoGsmPhonebookStorage* self, const gchar* cat, gint mindex, gint maxdex, int* result_length1);
+void fso_gsm_phonebook_handler_syncWithSim (FsoGsmPhonebookHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+void fso_gsm_phonebook_handler_syncWithSim_finish (FsoGsmPhonebookHandler* self, GAsyncResult* _res_);
 FsoGsmPhonebookStorage* fso_gsm_phonebook_handler_get_storage (FsoGsmPhonebookHandler* self);
 void fso_gsm_phonebook_handler_set_storage (FsoGsmPhonebookHandler* self, FsoGsmPhonebookStorage* value);
-GType fso_gsm_at_phonebook_handler_get_type (void) G_GNUC_CONST;
-FsoGsmAtPhonebookHandler* fso_gsm_at_phonebook_handler_new (void);
-FsoGsmAtPhonebookHandler* fso_gsm_at_phonebook_handler_construct (GType object_type);
-void fso_gsm_at_phonebook_handler_onModemStatusChanged (FsoGsmAtPhonebookHandler* self, FsoGsmModem* modem, FsoGsmModemStatus status);
-void fso_gsm_at_phonebook_handler_simIsReady (FsoGsmAtPhonebookHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-void fso_gsm_at_phonebook_handler_simIsReady_finish (FsoGsmAtPhonebookHandler* self, GAsyncResult* _res_);
-gpointer* fso_gsm_at_phonebook_handler_copy (FsoGsmAtPhonebookHandler* self, GType t_type, GBoxedCopyFunc t_dup_func, GDestroyNotify t_destroy_func, gpointer* array, int array_length1, int* result_length1);
-void fso_gsm_at_phonebook_handler_syncWithSim (FsoGsmAtPhonebookHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-void fso_gsm_at_phonebook_handler_syncWithSim_finish (FsoGsmAtPhonebookHandler* self, GAsyncResult* _res_);
 FsoGsmRouteInfo* fso_gsm_route_info_new (void);
 FsoGsmRouteInfo* fso_gsm_route_info_construct (GType object_type);
 void fso_gsm_ipdp_handler_activate (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -6727,6 +6912,15 @@ void fso_gsm_ipdp_handler_statusUpdate_finish (FsoGsmIPdpHandler* self, GAsyncRe
 void fso_gsm_ipdp_handler_connectedWithNewDefaultRoute (FsoGsmIPdpHandler* self, FsoGsmRouteInfo* route, GAsyncReadyCallback _callback_, gpointer _user_data_);
 void fso_gsm_ipdp_handler_connectedWithNewDefaultRoute_finish (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
 void fso_gsm_ipdp_handler_disconnected (FsoGsmIPdpHandler* self);
+void fso_gsm_ipdp_handler_syncStatus (FsoGsmIPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+void fso_gsm_ipdp_handler_syncStatus_finish (FsoGsmIPdpHandler* self, GAsyncResult* _res_);
+FreeSmartphoneGSMContextStatus fso_gsm_ipdp_handler_get_status (FsoGsmIPdpHandler* self);
+void fso_gsm_ipdp_handler_set_status (FsoGsmIPdpHandler* self, FreeSmartphoneGSMContextStatus value);
+GHashTable* fso_gsm_ipdp_handler_get_properties (FsoGsmIPdpHandler* self);
+void fso_gsm_ipdp_handler_set_properties (FsoGsmIPdpHandler* self, GHashTable* value);
+GType fso_gsm_null_pdp_handler_get_type (void) G_GNUC_CONST;
+FsoGsmNullPdpHandler* fso_gsm_null_pdp_handler_new (void);
+FsoGsmNullPdpHandler* fso_gsm_null_pdp_handler_construct (GType object_type);
 void fso_gsm_pdp_handler_sc_activate (FsoGsmPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
 void fso_gsm_pdp_handler_sc_activate_finish (FsoGsmPdpHandler* self, GAsyncResult* _res_, GError** error);
 void fso_gsm_pdp_handler_sc_deactivate (FsoGsmPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -6735,15 +6929,9 @@ void fso_gsm_pdp_handler_updateStatus (FsoGsmPdpHandler* self, FreeSmartphoneGSM
 void fso_gsm_pdp_handler_updateStatus_finish (FsoGsmPdpHandler* self, GAsyncResult* _res_);
 void fso_gsm_pdp_handler_statusUpdate (FsoGsmPdpHandler* self, const gchar* status, GHashTable* properties, GAsyncReadyCallback _callback_, gpointer _user_data_);
 void fso_gsm_pdp_handler_statusUpdate_finish (FsoGsmPdpHandler* self, GAsyncResult* _res_);
-void fso_gsm_pdp_handler_syncStatus (FsoGsmPdpHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
-void fso_gsm_pdp_handler_syncStatus_finish (FsoGsmPdpHandler* self, GAsyncResult* _res_);
 FsoGsmPdpHandler* fso_gsm_pdp_handler_construct (GType object_type);
-FreeSmartphoneGSMContextStatus fso_gsm_pdp_handler_get_status (FsoGsmPdpHandler* self);
-void fso_gsm_pdp_handler_set_status (FsoGsmPdpHandler* self, FreeSmartphoneGSMContextStatus value);
-GHashTable* fso_gsm_pdp_handler_get_properties (FsoGsmPdpHandler* self);
-void fso_gsm_pdp_handler_set_properties (FsoGsmPdpHandler* self, GHashTable* value);
-WrapSms* wrap_sms_new (structsms* message, gint index);
-WrapSms* wrap_sms_construct (GType object_type, structsms* message, gint index);
+WrapSms* wrap_sms_new (struct sms* message, gint index);
+WrapSms* wrap_sms_construct (GType object_type, struct sms* message, gint index);
 WrapHexPdu* wrap_hex_pdu_new (const gchar* hexpdu, guint tpdulen);
 WrapHexPdu* wrap_hex_pdu_construct (GType object_type, const gchar* hexpdu, guint tpdulen);
 void fso_gsm_sms_handler_handleIncomingSmsOnSim (FsoGsmSmsHandler* self, guint index, GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -6756,9 +6944,11 @@ guint16 fso_gsm_sms_handler_lastReferenceNumber (FsoGsmSmsHandler* self);
 guint16 fso_gsm_sms_handler_nextReferenceNumber (FsoGsmSmsHandler* self);
 GeeArrayList* fso_gsm_sms_handler_formatTextMessage (FsoGsmSmsHandler* self, const gchar* number, const gchar* contents, gboolean requestReport);
 void fso_gsm_sms_handler_storeTransactionIndizesForSentMessage (FsoGsmSmsHandler* self, GeeArrayList* hexpdus);
-FsoGsmSmsStorage* fso_gsm_sms_handler_get_storage (FsoGsmSmsHandler* self);
-void fso_gsm_sms_handler_set_storage (FsoGsmSmsHandler* self, FsoGsmSmsStorage* value);
-GType fso_gsm_abstract_sms_handler_get_type (void) G_GNUC_CONST;
+FsoGsmISmsStorage* fso_gsm_sms_handler_get_storage (FsoGsmSmsHandler* self);
+void fso_gsm_sms_handler_set_storage (FsoGsmSmsHandler* self, FsoGsmISmsStorage* value);
+GType fso_gsm_null_sms_handler_get_type (void) G_GNUC_CONST;
+FsoGsmNullSmsHandler* fso_gsm_null_sms_handler_new (void);
+FsoGsmNullSmsHandler* fso_gsm_null_sms_handler_construct (GType object_type);
 void fso_gsm_abstract_sms_handler_retrieveImsiFromSIM (FsoGsmAbstractSmsHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
 gchar* fso_gsm_abstract_sms_handler_retrieveImsiFromSIM_finish (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_);
 void fso_gsm_abstract_sms_handler_fillStorageWithMessageFromSIM (FsoGsmAbstractSmsHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
@@ -6767,27 +6957,46 @@ void fso_gsm_abstract_sms_handler_readSmsMessageFromSIM (FsoGsmAbstractSmsHandle
 gboolean fso_gsm_abstract_sms_handler_readSmsMessageFromSIM_finish (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_, gchar** hexpdu, gint* tpdulen);
 void fso_gsm_abstract_sms_handler_acknowledgeSmsMessage (FsoGsmAbstractSmsHandler* self, gint id, GAsyncReadyCallback _callback_, gpointer _user_data_);
 gboolean fso_gsm_abstract_sms_handler_acknowledgeSmsMessage_finish (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_);
+void fso_gsm_abstract_sms_handler_syncWithSim (FsoGsmAbstractSmsHandler* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
+void fso_gsm_abstract_sms_handler_syncWithSim_finish (FsoGsmAbstractSmsHandler* self, GAsyncResult* _res_);
 FsoGsmAbstractSmsHandler* fso_gsm_abstract_sms_handler_construct (GType object_type);
 #define FSO_GSM_SMS_STORAGE_DEFAULT_STORAGE_DIR "/tmp/fsogsmd/sms"
 #define FSO_GSM_SMS_STORAGE_SENT_UNCONFIRMED "sent-unconfirmed"
 #define FSO_GSM_SMS_STORAGE_DIRECTORY_PERMISSIONS ((((((((gint) S_IRUSR) | S_IWUSR) | S_IXUSR) | S_IRGRP) | S_IXGRP) | S_IROTH) | S_IXOTH)
+void fso_gsm_isms_storage_clean (FsoGsmISmsStorage* self);
+gint fso_gsm_isms_storage_addSms (FsoGsmISmsStorage* self, struct sms* message);
+GeeArrayList* fso_gsm_isms_storage_keys (FsoGsmISmsStorage* self);
+void fso_gsm_isms_storage_message (FsoGsmISmsStorage* self, const gchar* key, gint index, FreeSmartphoneGSMSIMMessage* result);
+FreeSmartphoneGSMSIMMessage* fso_gsm_isms_storage_messagebook (FsoGsmISmsStorage* self, int* result_length1);
+guint16 fso_gsm_isms_storage_lastReferenceNumber (FsoGsmISmsStorage* self);
+guint16 fso_gsm_isms_storage_increasingReferenceNumber (FsoGsmISmsStorage* self);
+void fso_gsm_isms_storage_storeTransactionIndizesForSentMessage (FsoGsmISmsStorage* self, GeeArrayList* hexpdus);
+gint fso_gsm_isms_storage_confirmReceivedMessage (FsoGsmISmsStorage* self, gint netreference);
+gpointer fso_gsm_sms_storage_factory_ref (gpointer instance);
+void fso_gsm_sms_storage_factory_unref (gpointer instance);
+GParamSpec* fso_gsm_param_spec_sms_storage_factory (const gchar* name, const gchar* nick, const gchar* blurb, GType object_type, GParamFlags flags);
+void fso_gsm_value_set_sms_storage_factory (GValue* value, gpointer v_object);
+void fso_gsm_value_take_sms_storage_factory (GValue* value, gpointer v_object);
+gpointer fso_gsm_value_get_sms_storage_factory (const GValue* value);
+GType fso_gsm_sms_storage_factory_get_type (void) G_GNUC_CONST;
+FsoGsmISmsStorage* fso_gsm_sms_storage_factory_create (const gchar* type, const gchar* imsi);
+FsoGsmSmsStorageFactory* fso_gsm_sms_storage_factory_new (void);
+FsoGsmSmsStorageFactory* fso_gsm_sms_storage_factory_construct (GType object_type);
+GType fso_gsm_null_sms_storage_get_type (void) G_GNUC_CONST;
+FsoGsmNullSmsStorage* fso_gsm_null_sms_storage_new (void);
+FsoGsmNullSmsStorage* fso_gsm_null_sms_storage_construct (GType object_type);
+GType fso_gsm_sms_storage_get_type (void) G_GNUC_CONST;
 #define FSO_GSM_SMS_STORAGE_SMS_ALREADY_SEEN (-1)
 #define FSO_GSM_SMS_STORAGE_SMS_MULTI_INCOMPLETE 0
 #define FSO_GSM_SMS_STORAGE_SMS_SINGLE_COMPLETE 1
 void fso_gsm_sms_storage_setStorageDir (const gchar* dirname);
 FsoGsmSmsStorage* fso_gsm_sms_storage_new (const gchar* imsi);
 FsoGsmSmsStorage* fso_gsm_sms_storage_construct (GType object_type, const gchar* imsi);
-void fso_gsm_sms_storage_clean (FsoGsmSmsStorage* self);
-gint fso_gsm_sms_storage_addSms (FsoGsmSmsStorage* self, structsms* message);
-GeeArrayList* fso_gsm_sms_storage_keys (FsoGsmSmsStorage* self);
-void fso_gsm_sms_storage_message (FsoGsmSmsStorage* self, const gchar* key, gint index, FreeSmartphoneGSMSIMMessage* result);
-FreeSmartphoneGSMSIMMessage* fso_gsm_sms_storage_messagebook (FsoGsmSmsStorage* self, int* result_length1);
-guint16 fso_gsm_sms_storage_lastReferenceNumber (FsoGsmSmsStorage* self);
-guint16 fso_gsm_sms_storage_increasingReferenceNumber (FsoGsmSmsStorage* self);
-void fso_gsm_sms_storage_storeTransactionIndizesForSentMessage (FsoGsmSmsStorage* self, GeeArrayList* hexpdus);
-gint fso_gsm_sms_storage_confirmReceivedMessage (FsoGsmSmsStorage* self, gint netreference);
 void fso_gsm_watch_dog_check (FsoGsmWatchDog* self);
 void fso_gsm_watch_dog_resetUnlockMarker (FsoGsmWatchDog* self);
+GType fso_gsm_null_watch_dog_get_type (void) G_GNUC_CONST;
+FsoGsmNullWatchDog* fso_gsm_null_watch_dog_new (void);
+FsoGsmNullWatchDog* fso_gsm_null_watch_dog_construct (GType object_type);
 GType fso_gsm_generic_watch_dog_get_type (void) G_GNUC_CONST;
 FsoGsmGenericWatchDog* fso_gsm_generic_watch_dog_new (void);
 FsoGsmGenericWatchDog* fso_gsm_generic_watch_dog_construct (GType object_type);

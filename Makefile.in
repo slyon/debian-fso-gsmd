@@ -40,6 +40,11 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(top_srcdir)/Makefile.decl $(top_srcdir)/configure AUTHORS \
 	COPYING ChangeLog INSTALL NEWS compile config.guess config.sub \
 	depcomp install-sh ltmain.sh missing
+@WANT_DATAFILES_TRUE@am__append_1 = \
+@WANT_DATAFILES_TRUE@	conf \
+@WANT_DATAFILES_TRUE@	data \
+@WANT_DATAFILES_TRUE@	$(NULL)
+
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -73,7 +78,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir dist dist-all distcheck
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
+DIST_SUBDIRS = src tests vapi conf data
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -125,8 +130,6 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CONNMAN_CFLAGS = @CONNMAN_CFLAGS@
-CONNMAN_LIBS = @CONNMAN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -258,12 +261,9 @@ GTESTER_REPORT = gtester-report
 EXTRA_DIST = 
 TEST_PROGS = 
 NULL = 
-SUBDIRS = \
-	conf \
-	src \
-	data \
-	tests \
-	vapi \
+SUBDIRS = src tests vapi $(NULL) $(am__append_1)
+DISTCHECK_CONFIGURE_FLAGS = \
+	--disable-datafiles \
 	$(NULL)
 
 MAINTAINERCLEANFILES = \

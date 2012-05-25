@@ -84,26 +84,24 @@ static gchar* singleline_modem_real_repr (FsoFrameworkAbstractObject* base) {
 
 static void singleline_modem_real_createChannels (FsoGsmAbstractModem* base) {
 	SinglelineModem * self;
-	const gchar* _tmp0_;
-	const gchar* _tmp1_;
-	gint _tmp2_;
-	FsoFrameworkTransport* _tmp3_ = NULL;
+	FsoFrameworkTransportSpec* _tmp0_;
+	FsoFrameworkTransportSpec* _tmp1_;
+	FsoFrameworkTransport* _tmp2_ = NULL;
 	FsoFrameworkTransport* transport;
-	FsoGsmStateBasedAtParser* _tmp4_;
+	FsoGsmStateBasedAtParser* _tmp3_;
 	FsoGsmStateBasedAtParser* parser;
+	FsoGsmAtChannel* _tmp4_;
 	FsoGsmAtChannel* _tmp5_;
-	FsoGsmAtChannel* _tmp6_;
 	self = (SinglelineModem*) base;
-	_tmp0_ = ((FsoGsmAbstractModem*) self)->modem_transport;
-	_tmp1_ = ((FsoGsmAbstractModem*) self)->modem_port;
-	_tmp2_ = ((FsoGsmAbstractModem*) self)->modem_speed;
-	_tmp3_ = fso_framework_transport_create (_tmp0_, _tmp1_, (guint) _tmp2_, TRUE, TRUE);
-	transport = _tmp3_;
-	_tmp4_ = fso_gsm_state_based_at_parser_new ();
-	parser = _tmp4_;
-	_tmp5_ = fso_gsm_at_channel_new (SINGLELINE_MODEM_CHANNEL_NAME, transport, (FsoFrameworkParser*) parser);
-	_tmp6_ = _tmp5_;
-	_g_object_unref0 (_tmp6_);
+	_tmp0_ = fso_gsm_abstract_modem_get_modem_transport_spec ((FsoGsmAbstractModem*) self);
+	_tmp1_ = _tmp0_;
+	_tmp2_ = fso_framework_transport_spec_create (_tmp1_);
+	transport = _tmp2_;
+	_tmp3_ = fso_gsm_state_based_at_parser_new ();
+	parser = _tmp3_;
+	_tmp4_ = fso_gsm_at_channel_new (SINGLELINE_MODEM_CHANNEL_NAME, transport, (FsoFrameworkParser*) parser);
+	_tmp5_ = _tmp4_;
+	_g_object_unref0 (_tmp5_);
 	_g_object_unref0 (parser);
 	_g_object_unref0 (transport);
 }

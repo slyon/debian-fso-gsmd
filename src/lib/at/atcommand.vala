@@ -129,8 +129,7 @@ public abstract class FsoGsm.AbstractAtCommand : GLib.Object, FsoGsm.AtCommandQu
 
         if ( !match || mi == null )
         {
-            theModem.logger.debug( @"Parsing error: '$response' does not match '$(re.get_pattern())'" );
-            throw new AtCommandError.UNABLE_TO_PARSE( "" );
+            throw new AtCommandError.UNABLE_TO_PARSE( @"Parsing error: '$response' does not match '$(re.get_pattern())'" );
         }
     }
 
@@ -141,8 +140,7 @@ public abstract class FsoGsm.AbstractAtCommand : GLib.Object, FsoGsm.AtCommandQu
 
         if ( !match || mi == null )
         {
-            theModem.logger.debug( @"Parsing error: '$response' does not match '$(tere.get_pattern())'" );
-            throw new AtCommandError.UNABLE_TO_PARSE( "" );
+            throw new AtCommandError.UNABLE_TO_PARSE( @"Parsing error: '$response' does not match '$(tere.get_pattern())'" );
         }
     }
 
@@ -181,19 +179,19 @@ public abstract class FsoGsm.AbstractAtCommand : GLib.Object, FsoGsm.AtCommandQu
         if ( statusline.has_prefix( "+CMS" ) )
         {
             errorcode += (int)Constants.AtResponse.CMS_ERROR_START;
-            errorcode += (int)statusline.split( ":" )[1].to_int();
+            errorcode += int.parse( statusline.split( ":" )[1] );
             return (Constants.AtResponse)errorcode;
         }
         else if ( statusline.has_prefix( "+CME" ) )
         {
             errorcode += (int)Constants.AtResponse.CME_ERROR_START;
-            errorcode += (int)statusline.split( ":" )[1].to_int();
+            errorcode += int.parse( statusline.split( ":" )[1] );
             return (Constants.AtResponse)errorcode;
         }
         else if ( statusline.has_prefix( "+EXT" ) )
         {
             errorcode += (int)Constants.AtResponse.EXT_ERROR_START;
-            errorcode += (int)statusline.split( ":" )[1].to_int();
+            errorcode += int.parse( statusline.split( ":" )[1] );
             return (Constants.AtResponse)errorcode;
         }
         return Constants.AtResponse.ERROR;
@@ -350,7 +348,7 @@ public abstract class FsoGsm.AbstractAtCommand : GLib.Object, FsoGsm.AtCommandQu
         var res = mi.fetch_named( name );
         if ( res == null )
             return -1; // indicates parameter not present
-        return res.to_int();
+        return int.parse(res);
     }
 
     public virtual uint get_timeout()

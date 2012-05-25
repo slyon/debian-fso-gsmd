@@ -657,21 +657,13 @@ void plugin_init (void) {
 		_tmp0_ = g_initable_new (FREE_SMARTPHONE_GSM_TYPE_PDP_PROXY, NULL, &_inner_error_, "g-flags", 0, "g-name", FSO_FRAMEWORK_GSM_ServiceDBusName, "g-bus-type", G_BUS_TYPE_SYSTEM, "g-object-path", FSO_FRAMEWORK_GSM_DeviceServicePath, "g-interface-name", "org.freesmartphone.GSM.PDP", NULL);
 		_tmp1_ = (FreeSmartphoneGSMPDP*) _tmp0_;
 		if (_inner_error_ != NULL) {
-			if (_inner_error_->domain == G_DBUS_ERROR) {
-				goto __catch1_g_dbus_error;
-			}
-			if (_inner_error_->domain == G_IO_ERROR) {
-				goto __catch1_g_io_error;
-			}
-			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
-			g_clear_error (&_inner_error_);
-			return;
+			goto __catch1_g_error;
 		}
 		_g_object_unref0 (fsogsmd_pdp);
 		fsogsmd_pdp = _tmp1_;
 	}
 	goto __finally1;
-	__catch1_g_dbus_error:
+	__catch1_g_error:
 	{
 		GError* e = NULL;
 		GError* _tmp2_;
@@ -684,30 +676,10 @@ void plugin_init (void) {
 		_tmp2_ = e;
 		_tmp3_ = _tmp2_->message;
 		_tmp4_ = string_to_string (_tmp3_);
-		_tmp5_ = g_strconcat ("DBusError while initializing plugin: ", _tmp4_, NULL);
+		_tmp5_ = g_strconcat ("IOError while initializing plugin: ", _tmp4_, NULL);
 		_tmp6_ = _tmp5_;
 		error (_tmp6_, NULL);
 		_g_free0 (_tmp6_);
-		_g_error_free0 (e);
-	}
-	goto __finally1;
-	__catch1_g_io_error:
-	{
-		GError* e = NULL;
-		GError* _tmp7_;
-		const gchar* _tmp8_;
-		const gchar* _tmp9_ = NULL;
-		gchar* _tmp10_ = NULL;
-		gchar* _tmp11_;
-		e = _inner_error_;
-		_inner_error_ = NULL;
-		_tmp7_ = e;
-		_tmp8_ = _tmp7_->message;
-		_tmp9_ = string_to_string (_tmp8_);
-		_tmp10_ = g_strconcat ("IOError while initializing plugin: ", _tmp9_, NULL);
-		_tmp11_ = _tmp10_;
-		error (_tmp11_, NULL);
-		_g_free0 (_tmp11_);
 		_g_error_free0 (e);
 	}
 	__finally1:

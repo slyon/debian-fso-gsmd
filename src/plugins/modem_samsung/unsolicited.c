@@ -500,8 +500,8 @@ static void samsung_unsolicited_response_handler_handle_power_state (SamsungUnso
 
 static void samsung_unsolicited_response_handler_handle_gprs_ip_configuration (SamsungUnsolicitedResponseHandler* self, struct ipc_message_info* response) {
 	FsoGsmModem* _tmp0_;
-	FsoGsmPdpHandler* _tmp1_;
-	FsoGsmPdpHandler* _tmp2_;
+	FsoGsmIPdpHandler* _tmp1_;
+	FsoGsmIPdpHandler* _tmp2_;
 	SamsungPdpHandler* _tmp3_;
 	SamsungPdpHandler* pdphandler;
 	SamsungPdpHandler* _tmp4_;

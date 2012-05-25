@@ -3,11 +3,20 @@ include $(top_srcdir)/Makefile.decl
 NULL =
 
 SUBDIRS = \
-	conf \
 	src \
-	data \
 	tests \
 	vapi \
+	$(NULL)
+
+if WANT_DATAFILES
+SUBDIRS += \
+	conf \
+	data \
+	$(NULL)
+endif
+
+DISTCHECK_CONFIGURE_FLAGS = \
+	--disable-datafiles \
 	$(NULL)
 
 MAINTAINERCLEANFILES = \

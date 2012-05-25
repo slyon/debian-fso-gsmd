@@ -936,7 +936,6 @@ public class PlusCOPS : AbstractAtCommand
     public int mode;
     public string oper;
     public string act;
-    public int status;
 
     public FreeSmartphone.GSM.NetworkProvider[] providers;
 
@@ -992,8 +991,8 @@ public class PlusCOPS : AbstractAtCommand
             {
                 var p = FreeSmartphone.GSM.NetworkProvider(
                     Constants.instance().networkProviderStatusToString( to_int( "status" ) ),
-                    to_string( "longname" ),
                     to_string( "shortname" ),
+                    to_string( "longname" ),
                     to_string( "mccmnc" ),
                     Constants.instance().networkProviderActToString( to_int( "act" ) ) );
                 providers += p;
@@ -1286,6 +1285,13 @@ public class PlusCREG : AbstractAtCommand
     public string lac;
     public string cid;
 
+    public enum Mode
+    {
+        DISABLE = 0,
+        ENABLE_WITH_NETORK_REGISTRATION = 1,
+        ENABLE_WITH_NETORK_REGISTRATION_AND_LOCATION = 2,
+    }
+
     public PlusCREG()
     {
         try
@@ -1313,14 +1319,9 @@ public class PlusCREG : AbstractAtCommand
         return "+CREG?";
     }
 
-    public string issue( int mode )
+    public string issue( Mode mode )
     {
-        return @"+CREG=$mode";
-    }
-
-    public string queryFull( int restoreMode )
-    {
-        return @"+CREG=2;+CREG?;+CREG=$restoreMode";
+        return "+CREG=%i".printf( (int) mode );
     }
 }
 
@@ -1550,22 +1551,12 @@ public class PlusGCAP : SimpleAtCommand<string>
 
 public class PlusVTS : AbstractAtCommand
 {
-    public const string DTMF_VALID_CHARS = "0123456789ABC+#";
-
     public string issue( string tones )
     {
-        /*
-        var tone = "";
-        for ( int i = 0; i < tone.length; ++i )
-        {
-            var c = tones[i];
-            if ( c in DTMF_VALID_CHARS )
-            {
-                tone += c;
-            }
-        }
-        */
-        return @"+VTS=$tones";
+        var command = @"+VTS=$(tones[0])";
+        for ( var n = 1; n < tones.length; n++ )
+            command += @";+VTS=$(tones[n])";
+        return command;
     }
 }
 

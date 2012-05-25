@@ -47,19 +47,6 @@ typedef struct _MsmSmsRetrieveTextMessagesPrivate MsmSmsRetrieveTextMessagesPriv
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
 typedef struct _MsmSmsRetrieveTextMessagesRunData MsmSmsRetrieveTextMessagesRunData;
 
-#define TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE (msm_sms_get_size_for_text_message_get_type ())
-#define MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE, MsmSmsGetSizeForTextMessage))
-#define MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE, MsmSmsGetSizeForTextMessageClass))
-#define IS_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE))
-#define IS_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE))
-#define MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE, MsmSmsGetSizeForTextMessageClass))
-
-typedef struct _MsmSmsGetSizeForTextMessage MsmSmsGetSizeForTextMessage;
-typedef struct _MsmSmsGetSizeForTextMessageClass MsmSmsGetSizeForTextMessageClass;
-typedef struct _MsmSmsGetSizeForTextMessagePrivate MsmSmsGetSizeForTextMessagePrivate;
-#define _g_free0(var) (var = (g_free (var), NULL))
-typedef struct _MsmSmsGetSizeForTextMessageRunData MsmSmsGetSizeForTextMessageRunData;
-
 #define TYPE_MSM_SMS_SEND_TEXT_MESSAGE (msm_sms_send_text_message_get_type ())
 #define MSM_SMS_SEND_TEXT_MESSAGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_MSM_SMS_SEND_TEXT_MESSAGE, MsmSmsSendTextMessage))
 #define MSM_SMS_SEND_TEXT_MESSAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_MSM_SMS_SEND_TEXT_MESSAGE, MsmSmsSendTextMessageClass))
@@ -70,6 +57,7 @@ typedef struct _MsmSmsGetSizeForTextMessageRunData MsmSmsGetSizeForTextMessageRu
 typedef struct _MsmSmsSendTextMessage MsmSmsSendTextMessage;
 typedef struct _MsmSmsSendTextMessageClass MsmSmsSendTextMessageClass;
 typedef struct _MsmSmsSendTextMessagePrivate MsmSmsSendTextMessagePrivate;
+#define _g_free0(var) (var = (g_free (var), NULL))
 
 #define TYPE_MSM_CHANNEL (msm_channel_get_type ())
 #define MSM_CHANNEL(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_MSM_CHANNEL, MsmChannel))
@@ -110,26 +98,6 @@ struct _MsmSmsRetrieveTextMessagesRunData {
 	GAsyncResult* _res_;
 	GSimpleAsyncResult* _async_result;
 	MsmSmsRetrieveTextMessages* self;
-	GError* _tmp0_;
-	GError * _inner_error_;
-};
-
-struct _MsmSmsGetSizeForTextMessage {
-	FsoGsmSmsGetSizeForTextMessage parent_instance;
-	MsmSmsGetSizeForTextMessagePrivate * priv;
-};
-
-struct _MsmSmsGetSizeForTextMessageClass {
-	FsoGsmSmsGetSizeForTextMessageClass parent_class;
-};
-
-struct _MsmSmsGetSizeForTextMessageRunData {
-	int _state_;
-	GObject* _source_object_;
-	GAsyncResult* _res_;
-	GSimpleAsyncResult* _async_result;
-	MsmSmsGetSizeForTextMessage* self;
-	gchar* contents;
 	GError* _tmp0_;
 	GError * _inner_error_;
 };
@@ -255,8 +223,6 @@ struct _MsmSmsSendTextMessageRunData {
 
 static gpointer msm_sms_retrieve_text_messages_parent_class = NULL;
 static GType msm_sms_retrieve_text_messages_type_id = 0;
-static gpointer msm_sms_get_size_for_text_message_parent_class = NULL;
-static GType msm_sms_get_size_for_text_message_type_id = 0;
 static gpointer msm_sms_send_text_message_parent_class = NULL;
 static GType msm_sms_send_text_message_type_id = 0;
 
@@ -270,16 +236,6 @@ static void msm_sms_retrieve_text_messages_real_run (FsoGsmSmsRetrieveTextMessag
 static gboolean msm_sms_retrieve_text_messages_real_run_co (MsmSmsRetrieveTextMessagesRunData* _data_);
 MsmSmsRetrieveTextMessages* msm_sms_retrieve_text_messages_new (void);
 MsmSmsRetrieveTextMessages* msm_sms_retrieve_text_messages_construct (GType object_type);
-GType msm_sms_get_size_for_text_message_get_type (void) G_GNUC_CONST;
-GType msm_sms_get_size_for_text_message_register_type (GTypeModule * module);
-enum  {
-	MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_DUMMY_PROPERTY
-};
-static void msm_sms_get_size_for_text_message_real_run_data_free (gpointer _data);
-static void msm_sms_get_size_for_text_message_real_run (FsoGsmSmsGetSizeForTextMessage* base, const gchar* contents, GAsyncReadyCallback _callback_, gpointer _user_data_);
-static gboolean msm_sms_get_size_for_text_message_real_run_co (MsmSmsGetSizeForTextMessageRunData* _data_);
-MsmSmsGetSizeForTextMessage* msm_sms_get_size_for_text_message_new (void);
-MsmSmsGetSizeForTextMessage* msm_sms_get_size_for_text_message_construct (GType object_type);
 GType msm_sms_send_text_message_get_type (void) G_GNUC_CONST;
 GType msm_sms_send_text_message_register_type (GTypeModule * module);
 enum  {
@@ -404,113 +360,6 @@ GType msm_sms_retrieve_text_messages_register_type (GTypeModule * module) {
 	static const GTypeInfo g_define_type_info = { sizeof (MsmSmsRetrieveTextMessagesClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) msm_sms_retrieve_text_messages_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (MsmSmsRetrieveTextMessages), 0, (GInstanceInitFunc) msm_sms_retrieve_text_messages_instance_init, NULL };
 	msm_sms_retrieve_text_messages_type_id = g_type_module_register_type (module, FSO_GSM_TYPE_SMS_RETRIEVE_TEXT_MESSAGES, "MsmSmsRetrieveTextMessages", &g_define_type_info, 0);
 	return msm_sms_retrieve_text_messages_type_id;
-}
-
-
-static void msm_sms_get_size_for_text_message_real_run_data_free (gpointer _data) {
-	MsmSmsGetSizeForTextMessageRunData* _data_;
-	_data_ = _data;
-	_g_free0 (_data_->contents);
-	_g_object_unref0 (_data_->self);
-	g_slice_free (MsmSmsGetSizeForTextMessageRunData, _data_);
-}
-
-
-static void msm_sms_get_size_for_text_message_real_run (FsoGsmSmsGetSizeForTextMessage* base, const gchar* contents, GAsyncReadyCallback _callback_, gpointer _user_data_) {
-	MsmSmsGetSizeForTextMessage * self;
-	MsmSmsGetSizeForTextMessageRunData* _data_;
-	MsmSmsGetSizeForTextMessage* _tmp0_;
-	const gchar* _tmp1_;
-	gchar* _tmp2_;
-	self = (MsmSmsGetSizeForTextMessage*) base;
-	_data_ = g_slice_new0 (MsmSmsGetSizeForTextMessageRunData);
-	_data_->_async_result = g_simple_async_result_new (G_OBJECT (self), _callback_, _user_data_, msm_sms_get_size_for_text_message_real_run);
-	g_simple_async_result_set_op_res_gpointer (_data_->_async_result, _data_, msm_sms_get_size_for_text_message_real_run_data_free);
-	_tmp0_ = _g_object_ref0 (self);
-	_data_->self = _tmp0_;
-	_tmp1_ = contents;
-	_tmp2_ = g_strdup (_tmp1_);
-	_data_->contents = _tmp2_;
-	msm_sms_get_size_for_text_message_real_run_co (_data_);
-}
-
-
-static void msm_sms_get_size_for_text_message_real_run_finish (FsoGsmSmsGetSizeForTextMessage* base, GAsyncResult* _res_, GError** error) {
-	MsmSmsGetSizeForTextMessageRunData* _data_;
-	if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (_res_), error)) {
-		return;
-	}
-	_data_ = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (_res_));
-}
-
-
-static gboolean msm_sms_get_size_for_text_message_real_run_co (MsmSmsGetSizeForTextMessageRunData* _data_) {
-	switch (_data_->_state_) {
-		case 0:
-		goto _state_0;
-		default:
-		g_assert_not_reached ();
-	}
-	_state_0:
-	_data_->_tmp0_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_UNSUPPORTED, "Not yet implemented!");
-	_data_->_inner_error_ = _data_->_tmp0_;
-	if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
-		g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
-		g_error_free (_data_->_inner_error_);
-		if (_data_->_state_ == 0) {
-			g_simple_async_result_complete_in_idle (_data_->_async_result);
-		} else {
-			g_simple_async_result_complete (_data_->_async_result);
-		}
-		g_object_unref (_data_->_async_result);
-		return FALSE;
-	} else {
-		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
-		g_clear_error (&_data_->_inner_error_);
-		return FALSE;
-	}
-	if (_data_->_state_ == 0) {
-		g_simple_async_result_complete_in_idle (_data_->_async_result);
-	} else {
-		g_simple_async_result_complete (_data_->_async_result);
-	}
-	g_object_unref (_data_->_async_result);
-	return FALSE;
-}
-
-
-MsmSmsGetSizeForTextMessage* msm_sms_get_size_for_text_message_construct (GType object_type) {
-	MsmSmsGetSizeForTextMessage * self = NULL;
-	self = (MsmSmsGetSizeForTextMessage*) fso_gsm_sms_get_size_for_text_message_construct (object_type);
-	return self;
-}
-
-
-MsmSmsGetSizeForTextMessage* msm_sms_get_size_for_text_message_new (void) {
-	return msm_sms_get_size_for_text_message_construct (TYPE_MSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE);
-}
-
-
-static void msm_sms_get_size_for_text_message_class_init (MsmSmsGetSizeForTextMessageClass * klass) {
-	msm_sms_get_size_for_text_message_parent_class = g_type_class_peek_parent (klass);
-	FSO_GSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS (klass)->run = msm_sms_get_size_for_text_message_real_run;
-	FSO_GSM_SMS_GET_SIZE_FOR_TEXT_MESSAGE_CLASS (klass)->run_finish = msm_sms_get_size_for_text_message_real_run_finish;
-}
-
-
-static void msm_sms_get_size_for_text_message_instance_init (MsmSmsGetSizeForTextMessage * self) {
-}
-
-
-GType msm_sms_get_size_for_text_message_get_type (void) {
-	return msm_sms_get_size_for_text_message_type_id;
-}
-
-
-GType msm_sms_get_size_for_text_message_register_type (GTypeModule * module) {
-	static const GTypeInfo g_define_type_info = { sizeof (MsmSmsGetSizeForTextMessageClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) msm_sms_get_size_for_text_message_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (MsmSmsGetSizeForTextMessage), 0, (GInstanceInitFunc) msm_sms_get_size_for_text_message_instance_init, NULL };
-	msm_sms_get_size_for_text_message_type_id = g_type_module_register_type (module, FSO_GSM_TYPE_SMS_GET_SIZE_FOR_TEXT_MESSAGE, "MsmSmsGetSizeForTextMessage", &g_define_type_info, 0);
-	return msm_sms_get_size_for_text_message_type_id;
 }
 
 

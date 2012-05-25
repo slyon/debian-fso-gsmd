@@ -17,7 +17,6 @@
 
 # GLIB - Library of useful C routines
 
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -38,8 +37,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/Makefile.decl
-noinst_PROGRAMS = $(am__EXEEXT_1)
+	$(top_srcdir)/Makefile.decl callhandler.c channel.c \
+	commandhandler.c mediators_call.c mediators_device.c \
+	mediators_network.c mediators_pdp.c mediators_sim.c \
+	mediators_sms.c modem_samsung_la_vala.stamp modemstate.c \
+	pdphandler.c plugin.c rfs.c samsungtransport.c smshandler.c \
+	soundhandler.c unsolicited.c utils.c
 @WANT_DEBUG_TRUE@am__append_1 = -g -D DEBUG
 @WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
 subdir = src/plugins/modem_samsung
@@ -81,12 +84,11 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(modlibexecdir)"
 LTLIBRARIES = $(modlibexec_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+modem_samsung_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/lib/libfsogsm.la
-modem_samsung_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
+	$(am__DEPENDENCIES_1) $(top_builddir)/src/lib/libfsogsm.la
 am__objects_1 =
-am__objects_2 = modem_samsung_la-samsungtransport.lo \
+am_modem_samsung_la_OBJECTS = modem_samsung_la-samsungtransport.lo \
 	modem_samsung_la-plugin.lo modem_samsung_la-commandhandler.lo \
 	modem_samsung_la-channel.lo modem_samsung_la-rfs.lo \
 	modem_samsung_la-unsolicited.lo modem_samsung_la-modemstate.lo \
@@ -101,17 +103,14 @@ am__objects_2 = modem_samsung_la-samsungtransport.lo \
 	modem_samsung_la-soundhandler.lo \
 	modem_samsung_la-smshandler.lo modem_samsung_la-utils.lo \
 	$(am__objects_1)
-am_modem_samsung_la_OBJECTS = $(am__objects_2)
 modem_samsung_la_OBJECTS = $(am_modem_samsung_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 modem_samsung_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
-	$(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
-	$(CCLD) $(AM_CFLAGS) $(CFLAGS) $(modem_samsung_la_LDFLAGS) \
-	$(LDFLAGS) -o $@
-am__EXEEXT_1 =
-PROGRAMS = $(noinst_PROGRAMS)
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(modem_samsung_la_CFLAGS) $(CFLAGS) \
+	$(modem_samsung_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -135,6 +134,13 @@ LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD  " $@;
+VALACOMPILE = $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS)
+LTVALACOMPILE = $(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(VALAC) $(AM_VALAFLAGS) \
+	$(VALAFLAGS)
+AM_V_VALAC = $(am__v_VALAC_@AM_V@)
+am__v_VALAC_ = $(am__v_VALAC_@AM_DEFAULT_V@)
+am__v_VALAC_0 = @echo "  VALAC " $@;
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN   " $@;
@@ -154,8 +160,6 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CONNMAN_CFLAGS = @CONNMAN_CFLAGS@
-CONNMAN_LIBS = @CONNMAN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -284,36 +288,15 @@ GTESTER = gtester
 GTESTER_REPORT = gtester-report
 
 # initialize variables for unconditional += appending
-EXTRA_DIST = $(modem_samsung_la_VALASOURCES) \
-	$(modem_samsung_la_SOURCES) include/samsung_modem_ctl.h \
-	$(NULL)
+EXTRA_DIST = 
 TEST_PROGS = 
 NULL = 
-AM_CFLAGS = -I$(top_srcdir)/src/lib -I$(top_srcdir)/src/3rdparty \
-	-I$(top_srcdir)/src/plugins/modem_samsung/include \
-	$(FSO_CFLAGS) $(GLIB_CFLAGS) $(GEE_CFLAGS) $(SAMSUNG_CFLAGS) \
-	-DG_LOG_DOMAIN=\"fsogsm.modem_samsung\" $(NULL) \
+AM_CFLAGS = -DG_LOG_DOMAIN=\"fsogsm.modem_samsung\" $(NULL) \
 	$(am__append_2)
-progs_ldadd = \
-	$(FSO_LIBS) \
-	$(GLIB_LIBS) \
-	$(GEE_LIBS) \
-	$(SAMSUNG_LIBS) \
-	$(top_builddir)/src/lib/libfsogsm.la
-
-VALAC_ARGS = --basedir $(top_srcdir) --vapidir $(top_srcdir)/src/lib \
-	--vapidir $(top_srcdir)/src/plugins/modem_samsung --pkg posix \
-	--pkg glib-2.0 --pkg gio-2.0 --pkg gee-1.0 --pkg fso-glib-1.0 \
-	--pkg fsoframework-2.0 --pkg fsotransport-2.0 --pkg \
-	fsosystem-2.0 --pkg fsogsm-2.0 --pkg fsodata-2.0 --pkg \
-	samsung-ipc-1.0 --pkg samsung-modemctl $(NULL) $(am__append_1)
-
-#
-# plugin
-#
+AM_VALAFLAGS = $(am__append_1)
 modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
 modlibexec_LTLIBRARIES = modem_samsung.la
-modem_samsung_la_VALASOURCES = \
+modem_samsung_la_SOURCES = \
  samsungtransport.vala \
  plugin.vala \
  commandhandler.vala \
@@ -334,21 +317,44 @@ modem_samsung_la_VALASOURCES = \
  utils.vala \
  $(NULL)
 
-modem_samsung_la_SOURCES = $(modem_samsung_la_VALASOURCES:.vala=.c)
-modem_samsung_la_LIBADD = $(progs_ldadd)
+modem_samsung_la_VALAFLAGS = \
+	--basedir $(top_srcdir) \
+	--vapidir $(top_srcdir)/src/lib \
+	--vapidir $(top_srcdir)/src/plugins/modem_samsung \
+	--pkg posix \
+	--pkg glib-2.0 \
+	--pkg gio-2.0 \
+	--pkg gee-1.0 \
+	--pkg fso-glib-1.0 \
+	--pkg fsoframework-2.0 \
+	--pkg fsotransport-2.0 \
+	--pkg fsosystem-2.0 \
+	--pkg fsogsm-2.0 \
+	--pkg samsung-ipc-1.0 \
+	--pkg samsung-modemctl \
+	$(NULL)
+
+modem_samsung_la_CFLAGS = \
+	-I$(top_srcdir)/src/lib \
+	-I$(top_srcdir)/src/3rdparty \
+	-I$(top_srcdir)/src/plugins/modem_samsung/include \
+	$(FSO_CFLAGS) \
+	$(GLIB_CFLAGS) \
+	$(GEE_CFLAGS) \
+	$(SAMSUNG_CFLAGS) \
+	$(NULL)
+
+modem_samsung_la_LIBADD = \
+	$(FSO_LIBS) \
+	$(GLIB_LIBS) \
+	$(GEE_LIBS) \
+	$(SAMSUNG_LIBS) \
+	$(top_builddir)/src/lib/libfsogsm.la
+
 modem_samsung_la_LDFLAGS = -no-undefined -module -avoid-version
-modem_samsung_la_LIBTOOLFLAGS = --tag=disable-static
-CLEANFILES = \
-    *.c \
-    *.h \
-    *.la \
-    *.lo \
-    $(NULL)
-
-MAINTAINERCLEANFILES = \
-  Makefile.in \
-  $(NULL)
-
+# modem_samsung_la_LIBTOOLFLAGS = --tag=disable-static
+CLEANFILES = 
+MAINTAINERCLEANFILES = 
 all: all-am
 
 .SUFFIXES:
@@ -418,15 +424,6 @@ clean-modlibexecLTLIBRARIES:
 modem_samsung.la: $(modem_samsung_la_OBJECTS) $(modem_samsung_la_DEPENDENCIES) $(EXTRA_modem_samsung_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(modem_samsung_la_LINK) -rpath $(modlibexecdir) $(modem_samsung_la_OBJECTS) $(modem_samsung_la_LIBADD) $(LIBS)
 
-clean-noinstPROGRAMS:
-	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
-	echo " rm -f" $$list; \
-	rm -f $$list || exit $$?; \
-	test -n "$(EXEEXT)" || exit 0; \
-	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
-	echo " rm -f" $$list; \
-	rm -f $$list
-
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -474,130 +471,224 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 modem_samsung_la-samsungtransport.lo: samsungtransport.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-samsungtransport.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-samsungtransport.Tpo -c -o modem_samsung_la-samsungtransport.lo `test -f 'samsungtransport.c' || echo '$(srcdir)/'`samsungtransport.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-samsungtransport.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-samsungtransport.Tpo -c -o modem_samsung_la-samsungtransport.lo `test -f 'samsungtransport.c' || echo '$(srcdir)/'`samsungtransport.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-samsungtransport.Tpo $(DEPDIR)/modem_samsung_la-samsungtransport.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='samsungtransport.c' object='modem_samsung_la-samsungtransport.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-samsungtransport.lo `test -f 'samsungtransport.c' || echo '$(srcdir)/'`samsungtransport.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-samsungtransport.lo `test -f 'samsungtransport.c' || echo '$(srcdir)/'`samsungtransport.c
 
 modem_samsung_la-plugin.lo: plugin.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-plugin.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-plugin.Tpo -c -o modem_samsung_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-plugin.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-plugin.Tpo -c -o modem_samsung_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-plugin.Tpo $(DEPDIR)/modem_samsung_la-plugin.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='plugin.c' object='modem_samsung_la-plugin.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
 
 modem_samsung_la-commandhandler.lo: commandhandler.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-commandhandler.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-commandhandler.Tpo -c -o modem_samsung_la-commandhandler.lo `test -f 'commandhandler.c' || echo '$(srcdir)/'`commandhandler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-commandhandler.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-commandhandler.Tpo -c -o modem_samsung_la-commandhandler.lo `test -f 'commandhandler.c' || echo '$(srcdir)/'`commandhandler.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-commandhandler.Tpo $(DEPDIR)/modem_samsung_la-commandhandler.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='commandhandler.c' object='modem_samsung_la-commandhandler.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-commandhandler.lo `test -f 'commandhandler.c' || echo '$(srcdir)/'`commandhandler.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-commandhandler.lo `test -f 'commandhandler.c' || echo '$(srcdir)/'`commandhandler.c
 
 modem_samsung_la-channel.lo: channel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-channel.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-channel.Tpo -c -o modem_samsung_la-channel.lo `test -f 'channel.c' || echo '$(srcdir)/'`channel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-channel.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-channel.Tpo -c -o modem_samsung_la-channel.lo `test -f 'channel.c' || echo '$(srcdir)/'`channel.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-channel.Tpo $(DEPDIR)/modem_samsung_la-channel.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='channel.c' object='modem_samsung_la-channel.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-channel.lo `test -f 'channel.c' || echo '$(srcdir)/'`channel.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-channel.lo `test -f 'channel.c' || echo '$(srcdir)/'`channel.c
 
 modem_samsung_la-rfs.lo: rfs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-rfs.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-rfs.Tpo -c -o modem_samsung_la-rfs.lo `test -f 'rfs.c' || echo '$(srcdir)/'`rfs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-rfs.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-rfs.Tpo -c -o modem_samsung_la-rfs.lo `test -f 'rfs.c' || echo '$(srcdir)/'`rfs.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-rfs.Tpo $(DEPDIR)/modem_samsung_la-rfs.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rfs.c' object='modem_samsung_la-rfs.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-rfs.lo `test -f 'rfs.c' || echo '$(srcdir)/'`rfs.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-rfs.lo `test -f 'rfs.c' || echo '$(srcdir)/'`rfs.c
 
 modem_samsung_la-unsolicited.lo: unsolicited.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-unsolicited.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-unsolicited.Tpo -c -o modem_samsung_la-unsolicited.lo `test -f 'unsolicited.c' || echo '$(srcdir)/'`unsolicited.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-unsolicited.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-unsolicited.Tpo -c -o modem_samsung_la-unsolicited.lo `test -f 'unsolicited.c' || echo '$(srcdir)/'`unsolicited.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-unsolicited.Tpo $(DEPDIR)/modem_samsung_la-unsolicited.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='unsolicited.c' object='modem_samsung_la-unsolicited.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-unsolicited.lo `test -f 'unsolicited.c' || echo '$(srcdir)/'`unsolicited.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-unsolicited.lo `test -f 'unsolicited.c' || echo '$(srcdir)/'`unsolicited.c
 
 modem_samsung_la-modemstate.lo: modemstate.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-modemstate.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-modemstate.Tpo -c -o modem_samsung_la-modemstate.lo `test -f 'modemstate.c' || echo '$(srcdir)/'`modemstate.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-modemstate.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-modemstate.Tpo -c -o modem_samsung_la-modemstate.lo `test -f 'modemstate.c' || echo '$(srcdir)/'`modemstate.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-modemstate.Tpo $(DEPDIR)/modem_samsung_la-modemstate.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='modemstate.c' object='modem_samsung_la-modemstate.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-modemstate.lo `test -f 'modemstate.c' || echo '$(srcdir)/'`modemstate.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-modemstate.lo `test -f 'modemstate.c' || echo '$(srcdir)/'`modemstate.c
 
 modem_samsung_la-mediators_sim.lo: mediators_sim.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_sim.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_sim.Tpo -c -o modem_samsung_la-mediators_sim.lo `test -f 'mediators_sim.c' || echo '$(srcdir)/'`mediators_sim.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_sim.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_sim.Tpo -c -o modem_samsung_la-mediators_sim.lo `test -f 'mediators_sim.c' || echo '$(srcdir)/'`mediators_sim.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-mediators_sim.Tpo $(DEPDIR)/modem_samsung_la-mediators_sim.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_sim.c' object='modem_samsung_la-mediators_sim.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_sim.lo `test -f 'mediators_sim.c' || echo '$(srcdir)/'`mediators_sim.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_sim.lo `test -f 'mediators_sim.c' || echo '$(srcdir)/'`mediators_sim.c
 
 modem_samsung_la-mediators_device.lo: mediators_device.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_device.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_device.Tpo -c -o modem_samsung_la-mediators_device.lo `test -f 'mediators_device.c' || echo '$(srcdir)/'`mediators_device.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_device.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_device.Tpo -c -o modem_samsung_la-mediators_device.lo `test -f 'mediators_device.c' || echo '$(srcdir)/'`mediators_device.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-mediators_device.Tpo $(DEPDIR)/modem_samsung_la-mediators_device.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_device.c' object='modem_samsung_la-mediators_device.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_device.lo `test -f 'mediators_device.c' || echo '$(srcdir)/'`mediators_device.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_device.lo `test -f 'mediators_device.c' || echo '$(srcdir)/'`mediators_device.c
 
 modem_samsung_la-mediators_network.lo: mediators_network.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_network.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_network.Tpo -c -o modem_samsung_la-mediators_network.lo `test -f 'mediators_network.c' || echo '$(srcdir)/'`mediators_network.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_network.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_network.Tpo -c -o modem_samsung_la-mediators_network.lo `test -f 'mediators_network.c' || echo '$(srcdir)/'`mediators_network.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-mediators_network.Tpo $(DEPDIR)/modem_samsung_la-mediators_network.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_network.c' object='modem_samsung_la-mediators_network.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_network.lo `test -f 'mediators_network.c' || echo '$(srcdir)/'`mediators_network.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_network.lo `test -f 'mediators_network.c' || echo '$(srcdir)/'`mediators_network.c
 
 modem_samsung_la-mediators_pdp.lo: mediators_pdp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_pdp.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_pdp.Tpo -c -o modem_samsung_la-mediators_pdp.lo `test -f 'mediators_pdp.c' || echo '$(srcdir)/'`mediators_pdp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_pdp.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_pdp.Tpo -c -o modem_samsung_la-mediators_pdp.lo `test -f 'mediators_pdp.c' || echo '$(srcdir)/'`mediators_pdp.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-mediators_pdp.Tpo $(DEPDIR)/modem_samsung_la-mediators_pdp.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_pdp.c' object='modem_samsung_la-mediators_pdp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_pdp.lo `test -f 'mediators_pdp.c' || echo '$(srcdir)/'`mediators_pdp.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_pdp.lo `test -f 'mediators_pdp.c' || echo '$(srcdir)/'`mediators_pdp.c
 
 modem_samsung_la-mediators_sms.lo: mediators_sms.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_sms.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_sms.Tpo -c -o modem_samsung_la-mediators_sms.lo `test -f 'mediators_sms.c' || echo '$(srcdir)/'`mediators_sms.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_sms.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_sms.Tpo -c -o modem_samsung_la-mediators_sms.lo `test -f 'mediators_sms.c' || echo '$(srcdir)/'`mediators_sms.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-mediators_sms.Tpo $(DEPDIR)/modem_samsung_la-mediators_sms.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_sms.c' object='modem_samsung_la-mediators_sms.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_sms.lo `test -f 'mediators_sms.c' || echo '$(srcdir)/'`mediators_sms.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_sms.lo `test -f 'mediators_sms.c' || echo '$(srcdir)/'`mediators_sms.c
 
 modem_samsung_la-pdphandler.lo: pdphandler.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-pdphandler.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-pdphandler.Tpo -c -o modem_samsung_la-pdphandler.lo `test -f 'pdphandler.c' || echo '$(srcdir)/'`pdphandler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-pdphandler.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-pdphandler.Tpo -c -o modem_samsung_la-pdphandler.lo `test -f 'pdphandler.c' || echo '$(srcdir)/'`pdphandler.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-pdphandler.Tpo $(DEPDIR)/modem_samsung_la-pdphandler.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pdphandler.c' object='modem_samsung_la-pdphandler.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-pdphandler.lo `test -f 'pdphandler.c' || echo '$(srcdir)/'`pdphandler.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-pdphandler.lo `test -f 'pdphandler.c' || echo '$(srcdir)/'`pdphandler.c
 
 modem_samsung_la-mediators_call.lo: mediators_call.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_call.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_call.Tpo -c -o modem_samsung_la-mediators_call.lo `test -f 'mediators_call.c' || echo '$(srcdir)/'`mediators_call.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-mediators_call.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-mediators_call.Tpo -c -o modem_samsung_la-mediators_call.lo `test -f 'mediators_call.c' || echo '$(srcdir)/'`mediators_call.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-mediators_call.Tpo $(DEPDIR)/modem_samsung_la-mediators_call.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_call.c' object='modem_samsung_la-mediators_call.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_call.lo `test -f 'mediators_call.c' || echo '$(srcdir)/'`mediators_call.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-mediators_call.lo `test -f 'mediators_call.c' || echo '$(srcdir)/'`mediators_call.c
 
 modem_samsung_la-callhandler.lo: callhandler.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-callhandler.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-callhandler.Tpo -c -o modem_samsung_la-callhandler.lo `test -f 'callhandler.c' || echo '$(srcdir)/'`callhandler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-callhandler.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-callhandler.Tpo -c -o modem_samsung_la-callhandler.lo `test -f 'callhandler.c' || echo '$(srcdir)/'`callhandler.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-callhandler.Tpo $(DEPDIR)/modem_samsung_la-callhandler.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='callhandler.c' object='modem_samsung_la-callhandler.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-callhandler.lo `test -f 'callhandler.c' || echo '$(srcdir)/'`callhandler.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-callhandler.lo `test -f 'callhandler.c' || echo '$(srcdir)/'`callhandler.c
 
 modem_samsung_la-soundhandler.lo: soundhandler.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-soundhandler.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-soundhandler.Tpo -c -o modem_samsung_la-soundhandler.lo `test -f 'soundhandler.c' || echo '$(srcdir)/'`soundhandler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-soundhandler.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-soundhandler.Tpo -c -o modem_samsung_la-soundhandler.lo `test -f 'soundhandler.c' || echo '$(srcdir)/'`soundhandler.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-soundhandler.Tpo $(DEPDIR)/modem_samsung_la-soundhandler.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='soundhandler.c' object='modem_samsung_la-soundhandler.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-soundhandler.lo `test -f 'soundhandler.c' || echo '$(srcdir)/'`soundhandler.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-soundhandler.lo `test -f 'soundhandler.c' || echo '$(srcdir)/'`soundhandler.c
 
 modem_samsung_la-smshandler.lo: smshandler.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-smshandler.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-smshandler.Tpo -c -o modem_samsung_la-smshandler.lo `test -f 'smshandler.c' || echo '$(srcdir)/'`smshandler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-smshandler.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-smshandler.Tpo -c -o modem_samsung_la-smshandler.lo `test -f 'smshandler.c' || echo '$(srcdir)/'`smshandler.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-smshandler.Tpo $(DEPDIR)/modem_samsung_la-smshandler.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='smshandler.c' object='modem_samsung_la-smshandler.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-smshandler.lo `test -f 'smshandler.c' || echo '$(srcdir)/'`smshandler.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-smshandler.lo `test -f 'smshandler.c' || echo '$(srcdir)/'`smshandler.c
 
 modem_samsung_la-utils.lo: utils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_samsung_la-utils.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-utils.Tpo -c -o modem_samsung_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -MT modem_samsung_la-utils.lo -MD -MP -MF $(DEPDIR)/modem_samsung_la-utils.Tpo -c -o modem_samsung_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_samsung_la-utils.Tpo $(DEPDIR)/modem_samsung_la-utils.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='modem_samsung_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_samsung_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_samsung_la_CFLAGS) $(CFLAGS) -c -o modem_samsung_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+$(srcdir)/samsungtransport.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/plugin.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/commandhandler.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/channel.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/rfs.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/unsolicited.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/modemstate.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_sim.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_device.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_network.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_pdp.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_sms.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/pdphandler.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_call.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/callhandler.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/soundhandler.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/smshandler.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/utils.c: $(srcdir)/modem_samsung_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_samsung_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_samsung_la_vala.stamp; \
+	fi
+$(srcdir)/modem_samsung_la_vala.stamp: $(modem_samsung_la_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(modem_samsung_la_VALAFLAGS) $(VALAFLAGS) -C $(modem_samsung_la_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -690,7 +781,7 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-local
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
+all-am: Makefile $(LTLIBRARIES)
 installdirs:
 	for dir in "$(DESTDIR)$(modlibexecdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -726,11 +817,30 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f callhandler.c
+	-rm -f channel.c
+	-rm -f commandhandler.c
+	-rm -f mediators_call.c
+	-rm -f mediators_device.c
+	-rm -f mediators_network.c
+	-rm -f mediators_pdp.c
+	-rm -f mediators_sim.c
+	-rm -f mediators_sms.c
+	-rm -f modem_samsung_la_vala.stamp
+	-rm -f modemstate.c
+	-rm -f pdphandler.c
+	-rm -f plugin.c
+	-rm -f rfs.c
+	-rm -f samsungtransport.c
+	-rm -f smshandler.c
+	-rm -f soundhandler.c
+	-rm -f unsolicited.c
+	-rm -f utils.c
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-modlibexecLTLIBRARIES \
-	clean-noinstPROGRAMS mostlyclean-am
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -801,19 +911,19 @@ uninstall-am: uninstall-modlibexecLTLIBRARIES
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am check-local clean \
-	clean-generic clean-libtool clean-modlibexecLTLIBRARIES \
-	clean-noinstPROGRAMS ctags distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man \
-	install-modlibexecLTLIBRARIES install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-modlibexecLTLIBRARIES
+	clean-generic clean-libtool clean-modlibexecLTLIBRARIES ctags \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-modlibexecLTLIBRARIES \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-modlibexecLTLIBRARIES
 
 
 ### testing rules
@@ -864,10 +974,7 @@ test-report perf-report full-report:	${TEST_PROGS}
 .PHONY: test test-report perf-report full-report
 # run make test as part of make check
 check-local: test
-
-$(modem_samsung_la_SOURCES): $(modem_samsung_la_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
+	$(NULL)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

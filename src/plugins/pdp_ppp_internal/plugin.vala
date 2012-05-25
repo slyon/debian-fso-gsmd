@@ -73,8 +73,6 @@ class Pdp.PppInternal : FsoGsm.PdpHandler
 
     public async override void sc_activate() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var m = theModem as FsoGsm.AbstractModem;
-
         var data = theModem.data();
 
         if ( data.contextParams == null )
@@ -89,17 +87,18 @@ class Pdp.PppInternal : FsoGsm.PdpHandler
             throw new FreeSmartphone.Error.INTERNAL_ERROR( "APN not set" );
         }
 
-        if ( ( (FsoGsm.AbstractModem) theModem ).data_transport != "serial" &&  ( (FsoGsm.AbstractModem) theModem ).data_transport != "tcp" )
+        if ( ( (FsoGsm.AbstractModem) theModem ).data_transport_spec.type != "serial" &&
+             ( (FsoGsm.AbstractModem) theModem ).data_transport_spec.type != "tcp" )
         {
             disconnected();
             throw new FreeSmartphone.Error.INTERNAL_ERROR( "ippp only supports data transport types 'serial' and 'tcp' for now" );
         }
 
-        transport = FsoFramework.Transport.create( m.data_transport, m.data_port, m.data_speed );
+        transport = ( (FsoGsm.AbstractModem) theModem ).data_transport_spec.create();
 
         // in the case that we have a serial transport we need to cycle the dtr line of
         // the serial port if the config tells us to do so
-        if ( ( (FsoGsm.AbstractModem) theModem ).data_transport == "serial" )
+        if ( transport is FsoFramework.SerialTransport )
         {
             var serial_transport = transport as FsoFramework.SerialTransport;
             serial_transport.dtr_cycle = FsoFramework.theConfig.boolValue( MODULE_NAME, "dtr_cycle", false );
@@ -117,7 +116,7 @@ class Pdp.PppInternal : FsoGsm.PdpHandler
         Timeout.add( delay, sc_activate.callback );
         yield;
 
-        var reason = yield channel.enqueueAsync( new FsoGsm.CustomAtCommand(), "Z" );
+        yield channel.enqueueAsync( new FsoGsm.CustomAtCommand(), "Z" );
 
         //var response = yield channel.enqueueAsync( new FsoGsm.CustomAtCommand(), "E0" );
         var response = yield channel.enqueueAsync( new FsoGsm.CustomAtCommand(), "+CGQREQ=1;+CGQMIN=1;+CGEQREQ=1;+CGEQMIN=1" );

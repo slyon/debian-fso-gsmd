@@ -22,10 +22,10 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <stdlib.h>
-#include <string.h>
 #include <smsutil.h>
 #include <conversions.h>
+#include <stdlib.h>
+#include <string.h>
 #include <util.h>
 #include <fsogsm.h>
 #include <gee.h>
@@ -38,31 +38,7 @@
 
 
 extern GSList* smslist;
-GSList* smslist = NULL;
 
-#define IMSI "26203123456789"
-#define LONG_TEXT "freesmartphone.org is a collaboration platform for open source and ope" \
-"n discussion software projects working on interoperability and shared " \
-"technology for Linux-based SmartPhones. freesmartphone.org works on a " \
-"service layer (middleware) that allows developers to concentrate on th" \
-"eir application business logic rather than dealing with device specifi" \
-"cs. freesmartphone.org honours and bases on specifications and softwar" \
-"e created by the freedesktop.org community."
-#define LONG_TEXT_REF ((guint16) 1)
-#define SHORT_TEXT "Hoffentlich diesmal mit ACKPDU"
-#define PHONE_NUMBER "+49123456789"
-#define pdu3 "0791947106004034040C9194713900303341009001910002108059D6B75B076A86D36C" \
-"F11BEF024DD365103A2C2EBB413290BB5C2F839CE1315A9E1EA3E96537C805D2D6DBA0" \
-"A0585E3797DDA0FB1ECD2EBB41D37419244ED3E965906845CBC56EB9190C069BCD6622"
-#define pdulength3 97
-#define pdu4 "079144999701903706990C91448748749999101151714000001011517140000000"
-#define pdulength4 25
-#define pdu5 "0791947106004034440B899421436587F900F501505102500280860605040B8423F061" \
-"06226170706C69636174696F6E2F766E642E7761702E6D6D732D6D65737361676500AF" \
-"848C82986B70684544414F637942008D908919802B3439313730323732303030332F54" \
-"5950453D504C4D4E008A808E0261A88805810303F47983687474703A2F2F31302E3831" \
-"2E302E373A383030322F6B70684544414F63794200"
-#define pdulength5 153
 void test_sms_decode_deliver_single_default_alphabet (void);
 static guint8* _vala_array_dup1 (guint8* self, int length);
 void test_sms_decode_deliver_single_concatenated_default_alphabet (void);
@@ -70,98 +46,43 @@ static guint8* _vala_array_dup2 (guint8* self, int length);
 void test_sms_decode_deliver_multiple_concatenated_default_alphabet (void);
 void test_sms_decode_deliver_whole_concatenated_default_alphabet (void);
 void test_sms_decode_deliver_incoming_mms_control_message (void);
+#define pdu5 "0791947106004034440B899421436587F900F501505102500280860605040B8423F061" \
+"06226170706C69636174696F6E2F766E642E7761702E6D6D732D6D65737361676500AF" \
+"848C82986B70684544414F637942008D908919802B3439313730323732303030332F54" \
+"5950453D504C4D4E008A808E0261A88805810303F47983687474703A2F2F31302E3831" \
+"2E302E373A383030322F6B70684544414F63794200"
+#define pdulength5 153
 void test_sms_decode_status_report (void);
+#define pdu4 "079144999701903706990C91448748749999101151714000001011517140000000"
+#define pdulength4 25
 const gchar* sms_status_to_string (int self);
 static const char* _sms_status_to_string (int value);
 void test_sms_encode_submit_single_default_alphabet (void);
+#define SHORT_TEXT "Hoffentlich diesmal mit ACKPDU"
 static guint8* _vala_array_dup3 (guint8* self, int length);
 void test_sms_encode_submit_concatenated_default_alphabet (void);
-void test_fso_sms_storage_new (void);
-void test_fso_sms_storage_add_single (void);
-void test_fso_sms_storage_add_concatenated (void);
-void test_fso_sms_storage_store_transaction_index (void);
-void test_fso_sms_storage_confirm_ack (void);
+#define PHONE_NUMBER "+49123456789"
+#define LONG_TEXT "freesmartphone.org is a collaboration platform for open source and ope" \
+"n discussion software projects working on interoperability and shared " \
+"technology for Linux-based SmartPhones. freesmartphone.org works on a " \
+"service layer (middleware) that allows developers to concentrate on th" \
+"eir application business logic rather than dealing with device specifi" \
+"cs. freesmartphone.org honours and bases on specifications and softwar" \
+"e created by the freedesktop.org community."
 void _vala_main (gchar** args, int args_length1);
 static void _test_sms_decode_deliver_single_default_alphabet_gcallback (void);
 static void _test_sms_decode_deliver_single_concatenated_default_alphabet_gcallback (void);
 static void _test_sms_decode_deliver_multiple_concatenated_default_alphabet_gcallback (void);
 static void _test_sms_decode_status_report_gcallback (void);
 static void _test_sms_encode_submit_single_default_alphabet_gcallback (void);
-static void _test_fso_sms_storage_new_gcallback (void);
-static void _test_fso_sms_storage_add_single_gcallback (void);
-static void _test_fso_sms_storage_add_concatenated_gcallback (void);
-static void _test_fso_sms_storage_store_transaction_index_gcallback (void);
-static void _test_fso_sms_storage_confirm_ack_gcallback (void);
 static void _vala_array_destroy (gpointer array, gint array_length, GDestroyNotify destroy_func);
 static void _vala_array_free (gpointer array, gint array_length, GDestroyNotify destroy_func);
 
-const gchar* LONG_TEXT_PDUS[4] = {"0051000B919421436587F90000A7A0060804000104016679B93C6F87E57438FAED2EBB" \
-"DEF233283D078541E3379B1D16BFE5617AFAED06C1D961BAF92D6F83CC6F39E80D2FBB" \
-"41F3775D3E2E83C26E32E80D2FBB41E4F47C5C9FCFD36F3768FE36D3EF6179190497BF" \
-"D5E5317D0EBABFE5EBB4FB0C7ABB416937BD2C7FC3CBF2B038CD4ED3F3A0B09B0C9AA3" \
-"C3F23219442F8FD1EE37FB7DCE83CC", "0051000B919421436587F90000A7A0060804000104026F39889976D7F12D71785E2683" \
-"A6EDB09C0E45BFDDE5B90B649697CBF376584E87A3DFEEB2EB2D3F83EE6FF97A0E7ABB" \
-"4161D0BC2CB7A7C765103B9C2FCB41A8769A4C6697EF61793905A2A3C3745098CD7EDF" \
-"E72072D95E66BFE165F91C447F83C66FF7B8ECA6CBC3F432E8ED06D1D1E5B41C1486C3" \
-"D9E971989E7EBB41E2FA3CED2ECFE7", "0051000B919421436587F90000A7A00608040001040320F6FB9C1E83E4613ABA2C07D1" \
-"D16137885C0EB3D3EE33E89EA6A341E4B23D3D2E83E6F0F2386D4E8FE72E90595E2ECF" \
-"DB61391D8E7EBBCBAEB7FC0C42BFDDEFBA7C0E0ABBC92071785E9E83DE6ED01C5E1EA7" \
-"CDE971989E7EBBE7A0B09B0C9ABFCDF47B585E068DE5E530BD4C0689F3203ABA0C32CB" \
-"CB657279BEA6BFE1AEB7FC0C1ABFDB", "0051000B919421436587F90000A70F06080400010404EDBA3B4DCFBB00"};
-const gint LONG_TEXT_PDULENS[4] = {154, 154, 154, 28};
-const gint pdulengths1[11] = {159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 54};
-const gchar* pdus1[11] = {"0791947101670000440C91947120270030000090010321610440A0050003040B01AEE9" \
-"32081D1697DD2072BA0C22CAC3FA34C8FE7683C865394858A697D3ECF4B9EE3E83C865" \
-"39685876D3C375791A54969BC36879D9FD033DC96539081D1697DDA079BA0C2AA7DDE6" \
-"F0180D72D7E5A0739D0E3A97E5617AD9FD0311C320E6DB4D7E83DCE9319A0EBA97D31E" \
-"16E81E9E83D8EF39283DA7B340E83D9D5E7683E6E932A83C07B9D3", "0791947101670000440C91947120270030000090010321614440A0050003040B02C668" \
-"3A885C978FD1A034DA0D4297E5E1FADC9C7693CB6ED09AEF7697DD2CD0BCCC16CFE9A0" \
-"7BD9ED06CDD365505A7E2EBBC9F7B0DB0D9A97D36E50B41E96D3D36539A82C37BFD967" \
-"79393D4683EC65F93DECD6D341E83D9D5E76BB14CCB79BFC06A1C3747A19242D8FD174" \
-"1039DC4ED3592072D803B2A6E520F77B8C06B9D363341D242ECBCB", "0791947101670000440C91947120270030000090010321618440A0050003040B03D274" \
-"90D92F0791C37350B04D0791CB7390F04D9F8FD16133BD2C9F83D273BA0E644DCB41F7" \
-"B49C0CB2BFDD2072D90D0ABBC96579D90DB2F2D9EBB2DC0D0AB3E7A0F9187D0F8FD1A0" \
-"BA9B0CAABBE9E1FA999D1EA34161F7B93C2FA3CB6E16E89E2E83CA7310B92C0711E561" \
-"7DBA85DCBBC9ECB21CA42FA7CF7417E829BEBFD16C10F3ED26BFE7", "0791947101670000440C91947120270030000090010321611540A0050003040B0440C2" \
-"72BB2C5FD7DD67D0B97C2EBBFDE2B21CA40D8FD7207BBACC6697D363341DA4AFB741D4" \
-"729A0D2AA7DDA0E9185D96EB41F7B09C055AF3DD6E7A19544EBBCBA035BB9C769741CB" \
-"B7DB2C7FBBE9617AFAED06D9DF6E379F5E7683E6E5B49B052287DB693AC89A9683CA72" \
-"F79C0E3A97DDF533E85C76BFDBEDB21B744FCBC9A07A1B544EBB41", "0791947101670000440C91947120270030000090010321615540A0050003040B05CA66" \
-"73794D4FDBCB7290F04D9F8FD16133BD2C07E9EBA07939ED76298EA765580E1297DD75" \
-"BA9E0E22A7CBA0A03BCC7E9FD3655039ED2ECF41CCF4184D2FCF592072780E0AD7CDA0" \
-"72DA5D065DC36E32683E4697D36E3A0B546F83F47590B83C1FA3E5E5B4B8EC6681EEE9" \
-"32889C2E8398E53ABD0C3ABEE974D03D8C96BBCBE876D9ED0231CB", "0791947101670000440C91947120270030000090010321619540A0050003040B06DCEE" \
-"74590E4287E9A0B41B2422A6CBA0E9182D4F9BE9A0707D0E12B2EB7411A89C7697417B" \
-"B49B9D1EA3CBA0A03BCC7E9FD36590B8ECAED3F5741628CC9E83CA7210395D0605DDF3" \
-"F4184D0791CB725033ED1687E569905F5C968384F23AB92C0715C9F7B09C3C074DCB65" \
-"7619242ECFC76879BA2C76299865B73B5D9683EE61B99B5E0619D3", "0791947101670000440C91947120270030000090010321713040A0050003040B07DCE4" \
-"329B0D2287ED6F390B442EBB4141373B7C9AA3DF6B50B83E0791CB6E9039CC9E8FD165" \
-"37E828F7BBC96537485C4EEBEB7479995E76835AA0B0B82C0795D3E7B29BCE4E8FD1A0" \
-"F49C0E2ACF41E7B23B5C0791C37316E81E9E839865B73B5D9683E665B6784E079DCBF4" \
-"B01B840ED359207218549E83CA6977790E9A97D3EEB21CA44D97D9", "0791947101670000440C91947120270030000090010321717040A0050003040B08CAA0" \
-"F49CCE0211CBECB2DB0DD2D741E27239ED26CBEBE375D90D4295E5A079F84C2F83CAF4" \
-"7B780E2297E561393D7D2ECF41693748147483C86539683A46DFCB6C7619442ECF41D4" \
-"37B93C17A55C2062589E7683D67CB79B5E0691CB72D0748C66FBE7F3321BA4AF83E6E5" \
-"B4BBDC06B5F967767A8C2EBB41D6B25C1EA683C26E10B9EC0649C3", "0791947101670000440C91947120270030000090010321711140A0050003040B09DCE7" \
-"B27C0E62A7CBE7B29B052297DDA0E65B4E2EBB41F6B71C5D96CFC3677A19841211CB72" \
-"10357C0691CB7210F54D2FBB452917E85A76BB416539C8FE9683C86539E81A46B34173" \
-"7A194D6781886576D9ED0691D3F2F29A0E7A93CB7210B9EC0605DDECF0698E7EAF41FA" \
-"3A889C2EBBCB6E1668CD77BBE96550590E9A97D172D0FD8D6683C8", "0791947101670000440C91947120270030000090010321714140A0050003040B0AC273" \
-"50593EA797E565D07D8F6697DD2C90B83C7FBBC965F91C742FBBDD2072BA0CBA86D16C" \
-"5039ED2E83CA72F79C8E0E9BE96590B04C96BFD175F71964F6CB41C432BBEC7683C4E5" \
-"B41B1D66D3CB7417A898769741F3377B8C2E839AFC333B3D46AFCB693A683E4697D36E" \
-"3A28DD061DCB73B87C3F4683F4F7F47C8C2EBB41C432BBEC7683EA", "0791947101670000440C9194712027003000009001032171714027050003040B0BDC64" \
-"10B3EC76A7CB7250D87D2E93CB757A990ED2D741F7B29C5C76BB00"};
-const gint pdulengths2[2] = {159, 54};
-const gchar* pdus2[2] = {"0791947101670000440C91947120270030000090010351645540A0050003050201A665" \
-"B9BD3E6781C8E9F21C949ED341E5B41B740EBBF520F29BCD2ECB4165FA3D3C07B1F7EE" \
-"73595E9683A8653C1DD402A1DF6673D94D67A7C768500C346D4E4173B8BCEC3E97DDE4" \
-"32A8054297EBF432285C9FBBC3E8F6FC5E4ECFCBA07698ED0205DDF3B77B4E2FBB41F2" \
-"F7784D0791C37310325C9F83EEE93228DD6E97E52E970BA460A6CB", "0791947101670000440C919471202700300000900103516475401E050003050202C465" \
-"D051EEF79441F6B71BC4840643A110A8F83402"};
+extern const gint pdulengths1[11];
+extern const gchar* pdus1[11];
+extern const gchar* LONG_TEXT_PDUS[4];
+extern const gint LONG_TEXT_PDULENS[4];
 
-/******************************************************************************************
- ******************************************************************************************/
 static const gchar* string_to_string (const gchar* self) {
 	const gchar* result = NULL;
 	g_return_val_if_fail (self != NULL, NULL);
@@ -170,8 +91,8 @@ static const gchar* string_to_string (const gchar* self) {
 }
 
 
-static structsms* sms_newFromHexPdu (const gchar* hexpdu, gint tpdulen) {
-	structsms* result = NULL;
+static struct sms* sms_newFromHexPdu (const gchar* hexpdu, gint tpdulen) {
+	struct sms* result = NULL;
 	glong items_written;
 	gchar* _tmp0_ = NULL;
 	gchar* binpdu;
@@ -182,12 +103,12 @@ static structsms* sms_newFromHexPdu (const gchar* hexpdu, gint tpdulen) {
 	gint _tmp2__length1;
 	glong _tmp3_ = 0L;
 	glong _tmp4_;
-	structsms* _tmp5_;
-	structsms* sms;
+	struct sms* _tmp5_;
+	struct sms* sms;
 	gchar* _tmp6_;
 	gint _tmp6__length1;
 	gint _tmp7_;
-	structsms* _tmp8_;
+	struct sms* _tmp8_;
 	gboolean _tmp9_ = FALSE;
 	gboolean res;
 	gboolean _tmp10_;
@@ -228,7 +149,7 @@ static structsms* sms_newFromHexPdu (const gchar* hexpdu, gint tpdulen) {
 		_tmp15_ = string_to_string (_tmp14_);
 		_tmp16_ = g_strconcat ("Sms.Message::newFromHexPdu: could not decode message w/ tpdulen ", _tmp13_, " and hexpdu ", _tmp15_, NULL);
 		_tmp17_ = _tmp16_;
-		g_warning ("fsogsm3rdparty.vapi:599: %s", _tmp17_);
+		g_warning ("fsogsm3rdparty.vapi:602: %s", _tmp17_);
 		_g_free0 (_tmp17_);
 		_g_free0 (_tmp13_);
 		result = NULL;
@@ -245,7 +166,7 @@ static structsms* sms_newFromHexPdu (const gchar* hexpdu, gint tpdulen) {
 }
 
 
-static gchar* sms_number (structsms* self) {
+static gchar* sms_number (struct sms* self) {
 	gchar* result = NULL;
 	enum sms_type _tmp0_;
 	g_return_val_if_fail (self != NULL, NULL);
@@ -298,7 +219,7 @@ static gchar* sms_number (structsms* self) {
 }
 
 
-static gchar* sms_to_string (structsms* self) {
+static gchar* sms_to_string (struct sms* self) {
 	gchar* result = NULL;
 	GSList* list;
 	GSList* _tmp0_;
@@ -320,8 +241,8 @@ static guint8* _vala_array_dup1 (guint8* self, int length) {
 
 
 void test_sms_decode_deliver_single_default_alphabet (void) {
-	structsms* _tmp0_ = NULL;
-	structsms* sms;
+	struct sms* _tmp0_ = NULL;
+	struct sms* sms;
 	enum sms_type _tmp1_;
 	const gchar* _tmp2_ = NULL;
 	gchar* _tmp3_ = NULL;
@@ -430,8 +351,8 @@ static guint8* _vala_array_dup2 (guint8* self, int length) {
 
 
 void test_sms_decode_deliver_single_concatenated_default_alphabet (void) {
-	structsms* _tmp0_ = NULL;
-	structsms* sms;
+	struct sms* _tmp0_ = NULL;
+	struct sms* sms;
 	enum sms_type _tmp1_;
 	const gchar* _tmp2_ = NULL;
 	gchar* _tmp3_ = NULL;
@@ -560,12 +481,12 @@ void test_sms_decode_deliver_multiple_concatenated_default_alphabet (void) {
 				const gchar* _tmp5_;
 				gint _tmp6_;
 				gint _tmp7_;
-				structsms* _tmp8_ = NULL;
-				structsms* sms;
+				struct sms* _tmp8_ = NULL;
+				struct sms* sms;
 				guint16 ref_num = 0U;
 				guint8 max_msgs = 0U;
 				guint8 seq_num = 0U;
-				structsms* _tmp9_;
+				struct sms* _tmp9_;
 				guint16 _tmp10_ = 0U;
 				guint8 _tmp11_ = 0U;
 				guint8 _tmp12_ = 0U;
@@ -612,8 +533,8 @@ void test_sms_decode_deliver_multiple_concatenated_default_alphabet (void) {
 
 
 void test_sms_decode_deliver_whole_concatenated_default_alphabet (void) {
-	structsms** _tmp0_ = NULL;
-	structsms** smses;
+	struct sms** _tmp0_ = NULL;
+	struct sms** smses;
 	gint smses_length1;
 	gint _smses_size_;
 	GSList* smslist;
@@ -624,7 +545,7 @@ void test_sms_decode_deliver_whole_concatenated_default_alphabet (void) {
 	gint _tmp23_;
 	gboolean _tmp24_ = FALSE;
 	gboolean _tmp25_ = FALSE;
-	_tmp0_ = g_new0 (structsms*, G_N_ELEMENTS (pdulengths1) + 1);
+	_tmp0_ = g_new0 (struct sms*, G_N_ELEMENTS (pdulengths1) + 1);
 	smses = _tmp0_;
 	smses_length1 = G_N_ELEMENTS (pdulengths1);
 	_smses_size_ = smses_length1;
@@ -637,15 +558,15 @@ void test_sms_decode_deliver_whole_concatenated_default_alphabet (void) {
 			while (TRUE) {
 				gboolean _tmp2_;
 				gint _tmp4_;
-				structsms** _tmp5_;
+				struct sms** _tmp5_;
 				gint _tmp5__length1;
 				gint _tmp6_;
 				gint _tmp7_;
 				const gchar* _tmp8_;
 				gint _tmp9_;
 				gint _tmp10_;
-				structsms* _tmp11_ = NULL;
-				structsms* _tmp12_;
+				struct sms* _tmp11_ = NULL;
+				struct sms* _tmp12_;
 				_tmp2_ = _tmp1_;
 				if (!_tmp2_) {
 					gint _tmp3_;
@@ -681,10 +602,10 @@ void test_sms_decode_deliver_whole_concatenated_default_alphabet (void) {
 			while (TRUE) {
 				gboolean _tmp14_;
 				gint _tmp16_;
-				structsms** _tmp17_;
+				struct sms** _tmp17_;
 				gint _tmp17__length1;
 				gint _tmp18_;
-				structsms* _tmp19_;
+				struct sms* _tmp19_;
 				_tmp14_ = _tmp13_;
 				if (!_tmp14_) {
 					gint _tmp15_;
@@ -721,12 +642,12 @@ void test_sms_decode_deliver_whole_concatenated_default_alphabet (void) {
 
 
 void test_sms_decode_deliver_incoming_mms_control_message (void) {
-	structsms* _tmp0_ = NULL;
-	structsms* sms;
+	struct sms* _tmp0_ = NULL;
+	struct sms* sms;
 	gint dst = 0;
 	gint src = 0;
 	gboolean is8bit = FALSE;
-	structsms* _tmp1_;
+	struct sms* _tmp1_;
 	gint _tmp2_ = 0;
 	gint _tmp3_ = 0;
 	gboolean _tmp4_ = FALSE;
@@ -738,7 +659,7 @@ void test_sms_decode_deliver_incoming_mms_control_message (void) {
 	gboolean _tmp9_;
 	gchar* _tmp10_;
 	gchar* contents;
-	structsms* _tmp11_;
+	struct sms* _tmp11_;
 	struct sms_deliver _tmp12_;
 	guint8* ud;
 	const gchar* _tmp27_;
@@ -775,7 +696,7 @@ void test_sms_decode_deliver_incoming_mms_control_message (void) {
 			while (TRUE) {
 				gboolean _tmp14_;
 				gint _tmp16_;
-				structsms* _tmp17_;
+				struct sms* _tmp17_;
 				struct sms_deliver _tmp18_;
 				guint8 _tmp19_;
 				const gchar* _tmp20_;
@@ -816,7 +737,7 @@ void test_sms_decode_deliver_incoming_mms_control_message (void) {
 	_tmp28_ = string_to_string (_tmp27_);
 	_tmp29_ = g_strconcat ("content = ", _tmp28_, NULL);
 	_tmp30_ = _tmp29_;
-	g_debug ("testsms.vala:226: %s", _tmp30_);
+	g_debug ("testsms.vala:164: %s", _tmp30_);
 	_g_free0 (_tmp30_);
 	g_assert (FALSE);
 	_g_free0 (contents);
@@ -890,8 +811,8 @@ static const char* _sms_status_to_string (int value) {
 
 
 void test_sms_decode_status_report (void) {
-	structsms* _tmp0_ = NULL;
-	structsms* sms;
+	struct sms* _tmp0_ = NULL;
+	struct sms* sms;
 	gchar* _tmp1_ = NULL;
 	gchar* number;
 	struct sms_status_report _tmp2_;
@@ -927,25 +848,25 @@ void test_sms_decode_status_report (void) {
 	_tmp6_ = string_to_string (number);
 	_tmp7_ = g_strconcat ("sms report addr: ", _tmp6_, NULL);
 	_tmp8_ = _tmp7_;
-	g_debug ("testsms.vala:241: %s", _tmp8_);
+	g_debug ("testsms.vala:179: %s", _tmp8_);
 	_g_free0 (_tmp8_);
 	_tmp9_ = g_strdup_printf ("%hhu", reference);
 	_tmp10_ = _tmp9_;
 	_tmp11_ = g_strconcat ("sms report ref: ", _tmp10_, NULL);
 	_tmp12_ = _tmp11_;
-	g_debug ("testsms.vala:242: %s", _tmp12_);
+	g_debug ("testsms.vala:180: %s", _tmp12_);
 	_g_free0 (_tmp12_);
 	_g_free0 (_tmp10_);
 	_tmp13_ = _sms_status_to_string (status);
 	_tmp14_ = g_strconcat ("sms report status: ", _tmp13_, NULL);
 	_tmp15_ = _tmp14_;
-	g_debug ("testsms.vala:243: %s", _tmp15_);
+	g_debug ("testsms.vala:181: %s", _tmp15_);
 	_g_free0 (_tmp15_);
 	_tmp16_ = sms_to_string (sms);
 	_tmp17_ = _tmp16_;
 	_tmp18_ = g_strconcat ("sms report text: ", _tmp17_, NULL);
 	_tmp19_ = _tmp18_;
-	g_debug ("testsms.vala:244: %s", _tmp19_);
+	g_debug ("testsms.vala:182: %s", _tmp19_);
 	_g_free0 (_tmp19_);
 	_g_free0 (_tmp17_);
 	_g_free0 (number);
@@ -966,7 +887,7 @@ void test_sms_encode_submit_single_default_alphabet (void) {
 	guint _tmp3_ = 0U;
 	GSList* _tmp4_;
 	gconstpointer _tmp5_ = NULL;
-	structsms* sms;
+	struct sms* sms;
 	enum sms_type _tmp6_;
 	gchar* _tmp7_ = NULL;
 	gchar* _tmp8_;
@@ -994,7 +915,7 @@ void test_sms_encode_submit_single_default_alphabet (void) {
 	g_assert (_tmp3_ == ((guint) 1));
 	_tmp4_ = smslist;
 	_tmp5_ = g_slist_nth_data (_tmp4_, (guint) 0);
-	sms = (structsms*) ((structsms*) _tmp5_);
+	sms = (struct sms*) ((struct sms*) _tmp5_);
 	_tmp6_ = sms->type;
 	g_assert (_tmp6_ == SMS_TYPE_SUBMIT);
 	_tmp7_ = sms_to_string (sms);
@@ -1120,275 +1041,6 @@ void test_sms_encode_submit_concatenated_default_alphabet (void) {
 }
 
 
-void test_fso_sms_storage_new (void) {
-	FsoGsmSmsStorage* _tmp0_;
-	FsoGsmSmsStorage* storage;
-	_tmp0_ = fso_gsm_sms_storage_new (IMSI);
-	storage = _tmp0_;
-	_g_object_unref0 (storage);
-}
-
-
-void test_fso_sms_storage_add_single (void) {
-	FsoGsmSmsStorage* _tmp0_;
-	FsoGsmSmsStorage* storage;
-	structsms* _tmp1_ = NULL;
-	structsms* sms;
-	gint _tmp2_ = 0;
-	gint _tmp3_ = 0;
-	_tmp0_ = fso_gsm_sms_storage_new (IMSI);
-	storage = _tmp0_;
-	fso_gsm_sms_storage_clean (storage);
-	_tmp1_ = sms_newFromHexPdu (pdu3, pdulength3);
-	sms = _tmp1_;
-	g_assert (sms != NULL);
-	_tmp2_ = fso_gsm_sms_storage_addSms (storage, sms);
-	g_assert (_tmp2_ == FSO_GSM_SMS_STORAGE_SMS_SINGLE_COMPLETE);
-	_tmp3_ = fso_gsm_sms_storage_addSms (storage, sms);
-	g_assert (_tmp3_ == FSO_GSM_SMS_STORAGE_SMS_ALREADY_SEEN);
-	_sms_free0 (sms);
-	_g_object_unref0 (storage);
-}
-
-
-void test_fso_sms_storage_add_concatenated (void) {
-	FsoGsmSmsStorage* _tmp0_;
-	FsoGsmSmsStorage* storage;
-	FsoGsmSmsStorage* _tmp1_;
-	structsms** _tmp2_ = NULL;
-	structsms** smses;
-	gint smses_length1;
-	gint _smses_size_;
-	FsoGsmSmsStorage* _tmp24_;
-	structsms** _tmp25_;
-	gint _tmp25__length1;
-	structsms* _tmp26_;
-	gint _tmp27_ = 0;
-	_tmp0_ = fso_gsm_sms_storage_new (IMSI);
-	storage = _tmp0_;
-	_tmp1_ = storage;
-	fso_gsm_sms_storage_clean (_tmp1_);
-	_tmp2_ = g_new0 (structsms*, G_N_ELEMENTS (pdulengths1) + 1);
-	smses = _tmp2_;
-	smses_length1 = G_N_ELEMENTS (pdulengths1);
-	_smses_size_ = smses_length1;
-	{
-		gint i;
-		i = 0;
-		{
-			gboolean _tmp3_;
-			_tmp3_ = TRUE;
-			while (TRUE) {
-				gboolean _tmp4_;
-				gint _tmp6_;
-				structsms** _tmp7_;
-				gint _tmp7__length1;
-				gint _tmp8_;
-				gint _tmp9_;
-				const gchar* _tmp10_;
-				gint _tmp11_;
-				gint _tmp12_;
-				structsms* _tmp13_ = NULL;
-				structsms* _tmp14_;
-				_tmp4_ = _tmp3_;
-				if (!_tmp4_) {
-					gint _tmp5_;
-					_tmp5_ = i;
-					i = _tmp5_ + 1;
-				}
-				_tmp3_ = FALSE;
-				_tmp6_ = i;
-				if (!(_tmp6_ < G_N_ELEMENTS (pdulengths1))) {
-					break;
-				}
-				_tmp7_ = smses;
-				_tmp7__length1 = smses_length1;
-				_tmp8_ = i;
-				_tmp9_ = i;
-				_tmp10_ = pdus1[_tmp9_];
-				_tmp11_ = i;
-				_tmp12_ = pdulengths1[_tmp11_];
-				_tmp13_ = sms_newFromHexPdu (_tmp10_, _tmp12_);
-				_sms_free0 (_tmp7_[_tmp8_]);
-				_tmp7_[_tmp8_] = _tmp13_;
-				_tmp14_ = _tmp7_[_tmp8_];
-			}
-		}
-	}
-	{
-		gint i;
-		i = 0;
-		{
-			gboolean _tmp15_;
-			_tmp15_ = TRUE;
-			while (TRUE) {
-				gboolean _tmp16_;
-				gint _tmp18_;
-				FsoGsmSmsStorage* _tmp19_;
-				structsms** _tmp20_;
-				gint _tmp20__length1;
-				gint _tmp21_;
-				structsms* _tmp22_;
-				gint _tmp23_ = 0;
-				_tmp16_ = _tmp15_;
-				if (!_tmp16_) {
-					gint _tmp17_;
-					_tmp17_ = i;
-					i = _tmp17_ + 1;
-				}
-				_tmp15_ = FALSE;
-				_tmp18_ = i;
-				if (!(_tmp18_ < (G_N_ELEMENTS (pdulengths1) - 1))) {
-					break;
-				}
-				_tmp19_ = storage;
-				_tmp20_ = smses;
-				_tmp20__length1 = smses_length1;
-				_tmp21_ = i;
-				_tmp22_ = _tmp20_[_tmp21_];
-				_tmp23_ = fso_gsm_sms_storage_addSms (_tmp19_, _tmp22_);
-				g_assert (_tmp23_ == FSO_GSM_SMS_STORAGE_SMS_MULTI_INCOMPLETE);
-			}
-		}
-	}
-	_tmp24_ = storage;
-	_tmp25_ = smses;
-	_tmp25__length1 = smses_length1;
-	_tmp26_ = _tmp25_[G_N_ELEMENTS (pdulengths1) - 1];
-	_tmp27_ = fso_gsm_sms_storage_addSms (_tmp24_, _tmp26_);
-	g_assert (_tmp27_ == G_N_ELEMENTS (pdulengths1));
-	smses = (_vala_array_free (smses, smses_length1, (GDestroyNotify) sms_free), NULL);
-	_g_object_unref0 (storage);
-}
-
-
-static gpointer _g_object_ref0 (gpointer self) {
-	return self ? g_object_ref (self) : NULL;
-}
-
-
-void test_fso_sms_storage_store_transaction_index (void) {
-	FsoGsmAtSmsHandler* _tmp0_;
-	FsoGsmAtSmsHandler* handler;
-	FsoGsmAtSmsHandler* _tmp1_;
-	FsoGsmSmsStorage* _tmp2_;
-	FsoGsmSmsStorage* _tmp3_;
-	FsoGsmAtSmsHandler* _tmp4_;
-	GeeArrayList* _tmp5_ = NULL;
-	GeeArrayList* pdus;
-	gint i;
-	FsoGsmAtSmsHandler* _tmp20_;
-	GeeArrayList* _tmp21_;
-	_tmp0_ = fso_gsm_at_sms_handler_new ();
-	handler = _tmp0_;
-	_tmp1_ = handler;
-	_tmp2_ = fso_gsm_sms_storage_new (IMSI);
-	_tmp3_ = _tmp2_;
-	fso_gsm_sms_handler_set_storage ((FsoGsmSmsHandler*) _tmp1_, _tmp3_);
-	_g_object_unref0 (_tmp3_);
-	_tmp4_ = handler;
-	_tmp5_ = fso_gsm_sms_handler_formatTextMessage ((FsoGsmSmsHandler*) _tmp4_, PHONE_NUMBER, LONG_TEXT, TRUE);
-	pdus = _tmp5_;
-	i = 0;
-	{
-		GeeArrayList* _tmp6_;
-		GeeArrayList* _tmp7_;
-		GeeArrayList* _pdu_list;
-		GeeArrayList* _tmp8_;
-		gint _tmp9_;
-		gint _tmp10_;
-		gint _pdu_size;
-		gint _pdu_index;
-		_tmp6_ = pdus;
-		_tmp7_ = _g_object_ref0 (_tmp6_);
-		_pdu_list = _tmp7_;
-		_tmp8_ = _pdu_list;
-		_tmp9_ = gee_abstract_collection_get_size ((GeeCollection*) _tmp8_);
-		_tmp10_ = _tmp9_;
-		_pdu_size = _tmp10_;
-		_pdu_index = -1;
-		while (TRUE) {
-			gint _tmp11_;
-			gint _tmp12_;
-			gint _tmp13_;
-			GeeArrayList* _tmp14_;
-			gint _tmp15_;
-			gpointer _tmp16_ = NULL;
-			WrapHexPdu* pdu;
-			WrapHexPdu* _tmp17_;
-			gint _tmp18_;
-			gint _tmp19_;
-			_tmp11_ = _pdu_index;
-			_pdu_index = _tmp11_ + 1;
-			_tmp12_ = _pdu_index;
-			_tmp13_ = _pdu_size;
-			if (!(_tmp12_ < _tmp13_)) {
-				break;
-			}
-			_tmp14_ = _pdu_list;
-			_tmp15_ = _pdu_index;
-			_tmp16_ = gee_abstract_list_get ((GeeAbstractList*) _tmp14_, _tmp15_);
-			pdu = (WrapHexPdu*) _tmp16_;
-			_tmp17_ = pdu;
-			_tmp18_ = i;
-			i = _tmp18_ + 1;
-			_tmp19_ = i;
-			_tmp17_->transaction_index = _tmp19_;
-			_wrap_hex_pdu_unref0 (pdu);
-		}
-		_g_object_unref0 (_pdu_list);
-	}
-	_tmp20_ = handler;
-	_tmp21_ = pdus;
-	fso_gsm_sms_handler_storeTransactionIndizesForSentMessage ((FsoGsmSmsHandler*) _tmp20_, _tmp21_);
-	_g_object_unref0 (pdus);
-	_g_object_unref0 (handler);
-}
-
-
-void test_fso_sms_storage_confirm_ack (void) {
-	FsoGsmAtSmsHandler* _tmp0_;
-	FsoGsmAtSmsHandler* handler;
-	FsoGsmSmsStorage* _tmp1_;
-	FsoGsmSmsStorage* _tmp2_;
-	FsoGsmSmsStorage* _tmp3_;
-	FsoGsmSmsStorage* _tmp4_;
-	gint _tmp5_ = 0;
-	FsoGsmSmsStorage* _tmp6_;
-	FsoGsmSmsStorage* _tmp7_;
-	gint _tmp8_ = 0;
-	FsoGsmSmsStorage* _tmp9_;
-	FsoGsmSmsStorage* _tmp10_;
-	gint _tmp11_ = 0;
-	FsoGsmSmsStorage* _tmp12_;
-	FsoGsmSmsStorage* _tmp13_;
-	gint _tmp14_ = 0;
-	_tmp0_ = fso_gsm_at_sms_handler_new ();
-	handler = _tmp0_;
-	_tmp1_ = fso_gsm_sms_storage_new (IMSI);
-	_tmp2_ = _tmp1_;
-	fso_gsm_sms_handler_set_storage ((FsoGsmSmsHandler*) handler, _tmp2_);
-	_g_object_unref0 (_tmp2_);
-	_tmp3_ = fso_gsm_sms_handler_get_storage ((FsoGsmSmsHandler*) handler);
-	_tmp4_ = _tmp3_;
-	_tmp5_ = fso_gsm_sms_storage_confirmReceivedMessage (_tmp4_, 2);
-	g_assert (_tmp5_ == (-1));
-	_tmp6_ = fso_gsm_sms_handler_get_storage ((FsoGsmSmsHandler*) handler);
-	_tmp7_ = _tmp6_;
-	_tmp8_ = fso_gsm_sms_storage_confirmReceivedMessage (_tmp7_, 3);
-	g_assert (_tmp8_ == (-1));
-	_tmp9_ = fso_gsm_sms_handler_get_storage ((FsoGsmSmsHandler*) handler);
-	_tmp10_ = _tmp9_;
-	_tmp11_ = fso_gsm_sms_storage_confirmReceivedMessage (_tmp10_, 4);
-	g_assert (_tmp11_ == (-1));
-	_tmp12_ = fso_gsm_sms_handler_get_storage ((FsoGsmSmsHandler*) handler);
-	_tmp13_ = _tmp12_;
-	_tmp14_ = fso_gsm_sms_storage_confirmReceivedMessage (_tmp13_, 1);
-	g_assert (_tmp14_ != (-1));
-	_g_object_unref0 (handler);
-}
-
-
 static void _test_sms_decode_deliver_single_default_alphabet_gcallback (void) {
 	test_sms_decode_deliver_single_default_alphabet ();
 }
@@ -1414,31 +1066,6 @@ static void _test_sms_encode_submit_single_default_alphabet_gcallback (void) {
 }
 
 
-static void _test_fso_sms_storage_new_gcallback (void) {
-	test_fso_sms_storage_new ();
-}
-
-
-static void _test_fso_sms_storage_add_single_gcallback (void) {
-	test_fso_sms_storage_add_single ();
-}
-
-
-static void _test_fso_sms_storage_add_concatenated_gcallback (void) {
-	test_fso_sms_storage_add_concatenated ();
-}
-
-
-static void _test_fso_sms_storage_store_transaction_index_gcallback (void) {
-	test_fso_sms_storage_store_transaction_index ();
-}
-
-
-static void _test_fso_sms_storage_confirm_ack_gcallback (void) {
-	test_fso_sms_storage_confirm_ack ();
-}
-
-
 void _vala_main (gchar** args, int args_length1) {
 	g_test_init (&args_length1, &args, NULL);
 	g_test_add_func ("/3rdparty/Sms/Decode/Deliver/Single/DefaultAlphabet", _test_sms_decode_deliver_single_default_alphabet_gcallback);
@@ -1446,11 +1073,6 @@ void _vala_main (gchar** args, int args_length1) {
 	g_test_add_func ("/3rdparty/Sms/Decode/Deliver/Multiple/Concatenated/DefaultAlphabet", _test_sms_decode_deliver_multiple_concatenated_default_alphabet_gcallback);
 	g_test_add_func ("/3rdparty/Sms/Decode/StatusReport", _test_sms_decode_status_report_gcallback);
 	g_test_add_func ("/3rdparty/Sms/Encode/Submit/Single/DefaultAlphabet", _test_sms_encode_submit_single_default_alphabet_gcallback);
-	g_test_add_func ("/Fso/Sms/Storage/New", _test_fso_sms_storage_new_gcallback);
-	g_test_add_func ("/Fso/Sms/Storage/Add/Single", _test_fso_sms_storage_add_single_gcallback);
-	g_test_add_func ("/Fso/Sms/Storage/Add/Concatenated", _test_fso_sms_storage_add_concatenated_gcallback);
-	g_test_add_func ("/Fso/Sms/Storage/StoreTransactionIndex", _test_fso_sms_storage_store_transaction_index_gcallback);
-	g_test_add_func ("/Fso/Sms/Storage/ConfirmReceivedMessage", _test_fso_sms_storage_confirm_ack_gcallback);
 	g_test_run ();
 }
 

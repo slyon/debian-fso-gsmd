@@ -1362,12 +1362,106 @@ gchar* fso_gsm_constants_phonenumberTupleToString (FsoGsmConstants* self, const 
 }
 
 
-static const gchar* string_offset (const gchar* self, glong offset) {
-	const gchar* result = NULL;
-	glong _tmp0_;
+static glong string_strnlen (gchar* str, glong maxlen) {
+	glong result = 0L;
+	gchar* _tmp0_;
+	glong _tmp1_;
+	gchar* _tmp2_ = NULL;
+	gchar* end;
+	gchar* _tmp3_;
+	_tmp0_ = str;
+	_tmp1_ = maxlen;
+	_tmp2_ = memchr (_tmp0_, 0, (gsize) _tmp1_);
+	end = _tmp2_;
+	_tmp3_ = end;
+	if (_tmp3_ == NULL) {
+		glong _tmp4_;
+		_tmp4_ = maxlen;
+		result = _tmp4_;
+		return result;
+	} else {
+		gchar* _tmp5_;
+		gchar* _tmp6_;
+		_tmp5_ = end;
+		_tmp6_ = str;
+		result = (glong) (_tmp5_ - _tmp6_);
+		return result;
+	}
+}
+
+
+static gchar* string_substring (const gchar* self, glong offset, glong len) {
+	gchar* result = NULL;
+	glong string_length = 0L;
+	gboolean _tmp0_ = FALSE;
+	glong _tmp1_;
+	gboolean _tmp3_;
+	glong _tmp9_;
+	glong _tmp15_;
+	glong _tmp18_;
+	glong _tmp19_;
+	glong _tmp20_;
+	glong _tmp21_;
+	glong _tmp22_;
+	gchar* _tmp23_ = NULL;
 	g_return_val_if_fail (self != NULL, NULL);
-	_tmp0_ = offset;
-	result = (const gchar*) (((gchar*) self) + _tmp0_);
+	_tmp1_ = offset;
+	if (_tmp1_ >= ((glong) 0)) {
+		glong _tmp2_;
+		_tmp2_ = len;
+		_tmp0_ = _tmp2_ >= ((glong) 0);
+	} else {
+		_tmp0_ = FALSE;
+	}
+	_tmp3_ = _tmp0_;
+	if (_tmp3_) {
+		glong _tmp4_;
+		glong _tmp5_;
+		glong _tmp6_ = 0L;
+		_tmp4_ = offset;
+		_tmp5_ = len;
+		_tmp6_ = string_strnlen ((gchar*) self, _tmp4_ + _tmp5_);
+		string_length = _tmp6_;
+	} else {
+		gint _tmp7_;
+		gint _tmp8_;
+		_tmp7_ = strlen (self);
+		_tmp8_ = _tmp7_;
+		string_length = (glong) _tmp8_;
+	}
+	_tmp9_ = offset;
+	if (_tmp9_ < ((glong) 0)) {
+		glong _tmp10_;
+		glong _tmp11_;
+		glong _tmp12_;
+		_tmp10_ = string_length;
+		_tmp11_ = offset;
+		offset = _tmp10_ + _tmp11_;
+		_tmp12_ = offset;
+		g_return_val_if_fail (_tmp12_ >= ((glong) 0), NULL);
+	} else {
+		glong _tmp13_;
+		glong _tmp14_;
+		_tmp13_ = offset;
+		_tmp14_ = string_length;
+		g_return_val_if_fail (_tmp13_ <= _tmp14_, NULL);
+	}
+	_tmp15_ = len;
+	if (_tmp15_ < ((glong) 0)) {
+		glong _tmp16_;
+		glong _tmp17_;
+		_tmp16_ = string_length;
+		_tmp17_ = offset;
+		len = _tmp16_ - _tmp17_;
+	}
+	_tmp18_ = offset;
+	_tmp19_ = len;
+	_tmp20_ = string_length;
+	g_return_val_if_fail ((_tmp18_ + _tmp19_) <= _tmp20_, NULL);
+	_tmp21_ = offset;
+	_tmp22_ = len;
+	_tmp23_ = g_strndup (((gchar*) self) + _tmp21_, (gsize) _tmp22_);
+	result = _tmp23_;
 	return result;
 }
 
@@ -1382,19 +1476,24 @@ gchar* fso_gsm_constants_phonenumberStringToTuple (FsoGsmConstants* self, const 
 	_tmp1_ = string_get (_tmp0_, (glong) 0);
 	if (_tmp1_ == '+') {
 		const gchar* _tmp2_;
-		const gchar* _tmp3_ = NULL;
-		gchar* _tmp4_ = NULL;
+		gchar* _tmp3_ = NULL;
+		gchar* _tmp4_;
+		gchar* _tmp5_ = NULL;
+		gchar* _tmp6_;
 		_tmp2_ = number;
-		_tmp3_ = string_offset (_tmp2_, (glong) 1);
-		_tmp4_ = g_strdup_printf ("\"%s\",145", _tmp3_);
-		result = _tmp4_;
+		_tmp3_ = string_substring (_tmp2_, (glong) 1, (glong) (-1));
+		_tmp4_ = _tmp3_;
+		_tmp5_ = g_strdup_printf ("\"%s\",145", _tmp4_);
+		_tmp6_ = _tmp5_;
+		_g_free0 (_tmp4_);
+		result = _tmp6_;
 		return result;
 	} else {
-		const gchar* _tmp5_;
-		gchar* _tmp6_ = NULL;
-		_tmp5_ = number;
-		_tmp6_ = g_strdup_printf ("\"%s\",129", _tmp5_);
-		result = _tmp6_;
+		const gchar* _tmp7_;
+		gchar* _tmp8_ = NULL;
+		_tmp7_ = number;
+		_tmp8_ = g_strdup_printf ("\"%s\",129", _tmp7_);
+		result = _tmp8_;
 		return result;
 	}
 }
@@ -1405,30 +1504,28 @@ gchar* fso_gsm_constants_phonenumberStringToRealTuple (FsoGsmConstants* self, co
 	gchar* result = NULL;
 	const gchar* _tmp0_;
 	gchar _tmp1_ = '\0';
-	const gchar* _tmp5_;
-	gchar* _tmp6_;
+	const gchar* _tmp4_;
+	gchar* _tmp5_;
 	g_return_val_if_fail (self != NULL, NULL);
 	g_return_val_if_fail (number != NULL, NULL);
 	_tmp0_ = number;
 	_tmp1_ = string_get (_tmp0_, (glong) 0);
 	if (_tmp1_ == '+') {
 		const gchar* _tmp2_;
-		const gchar* _tmp3_ = NULL;
-		gchar* _tmp4_;
+		gchar* _tmp3_ = NULL;
 		_vala_ntype = (guint8) 145;
 		_tmp2_ = number;
-		_tmp3_ = string_offset (_tmp2_, (glong) 1);
-		_tmp4_ = g_strdup (_tmp3_);
-		result = _tmp4_;
+		_tmp3_ = string_substring (_tmp2_, (glong) 1, (glong) (-1));
+		result = _tmp3_;
 		if (ntype) {
 			*ntype = _vala_ntype;
 		}
 		return result;
 	}
 	_vala_ntype = (guint8) 129;
-	_tmp5_ = number;
-	_tmp6_ = g_strdup (_tmp5_);
-	result = _tmp6_;
+	_tmp4_ = number;
+	_tmp5_ = g_strdup (_tmp4_);
+	result = _tmp5_;
 	if (ntype) {
 		*ntype = _vala_ntype;
 	}
@@ -1616,7 +1713,7 @@ gchar* fso_gsm_constants_callDirectionToString (FsoGsmConstants* self, gint code
 			gint _tmp3_;
 			gchar* _tmp4_;
 			_tmp3_ = code;
-			g_error ("consts.vala:770: invalid call status: %d", _tmp3_);
+			g_warning ("consts.vala:770: invalid call status: %d", _tmp3_);
 			_tmp4_ = g_strdup ("unknown");
 			result = _tmp4_;
 			return result;
@@ -1731,7 +1828,7 @@ gint fso_gsm_constants_callStringToType (FsoGsmConstants* self, const gchar* cty
 			{
 				const gchar* _tmp4_;
 				_tmp4_ = ctype;
-				g_error ("consts.vala:799: invalid call type: %s", _tmp4_);
+				g_warning ("consts.vala:799: invalid call type: %s", _tmp4_);
 				result = 9;
 				return result;
 			}

@@ -75,126 +75,120 @@ struct _PdpPppInternalScActivateData {
 	GSimpleAsyncResult* _async_result;
 	PdpPppInternal* self;
 	FsoGsmModem* _tmp0_;
-	FsoGsmAbstractModem* _tmp1_;
-	FsoGsmAbstractModem* m;
-	FsoGsmModem* _tmp2_;
-	FsoGsmModemData* _tmp3_;
+	FsoGsmModemData* _tmp1_;
 	FsoGsmModemData* data;
-	FsoGsmModemData* _tmp4_;
-	FsoGsmContextParams* _tmp5_;
-	GError* _tmp6_;
-	FsoGsmModemData* _tmp7_;
-	FsoGsmContextParams* _tmp8_;
-	const gchar* _tmp9_;
-	GError* _tmp10_;
-	gboolean _tmp11_;
-	FsoGsmModem* _tmp12_;
+	FsoGsmModemData* _tmp2_;
+	FsoGsmContextParams* _tmp3_;
+	GError* _tmp4_;
+	FsoGsmModemData* _tmp5_;
+	FsoGsmContextParams* _tmp6_;
+	const gchar* _tmp7_;
+	GError* _tmp8_;
+	gboolean _tmp9_;
+	FsoGsmModem* _tmp10_;
+	FsoFrameworkTransportSpec* _tmp11_;
+	FsoFrameworkTransportSpec* _tmp12_;
 	const gchar* _tmp13_;
 	FsoGsmModem* _tmp14_;
-	const gchar* _tmp15_;
-	gboolean _tmp16_;
-	GError* _tmp17_;
-	FsoGsmAbstractModem* _tmp18_;
-	const gchar* _tmp19_;
-	FsoGsmAbstractModem* _tmp20_;
-	const gchar* _tmp21_;
-	FsoGsmAbstractModem* _tmp22_;
-	gint _tmp23_;
+	FsoFrameworkTransportSpec* _tmp15_;
+	FsoFrameworkTransportSpec* _tmp16_;
+	const gchar* _tmp17_;
+	gboolean _tmp18_;
+	GError* _tmp19_;
+	FsoGsmModem* _tmp20_;
+	FsoFrameworkTransportSpec* _tmp21_;
+	FsoFrameworkTransportSpec* _tmp22_;
+	FsoFrameworkTransport* _tmp23_;
 	FsoFrameworkTransport* _tmp24_;
-	FsoGsmModem* _tmp25_;
-	const gchar* _tmp26_;
-	FsoFrameworkTransport* _tmp27_;
-	FsoFrameworkSerialTransport* _tmp28_;
+	FsoFrameworkTransport* _tmp25_;
+	FsoFrameworkSerialTransport* _tmp26_;
 	FsoFrameworkSerialTransport* serial_transport;
-	FsoFrameworkSerialTransport* _tmp29_;
-	FsoFrameworkSmartKeyFile* _tmp30_;
-	gboolean _tmp31_;
-	FsoFrameworkTransport* _tmp32_;
-	FsoGsmStateBasedAtParser* _tmp33_;
-	FsoGsmStateBasedAtParser* _tmp34_;
-	FsoGsmAtChannel* _tmp35_;
-	FsoGsmAtChannel* _tmp36_;
+	FsoFrameworkSerialTransport* _tmp27_;
+	FsoFrameworkSmartKeyFile* _tmp28_;
+	gboolean _tmp29_;
+	FsoFrameworkTransport* _tmp30_;
+	FsoGsmStateBasedAtParser* _tmp31_;
+	FsoGsmStateBasedAtParser* _tmp32_;
+	FsoGsmAtChannel* _tmp33_;
+	FsoGsmAtChannel* _tmp34_;
 	FsoGsmAtChannel* channel;
-	FsoGsmAtChannel* _tmp37_;
-	gboolean _tmp38_;
-	GError* _tmp39_;
-	FsoFrameworkSmartKeyFile* _tmp40_;
-	gint _tmp41_;
+	FsoGsmAtChannel* _tmp35_;
+	gboolean _tmp36_;
+	GError* _tmp37_;
+	FsoFrameworkSmartKeyFile* _tmp38_;
+	gint _tmp39_;
 	gint delay;
-	gint _tmp42_;
-	FsoGsmAtChannel* _tmp43_;
-	FsoGsmCustomAtCommand* _tmp44_;
-	FsoGsmCustomAtCommand* _tmp45_;
-	gint _tmp46_;
-	gchar** _tmp47_;
-	gchar** _tmp48_;
-	gint _tmp48__length1;
-	gchar** reason;
-	gint reason_length1;
-	gint _reason_size_;
-	FsoGsmAtChannel* _tmp49_;
-	FsoGsmCustomAtCommand* _tmp50_;
-	FsoGsmCustomAtCommand* _tmp51_;
-	gint _tmp52_;
-	gchar** _tmp53_;
-	gchar** _tmp54_;
-	gint _tmp54__length1;
+	gint _tmp40_;
+	FsoGsmAtChannel* _tmp41_;
+	FsoGsmCustomAtCommand* _tmp42_;
+	FsoGsmCustomAtCommand* _tmp43_;
+	gint _tmp44_;
+	gchar** _tmp45_;
+	gchar** _tmp46_;
+	gint _tmp46__length1;
+	FsoGsmAtChannel* _tmp47_;
+	FsoGsmCustomAtCommand* _tmp48_;
+	FsoGsmCustomAtCommand* _tmp49_;
+	gint _tmp50_;
+	gchar** _tmp51_;
+	gchar** _tmp52_;
+	gint _tmp52__length1;
 	gchar** response;
 	gint response_length1;
 	gint _response_size_;
-	FsoGsmAtChannel* _tmp55_;
-	FsoGsmCustomAtCommand* _tmp56_;
-	FsoGsmCustomAtCommand* _tmp57_;
-	FsoGsmModemData* _tmp58_;
-	FsoGsmContextParams* _tmp59_;
-	const gchar* _tmp60_;
-	gchar* _tmp61_;
-	gchar* _tmp62_;
-	gint _tmp63_;
-	gchar** _tmp64_;
-	gchar** _tmp65_;
-	gint _tmp65__length1;
-	const gchar* _tmp66_;
-	gchar* _tmp67_;
-	gchar* _tmp68_;
-	gboolean _tmp69_;
-	gboolean _tmp70_;
+	FsoGsmAtChannel* _tmp53_;
+	FsoGsmCustomAtCommand* _tmp54_;
+	FsoGsmCustomAtCommand* _tmp55_;
+	FsoGsmModemData* _tmp56_;
+	FsoGsmContextParams* _tmp57_;
+	const gchar* _tmp58_;
+	gchar* _tmp59_;
+	gchar* _tmp60_;
+	gint _tmp61_;
+	gchar** _tmp62_;
+	gchar** _tmp63_;
+	gint _tmp63__length1;
+	const gchar* _tmp64_;
+	gchar* _tmp65_;
+	gchar* _tmp66_;
+	gboolean _tmp67_;
+	gboolean _tmp68_;
+	FsoGsmAtChannel* _tmp69_;
+	GError* _tmp70_;
 	FsoGsmAtChannel* _tmp71_;
-	GError* _tmp72_;
-	FsoGsmAtChannel* _tmp73_;
-	FsoGsmCustomAtCommand* _tmp74_;
-	FsoGsmCustomAtCommand* _tmp75_;
-	gint _tmp76_;
-	gchar** _tmp77_;
-	gchar** _tmp78_;
-	gint _tmp78__length1;
-	const gchar* _tmp79_;
-	gchar* _tmp80_;
-	gchar* _tmp81_;
-	gboolean _tmp82_;
-	gboolean _tmp83_;
-	FsoGsmAtChannel* _tmp84_;
-	GError* _tmp85_;
-	FsoFrameworkTransport* _tmp86_;
-	gint _tmp87_;
-	GIOChannel* _tmp88_;
-	FsoFrameworkSmartKeyFile* _tmp89_;
-	gint _tmp90_;
-	gint _tmp91_;
-	GIOChannel* _tmp92_;
+	FsoGsmCustomAtCommand* _tmp72_;
+	FsoGsmCustomAtCommand* _tmp73_;
+	gint _tmp74_;
+	gchar** _tmp75_;
+	gchar** _tmp76_;
+	gint _tmp76__length1;
+	const gchar* _tmp77_;
+	gchar* _tmp78_;
+	gchar* _tmp79_;
+	gboolean _tmp80_;
+	gboolean _tmp81_;
+	FsoGsmAtChannel* _tmp82_;
+	GError* _tmp83_;
+	FsoFrameworkTransport* _tmp84_;
+	gint _tmp85_;
+	GIOChannel* _tmp86_;
+	FsoFrameworkSmartKeyFile* _tmp87_;
+	gint _tmp88_;
+	gint _tmp89_;
+	GIOChannel* _tmp90_;
+	GAtPPP* _tmp91_;
+	GAtPPP* _tmp92_;
 	GAtPPP* _tmp93_;
 	GAtPPP* _tmp94_;
-	GAtPPP* _tmp95_;
-	GAtPPP* _tmp96_;
-	FsoGsmModemData* _tmp97_;
-	FsoGsmContextParams* _tmp98_;
-	const gchar* _tmp99_;
-	FsoGsmModemData* _tmp100_;
-	FsoGsmContextParams* _tmp101_;
-	const gchar* _tmp102_;
+	FsoGsmModemData* _tmp95_;
+	FsoGsmContextParams* _tmp96_;
+	const gchar* _tmp97_;
+	FsoGsmModemData* _tmp98_;
+	FsoGsmContextParams* _tmp99_;
+	const gchar* _tmp100_;
+	GAtPPP* _tmp101_;
+	GAtPPP* _tmp102_;
 	GAtPPP* _tmp103_;
-	GAtPPP* _tmp104_;
-	GAtPPP* _tmp105_;
 	GError * _inner_error_;
 };
 
@@ -528,23 +522,19 @@ static gboolean pdp_ppp_internal_real_sc_activate_co (PdpPppInternalScActivateDa
 	}
 	_state_0:
 	_data_->_tmp0_ = fso_gsm_theModem;
-	_data_->_tmp1_ = _g_object_ref0 (FSO_GSM_IS_ABSTRACT_MODEM (_data_->_tmp0_) ? ((FsoGsmAbstractModem*) _data_->_tmp0_) : NULL);
-	_data_->m = _data_->_tmp1_;
-	_data_->_tmp2_ = fso_gsm_theModem;
-	_data_->_tmp3_ = NULL;
-	_data_->_tmp3_ = fso_gsm_modem_data (_data_->_tmp2_);
-	_data_->data = _data_->_tmp3_;
-	_data_->_tmp4_ = _data_->data;
-	_data_->_tmp5_ = _data_->_tmp4_->contextParams;
-	if (_data_->_tmp5_ == NULL) {
+	_data_->_tmp1_ = NULL;
+	_data_->_tmp1_ = fso_gsm_modem_data (_data_->_tmp0_);
+	_data_->data = _data_->_tmp1_;
+	_data_->_tmp2_ = _data_->data;
+	_data_->_tmp3_ = _data_->_tmp2_->contextParams;
+	if (_data_->_tmp3_ == NULL) {
 		fso_gsm_ipdp_handler_disconnected ((FsoGsmIPdpHandler*) _data_->self);
-		_data_->_tmp6_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_INTERNAL_ERROR, "Context parameters not set");
-		_data_->_inner_error_ = _data_->_tmp6_;
+		_data_->_tmp4_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_INTERNAL_ERROR, "Context parameters not set");
+		_data_->_inner_error_ = _data_->_tmp4_;
 		if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
 			g_error_free (_data_->_inner_error_);
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			if (_data_->_state_ == 0) {
 				g_simple_async_result_complete_in_idle (_data_->_async_result);
 			} else {
@@ -554,24 +544,22 @@ static gboolean pdp_ppp_internal_real_sc_activate_co (PdpPppInternalScActivateDa
 			return FALSE;
 		} else {
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 			g_clear_error (&_data_->_inner_error_);
 			return FALSE;
 		}
 	}
-	_data_->_tmp7_ = _data_->data;
-	_data_->_tmp8_ = _data_->_tmp7_->contextParams;
-	_data_->_tmp9_ = _data_->_tmp8_->apn;
-	if (_data_->_tmp9_ == NULL) {
+	_data_->_tmp5_ = _data_->data;
+	_data_->_tmp6_ = _data_->_tmp5_->contextParams;
+	_data_->_tmp7_ = _data_->_tmp6_->apn;
+	if (_data_->_tmp7_ == NULL) {
 		fso_gsm_ipdp_handler_disconnected ((FsoGsmIPdpHandler*) _data_->self);
-		_data_->_tmp10_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_INTERNAL_ERROR, "APN not set");
-		_data_->_inner_error_ = _data_->_tmp10_;
+		_data_->_tmp8_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_INTERNAL_ERROR, "APN not set");
+		_data_->_inner_error_ = _data_->_tmp8_;
 		if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
 			g_error_free (_data_->_inner_error_);
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			if (_data_->_state_ == 0) {
 				g_simple_async_result_complete_in_idle (_data_->_async_result);
 			} else {
@@ -581,31 +569,33 @@ static gboolean pdp_ppp_internal_real_sc_activate_co (PdpPppInternalScActivateDa
 			return FALSE;
 		} else {
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 			g_clear_error (&_data_->_inner_error_);
 			return FALSE;
 		}
 	}
-	_data_->_tmp12_ = fso_gsm_theModem;
-	_data_->_tmp13_ = FSO_GSM_ABSTRACT_MODEM (_data_->_tmp12_)->data_transport;
+	_data_->_tmp10_ = fso_gsm_theModem;
+	_data_->_tmp11_ = fso_gsm_abstract_modem_get_data_transport_spec (FSO_GSM_ABSTRACT_MODEM (_data_->_tmp10_));
+	_data_->_tmp12_ = _data_->_tmp11_;
+	_data_->_tmp13_ = _data_->_tmp12_->type;
 	if (g_strcmp0 (_data_->_tmp13_, "serial") != 0) {
 		_data_->_tmp14_ = fso_gsm_theModem;
-		_data_->_tmp15_ = FSO_GSM_ABSTRACT_MODEM (_data_->_tmp14_)->data_transport;
-		_data_->_tmp11_ = g_strcmp0 (_data_->_tmp15_, "tcp") != 0;
+		_data_->_tmp15_ = fso_gsm_abstract_modem_get_data_transport_spec (FSO_GSM_ABSTRACT_MODEM (_data_->_tmp14_));
+		_data_->_tmp16_ = _data_->_tmp15_;
+		_data_->_tmp17_ = _data_->_tmp16_->type;
+		_data_->_tmp9_ = g_strcmp0 (_data_->_tmp17_, "tcp") != 0;
 	} else {
-		_data_->_tmp11_ = FALSE;
+		_data_->_tmp9_ = FALSE;
 	}
-	_data_->_tmp16_ = _data_->_tmp11_;
-	if (_data_->_tmp16_) {
+	_data_->_tmp18_ = _data_->_tmp9_;
+	if (_data_->_tmp18_) {
 		fso_gsm_ipdp_handler_disconnected ((FsoGsmIPdpHandler*) _data_->self);
-		_data_->_tmp17_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_INTERNAL_ERROR, "ippp only supports data transport types 'serial' and 'tcp' for now");
-		_data_->_inner_error_ = _data_->_tmp17_;
+		_data_->_tmp19_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_INTERNAL_ERROR, "ippp only supports data transport types 'serial' and 'tcp' for now");
+		_data_->_inner_error_ = _data_->_tmp19_;
 		if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
 			g_error_free (_data_->_inner_error_);
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			if (_data_->_state_ == 0) {
 				g_simple_async_result_complete_in_idle (_data_->_async_result);
 			} else {
@@ -615,59 +605,53 @@ static gboolean pdp_ppp_internal_real_sc_activate_co (PdpPppInternalScActivateDa
 			return FALSE;
 		} else {
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 			g_clear_error (&_data_->_inner_error_);
 			return FALSE;
 		}
 	}
-	_data_->_tmp18_ = _data_->m;
-	_data_->_tmp19_ = _data_->_tmp18_->data_transport;
-	_data_->_tmp20_ = _data_->m;
-	_data_->_tmp21_ = _data_->_tmp20_->data_port;
-	_data_->_tmp22_ = _data_->m;
-	_data_->_tmp23_ = _data_->_tmp22_->data_speed;
-	_data_->_tmp24_ = NULL;
-	_data_->_tmp24_ = fso_framework_transport_create (_data_->_tmp19_, _data_->_tmp21_, (guint) _data_->_tmp23_, TRUE, TRUE);
+	_data_->_tmp20_ = fso_gsm_theModem;
+	_data_->_tmp21_ = fso_gsm_abstract_modem_get_data_transport_spec (FSO_GSM_ABSTRACT_MODEM (_data_->_tmp20_));
+	_data_->_tmp22_ = _data_->_tmp21_;
+	_data_->_tmp23_ = NULL;
+	_data_->_tmp23_ = fso_framework_transport_spec_create (_data_->_tmp22_);
 	_g_object_unref0 (_data_->self->priv->transport);
-	_data_->self->priv->transport = _data_->_tmp24_;
-	_data_->_tmp25_ = fso_gsm_theModem;
-	_data_->_tmp26_ = FSO_GSM_ABSTRACT_MODEM (_data_->_tmp25_)->data_transport;
-	if (g_strcmp0 (_data_->_tmp26_, "serial") == 0) {
-		_data_->_tmp27_ = _data_->self->priv->transport;
-		_data_->_tmp28_ = _g_object_ref0 (FSO_FRAMEWORK_IS_SERIAL_TRANSPORT (_data_->_tmp27_) ? ((FsoFrameworkSerialTransport*) _data_->_tmp27_) : NULL);
-		_data_->serial_transport = _data_->_tmp28_;
-		_data_->_tmp29_ = _data_->serial_transport;
-		_data_->_tmp30_ = fso_framework_theConfig;
-		_data_->_tmp31_ = FALSE;
-		_data_->_tmp31_ = fso_framework_smart_key_file_boolValue (_data_->_tmp30_, PDP_PPP_INTERNAL_MODULE_NAME, "dtr_cycle", FALSE);
-		_data_->_tmp29_->dtr_cycle = _data_->_tmp31_;
+	_data_->self->priv->transport = _data_->_tmp23_;
+	_data_->_tmp24_ = _data_->self->priv->transport;
+	if (FSO_FRAMEWORK_IS_SERIAL_TRANSPORT (_data_->_tmp24_)) {
+		_data_->_tmp25_ = _data_->self->priv->transport;
+		_data_->_tmp26_ = _g_object_ref0 (FSO_FRAMEWORK_IS_SERIAL_TRANSPORT (_data_->_tmp25_) ? ((FsoFrameworkSerialTransport*) _data_->_tmp25_) : NULL);
+		_data_->serial_transport = _data_->_tmp26_;
+		_data_->_tmp27_ = _data_->serial_transport;
+		_data_->_tmp28_ = fso_framework_theConfig;
+		_data_->_tmp29_ = FALSE;
+		_data_->_tmp29_ = fso_framework_smart_key_file_boolValue (_data_->_tmp28_, PDP_PPP_INTERNAL_MODULE_NAME, "dtr_cycle", FALSE);
+		_data_->_tmp27_->dtr_cycle = _data_->_tmp29_;
 		_g_object_unref0 (_data_->serial_transport);
 	}
-	_data_->_tmp32_ = _data_->self->priv->transport;
-	_data_->_tmp33_ = fso_gsm_state_based_at_parser_new ();
+	_data_->_tmp30_ = _data_->self->priv->transport;
+	_data_->_tmp31_ = fso_gsm_state_based_at_parser_new ();
+	_data_->_tmp32_ = _data_->_tmp31_;
+	_data_->_tmp33_ = fso_gsm_at_channel_new (NULL, _data_->_tmp30_, (FsoFrameworkParser*) _data_->_tmp32_);
 	_data_->_tmp34_ = _data_->_tmp33_;
-	_data_->_tmp35_ = fso_gsm_at_channel_new (NULL, _data_->_tmp32_, (FsoFrameworkParser*) _data_->_tmp34_);
-	_data_->_tmp36_ = _data_->_tmp35_;
-	_g_object_unref0 (_data_->_tmp34_);
-	_data_->channel = _data_->_tmp36_;
-	_data_->_tmp37_ = _data_->channel;
+	_g_object_unref0 (_data_->_tmp32_);
+	_data_->channel = _data_->_tmp34_;
+	_data_->_tmp35_ = _data_->channel;
 	_data_->_state_ = 1;
-	fso_framework_abstract_command_queue_open ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp37_, pdp_ppp_internal_sc_activate_ready, _data_);
+	fso_framework_abstract_command_queue_open ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp35_, pdp_ppp_internal_sc_activate_ready, _data_);
 	return FALSE;
 	_state_1:
-	_data_->_tmp38_ = FALSE;
-	_data_->_tmp38_ = fso_framework_abstract_command_queue_open_finish ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp37_, _data_->_res_);
-	if (!_data_->_tmp38_) {
+	_data_->_tmp36_ = FALSE;
+	_data_->_tmp36_ = fso_framework_abstract_command_queue_open_finish ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp35_, _data_->_res_);
+	if (!_data_->_tmp36_) {
 		fso_gsm_ipdp_handler_disconnected ((FsoGsmIPdpHandler*) _data_->self);
-		_data_->_tmp39_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_SYSTEM_ERROR, "Can't open data channel or transport");
-		_data_->_inner_error_ = _data_->_tmp39_;
+		_data_->_tmp37_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_SYSTEM_ERROR, "Can't open data channel or transport");
+		_data_->_inner_error_ = _data_->_tmp37_;
 		if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
 			g_error_free (_data_->_inner_error_);
 			_g_object_unref0 (_data_->channel);
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			if (_data_->_state_ == 0) {
 				g_simple_async_result_complete_in_idle (_data_->_async_result);
 			} else {
@@ -678,106 +662,101 @@ static gboolean pdp_ppp_internal_real_sc_activate_co (PdpPppInternalScActivateDa
 		} else {
 			_g_object_unref0 (_data_->channel);
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 			g_clear_error (&_data_->_inner_error_);
 			return FALSE;
 		}
 	}
-	_data_->_tmp40_ = ((FsoFrameworkAbstractObject*) _data_->self)->config;
-	_data_->_tmp41_ = 0;
-	_data_->_tmp41_ = fso_framework_smart_key_file_intValue (_data_->_tmp40_, PDP_PPP_INTERNAL_MODULE_NAME, "post_open_delay", 500);
-	_data_->delay = _data_->_tmp41_;
-	_data_->_tmp42_ = _data_->delay;
-	g_timeout_add_full (G_PRIORITY_DEFAULT, (guint) _data_->_tmp42_, _pdp_ppp_internal_real_sc_activate_co_gsource_func, _data_, NULL);
+	_data_->_tmp38_ = ((FsoFrameworkAbstractObject*) _data_->self)->config;
+	_data_->_tmp39_ = 0;
+	_data_->_tmp39_ = fso_framework_smart_key_file_intValue (_data_->_tmp38_, PDP_PPP_INTERNAL_MODULE_NAME, "post_open_delay", 500);
+	_data_->delay = _data_->_tmp39_;
+	_data_->_tmp40_ = _data_->delay;
+	g_timeout_add_full (G_PRIORITY_DEFAULT, (guint) _data_->_tmp40_, _pdp_ppp_internal_real_sc_activate_co_gsource_func, _data_, NULL);
 	_data_->_state_ = 2;
 	return FALSE;
 	_state_2:
 	;
-	_data_->_tmp43_ = _data_->channel;
-	_data_->_tmp44_ = fso_gsm_custom_at_command_new ("", FALSE);
-	_data_->_tmp45_ = _data_->_tmp44_;
-	_data_->_tmp46_ = 0;
+	_data_->_tmp41_ = _data_->channel;
+	_data_->_tmp42_ = fso_gsm_custom_at_command_new ("", FALSE);
+	_data_->_tmp43_ = _data_->_tmp42_;
+	_data_->_tmp44_ = 0;
 	_data_->_state_ = 3;
-	fso_gsm_at_command_queue_enqueueAsync ((FsoGsmAtCommandQueue*) _data_->_tmp43_, (FsoGsmAtCommandQueueCommand*) _data_->_tmp45_, "Z", 0, 0, pdp_ppp_internal_sc_activate_ready, _data_);
+	fso_gsm_at_command_queue_enqueueAsync ((FsoGsmAtCommandQueue*) _data_->_tmp41_, (FsoGsmAtCommandQueueCommand*) _data_->_tmp43_, "Z", 0, 0, pdp_ppp_internal_sc_activate_ready, _data_);
 	return FALSE;
 	_state_3:
-	_data_->_tmp47_ = NULL;
-	_data_->_tmp47_ = fso_gsm_at_command_queue_enqueueAsync_finish ((FsoGsmAtCommandQueue*) _data_->_tmp43_, _data_->_res_, &_data_->_tmp46_);
-	_data_->_tmp48_ = _data_->_tmp47_;
-	_data_->_tmp48__length1 = _data_->_tmp46_;
-	_g_object_unref0 (_data_->_tmp45_);
-	_data_->reason = _data_->_tmp48_;
-	_data_->reason_length1 = _data_->_tmp48__length1;
-	_data_->_reason_size_ = _data_->reason_length1;
-	_data_->_tmp49_ = _data_->channel;
-	_data_->_tmp50_ = fso_gsm_custom_at_command_new ("", FALSE);
-	_data_->_tmp51_ = _data_->_tmp50_;
-	_data_->_tmp52_ = 0;
+	_data_->_tmp45_ = NULL;
+	_data_->_tmp45_ = fso_gsm_at_command_queue_enqueueAsync_finish ((FsoGsmAtCommandQueue*) _data_->_tmp41_, _data_->_res_, &_data_->_tmp44_);
+	_data_->_tmp46_ = _data_->_tmp45_;
+	_data_->_tmp46__length1 = _data_->_tmp44_;
+	_data_->_tmp46_ = (_vala_array_free (_data_->_tmp46_, _data_->_tmp46__length1, (GDestroyNotify) g_free), NULL);
+	_g_object_unref0 (_data_->_tmp43_);
+	_data_->_tmp47_ = _data_->channel;
+	_data_->_tmp48_ = fso_gsm_custom_at_command_new ("", FALSE);
+	_data_->_tmp49_ = _data_->_tmp48_;
+	_data_->_tmp50_ = 0;
 	_data_->_state_ = 4;
-	fso_gsm_at_command_queue_enqueueAsync ((FsoGsmAtCommandQueue*) _data_->_tmp49_, (FsoGsmAtCommandQueueCommand*) _data_->_tmp51_, "+CGQREQ=1;+CGQMIN=1;+CGEQREQ=1;+CGEQMIN=1", 0, 0, pdp_ppp_internal_sc_activate_ready, _data_);
+	fso_gsm_at_command_queue_enqueueAsync ((FsoGsmAtCommandQueue*) _data_->_tmp47_, (FsoGsmAtCommandQueueCommand*) _data_->_tmp49_, "+CGQREQ=1;+CGQMIN=1;+CGEQREQ=1;+CGEQMIN=1", 0, 0, pdp_ppp_internal_sc_activate_ready, _data_);
 	return FALSE;
 	_state_4:
-	_data_->_tmp53_ = NULL;
-	_data_->_tmp53_ = fso_gsm_at_command_queue_enqueueAsync_finish ((FsoGsmAtCommandQueue*) _data_->_tmp49_, _data_->_res_, &_data_->_tmp52_);
-	_data_->_tmp54_ = _data_->_tmp53_;
-	_data_->_tmp54__length1 = _data_->_tmp52_;
-	_g_object_unref0 (_data_->_tmp51_);
-	_data_->response = _data_->_tmp54_;
-	_data_->response_length1 = _data_->_tmp54__length1;
+	_data_->_tmp51_ = NULL;
+	_data_->_tmp51_ = fso_gsm_at_command_queue_enqueueAsync_finish ((FsoGsmAtCommandQueue*) _data_->_tmp47_, _data_->_res_, &_data_->_tmp50_);
+	_data_->_tmp52_ = _data_->_tmp51_;
+	_data_->_tmp52__length1 = _data_->_tmp50_;
+	_g_object_unref0 (_data_->_tmp49_);
+	_data_->response = _data_->_tmp52_;
+	_data_->response_length1 = _data_->_tmp52__length1;
 	_data_->_response_size_ = _data_->response_length1;
-	_data_->_tmp55_ = _data_->channel;
-	_data_->_tmp56_ = fso_gsm_custom_at_command_new ("", FALSE);
-	_data_->_tmp57_ = _data_->_tmp56_;
-	_data_->_tmp58_ = _data_->data;
-	_data_->_tmp59_ = _data_->_tmp58_->contextParams;
-	_data_->_tmp60_ = _data_->_tmp59_->apn;
-	_data_->_tmp61_ = NULL;
-	_data_->_tmp61_ = g_strdup_printf ("+CGDCONT=1,\"IP\",\"%s\",,0,0", _data_->_tmp60_);
-	_data_->_tmp62_ = _data_->_tmp61_;
-	_data_->_tmp63_ = 0;
+	_data_->_tmp53_ = _data_->channel;
+	_data_->_tmp54_ = fso_gsm_custom_at_command_new ("", FALSE);
+	_data_->_tmp55_ = _data_->_tmp54_;
+	_data_->_tmp56_ = _data_->data;
+	_data_->_tmp57_ = _data_->_tmp56_->contextParams;
+	_data_->_tmp58_ = _data_->_tmp57_->apn;
+	_data_->_tmp59_ = NULL;
+	_data_->_tmp59_ = g_strdup_printf ("+CGDCONT=1,\"IP\",\"%s\",,0,0", _data_->_tmp58_);
+	_data_->_tmp60_ = _data_->_tmp59_;
+	_data_->_tmp61_ = 0;
 	_data_->_state_ = 5;
-	fso_gsm_at_command_queue_enqueueAsync ((FsoGsmAtCommandQueue*) _data_->_tmp55_, (FsoGsmAtCommandQueueCommand*) _data_->_tmp57_, _data_->_tmp62_, 0, 0, pdp_ppp_internal_sc_activate_ready, _data_);
+	fso_gsm_at_command_queue_enqueueAsync ((FsoGsmAtCommandQueue*) _data_->_tmp53_, (FsoGsmAtCommandQueueCommand*) _data_->_tmp55_, _data_->_tmp60_, 0, 0, pdp_ppp_internal_sc_activate_ready, _data_);
 	return FALSE;
 	_state_5:
-	_data_->_tmp64_ = NULL;
-	_data_->_tmp64_ = fso_gsm_at_command_queue_enqueueAsync_finish ((FsoGsmAtCommandQueue*) _data_->_tmp55_, _data_->_res_, &_data_->_tmp63_);
+	_data_->_tmp62_ = NULL;
+	_data_->_tmp62_ = fso_gsm_at_command_queue_enqueueAsync_finish ((FsoGsmAtCommandQueue*) _data_->_tmp53_, _data_->_res_, &_data_->_tmp61_);
 	_data_->response = (_vala_array_free (_data_->response, _data_->response_length1, (GDestroyNotify) g_free), NULL);
-	_data_->response = _data_->_tmp64_;
-	_data_->response_length1 = _data_->_tmp63_;
+	_data_->response = _data_->_tmp62_;
+	_data_->response_length1 = _data_->_tmp61_;
 	_data_->_response_size_ = _data_->response_length1;
-	_g_free0 (_data_->_tmp62_);
-	_g_object_unref0 (_data_->_tmp57_);
-	_data_->_tmp65_ = _data_->response;
-	_data_->_tmp65__length1 = _data_->response_length1;
-	_data_->_tmp66_ = _data_->_tmp65_[0];
-	_data_->_tmp67_ = NULL;
-	_data_->_tmp67_ = string_strip (_data_->_tmp66_);
-	_data_->_tmp68_ = _data_->_tmp67_;
-	_data_->_tmp69_ = FALSE;
-	_data_->_tmp69_ = g_str_has_suffix (_data_->_tmp68_, "OK");
-	_data_->_tmp70_ = !_data_->_tmp69_;
-	_g_free0 (_data_->_tmp68_);
-	if (_data_->_tmp70_) {
-		_data_->_tmp71_ = _data_->channel;
+	_g_free0 (_data_->_tmp60_);
+	_g_object_unref0 (_data_->_tmp55_);
+	_data_->_tmp63_ = _data_->response;
+	_data_->_tmp63__length1 = _data_->response_length1;
+	_data_->_tmp64_ = _data_->_tmp63_[0];
+	_data_->_tmp65_ = NULL;
+	_data_->_tmp65_ = string_strip (_data_->_tmp64_);
+	_data_->_tmp66_ = _data_->_tmp65_;
+	_data_->_tmp67_ = FALSE;
+	_data_->_tmp67_ = g_str_has_suffix (_data_->_tmp66_, "OK");
+	_data_->_tmp68_ = !_data_->_tmp67_;
+	_g_free0 (_data_->_tmp66_);
+	if (_data_->_tmp68_) {
+		_data_->_tmp69_ = _data_->channel;
 		_data_->_state_ = 6;
-		fso_framework_abstract_command_queue_close ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp71_, pdp_ppp_internal_sc_activate_ready, _data_);
+		fso_framework_abstract_command_queue_close ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp69_, pdp_ppp_internal_sc_activate_ready, _data_);
 		return FALSE;
 		_state_6:
-		fso_framework_abstract_command_queue_close_finish ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp71_, _data_->_res_);
+		fso_framework_abstract_command_queue_close_finish ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp69_, _data_->_res_);
 		_g_object_unref0 (_data_->self->priv->transport);
 		_data_->self->priv->transport = NULL;
 		fso_gsm_ipdp_handler_disconnected ((FsoGsmIPdpHandler*) _data_->self);
-		_data_->_tmp72_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_SYSTEM_ERROR, "Can't initialize data transport");
-		_data_->_inner_error_ = _data_->_tmp72_;
+		_data_->_tmp70_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_SYSTEM_ERROR, "Can't initialize data transport");
+		_data_->_inner_error_ = _data_->_tmp70_;
 		if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
 			g_error_free (_data_->_inner_error_);
 			_data_->response = (_vala_array_free (_data_->response, _data_->response_length1, (GDestroyNotify) g_free), NULL);
-			_data_->reason = (_vala_array_free (_data_->reason, _data_->reason_length1, (GDestroyNotify) g_free), NULL);
 			_g_object_unref0 (_data_->channel);
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			if (_data_->_state_ == 0) {
 				g_simple_async_result_complete_in_idle (_data_->_async_result);
 			} else {
@@ -787,60 +766,56 @@ static gboolean pdp_ppp_internal_real_sc_activate_co (PdpPppInternalScActivateDa
 			return FALSE;
 		} else {
 			_data_->response = (_vala_array_free (_data_->response, _data_->response_length1, (GDestroyNotify) g_free), NULL);
-			_data_->reason = (_vala_array_free (_data_->reason, _data_->reason_length1, (GDestroyNotify) g_free), NULL);
 			_g_object_unref0 (_data_->channel);
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 			g_clear_error (&_data_->_inner_error_);
 			return FALSE;
 		}
 	}
-	_data_->_tmp73_ = _data_->channel;
-	_data_->_tmp74_ = fso_gsm_custom_at_command_new ("", FALSE);
-	_data_->_tmp75_ = _data_->_tmp74_;
-	_data_->_tmp76_ = 0;
+	_data_->_tmp71_ = _data_->channel;
+	_data_->_tmp72_ = fso_gsm_custom_at_command_new ("", FALSE);
+	_data_->_tmp73_ = _data_->_tmp72_;
+	_data_->_tmp74_ = 0;
 	_data_->_state_ = 7;
-	fso_gsm_at_command_queue_enqueueAsync ((FsoGsmAtCommandQueue*) _data_->_tmp73_, (FsoGsmAtCommandQueueCommand*) _data_->_tmp75_, "D*99***1#", 0, 0, pdp_ppp_internal_sc_activate_ready, _data_);
+	fso_gsm_at_command_queue_enqueueAsync ((FsoGsmAtCommandQueue*) _data_->_tmp71_, (FsoGsmAtCommandQueueCommand*) _data_->_tmp73_, "D*99***1#", 0, 0, pdp_ppp_internal_sc_activate_ready, _data_);
 	return FALSE;
 	_state_7:
-	_data_->_tmp77_ = NULL;
-	_data_->_tmp77_ = fso_gsm_at_command_queue_enqueueAsync_finish ((FsoGsmAtCommandQueue*) _data_->_tmp73_, _data_->_res_, &_data_->_tmp76_);
+	_data_->_tmp75_ = NULL;
+	_data_->_tmp75_ = fso_gsm_at_command_queue_enqueueAsync_finish ((FsoGsmAtCommandQueue*) _data_->_tmp71_, _data_->_res_, &_data_->_tmp74_);
 	_data_->response = (_vala_array_free (_data_->response, _data_->response_length1, (GDestroyNotify) g_free), NULL);
-	_data_->response = _data_->_tmp77_;
-	_data_->response_length1 = _data_->_tmp76_;
+	_data_->response = _data_->_tmp75_;
+	_data_->response_length1 = _data_->_tmp74_;
 	_data_->_response_size_ = _data_->response_length1;
-	_g_object_unref0 (_data_->_tmp75_);
-	_data_->_tmp78_ = _data_->response;
-	_data_->_tmp78__length1 = _data_->response_length1;
-	_data_->_tmp79_ = _data_->_tmp78_[0];
-	_data_->_tmp80_ = NULL;
-	_data_->_tmp80_ = string_strip (_data_->_tmp79_);
-	_data_->_tmp81_ = _data_->_tmp80_;
-	_data_->_tmp82_ = FALSE;
-	_data_->_tmp82_ = g_str_has_suffix (_data_->_tmp81_, "CONNECT");
-	_data_->_tmp83_ = !_data_->_tmp82_;
-	_g_free0 (_data_->_tmp81_);
-	if (_data_->_tmp83_) {
-		_data_->_tmp84_ = _data_->channel;
+	_g_object_unref0 (_data_->_tmp73_);
+	_data_->_tmp76_ = _data_->response;
+	_data_->_tmp76__length1 = _data_->response_length1;
+	_data_->_tmp77_ = _data_->_tmp76_[0];
+	_data_->_tmp78_ = NULL;
+	_data_->_tmp78_ = string_strip (_data_->_tmp77_);
+	_data_->_tmp79_ = _data_->_tmp78_;
+	_data_->_tmp80_ = FALSE;
+	_data_->_tmp80_ = g_str_has_suffix (_data_->_tmp79_, "CONNECT");
+	_data_->_tmp81_ = !_data_->_tmp80_;
+	_g_free0 (_data_->_tmp79_);
+	if (_data_->_tmp81_) {
+		_data_->_tmp82_ = _data_->channel;
 		_data_->_state_ = 8;
-		fso_framework_abstract_command_queue_close ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp84_, pdp_ppp_internal_sc_activate_ready, _data_);
+		fso_framework_abstract_command_queue_close ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp82_, pdp_ppp_internal_sc_activate_ready, _data_);
 		return FALSE;
 		_state_8:
-		fso_framework_abstract_command_queue_close_finish ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp84_, _data_->_res_);
+		fso_framework_abstract_command_queue_close_finish ((FsoFrameworkAbstractCommandQueue*) _data_->_tmp82_, _data_->_res_);
 		_g_object_unref0 (_data_->self->priv->transport);
 		_data_->self->priv->transport = NULL;
 		fso_gsm_ipdp_handler_disconnected ((FsoGsmIPdpHandler*) _data_->self);
-		_data_->_tmp85_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_SYSTEM_ERROR, "Can't initialize data transport");
-		_data_->_inner_error_ = _data_->_tmp85_;
+		_data_->_tmp83_ = g_error_new_literal (FREE_SMARTPHONE_ERROR, FREE_SMARTPHONE_ERROR_SYSTEM_ERROR, "Can't initialize data transport");
+		_data_->_inner_error_ = _data_->_tmp83_;
 		if ((_data_->_inner_error_->domain == FREE_SMARTPHONE_GSM_ERROR) || (_data_->_inner_error_->domain == FREE_SMARTPHONE_ERROR)) {
 			g_simple_async_result_set_from_error (_data_->_async_result, _data_->_inner_error_);
 			g_error_free (_data_->_inner_error_);
 			_data_->response = (_vala_array_free (_data_->response, _data_->response_length1, (GDestroyNotify) g_free), NULL);
-			_data_->reason = (_vala_array_free (_data_->reason, _data_->reason_length1, (GDestroyNotify) g_free), NULL);
 			_g_object_unref0 (_data_->channel);
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			if (_data_->_state_ == 0) {
 				g_simple_async_result_complete_in_idle (_data_->_async_result);
 			} else {
@@ -850,58 +825,54 @@ static gboolean pdp_ppp_internal_real_sc_activate_co (PdpPppInternalScActivateDa
 			return FALSE;
 		} else {
 			_data_->response = (_vala_array_free (_data_->response, _data_->response_length1, (GDestroyNotify) g_free), NULL);
-			_data_->reason = (_vala_array_free (_data_->reason, _data_->reason_length1, (GDestroyNotify) g_free), NULL);
 			_g_object_unref0 (_data_->channel);
 			_g_object_unref0 (_data_->data);
-			_g_object_unref0 (_data_->m);
 			g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _data_->_inner_error_->message, g_quark_to_string (_data_->_inner_error_->domain), _data_->_inner_error_->code);
 			g_clear_error (&_data_->_inner_error_);
 			return FALSE;
 		}
 	}
-	_data_->_tmp86_ = _data_->self->priv->transport;
-	_data_->_tmp87_ = 0;
-	_data_->_tmp87_ = fso_framework_transport_freeze (_data_->_tmp86_);
-	_data_->_tmp88_ = g_io_channel_unix_new (_data_->_tmp87_);
+	_data_->_tmp84_ = _data_->self->priv->transport;
+	_data_->_tmp85_ = 0;
+	_data_->_tmp85_ = fso_framework_transport_freeze (_data_->_tmp84_);
+	_data_->_tmp86_ = g_io_channel_unix_new (_data_->_tmp85_);
 	_g_io_channel_unref0 (_data_->self->priv->iochannel);
-	_data_->self->priv->iochannel = _data_->_tmp88_;
-	_data_->_tmp89_ = ((FsoFrameworkAbstractObject*) _data_->self)->config;
-	_data_->_tmp90_ = 0;
-	_data_->_tmp90_ = fso_framework_smart_key_file_intValue (_data_->_tmp89_, PDP_PPP_INTERNAL_MODULE_NAME, "post_connect_delay", 500);
-	_data_->delay = _data_->_tmp90_;
-	_data_->_tmp91_ = _data_->delay;
-	g_timeout_add_full (G_PRIORITY_DEFAULT, (guint) _data_->_tmp91_, _pdp_ppp_internal_real_sc_activate_co_gsource_func, _data_, NULL);
+	_data_->self->priv->iochannel = _data_->_tmp86_;
+	_data_->_tmp87_ = ((FsoFrameworkAbstractObject*) _data_->self)->config;
+	_data_->_tmp88_ = 0;
+	_data_->_tmp88_ = fso_framework_smart_key_file_intValue (_data_->_tmp87_, PDP_PPP_INTERNAL_MODULE_NAME, "post_connect_delay", 500);
+	_data_->delay = _data_->_tmp88_;
+	_data_->_tmp89_ = _data_->delay;
+	g_timeout_add_full (G_PRIORITY_DEFAULT, (guint) _data_->_tmp89_, _pdp_ppp_internal_real_sc_activate_co_gsource_func, _data_, NULL);
 	_data_->_state_ = 9;
 	return FALSE;
 	_state_9:
 	;
-	_data_->_tmp92_ = _data_->self->priv->iochannel;
-	_data_->_tmp93_ = g_at_ppp_new (_data_->_tmp92_);
+	_data_->_tmp90_ = _data_->self->priv->iochannel;
+	_data_->_tmp91_ = g_at_ppp_new (_data_->_tmp90_);
 	_g_at_ppp_unref0 (_data_->self->priv->ppp);
-	_data_->self->priv->ppp = _data_->_tmp93_;
+	_data_->self->priv->ppp = _data_->_tmp91_;
+	_data_->_tmp92_ = _data_->self->priv->ppp;
+	g_at_ppp_set_debug (_data_->_tmp92_, _pdp_ppp_internal_onDebugFromAtPPP_gat_debug_func, _data_->self);
+	_data_->_tmp93_ = _data_->self->priv->ppp;
+	g_at_ppp_set_recording (_data_->_tmp93_, "/tmp/ppp.log");
 	_data_->_tmp94_ = _data_->self->priv->ppp;
-	g_at_ppp_set_debug (_data_->_tmp94_, _pdp_ppp_internal_onDebugFromAtPPP_gat_debug_func, _data_->self);
-	_data_->_tmp95_ = _data_->self->priv->ppp;
-	g_at_ppp_set_recording (_data_->_tmp95_, "/tmp/ppp.log");
-	_data_->_tmp96_ = _data_->self->priv->ppp;
-	_data_->_tmp97_ = _data_->data;
-	_data_->_tmp98_ = _data_->_tmp97_->contextParams;
-	_data_->_tmp99_ = _data_->_tmp98_->username;
-	_data_->_tmp100_ = _data_->data;
-	_data_->_tmp101_ = _data_->_tmp100_->contextParams;
-	_data_->_tmp102_ = _data_->_tmp101_->password;
-	g_at_ppp_set_credentials (_data_->_tmp96_, _data_->_tmp99_, _data_->_tmp102_);
+	_data_->_tmp95_ = _data_->data;
+	_data_->_tmp96_ = _data_->_tmp95_->contextParams;
+	_data_->_tmp97_ = _data_->_tmp96_->username;
+	_data_->_tmp98_ = _data_->data;
+	_data_->_tmp99_ = _data_->_tmp98_->contextParams;
+	_data_->_tmp100_ = _data_->_tmp99_->password;
+	g_at_ppp_set_credentials (_data_->_tmp94_, _data_->_tmp97_, _data_->_tmp100_);
+	_data_->_tmp101_ = _data_->self->priv->ppp;
+	g_at_ppp_set_connect_function (_data_->_tmp101_, _pdp_ppp_internal_onConnectFromAtPPPP_gat_ppp_connect_func, _data_->self);
+	_data_->_tmp102_ = _data_->self->priv->ppp;
+	g_at_ppp_set_disconnect_function (_data_->_tmp102_, _pdp_ppp_internal_onDisconnectFromAtPPP_gat_ppp_disconnect_func, _data_->self);
 	_data_->_tmp103_ = _data_->self->priv->ppp;
-	g_at_ppp_set_connect_function (_data_->_tmp103_, _pdp_ppp_internal_onConnectFromAtPPPP_gat_ppp_connect_func, _data_->self);
-	_data_->_tmp104_ = _data_->self->priv->ppp;
-	g_at_ppp_set_disconnect_function (_data_->_tmp104_, _pdp_ppp_internal_onDisconnectFromAtPPP_gat_ppp_disconnect_func, _data_->self);
-	_data_->_tmp105_ = _data_->self->priv->ppp;
-	g_at_ppp_open (_data_->_tmp105_);
+	g_at_ppp_open (_data_->_tmp103_);
 	_data_->response = (_vala_array_free (_data_->response, _data_->response_length1, (GDestroyNotify) g_free), NULL);
-	_data_->reason = (_vala_array_free (_data_->reason, _data_->reason_length1, (GDestroyNotify) g_free), NULL);
 	_g_object_unref0 (_data_->channel);
 	_g_object_unref0 (_data_->data);
-	_g_object_unref0 (_data_->m);
 	if (_data_->_state_ == 0) {
 		g_simple_async_result_complete_in_idle (_data_->_async_result);
 	} else {

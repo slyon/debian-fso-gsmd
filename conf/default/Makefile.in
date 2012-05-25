@@ -96,8 +96,6 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CONNMAN_CFLAGS = @CONNMAN_CFLAGS@
-CONNMAN_LIBS = @CONNMAN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -229,7 +227,7 @@ GTESTER_REPORT = gtester-report
 EXTRA_DIST = 
 TEST_PROGS = 
 NULL = 
-confdir = $(sysconfdir)/freesmartphone/default
+confdir = $(sysconfdir)/freesmartphone/conf/default
 dist_conf_DATA = \
 	fsogsmd.conf \
 	$(NULL)

@@ -25,7 +25,7 @@ namespace FsoGsm
     public const string CONFIG_SECTION = "fsogsm";
     internal const string PPPD_DEFAULT_COMMAND = "/usr/sbin/pppd";
 
-    // This is used the let the plugins define the services dependencies.
+    // This is used to let the plugins define their service dependencies
     public GLib.List<string> theServiceDependencies = new GLib.List<string>();
 }
 
@@ -189,6 +189,27 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
         CLOSING,
     }
 
+    /**
+     * Network connection state. We have this separated from the Modem status itself to be
+     * able to keep track of it for other purposes than exposing a global modem state
+     * (e.g. when state is SUSPENDING or CLOSING it's impossible to find out if we are
+     * still registered with any network or not).
+     *
+     * NOTE: This is currently only for internal use and will not be exposed with our
+     * public dbus API (which will maybe happen later).
+     **/
+    public enum NetworkStatus
+    {
+        /** For error cases **/
+        UNKNOWN,
+        /** Not registered to any network or trying to register **/
+        UNREGISTERED,
+        /** Not registered to any network but trying to register with one **/
+        SEARCHING,
+        /** Registered to a network **/
+        REGISTERED,
+    }
+
     // DBus Service API
     public abstract async bool open();
     public abstract async void close();
@@ -201,6 +222,7 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
     // Channel API
     public abstract void registerChannel( string name, FsoGsm.Channel channel );
     public abstract void advanceToState( Modem.Status status, bool force = false );
+    public abstract void advanceNetworkState( Modem.NetworkStatus status );
     public abstract AtCommandSequence atCommandSequence( string channel, string purpose );
     public signal void signalStatusChanged( Modem.Status status );
 
@@ -213,7 +235,7 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
     public abstract SmsHandler smshandler { get; set; } // the Sms handler
     public abstract PhonebookHandler pbhandler { get; set; } // the Phonebook handler
     public abstract WatchDog watchdog { get; set; } // the WatchDog
-    public abstract PdpHandler pdphandler { get; set; } // the Pdp handler
+    public abstract IPdpHandler pdphandler { get; set; } // the Pdp handler
 
     // PDP API
     public abstract string allocateDataPort();
@@ -223,10 +245,19 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
     public abstract async string[] processAtCommandAsync( AtCommand command, string request, int retries = DEFAULT_RETRIES );
     public abstract async string[] processAtPduCommandAsync( AtCommand command, string request, int retries = DEFAULT_RETRIES );
 
+    /**
+     * Send an AT command to the modem but don't wait for any response. This might me usefull in
+     * some cases where we're really sure that the modem will understand the command we're sending.
+     *
+     * Possible response will be threated as unsolicited ones when using this method.
+     **/
+    public abstract void sendAtCommand( AtCommand command, string request, int retries = DEFAULT_RETRIES );
+
     public abstract FsoGsm.Channel? channel( string category );
 
     // Misc. Accessors
     public abstract Modem.Status status();
+    public abstract Modem.NetworkStatus network_status();
     public abstract FreeSmartphone.GSM.DeviceStatus externalStatus();
     public abstract FsoGsm.Modem.Data data();
     public abstract void registerAtCommandSequence( string channel, string purpose, AtCommandSequence sequence );
@@ -238,19 +269,11 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
  **/
 public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.AbstractObject
 {
-    //FIXME: Encapsulate as transport spec
-    public string modem_type;
-    public string modem_transport;
-    public string modem_port;
-    public int modem_speed;
-
-    //FIXME: Encapsulate as transport spec
-    public string data_type;
-    public string data_transport;
-    public string data_port;
-    public int data_speed;
+    public FsoFramework.TransportSpec modem_transport_spec { get; private set; }
+    public FsoFramework.TransportSpec data_transport_spec { get; private set; }
 
     protected FsoGsm.Modem.Status modem_status;
+    protected FsoGsm.Modem.NetworkStatus modem_network_status;
     protected FsoGsm.Modem.Data modem_data;
 
     protected HashMap<string,FsoGsm.Channel> channels;
@@ -264,7 +287,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
     public SmsHandler smshandler { get; set; } // the SMS handler
     public PhonebookHandler pbhandler { get; set; } // the Phonebook handler
     public WatchDog watchdog { get; set; } // the WatchDog
-    public PdpHandler pdphandler { get; set; } // the Pdp handler
+    public IPdpHandler pdphandler { get; set; } // the Pdp handler
 
     protected FsoGsm.LowLevel lowlevel;
 
@@ -283,43 +306,11 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
 
         // gather modem access parameters
         var modem_config = config.stringValue( CONFIG_SECTION, "modem_access", "invalid:invalid:-1" );
-        if ( modem_config != "" )
-        {
-            var params = modem_config.split( ":" );
-            if ( params.length == 3 )
-            {
-                var values = modem_config.split( ":" );
-                modem_transport = values[0];
-                modem_port = values[1];
-                modem_speed = values[2].to_int();
-            }
-            else
-            {
-                logger.warning( @"Configuration string 'modem_access' invalid; expected 3 parameters, got $(params.length)" );
-            }
-        }
-        else
-        {
-            logger.warning( @"Configuration string 'modem_access' missing. This might not be what you want." );
-        }
+        modem_transport_spec = FsoFramework.TransportSpec.parse( modem_config );
 
         // gather modem data access parameters
         var data_config = config.stringValue( CONFIG_SECTION, "data_access", "" );
-        if ( data_config != "" )
-        {
-            var params = data_config.split( ":" );
-            if ( params.length == 3 )
-            {
-                var values = data_config.split( ":" );
-                data_transport = values[0];
-                data_port = values[1];
-                data_speed = values[2].to_int();
-            }
-            else
-            {
-                logger.warning( @"Configuration string 'data_access' invalid; expected 3 parameters, got $(params.length)" );
-            }
-        }
+        data_transport_spec = FsoFramework.TransportSpec.parse( data_config );
 
         initLowlevel();
         initPdpHandler();
@@ -330,11 +321,9 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         registerAtCommands();
         createChannels();
 
-        var configuration = @"$modem_transport:$modem_port@$modem_speed";
+        var configuration = modem_transport_spec.repr();
         if ( data_config != "" )
-        {
-            configuration += @" / $data_transport:$data_port@$data_speed";
-        }
+            configuration += @" / $(data_transport_spec.repr())";
 
         assert( logger.debug( @"Created; configured for $configuration" ) );
     }
@@ -422,7 +411,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
                 break;
             default:
                 logger.warning( @"Invalid pdp_type $pdphandlertype; data connectivity will NOT be available" );
-                //pdphandler = new FsoGsm.Nullpdphandler();
+                pdphandler = new FsoGsm.NullPdpHandler();
                 return;
         }
 
@@ -432,7 +421,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
             if ( pdphandlerclass == Type.INVALID  )
             {
                 logger.warning( @"Can't find plugin for pdp_type $pdphandlertype; data connectivity will NOT be available" );
-                //pdphandler = new FsoGsm.Nullpdphandler();
+                pdphandler = new FsoGsm.NullPdpHandler();
                 return;
             }
 
@@ -474,7 +463,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         modem_data.keepRegistration = config.boolValue( CONFIG_SECTION, "auto_register", false );
 
         modem_data.pppCommand = config.stringValue( CONFIG_SECTION, "ppp_command", PPPD_DEFAULT_COMMAND );
-        modem_data.pppPort = data_port ?? config.stringValue( CONFIG_SECTION, "ppp_port", "/dev/null" );
+        modem_data.pppPort = data_transport_spec.name ?? config.stringValue( CONFIG_SECTION, "ppp_port", "/dev/null" );
         modem_data.pppOptions = config.stringListValue( CONFIG_SECTION, "ppp_options", {
             "115200",
             "nodetach",
@@ -555,12 +544,14 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
 
     private async void checkChannelsForHangup()
     {
+        assert( logger.debug( @"Checking our channels as one had a hangup ..." ) );
+
         // we need to find out which channel has a hangup as we need to react
         // differently if it is the main channel or not
         var mainchannel = channels[ "main" ];
-        if ( mainchannel.isActive() )
+        if ( !mainchannel.isActive() )
         {
-            logger.error( "Detected main channel hangup; closing modem" );
+            logger.error( "Detected main channel hangup; closing modem ..." );
             close();
             this.hangup();
         }
@@ -572,6 +563,8 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
             {
                 if ( cname != "main" )
                 {
+                    assert( logger.debug( @"Checking channel $cname for hangup ..." ) );
+
                     var channel = channels[ cname ];
                     if ( !channel.isActive() )
                     {
@@ -593,14 +586,10 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         if ( modem_status == Modem.Status.CLOSING )
         {
             logger.warning( "Ignoring additional channel hangup while already closing the modem..." );
+            return;
         }
-        else
-        {
-            Idle.add( () => {
-                checkChannelsForHangup();
-                return false;
-            } );
-        }
+
+        Idle.add( () => { checkChannelsForHangup(); return false; } );
     }
 
     //
@@ -766,10 +755,17 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         yield;
 
         assert( logger.debug( @"Check wether we have to deactivate the PDP context ..." ) );
-        if ( pdphandler.status == FreeSmartphone.GSM.ContextStatus.ACTIVE ||
-             pdphandler.status == FreeSmartphone.GSM.ContextStatus.SUSPENDED )
+        if ( pdphandler != null && ( pdphandler.status == FreeSmartphone.GSM.ContextStatus.ACTIVE ||
+                                     pdphandler.status == FreeSmartphone.GSM.ContextStatus.SUSPENDED ) )
         {
-            yield pdphandler.deactivate();
+            try
+            {
+                yield pdphandler.deactivate();
+            }
+            catch( GLib.Error e )
+            {
+                logger.error( @"Could not deactivate PDP handle: $(e.message)" );
+            }
         }
 
         // close all channels
@@ -853,6 +849,11 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         return modem_status;
     }
 
+    public Modem.NetworkStatus network_status()
+    {
+        return modem_network_status;
+    }
+
     public FsoGsm.Modem.Data data()
     {
         return modem_data;
@@ -913,7 +914,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
      **/
     public virtual string allocateDataPort()
     {
-        return data_port;
+        return data_transport_spec.name;
     }
 
     /**
@@ -929,6 +930,13 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         // FIXME: assert channel is really an At channel
         var response = yield channel.enqueueAsync( command, request, retries );
         return response;
+    }
+
+    public void sendAtCommand( AtCommand command, string request, int retries = DEFAULT_RETRIES )
+    {
+        AtChannel channel = channelForCommand( command, request ) as AtChannel;
+        // FIXME: assert channel is really an At channel
+        channel.enqueue( command, request, retries );
     }
 
     public async string[] processAtPduCommandAsync( AtCommand command, string request, int retries = DEFAULT_RETRIES )
@@ -1052,6 +1060,12 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         logger.info( @"Modem Status changed to $modem_status" );
     }
 
+    public void advanceNetworkState( Modem.NetworkStatus state )
+    {
+        assert( logger.debug( @"Advancing network state to $state" ) );
+        modem_network_status = state;
+    }
+
     public AtCommandSequence atCommandSequence( string channel, string purpose )
     {
         var seq = modem_data.cmdSequences[ @"$channel-$purpose" ];
@@ -1106,6 +1120,22 @@ public abstract class FsoGsm.AbstractGsmModem : FsoGsm.AbstractModem
 
 public abstract class FsoGsm.AbstractCdmaModem : FsoGsm.AbstractModem
 {
+}
+
+/**
+ * Dummy implementation of a modem. Should be only used for testing purpose.
+ **/
+public class FsoGsm.NullModem : FsoGsm.AbstractModem
+{
+    public override string repr()
+    {
+        return @"<>";
+    }
+
+    protected override FsoGsm.Channel channelForCommand( FsoGsm.AtCommand command, string query )
+    {
+        return (FsoGsm.Channel) null;
+    }
 }
 
 // vim:ts=4:sw=4:expandtab

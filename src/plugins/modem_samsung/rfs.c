@@ -122,16 +122,13 @@ enum  {
 	SAMSUNG_RFS_CHANNEL_DUMMY_PROPERTY,
 	SAMSUNG_RFS_CHANNEL_NAME
 };
-static void samsung_rfs_channel_real_onReadFromTransport (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t);
+static void samsung_rfs_channel_real_onTransportDataAvailable (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t);
 const gchar* samsung_ipc_message_type_to_string (unsigned short self);
 static const char* _samsung_ipc_message_type_to_string (unsigned short value);
 gint samsung_rfs_channel_modem_read_request (SamsungRfsChannel* self, guint8* data, int data_length1);
 gint samsung_rfs_channel_modem_write_request (SamsungRfsChannel* self, guint8* data, int data_length1);
-static void _samsung_rfs_channel_onHupFromTransport (SamsungRfsChannel* self);
 SamsungRfsChannel* samsung_rfs_channel_new (const gchar* name, FsoFrameworkTransport* transport);
 SamsungRfsChannel* samsung_rfs_channel_construct (GType object_type, const gchar* name, FsoFrameworkTransport* transport);
-static void _fso_framework_abstract_command_queue_onReadFromTransport_fso_framework_transport_func (FsoFrameworkTransport* transport, gpointer self);
-static void __samsung_rfs_channel_onHupFromTransport_fso_framework_transport_func (FsoFrameworkTransport* transport, gpointer self);
 static void samsung_rfs_channel_set_name (SamsungRfsChannel* self, const gchar* value);
 static void __lambda5_ (SamsungRfsChannel* self, const gchar* message);
 static void ___lambda5__samsung_ipc_log_handler_cb (const gchar* message, gpointer self);
@@ -416,7 +413,7 @@ static const char* _samsung_ipc_message_type_to_string (unsigned short value) {
 }
 
 
-static void samsung_rfs_channel_real_onReadFromTransport (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t) {
+static void samsung_rfs_channel_real_onTransportDataAvailable (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t) {
 	SamsungRfsChannel * self;
 	struct ipc_message_info request = {0};
 	FsoFrameworkWakelock* _tmp0_;
@@ -573,21 +570,6 @@ gint samsung_rfs_channel_modem_write_request (SamsungRfsChannel* self, guint8* d
 }
 
 
-static void _samsung_rfs_channel_onHupFromTransport (SamsungRfsChannel* self) {
-	g_return_if_fail (self != NULL);
-}
-
-
-static void _fso_framework_abstract_command_queue_onReadFromTransport_fso_framework_transport_func (FsoFrameworkTransport* transport, gpointer self) {
-	fso_framework_abstract_command_queue_onReadFromTransport (self, transport);
-}
-
-
-static void __samsung_rfs_channel_onHupFromTransport_fso_framework_transport_func (FsoFrameworkTransport* transport, gpointer self) {
-	_samsung_rfs_channel_onHupFromTransport (self);
-}
-
-
 static void __lambda5_ (SamsungRfsChannel* self, const gchar* message) {
 	FsoFrameworkLogger* _tmp0_;
 	const gchar* _tmp1_;
@@ -620,34 +602,31 @@ static gint _samsung_rfs_channel_modem_write_request_samsung_ipc_transport_cb (g
 SamsungRfsChannel* samsung_rfs_channel_construct (GType object_type, const gchar* name, FsoFrameworkTransport* transport) {
 	SamsungRfsChannel * self = NULL;
 	FsoFrameworkTransport* _tmp0_;
-	FsoFrameworkTransport* _tmp1_;
-	const gchar* _tmp2_;
-	FsoFrameworkWakelock* _tmp3_;
-	FsoGsmModem* _tmp4_;
-	const gchar* _tmp5_;
+	const gchar* _tmp1_;
+	FsoFrameworkWakelock* _tmp2_;
+	FsoGsmModem* _tmp3_;
+	const gchar* _tmp4_;
+	struct ipc_client* _tmp5_;
 	struct ipc_client* _tmp6_;
 	struct ipc_client* _tmp7_;
-	struct ipc_client* _tmp8_;
 	g_return_val_if_fail (name != NULL, NULL);
 	_tmp0_ = transport;
 	self = (SamsungRfsChannel*) fso_framework_abstract_command_queue_construct (object_type, _tmp0_);
-	_tmp1_ = transport;
-	fso_framework_transport_setDelegates (_tmp1_, _fso_framework_abstract_command_queue_onReadFromTransport_fso_framework_transport_func, (FsoFrameworkAbstractCommandQueue*) self, __samsung_rfs_channel_onHupFromTransport_fso_framework_transport_func, self);
-	_tmp2_ = name;
-	samsung_rfs_channel_set_name (self, _tmp2_);
-	_tmp3_ = fso_framework_wakelock_new ("fsogsmd-modem-samsung-rfs");
+	_tmp1_ = name;
+	samsung_rfs_channel_set_name (self, _tmp1_);
+	_tmp2_ = fso_framework_wakelock_new ("fsogsmd-modem-samsung-rfs");
 	_g_object_unref0 (self->priv->wakelock);
-	self->priv->wakelock = _tmp3_;
-	_tmp4_ = fso_gsm_theModem;
-	_tmp5_ = name;
-	fso_gsm_modem_registerChannel (_tmp4_, _tmp5_, (FsoGsmChannel*) self);
-	_tmp6_ = ipc_client_new (IPC_CLIENT_TYPE_RFS);
+	self->priv->wakelock = _tmp2_;
+	_tmp3_ = fso_gsm_theModem;
+	_tmp4_ = name;
+	fso_gsm_modem_registerChannel (_tmp3_, _tmp4_, (FsoGsmChannel*) self);
+	_tmp5_ = ipc_client_new (IPC_CLIENT_TYPE_RFS);
 	_ipc_client_free0 (self->priv->rfsclient);
-	self->priv->rfsclient = _tmp6_;
+	self->priv->rfsclient = _tmp5_;
+	_tmp6_ = self->priv->rfsclient;
+	ipc_client_set_log_handler (_tmp6_, ___lambda5__samsung_ipc_log_handler_cb, self);
 	_tmp7_ = self->priv->rfsclient;
-	ipc_client_set_log_handler (_tmp7_, ___lambda5__samsung_ipc_log_handler_cb, self);
-	_tmp8_ = self->priv->rfsclient;
-	ipc_client_set_io_handlers (_tmp8_, _samsung_rfs_channel_modem_read_request_samsung_ipc_transport_cb, self, _samsung_rfs_channel_modem_write_request_samsung_ipc_transport_cb, self);
+	ipc_client_set_io_handlers (_tmp7_, _samsung_rfs_channel_modem_read_request_samsung_ipc_transport_cb, self, _samsung_rfs_channel_modem_write_request_samsung_ipc_transport_cb, self);
 	return self;
 }
 
@@ -956,7 +935,7 @@ static void samsung_rfs_channel_set_name (SamsungRfsChannel* self, const gchar* 
 static void samsung_rfs_channel_class_init (SamsungRfsChannelClass * klass) {
 	samsung_rfs_channel_parent_class = g_type_class_peek_parent (klass);
 	g_type_class_add_private (klass, sizeof (SamsungRfsChannelPrivate));
-	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->onReadFromTransport = samsung_rfs_channel_real_onReadFromTransport;
+	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->onTransportDataAvailable = samsung_rfs_channel_real_onTransportDataAvailable;
 	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->open = samsung_rfs_channel_real_open;
 	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->open_finish = samsung_rfs_channel_real_open_finish;
 	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->close = samsung_rfs_channel_real_close;

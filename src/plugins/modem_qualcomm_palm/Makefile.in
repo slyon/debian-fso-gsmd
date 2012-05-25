@@ -17,7 +17,6 @@
 
 # GLIB - Library of useful C routines
 
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -38,8 +37,13 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/Makefile.decl TODO
-noinst_PROGRAMS = $(am__EXEEXT_1)
+	$(top_srcdir)/Makefile.decl TODO callhandler.c channel.c \
+	consts.c data.c mediatorhelpers.c mediators.c mediators_call.c \
+	mediators_cb.c mediators_debug.c mediators_device.c \
+	mediators_monitor.c mediators_network.c mediators_pdp.c \
+	mediators_sim.c mediators_sms.c mediators_vm.c \
+	modem_qualcomm_palm_la_vala.stamp phonebookhandler.c plugin.c \
+	sms.c unsolicited.c utils.c
 @WANT_DEBUG_TRUE@am__append_1 = -g -D DEBUG
 @WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
 subdir = src/plugins/modem_qualcomm_palm
@@ -81,12 +85,11 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(modlibexecdir)"
 LTLIBRARIES = $(modlibexec_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+modem_qualcomm_palm_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(top_srcdir)/src/lib/libfsogsm.la
-modem_qualcomm_palm_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
+	$(am__DEPENDENCIES_1) $(top_srcdir)/src/lib/libfsogsm.la
 am__objects_1 =
-am__objects_2 = modem_qualcomm_palm_la-channel.lo \
+am_modem_qualcomm_palm_la_OBJECTS = modem_qualcomm_palm_la-channel.lo \
 	modem_qualcomm_palm_la-mediators.lo \
 	modem_qualcomm_palm_la-unsolicited.lo \
 	modem_qualcomm_palm_la-plugin.lo \
@@ -106,17 +109,14 @@ am__objects_2 = modem_qualcomm_palm_la-channel.lo \
 	modem_qualcomm_palm_la-mediators_vm.lo \
 	modem_qualcomm_palm_la-mediators_pdp.lo \
 	modem_qualcomm_palm_la-utils.lo $(am__objects_1)
-am_modem_qualcomm_palm_la_OBJECTS = $(am__objects_2)
 modem_qualcomm_palm_la_OBJECTS = $(am_modem_qualcomm_palm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 modem_qualcomm_palm_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
-	$(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) \
 	$(modem_qualcomm_palm_la_LDFLAGS) $(LDFLAGS) -o $@
-am__EXEEXT_1 =
-PROGRAMS = $(noinst_PROGRAMS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -140,6 +140,13 @@ LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD  " $@;
+VALACOMPILE = $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS)
+LTVALACOMPILE = $(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(VALAC) $(AM_VALAFLAGS) \
+	$(VALAFLAGS)
+AM_V_VALAC = $(am__v_VALAC_@AM_V@)
+am__v_VALAC_ = $(am__v_VALAC_@AM_DEFAULT_V@)
+am__v_VALAC_0 = @echo "  VALAC " $@;
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN   " $@;
@@ -159,8 +166,6 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CONNMAN_CFLAGS = @CONNMAN_CFLAGS@
-CONNMAN_LIBS = @CONNMAN_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -289,32 +294,15 @@ GTESTER = gtester
 GTESTER_REPORT = gtester-report
 
 # initialize variables for unconditional += appending
-EXTRA_DIST = $(modem_qualcomm_palm_la_VALASOURCES) \
-	$(modem_qualcomm_palm_la_SOURCES) $(NULL)
+EXTRA_DIST = 
 TEST_PROGS = 
 NULL = 
-AM_CFLAGS = -I$(top_srcdir)/src/lib -I$(top_srcdir)/src/3rdparty \
-	$(PALM_CFLAGS) $(FSO_CFLAGS) $(GLIB_CFLAGS) $(GEE_CFLAGS) \
-	-DG_LOG_DOMAIN=\"fsogsm.modem_qualcomm_palm\" $(NULL) \
+AM_CFLAGS = -DG_LOG_DOMAIN=\"fsogsm.modem_qualcomm_palm\" $(NULL) \
 	$(am__append_2)
-progs_ldadd = \
-	$(PALM_LIBS) \
-	$(FSO_LIBS) \
-	$(GLIB_LIBS) \
-	$(GEE_LIBS) \
-	$(top_srcdir)/src/lib/libfsogsm.la
-
-VALAC_ARGS = --basedir $(top_srcdir) --vapidir ../../lib --pkg posix \
-	--pkg glib-2.0 --pkg gio-2.0 --pkg gee-1.0 --pkg fso-glib-1.0 \
-	--pkg fsoframework-2.0 --pkg fsotransport-2.0 --pkg fsogsm-2.0 \
-	--pkg msmcomm-specs-2.0 $(NULL) $(am__append_1)
-
-#
-# plugin
-#
+AM_VALAFLAGS = $(am__append_1)
 modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
 modlibexec_LTLIBRARIES = modem_qualcomm_palm.la
-modem_qualcomm_palm_la_VALASOURCES = \
+modem_qualcomm_palm_la_SOURCES = \
  channel.vala \
  mediators.vala \
  unsolicited.vala \
@@ -338,21 +326,40 @@ modem_qualcomm_palm_la_VALASOURCES = \
  utils.vala \
  $(NULL)
 
-modem_qualcomm_palm_la_SOURCES = $(modem_qualcomm_palm_la_VALASOURCES:.vala=.c)
-modem_qualcomm_palm_la_LIBADD = $(progs_ldadd)
+modem_qualcomm_palm_la_VALAFLAGS = \
+	--basedir $(top_srcdir) \
+	--vapidir ../../lib \
+	--pkg posix \
+	--pkg glib-2.0 \
+	--pkg gio-2.0 \
+	--pkg gee-1.0 \
+	--pkg fso-glib-1.0 \
+	--pkg fsoframework-2.0 \
+	--pkg fsotransport-2.0 \
+	--pkg fsogsm-2.0 \
+	--pkg msmcomm-specs-2.0 \
+	$(NULL)
+
+modem_qualcomm_palm_la_CFLAGS = \
+	-I$(top_srcdir)/src/lib \
+	-I$(top_srcdir)/src/3rdparty \
+	$(PALM_CFLAGS) \
+	$(FSO_CFLAGS) \
+	$(GLIB_CFLAGS) \
+	$(GEE_CFLAGS) \
+	$(NULL)
+
+modem_qualcomm_palm_la_LIBADD = \
+	$(PALM_LIBS) \
+	$(FSO_LIBS) \
+	$(GLIB_LIBS) \
+	$(GEE_LIBS) \
+	$(top_srcdir)/src/lib/libfsogsm.la
+
 modem_qualcomm_palm_la_LDFLAGS = -no-undefined -module -avoid-version
-modem_qualcomm_palm_la_LIBTOOLFLAGS = --tag=disable-static
-CLEANFILES = \
-    *.c \
-    *.h \
-    *.la \
-    *.lo \
-    $(NULL)
-
-MAINTAINERCLEANFILES = \
-  Makefile.in \
-  $(NULL)
-
+# modem_qualcomm_palm_la_LIBTOOLFLAGS = --tag=disable-static
+CLEANFILES = 
+MAINTAINERCLEANFILES = 
 all: all-am
 
 .SUFFIXES:
@@ -422,15 +429,6 @@ clean-modlibexecLTLIBRARIES:
 modem_qualcomm_palm.la: $(modem_qualcomm_palm_la_OBJECTS) $(modem_qualcomm_palm_la_DEPENDENCIES) $(EXTRA_modem_qualcomm_palm_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(modem_qualcomm_palm_la_LINK) -rpath $(modlibexecdir) $(modem_qualcomm_palm_la_OBJECTS) $(modem_qualcomm_palm_la_LIBADD) $(LIBS)
 
-clean-noinstPROGRAMS:
-	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
-	echo " rm -f" $$list; \
-	rm -f $$list || exit $$?; \
-	test -n "$(EXEEXT)" || exit 0; \
-	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
-	echo " rm -f" $$list; \
-	rm -f $$list
-
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -481,151 +479,260 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 modem_qualcomm_palm_la-channel.lo: channel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-channel.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-channel.Tpo -c -o modem_qualcomm_palm_la-channel.lo `test -f 'channel.c' || echo '$(srcdir)/'`channel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-channel.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-channel.Tpo -c -o modem_qualcomm_palm_la-channel.lo `test -f 'channel.c' || echo '$(srcdir)/'`channel.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-channel.Tpo $(DEPDIR)/modem_qualcomm_palm_la-channel.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='channel.c' object='modem_qualcomm_palm_la-channel.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-channel.lo `test -f 'channel.c' || echo '$(srcdir)/'`channel.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-channel.lo `test -f 'channel.c' || echo '$(srcdir)/'`channel.c
 
 modem_qualcomm_palm_la-mediators.lo: mediators.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators.Tpo -c -o modem_qualcomm_palm_la-mediators.lo `test -f 'mediators.c' || echo '$(srcdir)/'`mediators.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators.Tpo -c -o modem_qualcomm_palm_la-mediators.lo `test -f 'mediators.c' || echo '$(srcdir)/'`mediators.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators.c' object='modem_qualcomm_palm_la-mediators.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators.lo `test -f 'mediators.c' || echo '$(srcdir)/'`mediators.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators.lo `test -f 'mediators.c' || echo '$(srcdir)/'`mediators.c
 
 modem_qualcomm_palm_la-unsolicited.lo: unsolicited.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-unsolicited.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-unsolicited.Tpo -c -o modem_qualcomm_palm_la-unsolicited.lo `test -f 'unsolicited.c' || echo '$(srcdir)/'`unsolicited.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-unsolicited.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-unsolicited.Tpo -c -o modem_qualcomm_palm_la-unsolicited.lo `test -f 'unsolicited.c' || echo '$(srcdir)/'`unsolicited.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-unsolicited.Tpo $(DEPDIR)/modem_qualcomm_palm_la-unsolicited.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='unsolicited.c' object='modem_qualcomm_palm_la-unsolicited.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-unsolicited.lo `test -f 'unsolicited.c' || echo '$(srcdir)/'`unsolicited.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-unsolicited.lo `test -f 'unsolicited.c' || echo '$(srcdir)/'`unsolicited.c
 
 modem_qualcomm_palm_la-plugin.lo: plugin.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-plugin.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-plugin.Tpo -c -o modem_qualcomm_palm_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-plugin.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-plugin.Tpo -c -o modem_qualcomm_palm_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-plugin.Tpo $(DEPDIR)/modem_qualcomm_palm_la-plugin.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='plugin.c' object='modem_qualcomm_palm_la-plugin.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
 
 modem_qualcomm_palm_la-callhandler.lo: callhandler.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-callhandler.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-callhandler.Tpo -c -o modem_qualcomm_palm_la-callhandler.lo `test -f 'callhandler.c' || echo '$(srcdir)/'`callhandler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-callhandler.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-callhandler.Tpo -c -o modem_qualcomm_palm_la-callhandler.lo `test -f 'callhandler.c' || echo '$(srcdir)/'`callhandler.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-callhandler.Tpo $(DEPDIR)/modem_qualcomm_palm_la-callhandler.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='callhandler.c' object='modem_qualcomm_palm_la-callhandler.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-callhandler.lo `test -f 'callhandler.c' || echo '$(srcdir)/'`callhandler.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-callhandler.lo `test -f 'callhandler.c' || echo '$(srcdir)/'`callhandler.c
 
 modem_qualcomm_palm_la-data.lo: data.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-data.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-data.Tpo -c -o modem_qualcomm_palm_la-data.lo `test -f 'data.c' || echo '$(srcdir)/'`data.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-data.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-data.Tpo -c -o modem_qualcomm_palm_la-data.lo `test -f 'data.c' || echo '$(srcdir)/'`data.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-data.Tpo $(DEPDIR)/modem_qualcomm_palm_la-data.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='data.c' object='modem_qualcomm_palm_la-data.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-data.lo `test -f 'data.c' || echo '$(srcdir)/'`data.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-data.lo `test -f 'data.c' || echo '$(srcdir)/'`data.c
 
 modem_qualcomm_palm_la-phonebookhandler.lo: phonebookhandler.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-phonebookhandler.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-phonebookhandler.Tpo -c -o modem_qualcomm_palm_la-phonebookhandler.lo `test -f 'phonebookhandler.c' || echo '$(srcdir)/'`phonebookhandler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-phonebookhandler.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-phonebookhandler.Tpo -c -o modem_qualcomm_palm_la-phonebookhandler.lo `test -f 'phonebookhandler.c' || echo '$(srcdir)/'`phonebookhandler.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-phonebookhandler.Tpo $(DEPDIR)/modem_qualcomm_palm_la-phonebookhandler.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='phonebookhandler.c' object='modem_qualcomm_palm_la-phonebookhandler.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-phonebookhandler.lo `test -f 'phonebookhandler.c' || echo '$(srcdir)/'`phonebookhandler.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-phonebookhandler.lo `test -f 'phonebookhandler.c' || echo '$(srcdir)/'`phonebookhandler.c
 
 modem_qualcomm_palm_la-sms.lo: sms.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-sms.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-sms.Tpo -c -o modem_qualcomm_palm_la-sms.lo `test -f 'sms.c' || echo '$(srcdir)/'`sms.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-sms.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-sms.Tpo -c -o modem_qualcomm_palm_la-sms.lo `test -f 'sms.c' || echo '$(srcdir)/'`sms.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-sms.Tpo $(DEPDIR)/modem_qualcomm_palm_la-sms.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sms.c' object='modem_qualcomm_palm_la-sms.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-sms.lo `test -f 'sms.c' || echo '$(srcdir)/'`sms.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-sms.lo `test -f 'sms.c' || echo '$(srcdir)/'`sms.c
 
 modem_qualcomm_palm_la-consts.lo: consts.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-consts.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-consts.Tpo -c -o modem_qualcomm_palm_la-consts.lo `test -f 'consts.c' || echo '$(srcdir)/'`consts.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-consts.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-consts.Tpo -c -o modem_qualcomm_palm_la-consts.lo `test -f 'consts.c' || echo '$(srcdir)/'`consts.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-consts.Tpo $(DEPDIR)/modem_qualcomm_palm_la-consts.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='consts.c' object='modem_qualcomm_palm_la-consts.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-consts.lo `test -f 'consts.c' || echo '$(srcdir)/'`consts.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-consts.lo `test -f 'consts.c' || echo '$(srcdir)/'`consts.c
 
 modem_qualcomm_palm_la-mediatorhelpers.lo: mediatorhelpers.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediatorhelpers.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediatorhelpers.Tpo -c -o modem_qualcomm_palm_la-mediatorhelpers.lo `test -f 'mediatorhelpers.c' || echo '$(srcdir)/'`mediatorhelpers.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediatorhelpers.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediatorhelpers.Tpo -c -o modem_qualcomm_palm_la-mediatorhelpers.lo `test -f 'mediatorhelpers.c' || echo '$(srcdir)/'`mediatorhelpers.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediatorhelpers.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediatorhelpers.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediatorhelpers.c' object='modem_qualcomm_palm_la-mediatorhelpers.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediatorhelpers.lo `test -f 'mediatorhelpers.c' || echo '$(srcdir)/'`mediatorhelpers.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediatorhelpers.lo `test -f 'mediatorhelpers.c' || echo '$(srcdir)/'`mediatorhelpers.c
 
 modem_qualcomm_palm_la-mediators_debug.lo: mediators_debug.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_debug.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_debug.Tpo -c -o modem_qualcomm_palm_la-mediators_debug.lo `test -f 'mediators_debug.c' || echo '$(srcdir)/'`mediators_debug.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_debug.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_debug.Tpo -c -o modem_qualcomm_palm_la-mediators_debug.lo `test -f 'mediators_debug.c' || echo '$(srcdir)/'`mediators_debug.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators_debug.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators_debug.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_debug.c' object='modem_qualcomm_palm_la-mediators_debug.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_debug.lo `test -f 'mediators_debug.c' || echo '$(srcdir)/'`mediators_debug.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_debug.lo `test -f 'mediators_debug.c' || echo '$(srcdir)/'`mediators_debug.c
 
 modem_qualcomm_palm_la-mediators_device.lo: mediators_device.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_device.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_device.Tpo -c -o modem_qualcomm_palm_la-mediators_device.lo `test -f 'mediators_device.c' || echo '$(srcdir)/'`mediators_device.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_device.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_device.Tpo -c -o modem_qualcomm_palm_la-mediators_device.lo `test -f 'mediators_device.c' || echo '$(srcdir)/'`mediators_device.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators_device.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators_device.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_device.c' object='modem_qualcomm_palm_la-mediators_device.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_device.lo `test -f 'mediators_device.c' || echo '$(srcdir)/'`mediators_device.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_device.lo `test -f 'mediators_device.c' || echo '$(srcdir)/'`mediators_device.c
 
 modem_qualcomm_palm_la-mediators_sim.lo: mediators_sim.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_sim.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_sim.Tpo -c -o modem_qualcomm_palm_la-mediators_sim.lo `test -f 'mediators_sim.c' || echo '$(srcdir)/'`mediators_sim.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_sim.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_sim.Tpo -c -o modem_qualcomm_palm_la-mediators_sim.lo `test -f 'mediators_sim.c' || echo '$(srcdir)/'`mediators_sim.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators_sim.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators_sim.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_sim.c' object='modem_qualcomm_palm_la-mediators_sim.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_sim.lo `test -f 'mediators_sim.c' || echo '$(srcdir)/'`mediators_sim.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_sim.lo `test -f 'mediators_sim.c' || echo '$(srcdir)/'`mediators_sim.c
 
 modem_qualcomm_palm_la-mediators_sms.lo: mediators_sms.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_sms.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_sms.Tpo -c -o modem_qualcomm_palm_la-mediators_sms.lo `test -f 'mediators_sms.c' || echo '$(srcdir)/'`mediators_sms.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_sms.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_sms.Tpo -c -o modem_qualcomm_palm_la-mediators_sms.lo `test -f 'mediators_sms.c' || echo '$(srcdir)/'`mediators_sms.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators_sms.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators_sms.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_sms.c' object='modem_qualcomm_palm_la-mediators_sms.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_sms.lo `test -f 'mediators_sms.c' || echo '$(srcdir)/'`mediators_sms.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_sms.lo `test -f 'mediators_sms.c' || echo '$(srcdir)/'`mediators_sms.c
 
 modem_qualcomm_palm_la-mediators_network.lo: mediators_network.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_network.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_network.Tpo -c -o modem_qualcomm_palm_la-mediators_network.lo `test -f 'mediators_network.c' || echo '$(srcdir)/'`mediators_network.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_network.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_network.Tpo -c -o modem_qualcomm_palm_la-mediators_network.lo `test -f 'mediators_network.c' || echo '$(srcdir)/'`mediators_network.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators_network.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators_network.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_network.c' object='modem_qualcomm_palm_la-mediators_network.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_network.lo `test -f 'mediators_network.c' || echo '$(srcdir)/'`mediators_network.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_network.lo `test -f 'mediators_network.c' || echo '$(srcdir)/'`mediators_network.c
 
 modem_qualcomm_palm_la-mediators_call.lo: mediators_call.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_call.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_call.Tpo -c -o modem_qualcomm_palm_la-mediators_call.lo `test -f 'mediators_call.c' || echo '$(srcdir)/'`mediators_call.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_call.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_call.Tpo -c -o modem_qualcomm_palm_la-mediators_call.lo `test -f 'mediators_call.c' || echo '$(srcdir)/'`mediators_call.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators_call.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators_call.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_call.c' object='modem_qualcomm_palm_la-mediators_call.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_call.lo `test -f 'mediators_call.c' || echo '$(srcdir)/'`mediators_call.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_call.lo `test -f 'mediators_call.c' || echo '$(srcdir)/'`mediators_call.c
 
 modem_qualcomm_palm_la-mediators_cb.lo: mediators_cb.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_cb.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_cb.Tpo -c -o modem_qualcomm_palm_la-mediators_cb.lo `test -f 'mediators_cb.c' || echo '$(srcdir)/'`mediators_cb.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_cb.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_cb.Tpo -c -o modem_qualcomm_palm_la-mediators_cb.lo `test -f 'mediators_cb.c' || echo '$(srcdir)/'`mediators_cb.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators_cb.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators_cb.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_cb.c' object='modem_qualcomm_palm_la-mediators_cb.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_cb.lo `test -f 'mediators_cb.c' || echo '$(srcdir)/'`mediators_cb.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_cb.lo `test -f 'mediators_cb.c' || echo '$(srcdir)/'`mediators_cb.c
 
 modem_qualcomm_palm_la-mediators_monitor.lo: mediators_monitor.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_monitor.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_monitor.Tpo -c -o modem_qualcomm_palm_la-mediators_monitor.lo `test -f 'mediators_monitor.c' || echo '$(srcdir)/'`mediators_monitor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_monitor.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_monitor.Tpo -c -o modem_qualcomm_palm_la-mediators_monitor.lo `test -f 'mediators_monitor.c' || echo '$(srcdir)/'`mediators_monitor.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators_monitor.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators_monitor.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_monitor.c' object='modem_qualcomm_palm_la-mediators_monitor.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_monitor.lo `test -f 'mediators_monitor.c' || echo '$(srcdir)/'`mediators_monitor.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_monitor.lo `test -f 'mediators_monitor.c' || echo '$(srcdir)/'`mediators_monitor.c
 
 modem_qualcomm_palm_la-mediators_vm.lo: mediators_vm.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_vm.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_vm.Tpo -c -o modem_qualcomm_palm_la-mediators_vm.lo `test -f 'mediators_vm.c' || echo '$(srcdir)/'`mediators_vm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_vm.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_vm.Tpo -c -o modem_qualcomm_palm_la-mediators_vm.lo `test -f 'mediators_vm.c' || echo '$(srcdir)/'`mediators_vm.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators_vm.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators_vm.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_vm.c' object='modem_qualcomm_palm_la-mediators_vm.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_vm.lo `test -f 'mediators_vm.c' || echo '$(srcdir)/'`mediators_vm.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_vm.lo `test -f 'mediators_vm.c' || echo '$(srcdir)/'`mediators_vm.c
 
 modem_qualcomm_palm_la-mediators_pdp.lo: mediators_pdp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_pdp.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_pdp.Tpo -c -o modem_qualcomm_palm_la-mediators_pdp.lo `test -f 'mediators_pdp.c' || echo '$(srcdir)/'`mediators_pdp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-mediators_pdp.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-mediators_pdp.Tpo -c -o modem_qualcomm_palm_la-mediators_pdp.lo `test -f 'mediators_pdp.c' || echo '$(srcdir)/'`mediators_pdp.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-mediators_pdp.Tpo $(DEPDIR)/modem_qualcomm_palm_la-mediators_pdp.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mediators_pdp.c' object='modem_qualcomm_palm_la-mediators_pdp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_pdp.lo `test -f 'mediators_pdp.c' || echo '$(srcdir)/'`mediators_pdp.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-mediators_pdp.lo `test -f 'mediators_pdp.c' || echo '$(srcdir)/'`mediators_pdp.c
 
 modem_qualcomm_palm_la-utils.lo: utils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-utils.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-utils.Tpo -c -o modem_qualcomm_palm_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -MT modem_qualcomm_palm_la-utils.lo -MD -MP -MF $(DEPDIR)/modem_qualcomm_palm_la-utils.Tpo -c -o modem_qualcomm_palm_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_qualcomm_palm_la-utils.Tpo $(DEPDIR)/modem_qualcomm_palm_la-utils.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='modem_qualcomm_palm_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(modem_qualcomm_palm_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_qualcomm_palm_la_CFLAGS) $(CFLAGS) -c -o modem_qualcomm_palm_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+$(srcdir)/channel.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/unsolicited.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/plugin.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/callhandler.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/data.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/phonebookhandler.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/sms.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/consts.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediatorhelpers.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_debug.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_device.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_sim.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_sms.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_network.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_call.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_cb.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_monitor.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_vm.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/mediators_pdp.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/utils.c: $(srcdir)/modem_qualcomm_palm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_qualcomm_palm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_qualcomm_palm_la_vala.stamp; \
+	fi
+$(srcdir)/modem_qualcomm_palm_la_vala.stamp: $(modem_qualcomm_palm_la_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(modem_qualcomm_palm_la_VALAFLAGS) $(VALAFLAGS) -C $(modem_qualcomm_palm_la_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -718,7 +825,7 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-local
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
+all-am: Makefile $(LTLIBRARIES)
 installdirs:
 	for dir in "$(DESTDIR)$(modlibexecdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -754,11 +861,33 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f callhandler.c
+	-rm -f channel.c
+	-rm -f consts.c
+	-rm -f data.c
+	-rm -f mediatorhelpers.c
+	-rm -f mediators.c
+	-rm -f mediators_call.c
+	-rm -f mediators_cb.c
+	-rm -f mediators_debug.c
+	-rm -f mediators_device.c
+	-rm -f mediators_monitor.c
+	-rm -f mediators_network.c
+	-rm -f mediators_pdp.c
+	-rm -f mediators_sim.c
+	-rm -f mediators_sms.c
+	-rm -f mediators_vm.c
+	-rm -f modem_qualcomm_palm_la_vala.stamp
+	-rm -f phonebookhandler.c
+	-rm -f plugin.c
+	-rm -f sms.c
+	-rm -f unsolicited.c
+	-rm -f utils.c
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-modlibexecLTLIBRARIES \
-	clean-noinstPROGRAMS mostlyclean-am
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -829,19 +958,19 @@ uninstall-am: uninstall-modlibexecLTLIBRARIES
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am check-local clean \
-	clean-generic clean-libtool clean-modlibexecLTLIBRARIES \
-	clean-noinstPROGRAMS ctags distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man \
-	install-modlibexecLTLIBRARIES install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-modlibexecLTLIBRARIES
+	clean-generic clean-libtool clean-modlibexecLTLIBRARIES ctags \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-modlibexecLTLIBRARIES \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-modlibexecLTLIBRARIES
 
 
 ### testing rules
@@ -892,10 +1021,7 @@ test-report perf-report full-report:	${TEST_PROGS}
 .PHONY: test test-report perf-report full-report
 # run make test as part of make check
 check-local: test
-
-$(modem_qualcomm_palm_la_SOURCES): $(modem_qualcomm_palm_la_VALASOURCES)
-	$(VALAC) -C $(VALAC_ARGS) $^
-	touch $@
+	$(NULL)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

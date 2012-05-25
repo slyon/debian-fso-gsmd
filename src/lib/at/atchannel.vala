@@ -62,6 +62,8 @@ public class FsoGsm.AtChannel : FsoGsm.AtCommandQueue, FsoGsm.Channel
 
     private async void initialize()
     {
+        assert( theModem.logger.debug( @"Initializing channel $name ..." ) );
+
         if ( this.isMainChannel )
         {
             var seq1 = theModem.atCommandSequence( "MODEM", "init" );
@@ -110,14 +112,17 @@ public class FsoGsm.AtChannel : FsoGsm.AtCommandQueue, FsoGsm.Channel
 
         if ( this.isMainChannel )
         {
-            // charset ok, now it's safe to call mediators
+            setupNetworkRegistrationReport();
             gatherSimStatusAndUpdate();
         }
+
         this.isInitialized = true;
     }
 
     private async void shutdown()
     {
+        assert( theModem.logger.debug( @"Shutting down channel $name ..." ) );
+
         if ( this.isMainChannel )
         {
             if ( this.isInitialized )
@@ -158,6 +163,22 @@ public class FsoGsm.AtChannel : FsoGsm.AtCommandQueue, FsoGsm.Channel
             }
         }
         return "unknown";
+    }
+
+    private async void setupNetworkRegistrationReport()
+    {
+        string[] response = { };
+        var cmd = theModem.createAtCommand<PlusCREG>( "+CREG" );
+
+        response = yield enqueueAsync( cmd, cmd.issue( PlusCREG.Mode.ENABLE_WITH_NETORK_REGISTRATION_AND_LOCATION ) );
+        if ( cmd.validateOk( response ) == Constants.AtResponse.OK )
+            return;
+
+        response = yield enqueueAsync( cmd, cmd.issue( PlusCREG.Mode.ENABLE_WITH_NETORK_REGISTRATION ) );
+        if ( cmd.validateOk( response ) != Constants.AtResponse.OK )
+        {
+            theModem.logger.error( "Failed to setup network registration reporting; reports will not be avaible ..." );
+        }
     }
 
     public void injectResponse( string response )
