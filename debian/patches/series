@@ -1,4 +1,3 @@
-use-private-libdir.patch
 pdp_ppp_internal-logging-dir.patch
 phonebook-storage-dir.patch
 sms-storage-dir.patch
