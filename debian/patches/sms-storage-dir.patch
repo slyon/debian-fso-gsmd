@@ -5,8 +5,8 @@ Description: store SMS in /var/lib/fsogsmd/sms
 Author: Rico Rommel <rico@bierrommel.de>
 Index: fso-gsmd/conf/default/fsogsmd.conf
 ===================================================================
---- fso-gsmd.orig/conf/default/fsogsmd.conf	2012-05-23 12:31:00.831909563 +0200
-+++ fso-gsmd/conf/default/fsogsmd.conf	2012-05-23 12:31:08.591909565 +0200
+--- fso-gsmd.orig/conf/default/fsogsmd.conf	2012-05-25 18:19:48.518093001 +0200
++++ fso-gsmd/conf/default/fsogsmd.conf	2012-05-25 18:26:27.830093001 +0200
 @@ -28,7 +28,7 @@
  modem_init = E0V1;+CMEE=1;+CRC=1;+CSCS="UCS2"
  
@@ -18,8 +18,8 @@ Index: fso-gsmd/conf/default/fsogsmd.conf
  # No settings yet
 Index: fso-gsmd/conf/htc_qualcomm_dream/fsogsmd.conf
 ===================================================================
---- fso-gsmd.orig/conf/htc_qualcomm_dream/fsogsmd.conf	2012-05-23 12:31:00.831909563 +0200
-+++ fso-gsmd/conf/htc_qualcomm_dream/fsogsmd.conf	2012-05-23 12:31:08.595909565 +0200
+--- fso-gsmd.orig/conf/htc_qualcomm_dream/fsogsmd.conf	2012-05-25 18:19:48.550093001 +0200
++++ fso-gsmd/conf/htc_qualcomm_dream/fsogsmd.conf	2012-05-25 18:26:27.830093001 +0200
 @@ -27,7 +27,7 @@
  modem_init = E0V1;+CMEE=1;+CRC=1;+CSCS="UCS2";+GTKC=2
  
@@ -31,8 +31,8 @@ Index: fso-gsmd/conf/htc_qualcomm_dream/fsogsmd.conf
  # No settings yet
 Index: fso-gsmd/conf/htc_qualcomm_msm/fsogsmd.conf
 ===================================================================
---- fso-gsmd.orig/conf/htc_qualcomm_msm/fsogsmd.conf	2012-05-23 12:31:00.839909564 +0200
-+++ fso-gsmd/conf/htc_qualcomm_msm/fsogsmd.conf	2012-05-23 12:31:08.595909565 +0200
+--- fso-gsmd.orig/conf/htc_qualcomm_msm/fsogsmd.conf	2012-05-25 18:19:48.478093001 +0200
++++ fso-gsmd/conf/htc_qualcomm_msm/fsogsmd.conf	2012-05-25 18:26:27.830093001 +0200
 @@ -22,7 +22,7 @@
  modem_init = E0V1;+CMEE=1;+CRC=1;+CSCS="UCS2"
  
@@ -44,8 +44,8 @@ Index: fso-gsmd/conf/htc_qualcomm_msm/fsogsmd.conf
  # No settings yet
 Index: fso-gsmd/conf/htcleo/fsogsmd.conf
 ===================================================================
---- fso-gsmd.orig/conf/htcleo/fsogsmd.conf	2012-05-23 12:31:00.839909564 +0200
-+++ fso-gsmd/conf/htcleo/fsogsmd.conf	2012-05-23 12:31:08.595909565 +0200
+--- fso-gsmd.orig/conf/htcleo/fsogsmd.conf	2012-05-25 18:19:48.494093001 +0200
++++ fso-gsmd/conf/htcleo/fsogsmd.conf	2012-05-25 18:26:27.830093001 +0200
 @@ -27,7 +27,7 @@
  modem_init = E0V1;+CMEE=1;+CRC=1;+CSCS="UCS2";@BRIC=0;+GTKC=2;+CLIP=1
  
@@ -57,8 +57,8 @@ Index: fso-gsmd/conf/htcleo/fsogsmd.conf
  # No settings yet
 Index: fso-gsmd/conf/motorola_ezx/fsogsmd.conf
 ===================================================================
---- fso-gsmd.orig/conf/motorola_ezx/fsogsmd.conf	2012-05-23 12:31:00.839909564 +0200
-+++ fso-gsmd/conf/motorola_ezx/fsogsmd.conf	2012-05-23 12:31:08.595909565 +0200
+--- fso-gsmd.orig/conf/motorola_ezx/fsogsmd.conf	2012-05-25 18:19:48.526093001 +0200
++++ fso-gsmd/conf/motorola_ezx/fsogsmd.conf	2012-05-25 18:26:27.830093001 +0200
 @@ -27,7 +27,7 @@
  modem_init = E0V1;+CMEE=1;+CRC=1;+CSCS="UCS2"
  
@@ -70,8 +70,8 @@ Index: fso-gsmd/conf/motorola_ezx/fsogsmd.conf
  muxnode_prefix = /dev/mux
 Index: fso-gsmd/conf/openmoko_gta/fsogsmd.conf
 ===================================================================
---- fso-gsmd.orig/conf/openmoko_gta/fsogsmd.conf	2012-05-23 12:31:00.839909564 +0200
-+++ fso-gsmd/conf/openmoko_gta/fsogsmd.conf	2012-05-23 12:31:08.595909565 +0200
+--- fso-gsmd.orig/conf/openmoko_gta/fsogsmd.conf	2012-05-25 18:19:48.458093001 +0200
++++ fso-gsmd/conf/openmoko_gta/fsogsmd.conf	2012-05-25 18:26:27.830093001 +0200
 @@ -62,7 +62,7 @@
  modem_init = E0V1;+CMEE=1;+CRC=1;+CSCS="UCS2"
  
@@ -83,8 +83,8 @@ Index: fso-gsmd/conf/openmoko_gta/fsogsmd.conf
  power_node = /sys/bus/platform/devices/gta02-pm-gsm.0/power_on
 Index: fso-gsmd/conf/palm_pre/fsogsmd.conf
 ===================================================================
---- fso-gsmd.orig/conf/palm_pre/fsogsmd.conf	2012-05-23 12:31:00.839909564 +0200
-+++ fso-gsmd/conf/palm_pre/fsogsmd.conf	2012-05-23 12:31:08.595909565 +0200
+--- fso-gsmd.orig/conf/palm_pre/fsogsmd.conf	2012-05-25 18:19:48.538093001 +0200
++++ fso-gsmd/conf/palm_pre/fsogsmd.conf	2012-05-25 18:26:27.830093001 +0200
 @@ -26,7 +26,7 @@
  pdp_type = ippp
  lowlevel_type = palmpre
@@ -96,8 +96,8 @@ Index: fso-gsmd/conf/palm_pre/fsogsmd.conf
  
 Index: fso-gsmd/conf/GTA04/fsogsmd.conf
 ===================================================================
---- fso-gsmd.orig/conf/GTA04/fsogsmd.conf	2012-05-23 12:31:00.831909563 +0200
-+++ fso-gsmd/conf/GTA04/fsogsmd.conf	2012-05-23 12:31:29.803909566 +0200
+--- fso-gsmd.orig/conf/GTA04/fsogsmd.conf	2012-05-25 18:19:48.510093001 +0200
++++ fso-gsmd/conf/GTA04/fsogsmd.conf	2012-05-25 18:26:27.830093001 +0200
 @@ -29,7 +29,7 @@
  modem_init = E0V1;+CMEE=1;+CRC=1;+CSCS="UCS2"
  
@@ -106,4 +106,4 @@ Index: fso-gsmd/conf/GTA04/fsogsmd.conf
 +sms_storage_dir = /var/lib/fsogsmd/sms/
  
  [fsogsm.modem_option_gtm601]
- # No settings yet
+ modem_urc_access = serial:/dev/ttyHS_Modem:115200

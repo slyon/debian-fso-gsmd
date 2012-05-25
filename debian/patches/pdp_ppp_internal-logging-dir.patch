@@ -1,9 +1,11 @@
 Description: log ppp into /var/log/ppp.log
  Use /var/log for logging as described in the FHS.
 Author: Rico Rommel <rico@bierrommel.de>
---- a/src/plugins/pdp_ppp_internal/plugin.vala
-+++ b/src/plugins/pdp_ppp_internal/plugin.vala
-@@ -149,7 +149,7 @@
+Index: fso-gsmd/src/plugins/pdp_ppp_internal/plugin.vala
+===================================================================
+--- fso-gsmd.orig/src/plugins/pdp_ppp_internal/plugin.vala	2012-05-25 18:19:50.614093001 +0200
++++ fso-gsmd/src/plugins/pdp_ppp_internal/plugin.vala	2012-05-25 18:26:27.806093001 +0200
+@@ -158,7 +158,7 @@
  
          ppp = new ThirdParty.At.PPP( iochannel );
          ppp.set_debug( onDebugFromAtPPP );

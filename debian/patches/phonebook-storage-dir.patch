@@ -3,8 +3,10 @@ Description: store phonebook in /var/lib/fsogsmd/pb
  default location may be flushed during the boot. The new
  location complies with the FHS.
 Author: Rico Rommel <rico@bierrommel.de>
---- a/src/lib/phonebook.vala
-+++ b/src/lib/phonebook.vala
+Index: fso-gsmd/src/lib/phonebook.vala
+===================================================================
+--- fso-gsmd.orig/src/lib/phonebook.vala	2012-05-25 18:19:49.782093002 +0200
++++ fso-gsmd/src/lib/phonebook.vala	2012-05-25 18:26:27.818093001 +0200
 @@ -21,7 +21,7 @@
  
  namespace FsoGsm
