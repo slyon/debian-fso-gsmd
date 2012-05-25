@@ -1,6 +1,6 @@
-fso-gsmd (0.10.2-1) unstable; urgency=low
+fso-gsmd (0.11.1-1) unstable; urgency=low
 
-  * Imported Upstream version 0.10.2
+  * Imported Upstream version 0.11.1
   * Build from vala source and not from precompiled c source
   * Update dependencies
   * Update debian source watch configuration
@@ -9,8 +9,11 @@ fso-gsmd (0.10.2-1) unstable; urgency=low
   * Drop remove-fsogsm.h.patch
   * Update sms-store-dir.patch to include support for GTA04 configuration
   * Update fix-pkglibdir.patch to match newer configure.ac
+  * Drop use-private-libdir.patch; it's upstream with version 0.11 now
+  * Use version 9 of debhelper utility
+  * Connman support is gone; remove dependency and configure option
 
- -- Simon Busch <morphis@gravedo.de>  Wed, 23 May 2012 12:38:34 +0200
+ -- Simon Busch <morphis@gravedo.de>  Fri, 25 May 2012 18:17:48 +0200
 
 fso-gsmd (0.5.0+git20120305-1) unstable; urgency=low
 
