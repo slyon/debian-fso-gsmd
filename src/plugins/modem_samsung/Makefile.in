@@ -288,7 +288,8 @@ GTESTER = gtester
 GTESTER_REPORT = gtester-report
 
 # initialize variables for unconditional += appending
-EXTRA_DIST = 
+# modem_samsung_la_LIBTOOLFLAGS = --tag=disable-static
+EXTRA_DIST = include/samsung_modem_ctl.h
 TEST_PROGS = 
 NULL = 
 AM_CFLAGS = -DG_LOG_DOMAIN=\"fsogsm.modem_samsung\" $(NULL) \
@@ -352,7 +353,6 @@ modem_samsung_la_LIBADD = \
 	$(top_builddir)/src/lib/libfsogsm.la
 
 modem_samsung_la_LDFLAGS = -no-undefined -module -avoid-version
-# modem_samsung_la_LIBTOOLFLAGS = --tag=disable-static
 CLEANFILES = 
 MAINTAINERCLEANFILES = 
 all: all-am
