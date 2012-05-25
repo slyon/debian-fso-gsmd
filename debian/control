@@ -4,8 +4,7 @@ Priority: extra
 Maintainer: Debian FreeSmartphone.Org Team <pkg-fso-maint@lists.alioth.debian.org>
 Uploaders: Sebastian Reichel <sre@debian.org>, Rico Rommel <rico@bierrommel.de>
 DM-Upload-Allowed: yes
-Build-Depends: connman-dev,
-               debhelper (>= 9),
+Build-Depends: debhelper (>= 9),
                dh-autoreconf,
                libfso-glib-dev (>= 2012.04.18.1),
                libfsodata-dev,
