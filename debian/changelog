@@ -1,6 +1,6 @@
-fso-gsmd (0.11.1-1) unstable; urgency=low
+fso-gsmd (0.11.2-1) unstable; urgency=low
 
-  * Imported Upstream version 0.11.1
+  * Imported Upstream version 0.11.2
   * Build from vala source and not from precompiled c source
   * Update dependencies
   * Update debian source watch configuration
@@ -12,6 +12,7 @@ fso-gsmd (0.11.1-1) unstable; urgency=low
   * Drop use-private-libdir.patch; it's upstream with version 0.11 now
   * Use version 9 of debhelper utility
   * Connman support is gone; remove dependency and configure option
+  * Remove dependency on libfsodata-dev package
 
  -- Simon Busch <morphis@gravedo.de>  Fri, 25 May 2012 18:17:48 +0200
 
