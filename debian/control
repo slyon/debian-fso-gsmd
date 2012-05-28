@@ -7,7 +7,6 @@ DM-Upload-Allowed: yes
 Build-Depends: debhelper (>= 9),
                dh-autoreconf,
                libfso-glib-dev (>= 2012.04.18.1),
-               libfsodata-dev,
                libfsoframework-dev (>= 0.11.0),
                libfsoresource-dev (>= 0.11.0),
                libfsosystem-dev (>= 0.11.0),
