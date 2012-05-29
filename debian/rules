@@ -16,8 +16,5 @@ override_dh_strip:
 override_dh_installdocs:
 	dh_installdocs --link-doc=fso-gsmd
 
-override_dh_installchangelogs:
-	dh_installchangelogs -XChangeLog
-
 override_dh_autoreconf:
 	dh_autoreconf --as-needed
