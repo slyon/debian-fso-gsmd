@@ -503,10 +503,12 @@ static gint fso_gsm_lib_gsm0710mux_transport_real_write (FsoFrameworkTransport* 
 	gint _tmp3__length1;
 	void* _tmp4_;
 	gint _tmp5_;
-	FsoFrameworkITransportDelegate* _tmp6_;
-	FsoFrameworkDelegateTransport* _tmp7_;
-	gint _tmp8_;
+	FsoFrameworkDelegateTransport* _tmp6_;
+	FsoFrameworkTransportFunc _tmp7_;
+	void* _tmp7__target;
+	FsoFrameworkDelegateTransport* _tmp8_;
 	gint _tmp9_;
+	gint _tmp10_;
 	self = (FsoGsmLibGsm0710muxTransport*) base;
 	_tmp0_ = self->priv->length;
 	g_assert (_tmp0_ == 0);
@@ -519,13 +521,15 @@ static gint fso_gsm_lib_gsm0710mux_transport_real_write (FsoFrameworkTransport* 
 	_tmp4_ = data;
 	_tmp5_ = length;
 	memcpy (_tmp3_, _tmp4_, (gsize) _tmp5_);
-	_tmp6_ = ((FsoFrameworkBaseTransport*) self)->_delegate;
-	_tmp7_ = self->priv->tdelegate;
-	fso_framework_itransport_delegate_onTransportDataAvailable (_tmp6_, (FsoFrameworkTransport*) _tmp7_);
-	_tmp8_ = self->priv->length;
-	g_assert (_tmp8_ == 0);
-	_tmp9_ = length;
-	result = _tmp9_;
+	_tmp6_ = self->priv->tdelegate;
+	_tmp7_ = ((FsoFrameworkBaseTransport*) _tmp6_)->readfunc;
+	_tmp7__target = ((FsoFrameworkBaseTransport*) _tmp6_)->readfunc_target;
+	_tmp8_ = self->priv->tdelegate;
+	_tmp7_ ((FsoFrameworkTransport*) _tmp8_, _tmp7__target);
+	_tmp9_ = self->priv->length;
+	g_assert (_tmp9_ == 0);
+	_tmp10_ = length;
+	result = _tmp10_;
 	return result;
 }
 
@@ -621,14 +625,18 @@ gboolean fso_gsm_lib_gsm0710mux_transport_delegateOpen (FsoGsmLibGsm0710muxTrans
 
 
 void fso_gsm_lib_gsm0710mux_transport_delegateClose (FsoGsmLibGsm0710muxTransport* self, FsoFrameworkTransport* t) {
-	FsoFrameworkITransportDelegate* _tmp0_;
+	FsoFrameworkTransportFunc _tmp0_;
+	void* _tmp0__target;
 	g_return_if_fail (self != NULL);
 	g_return_if_fail (t != NULL);
-	_tmp0_ = ((FsoFrameworkBaseTransport*) self)->_delegate;
+	_tmp0_ = ((FsoFrameworkBaseTransport*) self)->hupfunc;
+	_tmp0__target = ((FsoFrameworkBaseTransport*) self)->hupfunc_target;
 	if (_tmp0_ != NULL) {
-		FsoFrameworkITransportDelegate* _tmp1_;
-		_tmp1_ = ((FsoFrameworkBaseTransport*) self)->_delegate;
-		fso_framework_itransport_delegate_onTransportHangup (_tmp1_, (FsoFrameworkTransport*) self);
+		FsoFrameworkTransportFunc _tmp1_;
+		void* _tmp1__target;
+		_tmp1_ = ((FsoFrameworkBaseTransport*) self)->hupfunc;
+		_tmp1__target = ((FsoFrameworkBaseTransport*) self)->hupfunc_target;
+		_tmp1_ ((FsoFrameworkTransport*) self, _tmp1__target);
 	} else {
 		FsoFrameworkLogger* _tmp2_;
 		_tmp2_ = ((FsoFrameworkTransport*) self)->logger;
@@ -652,7 +660,8 @@ gint fso_gsm_lib_gsm0710mux_transport_delegateWrite (FsoGsmLibGsm0710muxTranspor
 		void* _tmp4_;
 		gint _tmp5_;
 		gint _tmp6_;
-		FsoFrameworkITransportDelegate* _tmp7_;
+		FsoFrameworkTransportFunc _tmp7_;
+		void* _tmp7__target;
 		gint _tmp8_;
 		gint _tmp9_;
 		_tmp1_ = self->priv->length;
@@ -666,8 +675,9 @@ gint fso_gsm_lib_gsm0710mux_transport_delegateWrite (FsoGsmLibGsm0710muxTranspor
 		memcpy (_tmp3_, _tmp4_, (gsize) _tmp5_);
 		_tmp6_ = length;
 		self->priv->length = _tmp6_;
-		_tmp7_ = ((FsoFrameworkBaseTransport*) self)->_delegate;
-		fso_framework_itransport_delegate_onTransportDataAvailable (_tmp7_, (FsoFrameworkTransport*) self);
+		_tmp7_ = ((FsoFrameworkBaseTransport*) self)->readfunc;
+		_tmp7__target = ((FsoFrameworkBaseTransport*) self)->readfunc_target;
+		_tmp7_ ((FsoFrameworkTransport*) self, _tmp7__target);
 		_tmp8_ = self->priv->length;
 		g_assert (_tmp8_ == 0);
 		_tmp9_ = length;

@@ -331,7 +331,7 @@ static void samsung_ipc_channel_onModemStatusChanged (SamsungIpcChannel* self, F
 static void samsung_ipc_channel_initialize (SamsungIpcChannel* self, GAsyncReadyCallback _callback_, gpointer _user_data_);
 static void samsung_ipc_channel_initialize_finish (SamsungIpcChannel* self, GAsyncResult* _res_);
 void samsung_modem_state_reset_network_data (void);
-static void samsung_ipc_channel_real_onTransportDataAvailable (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t);
+static void samsung_ipc_channel_real_onReadFromTransport (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t);
 const gchar* samsung_ipc_response_type_to_string (unsigned char self);
 static const char* _samsung_ipc_response_type_to_string (unsigned char value);
 const gchar* samsung_ipc_message_type_to_string (unsigned short self);
@@ -761,7 +761,7 @@ static const char* _samsung_ipc_message_type_to_string (unsigned short value) {
 }
 
 
-static void samsung_ipc_channel_real_onTransportDataAvailable (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t) {
+static void samsung_ipc_channel_real_onReadFromTransport (FsoFrameworkAbstractCommandQueue* base, FsoFrameworkTransport* t) {
 	SamsungIpcChannel * self;
 	struct ipc_message_info response = {0};
 	FsoFrameworkWakelock* _tmp0_;
@@ -2372,7 +2372,7 @@ static void samsung_ipc_channel_set_phone_pwr_state (SamsungIpcChannel* self, gi
 static void samsung_ipc_channel_class_init (SamsungIpcChannelClass * klass) {
 	samsung_ipc_channel_parent_class = g_type_class_peek_parent (klass);
 	g_type_class_add_private (klass, sizeof (SamsungIpcChannelPrivate));
-	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->onTransportDataAvailable = samsung_ipc_channel_real_onTransportDataAvailable;
+	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->onReadFromTransport = samsung_ipc_channel_real_onReadFromTransport;
 	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->onResponseTimeout = samsung_ipc_channel_real_onResponseTimeout;
 	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->open = samsung_ipc_channel_real_open;
 	FSO_FRAMEWORK_ABSTRACT_COMMAND_QUEUE_CLASS (klass)->open_finish = samsung_ipc_channel_real_open_finish;
