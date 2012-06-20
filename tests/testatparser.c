@@ -6,30 +6,10 @@
 #include <glib-object.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fsotransport.h>
 #include <fsogsm.h>
+#include <fsotransport.h>
 
-
-#define TYPE_TEST_PARSER_DELEGATE (test_parser_delegate_get_type ())
-#define TEST_PARSER_DELEGATE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_TEST_PARSER_DELEGATE, TestParserDelegate))
-#define TEST_PARSER_DELEGATE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_TEST_PARSER_DELEGATE, TestParserDelegateClass))
-#define IS_TEST_PARSER_DELEGATE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_TEST_PARSER_DELEGATE))
-#define IS_TEST_PARSER_DELEGATE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_TEST_PARSER_DELEGATE))
-#define TEST_PARSER_DELEGATE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_TEST_PARSER_DELEGATE, TestParserDelegateClass))
-
-typedef struct _TestParserDelegate TestParserDelegate;
-typedef struct _TestParserDelegateClass TestParserDelegateClass;
-typedef struct _TestParserDelegatePrivate TestParserDelegatePrivate;
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
-
-struct _TestParserDelegate {
-	GObject parent_instance;
-	TestParserDelegatePrivate * priv;
-};
-
-struct _TestParserDelegateClass {
-	GObjectClass parent_class;
-};
 
 
 extern gboolean haveCommand;
@@ -46,20 +26,16 @@ extern gint unsolicitedResponse_length1;
 gchar** unsolicitedResponse = NULL;
 gint unsolicitedResponse_length1 = 0;
 static gint _unsolicitedResponse_size_ = 0;
-static gpointer test_parser_delegate_parent_class = NULL;
-static FsoFrameworkIParserDelegateIface* test_parser_delegate_fso_framework_iparser_delegate_parent_iface = NULL;
 
-GType test_parser_delegate_get_type (void) G_GNUC_CONST;
-enum  {
-	TEST_PARSER_DELEGATE_DUMMY_PROPERTY
-};
-static gboolean test_parser_delegate_real_onParserHaveCommand (FsoFrameworkIParserDelegate* base);
-static gboolean test_parser_delegate_real_onParserIsExpectedPrefix (FsoFrameworkIParserDelegate* base, const gchar* line);
-static void test_parser_delegate_real_onParserSolicitedCompleted (FsoFrameworkIParserDelegate* base, gchar** response, int response_length1);
-static void test_parser_delegate_real_onParserUnsolicitedCompleted (FsoFrameworkIParserDelegate* base, gchar** response, int response_length1);
-TestParserDelegate* test_parser_delegate_new (void);
-TestParserDelegate* test_parser_delegate_construct (GType object_type);
+gboolean hcf (void);
+gboolean epf (void);
+void soli (gchar** response, int response_length1);
+void unsoli (gchar** response, int response_length1);
 void test_parser_1_solicited (void);
+static gboolean _hcf_fso_framework_parser_have_command_func (gpointer self);
+static gboolean _epf_fso_framework_parser_expected_prefix_func (const gchar* line, gpointer self);
+static void _soli_fso_framework_parser_solicited_completed_func (gchar** response, int response_length1, gpointer self);
+static void _unsoli_fso_framework_parser_unsolicited_completed_func (gchar** response, int response_length1, gpointer self);
 void test_parser_1_unsolicited (void);
 void test_parser_2_solicited (void);
 void test_parser_2_unsolicited (void);
@@ -76,37 +52,30 @@ static void _vala_array_destroy (gpointer array, gint array_length, GDestroyNoti
 static void _vala_array_free (gpointer array, gint array_length, GDestroyNotify destroy_func);
 
 
-static gboolean test_parser_delegate_real_onParserHaveCommand (FsoFrameworkIParserDelegate* base) {
-	TestParserDelegate * self;
+gboolean hcf (void) {
 	gboolean result = FALSE;
 	gboolean _tmp0_;
-	self = (TestParserDelegate*) base;
 	_tmp0_ = haveCommand;
 	result = _tmp0_;
 	return result;
 }
 
 
-static gboolean test_parser_delegate_real_onParserIsExpectedPrefix (FsoFrameworkIParserDelegate* base, const gchar* line) {
-	TestParserDelegate * self;
+gboolean epf (void) {
 	gboolean result = FALSE;
 	gboolean _tmp0_;
-	self = (TestParserDelegate*) base;
-	g_return_val_if_fail (line != NULL, FALSE);
 	_tmp0_ = expectedPrefix;
 	result = _tmp0_;
 	return result;
 }
 
 
-static void test_parser_delegate_real_onParserSolicitedCompleted (FsoFrameworkIParserDelegate* base, gchar** response, int response_length1) {
-	TestParserDelegate * self;
+void soli (gchar** response, int response_length1) {
 	gboolean _tmp0_;
 	gchar** _tmp1_;
 	gint _tmp1__length1;
 	gchar** _tmp2_;
 	gint _tmp2__length1;
-	self = (TestParserDelegate*) base;
 	_tmp0_ = haveCommand;
 	g_assert (_tmp0_);
 	_tmp1_ = solicitedResponse;
@@ -156,7 +125,7 @@ static void test_parser_delegate_real_onParserSolicitedCompleted (FsoFrameworkIP
 				_tmp9__length1 = response_length1;
 				_tmp10_ = i;
 				_tmp11_ = _tmp9_[_tmp10_];
-				g_debug ("testatparser.vala:47: line %d = '%s'", _tmp8_, _tmp11_);
+				g_debug ("testatparser.vala:45: line %d = '%s'", _tmp8_, _tmp11_);
 				_tmp12_ = response;
 				_tmp12__length1 = response_length1;
 				_tmp13_ = i;
@@ -172,8 +141,7 @@ static void test_parser_delegate_real_onParserSolicitedCompleted (FsoFrameworkIP
 }
 
 
-static void test_parser_delegate_real_onParserUnsolicitedCompleted (FsoFrameworkIParserDelegate* base, gchar** response, int response_length1) {
-	TestParserDelegate * self;
+void unsoli (gchar** response, int response_length1) {
 	gboolean _tmp0_ = FALSE;
 	gboolean _tmp1_;
 	gboolean _tmp3_;
@@ -181,7 +149,6 @@ static void test_parser_delegate_real_onParserUnsolicitedCompleted (FsoFramework
 	gint _tmp4__length1;
 	gchar** _tmp5_;
 	gint _tmp5__length1;
-	self = (TestParserDelegate*) base;
 	_tmp1_ = haveCommand;
 	if (!_tmp1_) {
 		_tmp0_ = TRUE;
@@ -239,7 +206,7 @@ static void test_parser_delegate_real_onParserUnsolicitedCompleted (FsoFramework
 				_tmp12__length1 = response_length1;
 				_tmp13_ = i;
 				_tmp14_ = _tmp12_[_tmp13_];
-				g_debug ("testatparser.vala:58: line %d = '%s'", _tmp11_, _tmp14_);
+				g_debug ("testatparser.vala:56: line %d = '%s'", _tmp11_, _tmp14_);
 				_tmp15_ = response;
 				_tmp15__length1 = response_length1;
 				_tmp16_ = i;
@@ -255,76 +222,51 @@ static void test_parser_delegate_real_onParserUnsolicitedCompleted (FsoFramework
 }
 
 
-TestParserDelegate* test_parser_delegate_construct (GType object_type) {
-	TestParserDelegate * self = NULL;
-	self = (TestParserDelegate*) g_object_new (object_type, NULL);
-	return self;
+static gboolean _hcf_fso_framework_parser_have_command_func (gpointer self) {
+	gboolean result;
+	result = hcf ();
+	return result;
 }
 
 
-TestParserDelegate* test_parser_delegate_new (void) {
-	return test_parser_delegate_construct (TYPE_TEST_PARSER_DELEGATE);
+static gboolean _epf_fso_framework_parser_expected_prefix_func (const gchar* line, gpointer self) {
+	gboolean result;
+	result = epf ();
+	return result;
 }
 
 
-static void test_parser_delegate_class_init (TestParserDelegateClass * klass) {
-	test_parser_delegate_parent_class = g_type_class_peek_parent (klass);
+static void _soli_fso_framework_parser_solicited_completed_func (gchar** response, int response_length1, gpointer self) {
+	soli (response, response_length1);
 }
 
 
-static void test_parser_delegate_fso_framework_iparser_delegate_interface_init (FsoFrameworkIParserDelegateIface * iface) {
-	test_parser_delegate_fso_framework_iparser_delegate_parent_iface = g_type_interface_peek_parent (iface);
-	iface->onParserHaveCommand = (gboolean (*)(FsoFrameworkIParserDelegate*)) test_parser_delegate_real_onParserHaveCommand;
-	iface->onParserIsExpectedPrefix = (gboolean (*)(FsoFrameworkIParserDelegate*, const gchar*)) test_parser_delegate_real_onParserIsExpectedPrefix;
-	iface->onParserSolicitedCompleted = (void (*)(FsoFrameworkIParserDelegate*, gchar**, int)) test_parser_delegate_real_onParserSolicitedCompleted;
-	iface->onParserUnsolicitedCompleted = (void (*)(FsoFrameworkIParserDelegate*, gchar**, int)) test_parser_delegate_real_onParserUnsolicitedCompleted;
-}
-
-
-static void test_parser_delegate_instance_init (TestParserDelegate * self) {
-}
-
-
-GType test_parser_delegate_get_type (void) {
-	static volatile gsize test_parser_delegate_type_id__volatile = 0;
-	if (g_once_init_enter (&test_parser_delegate_type_id__volatile)) {
-		static const GTypeInfo g_define_type_info = { sizeof (TestParserDelegateClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) test_parser_delegate_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (TestParserDelegate), 0, (GInstanceInitFunc) test_parser_delegate_instance_init, NULL };
-		static const GInterfaceInfo fso_framework_iparser_delegate_info = { (GInterfaceInitFunc) test_parser_delegate_fso_framework_iparser_delegate_interface_init, (GInterfaceFinalizeFunc) NULL, NULL};
-		GType test_parser_delegate_type_id;
-		test_parser_delegate_type_id = g_type_register_static (G_TYPE_OBJECT, "TestParserDelegate", &g_define_type_info, 0);
-		g_type_add_interface_static (test_parser_delegate_type_id, FSO_FRAMEWORK_TYPE_IPARSER_DELEGATE, &fso_framework_iparser_delegate_info);
-		g_once_init_leave (&test_parser_delegate_type_id__volatile, test_parser_delegate_type_id);
-	}
-	return test_parser_delegate_type_id__volatile;
+static void _unsoli_fso_framework_parser_unsolicited_completed_func (gchar** response, int response_length1, gpointer self) {
+	unsoli (response, response_length1);
 }
 
 
 void test_parser_1_solicited (void) {
 	FsoGsmStateBasedAtParser* _tmp0_;
 	FsoFrameworkParser* parser;
-	TestParserDelegate* _tmp1_;
-	TestParserDelegate* _tmp2_;
-	gchar* _tmp3_;
-	gchar** _tmp4_ = NULL;
-	gchar** _tmp5_ = NULL;
+	gchar* _tmp1_;
+	gchar** _tmp2_ = NULL;
+	gchar** _tmp3_ = NULL;
 	_tmp0_ = fso_gsm_state_based_at_parser_new ();
 	parser = (FsoFrameworkParser*) _tmp0_;
-	_tmp1_ = test_parser_delegate_new ();
-	_tmp2_ = _tmp1_;
-	fso_framework_parser_setDelegate (parser, (FsoFrameworkIParserDelegate*) _tmp2_);
-	_g_object_unref0 (_tmp2_);
+	fso_framework_parser_setDelegates (parser, _hcf_fso_framework_parser_have_command_func, NULL, _epf_fso_framework_parser_expected_prefix_func, NULL, _soli_fso_framework_parser_solicited_completed_func, NULL, _unsoli_fso_framework_parser_unsolicited_completed_func, NULL);
 	haveCommand = TRUE;
 	expectedPrefix = FALSE;
-	_tmp3_ = g_strdup ("OK");
-	_tmp4_ = g_new0 (gchar*, 1 + 1);
-	_tmp4_[0] = _tmp3_;
+	_tmp1_ = g_strdup ("OK");
+	_tmp2_ = g_new0 (gchar*, 1 + 1);
+	_tmp2_[0] = _tmp1_;
 	solicitedResponse = (_vala_array_free (solicitedResponse, solicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	solicitedResponse = _tmp4_;
+	solicitedResponse = _tmp2_;
 	solicitedResponse_length1 = 1;
 	_solicitedResponse_size_ = solicitedResponse_length1;
-	_tmp5_ = g_new0 (gchar*, 0 + 1);
+	_tmp3_ = g_new0 (gchar*, 0 + 1);
 	unsolicitedResponse = (_vala_array_free (unsolicitedResponse, unsolicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	unsolicitedResponse = _tmp5_;
+	unsolicitedResponse = _tmp3_;
 	unsolicitedResponse_length1 = 0;
 	_unsolicitedResponse_size_ = unsolicitedResponse_length1;
 	fso_framework_parser_feed (parser, "\r\nOK\r\n", 6);
@@ -335,29 +277,24 @@ void test_parser_1_solicited (void) {
 void test_parser_1_unsolicited (void) {
 	FsoGsmStateBasedAtParser* _tmp0_;
 	FsoFrameworkParser* parser;
-	TestParserDelegate* _tmp1_;
-	TestParserDelegate* _tmp2_;
+	gchar** _tmp1_ = NULL;
+	gchar* _tmp2_;
 	gchar** _tmp3_ = NULL;
-	gchar* _tmp4_;
-	gchar** _tmp5_ = NULL;
 	_tmp0_ = fso_gsm_state_based_at_parser_new ();
 	parser = (FsoFrameworkParser*) _tmp0_;
-	_tmp1_ = test_parser_delegate_new ();
-	_tmp2_ = _tmp1_;
-	fso_framework_parser_setDelegate (parser, (FsoFrameworkIParserDelegate*) _tmp2_);
-	_g_object_unref0 (_tmp2_);
+	fso_framework_parser_setDelegates (parser, _hcf_fso_framework_parser_have_command_func, NULL, _epf_fso_framework_parser_expected_prefix_func, NULL, _soli_fso_framework_parser_solicited_completed_func, NULL, _unsoli_fso_framework_parser_unsolicited_completed_func, NULL);
 	haveCommand = FALSE;
 	expectedPrefix = FALSE;
-	_tmp3_ = g_new0 (gchar*, 0 + 1);
+	_tmp1_ = g_new0 (gchar*, 0 + 1);
 	solicitedResponse = (_vala_array_free (solicitedResponse, solicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	solicitedResponse = _tmp3_;
+	solicitedResponse = _tmp1_;
 	solicitedResponse_length1 = 0;
 	_solicitedResponse_size_ = solicitedResponse_length1;
-	_tmp4_ = g_strdup ("+FOO: Yo Kurt");
-	_tmp5_ = g_new0 (gchar*, 1 + 1);
-	_tmp5_[0] = _tmp4_;
+	_tmp2_ = g_strdup ("+FOO: Yo Kurt");
+	_tmp3_ = g_new0 (gchar*, 1 + 1);
+	_tmp3_[0] = _tmp2_;
 	unsolicitedResponse = (_vala_array_free (unsolicitedResponse, unsolicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	unsolicitedResponse = _tmp5_;
+	unsolicitedResponse = _tmp3_;
 	unsolicitedResponse_length1 = 1;
 	_unsolicitedResponse_size_ = unsolicitedResponse_length1;
 	fso_framework_parser_feed (parser, "\r\n+FOO: Yo Kurt\r\n", 17);
@@ -368,32 +305,27 @@ void test_parser_1_unsolicited (void) {
 void test_parser_2_solicited (void) {
 	FsoGsmStateBasedAtParser* _tmp0_;
 	FsoFrameworkParser* parser;
-	TestParserDelegate* _tmp1_;
-	TestParserDelegate* _tmp2_;
-	gchar* _tmp3_;
-	gchar* _tmp4_;
-	gchar** _tmp5_ = NULL;
-	gchar** _tmp6_ = NULL;
+	gchar* _tmp1_;
+	gchar* _tmp2_;
+	gchar** _tmp3_ = NULL;
+	gchar** _tmp4_ = NULL;
 	_tmp0_ = fso_gsm_state_based_at_parser_new ();
 	parser = (FsoFrameworkParser*) _tmp0_;
-	_tmp1_ = test_parser_delegate_new ();
-	_tmp2_ = _tmp1_;
-	fso_framework_parser_setDelegate (parser, (FsoFrameworkIParserDelegate*) _tmp2_);
-	_g_object_unref0 (_tmp2_);
+	fso_framework_parser_setDelegates (parser, _hcf_fso_framework_parser_have_command_func, NULL, _epf_fso_framework_parser_expected_prefix_func, NULL, _soli_fso_framework_parser_solicited_completed_func, NULL, _unsoli_fso_framework_parser_unsolicited_completed_func, NULL);
 	haveCommand = TRUE;
 	expectedPrefix = TRUE;
-	_tmp3_ = g_strdup ("+CPIN: \"READY\"");
-	_tmp4_ = g_strdup ("OK");
-	_tmp5_ = g_new0 (gchar*, 2 + 1);
-	_tmp5_[0] = _tmp3_;
-	_tmp5_[1] = _tmp4_;
+	_tmp1_ = g_strdup ("+CPIN: \"READY\"");
+	_tmp2_ = g_strdup ("OK");
+	_tmp3_ = g_new0 (gchar*, 2 + 1);
+	_tmp3_[0] = _tmp1_;
+	_tmp3_[1] = _tmp2_;
 	solicitedResponse = (_vala_array_free (solicitedResponse, solicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	solicitedResponse = _tmp5_;
+	solicitedResponse = _tmp3_;
 	solicitedResponse_length1 = 2;
 	_solicitedResponse_size_ = solicitedResponse_length1;
-	_tmp6_ = g_new0 (gchar*, 0 + 1);
+	_tmp4_ = g_new0 (gchar*, 0 + 1);
 	unsolicitedResponse = (_vala_array_free (unsolicitedResponse, unsolicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	unsolicitedResponse = _tmp6_;
+	unsolicitedResponse = _tmp4_;
 	unsolicitedResponse_length1 = 0;
 	_unsolicitedResponse_size_ = unsolicitedResponse_length1;
 	fso_framework_parser_feed (parser, "\r\n+CPIN: \"READY\"\r\n", 18);
@@ -405,39 +337,34 @@ void test_parser_2_solicited (void) {
 void test_parser_2_unsolicited (void) {
 	FsoGsmStateBasedAtParser* _tmp0_;
 	FsoFrameworkParser* parser;
-	TestParserDelegate* _tmp1_;
-	TestParserDelegate* _tmp2_;
+	gchar** _tmp1_ = NULL;
+	gchar* _tmp2_;
 	gchar** _tmp3_ = NULL;
 	gchar* _tmp4_;
 	gchar** _tmp5_ = NULL;
-	gchar* _tmp6_;
-	gchar** _tmp7_ = NULL;
 	_tmp0_ = fso_gsm_state_based_at_parser_new ();
 	parser = (FsoFrameworkParser*) _tmp0_;
-	_tmp1_ = test_parser_delegate_new ();
-	_tmp2_ = _tmp1_;
-	fso_framework_parser_setDelegate (parser, (FsoFrameworkIParserDelegate*) _tmp2_);
-	_g_object_unref0 (_tmp2_);
+	fso_framework_parser_setDelegates (parser, _hcf_fso_framework_parser_have_command_func, NULL, _epf_fso_framework_parser_expected_prefix_func, NULL, _soli_fso_framework_parser_solicited_completed_func, NULL, _unsoli_fso_framework_parser_unsolicited_completed_func, NULL);
 	haveCommand = FALSE;
 	expectedPrefix = FALSE;
-	_tmp3_ = g_new0 (gchar*, 0 + 1);
+	_tmp1_ = g_new0 (gchar*, 0 + 1);
 	solicitedResponse = (_vala_array_free (solicitedResponse, solicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	solicitedResponse = _tmp3_;
+	solicitedResponse = _tmp1_;
 	solicitedResponse_length1 = 0;
 	_solicitedResponse_size_ = solicitedResponse_length1;
-	_tmp4_ = g_strdup ("+FOO: Yo Kurt");
+	_tmp2_ = g_strdup ("+FOO: Yo Kurt");
+	_tmp3_ = g_new0 (gchar*, 1 + 1);
+	_tmp3_[0] = _tmp2_;
+	unsolicitedResponse = (_vala_array_free (unsolicitedResponse, unsolicitedResponse_length1, (GDestroyNotify) g_free), NULL);
+	unsolicitedResponse = _tmp3_;
+	unsolicitedResponse_length1 = 1;
+	_unsolicitedResponse_size_ = unsolicitedResponse_length1;
+	fso_framework_parser_feed (parser, "\r\n+FOO: Yo Kurt\r\n", 17);
+	_tmp4_ = g_strdup ("+BAR: Yo Kurt");
 	_tmp5_ = g_new0 (gchar*, 1 + 1);
 	_tmp5_[0] = _tmp4_;
 	unsolicitedResponse = (_vala_array_free (unsolicitedResponse, unsolicitedResponse_length1, (GDestroyNotify) g_free), NULL);
 	unsolicitedResponse = _tmp5_;
-	unsolicitedResponse_length1 = 1;
-	_unsolicitedResponse_size_ = unsolicitedResponse_length1;
-	fso_framework_parser_feed (parser, "\r\n+FOO: Yo Kurt\r\n", 17);
-	_tmp6_ = g_strdup ("+BAR: Yo Kurt");
-	_tmp7_ = g_new0 (gchar*, 1 + 1);
-	_tmp7_[0] = _tmp6_;
-	unsolicitedResponse = (_vala_array_free (unsolicitedResponse, unsolicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	unsolicitedResponse = _tmp7_;
 	unsolicitedResponse_length1 = 1;
 	_unsolicitedResponse_size_ = unsolicitedResponse_length1;
 	fso_framework_parser_feed (parser, "\r\n+BAR: Yo Kurt\r\n", 17);
@@ -448,32 +375,27 @@ void test_parser_2_unsolicited (void) {
 void test_parser_2_unsolicited_pdu (void) {
 	FsoGsmStateBasedAtParser* _tmp0_;
 	FsoFrameworkParser* parser;
-	TestParserDelegate* _tmp1_;
-	TestParserDelegate* _tmp2_;
-	gchar** _tmp3_ = NULL;
-	gchar* _tmp4_;
-	gchar* _tmp5_;
-	gchar** _tmp6_ = NULL;
+	gchar** _tmp1_ = NULL;
+	gchar* _tmp2_;
+	gchar* _tmp3_;
+	gchar** _tmp4_ = NULL;
 	_tmp0_ = fso_gsm_state_based_at_parser_new ();
 	parser = (FsoFrameworkParser*) _tmp0_;
-	_tmp1_ = test_parser_delegate_new ();
-	_tmp2_ = _tmp1_;
-	fso_framework_parser_setDelegate (parser, (FsoFrameworkIParserDelegate*) _tmp2_);
-	_g_object_unref0 (_tmp2_);
+	fso_framework_parser_setDelegates (parser, _hcf_fso_framework_parser_have_command_func, NULL, _epf_fso_framework_parser_expected_prefix_func, NULL, _soli_fso_framework_parser_solicited_completed_func, NULL, _unsoli_fso_framework_parser_unsolicited_completed_func, NULL);
 	haveCommand = FALSE;
 	expectedPrefix = FALSE;
-	_tmp3_ = g_new0 (gchar*, 0 + 1);
+	_tmp1_ = g_new0 (gchar*, 0 + 1);
 	solicitedResponse = (_vala_array_free (solicitedResponse, solicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	solicitedResponse = _tmp3_;
+	solicitedResponse = _tmp1_;
 	solicitedResponse_length1 = 0;
 	_solicitedResponse_size_ = solicitedResponse_length1;
-	_tmp4_ = g_strdup ("+CMT: 120");
-	_tmp5_ = g_strdup ("1234567890");
-	_tmp6_ = g_new0 (gchar*, 2 + 1);
-	_tmp6_[0] = _tmp4_;
-	_tmp6_[1] = _tmp5_;
+	_tmp2_ = g_strdup ("+CMT: 120");
+	_tmp3_ = g_strdup ("1234567890");
+	_tmp4_ = g_new0 (gchar*, 2 + 1);
+	_tmp4_[0] = _tmp2_;
+	_tmp4_[1] = _tmp3_;
 	unsolicitedResponse = (_vala_array_free (unsolicitedResponse, unsolicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	unsolicitedResponse = _tmp6_;
+	unsolicitedResponse = _tmp4_;
 	unsolicitedResponse_length1 = 2;
 	_unsolicitedResponse_size_ = unsolicitedResponse_length1;
 	fso_framework_parser_feed (parser, "\r\n+CMT: 120\r\n", 13);
@@ -485,35 +407,30 @@ void test_parser_2_unsolicited_pdu (void) {
 void test_parser_multiline_solicited (void) {
 	FsoGsmStateBasedAtParser* _tmp0_;
 	FsoFrameworkParser* parser;
-	TestParserDelegate* _tmp1_;
-	TestParserDelegate* _tmp2_;
+	gchar* _tmp1_;
+	gchar* _tmp2_;
 	gchar* _tmp3_;
-	gchar* _tmp4_;
-	gchar* _tmp5_;
-	gchar** _tmp6_ = NULL;
-	gchar** _tmp7_ = NULL;
+	gchar** _tmp4_ = NULL;
+	gchar** _tmp5_ = NULL;
 	_tmp0_ = fso_gsm_state_based_at_parser_new ();
 	parser = (FsoFrameworkParser*) _tmp0_;
-	_tmp1_ = test_parser_delegate_new ();
-	_tmp2_ = _tmp1_;
-	fso_framework_parser_setDelegate (parser, (FsoFrameworkIParserDelegate*) _tmp2_);
-	_g_object_unref0 (_tmp2_);
+	fso_framework_parser_setDelegates (parser, _hcf_fso_framework_parser_have_command_func, NULL, _epf_fso_framework_parser_expected_prefix_func, NULL, _soli_fso_framework_parser_solicited_completed_func, NULL, _unsoli_fso_framework_parser_unsolicited_completed_func, NULL);
 	haveCommand = TRUE;
 	expectedPrefix = TRUE;
-	_tmp3_ = g_strdup ("+FOO: 123456");
-	_tmp4_ = g_strdup ("+BAR: 123456");
-	_tmp5_ = g_strdup ("OK");
-	_tmp6_ = g_new0 (gchar*, 3 + 1);
-	_tmp6_[0] = _tmp3_;
-	_tmp6_[1] = _tmp4_;
-	_tmp6_[2] = _tmp5_;
+	_tmp1_ = g_strdup ("+FOO: 123456");
+	_tmp2_ = g_strdup ("+BAR: 123456");
+	_tmp3_ = g_strdup ("OK");
+	_tmp4_ = g_new0 (gchar*, 3 + 1);
+	_tmp4_[0] = _tmp1_;
+	_tmp4_[1] = _tmp2_;
+	_tmp4_[2] = _tmp3_;
 	solicitedResponse = (_vala_array_free (solicitedResponse, solicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	solicitedResponse = _tmp6_;
+	solicitedResponse = _tmp4_;
 	solicitedResponse_length1 = 3;
 	_solicitedResponse_size_ = solicitedResponse_length1;
-	_tmp7_ = g_new0 (gchar*, 0 + 1);
+	_tmp5_ = g_new0 (gchar*, 0 + 1);
 	unsolicitedResponse = (_vala_array_free (unsolicitedResponse, unsolicitedResponse_length1, (GDestroyNotify) g_free), NULL);
-	unsolicitedResponse = _tmp7_;
+	unsolicitedResponse = _tmp5_;
 	unsolicitedResponse_length1 = 0;
 	_unsolicitedResponse_size_ = unsolicitedResponse_length1;
 	fso_framework_parser_feed (parser, "\r\n+FOO: 123456", 14);

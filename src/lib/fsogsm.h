@@ -6030,6 +6030,10 @@ FsoGsmAtCommandHandler* fso_gsm_at_command_handler_construct (GType object_type,
 #define FSO_GSM_AT_COMMAND_QUEUE_COMMAND_QUEUE_BUFFER_SIZE 4096
 FsoGsmAtCommandQueue* fso_gsm_at_command_queue_new (FsoFrameworkTransport* transport, FsoFrameworkParser* parser);
 FsoGsmAtCommandQueue* fso_gsm_at_command_queue_construct (GType object_type, FsoFrameworkTransport* transport, FsoFrameworkParser* parser);
+gboolean fso_gsm_at_command_queue_haveCommand (FsoGsmAtCommandQueue* self);
+gboolean fso_gsm_at_command_queue_isExpectedPrefix (FsoGsmAtCommandQueue* self, const gchar* line);
+void fso_gsm_at_command_queue_onParserCompletedSolicited (FsoGsmAtCommandQueue* self, gchar** response, int response_length1);
+void fso_gsm_at_command_queue_onParserCompletedUnsolicited (FsoGsmAtCommandQueue* self, gchar** response, int response_length1);
 void fso_gsm_at_command_queue_onSolicitedResponse (FsoGsmAtCommandQueue* self, FsoGsmAtCommandHandler* bundle, gchar** response, int response_length1);
 void fso_gsm_at_command_queue_enqueue (FsoGsmAtCommandQueue* self, FsoGsmAtCommandQueueCommand* command, const gchar* request, gint retries);
 void fso_gsm_at_command_queue_enqueueAsync (FsoGsmAtCommandQueue* self, FsoGsmAtCommandQueueCommand* command, const gchar* request, gint retries, gint timeout, GAsyncReadyCallback _callback_, gpointer _user_data_);
