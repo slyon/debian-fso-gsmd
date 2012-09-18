@@ -6,10 +6,6 @@ AM_CFLAGS = \
 	$(NULL)
 AM_VALAFLAGS =
 
-if WANT_DEBUG
-AM_VALAFLAGS += -g -D DEBUG
-AM_CFLAGS += -ggdb -O0
-endif
 
 modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
 modlibexec_LTLIBRARIES = libfsogsm.la
@@ -35,6 +31,7 @@ libfsogsm_la_SOURCES = \
 	at/atsms.vala \
 	at/atunsolicited.vala \
 	at/atphonebook.vala \
+	at/atresultiter.vala \
 	\
 	call.vala \
 	codes.vala \
@@ -49,6 +46,8 @@ libfsogsm_la_SOURCES = \
 	sms.vala \
 	smsstorage.vala \
 	watchdog.vala \
+	serviceprovider.vala \
+	mbpi.vala \
 	\
 	$(top_srcdir)/src/3rdparty/conversions.c \
 	$(top_srcdir)/src/3rdparty/smsutil.c \
@@ -79,9 +78,11 @@ libfsogsm_la_VALAFLAGS = \
 	--pkg fsoframework-2.0 \
 	--pkg fsotransport-2.0 \
 	--pkg fsogsm3rdparty \
+	--pkg libxml-2.0 \
 	--pkg config \
 	--header fsogsm.h \
 	--library fsogsm-2.0 \
+	$(DEBUG_VALAFLAGS) \
 	$(NULL)
 libfsogsm_la_CFLAGS = \
 	-I$(top_srcdir) \
@@ -91,6 +92,8 @@ libfsogsm_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
 	$(GEE_CFLAGS) \
 	$(GSMMUX_CFLAGS) \
+	$(XML_CFLAGS) \
+	$(DEBUG_CFLAGS) \
 	$(NULL)
 
 if WANT_MUX
@@ -104,6 +107,7 @@ libfsogsm_la_LIBADD = \
 	$(GEE_LIBS) \
 	$(GSMMUX_LIBS) \
 	$(THIRDPARTY_LIBS) \
+	$(XML_LIBS) \
 	$(NULL)
 libfsogsm_la_LDFLAGS = -no-undefined -avoid-version
 

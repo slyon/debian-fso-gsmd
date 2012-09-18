@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,8 +30,8 @@ public class AtMonitorGetServingCellInformation : MonitorGetServingCellInformati
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var cmd = theModem.createAtCommand<PercentEM21>( "%EM21" );
-        var response = yield theModem.processAtCommandAsync( cmd, cmd.query() );
+        var cmd = modem.createAtCommand<PercentEM21>( "%EM21" );
+        var response = yield modem.processAtCommandAsync( cmd, cmd.query() );
         checkResponseValid( cmd, response );
 
         cell = new GLib.HashTable<string,GLib.Variant>( GLib.str_hash, GLib.str_equal );
@@ -63,8 +63,8 @@ public class AtMonitorGetNeighbourCellInformation : MonitorGetNeighbourCellInfor
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var cmd = theModem.createAtCommand<PercentEM23>( "%EM23" );
-        var response = yield theModem.processAtCommandAsync( cmd, cmd.query() );
+        var cmd = modem.createAtCommand<PercentEM23>( "%EM23" );
+        var response = yield modem.processAtCommandAsync( cmd, cmd.query() );
         checkMultiResponseValid( cmd, response );
 
         //cells = new GLib.HashTable<string,GLib.Variant>[] {};
@@ -101,8 +101,8 @@ public class AtSimGetUnlockCounters : SimGetUnlockCounters
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var cmd = theModem.createAtCommand<PercentPVRF>( "%PVRF" );
-        var response = yield theModem.processAtCommandAsync( cmd, cmd.query() );
+        var cmd = modem.createAtCommand<PercentPVRF>( "%PVRF" );
+        var response = yield modem.processAtCommandAsync( cmd, cmd.query() );
         checkResponseValid( cmd, response );
         counters = new GLib.HashTable<string,GLib.Variant>( GLib.str_hash, GLib.str_equal );
         counters.insert( "SIM PIN", cmd.pin );
@@ -116,8 +116,8 @@ public class AtVoiceMailboxGetNumber : VoiceMailboxGetNumber
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var cmd = theModem.createAtCommand<PercentCPMB>( "%CPMB" );
-        var response = yield theModem.processAtCommandAsync( cmd, cmd.query() );
+        var cmd = modem.createAtCommand<PercentCPMB>( "%CPMB" );
+        var response = yield modem.processAtCommandAsync( cmd, cmd.query() );
         checkResponseValid( cmd, response );
         number = cmd.number;
     }

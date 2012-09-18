@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,12 +34,12 @@ public class AtPdpActivateContext : PdpActivateContext
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var data = theModem.data();
+        var data = modem.data();
         if ( data.contextParams == null )
         {
             throw new FreeSmartphone.Error.INVALID_PARAMETER( "No credentials set. Call org.freesmartphone.GSM.PDP.SetCredentials first." );
         }
-        yield theModem.pdphandler.activate();
+        yield modem.pdphandler.activate();
     }
 }
 
@@ -47,7 +47,7 @@ public class AtPdpDeactivateContext : PdpDeactivateContext
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        yield theModem.pdphandler.deactivate();
+        yield modem.pdphandler.deactivate();
     }
 }
 
@@ -55,7 +55,7 @@ public class AtPdpGetCredentials : PdpGetCredentials
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var data = theModem.data();
+        var data = modem.data();
         if ( data.contextParams == null )
         {
             apn = "";
@@ -75,12 +75,8 @@ public class AtPdpSetCredentials : PdpSetCredentials
 {
     public override async void run( string apn, string username, string password ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var data = theModem.data();
+        var data = modem.data();
         data.contextParams = new ContextParams( apn, username, password );
-
-        var cmd = theModem.createAtCommand<PlusCGDCONT>( "+CGDCONT" );
-        var response = yield theModem.processAtCommandAsync( cmd, cmd.issue( apn ) );
-        checkResponseOk( cmd, response );
     }
 }
 

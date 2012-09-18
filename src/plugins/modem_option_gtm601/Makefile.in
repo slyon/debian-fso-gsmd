@@ -39,7 +39,9 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.decl commands.c mediators.c \
 	modem_option_gtm601_la_vala.stamp pdphandler.c plugin.c \
-	unsolicited.c
+	smshandler.c unsolicited.c
+@WANT_DEBUG_TRUE@am__append_1 = --debug -D DEBUG
+@WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
 subdir = src/plugins/modem_option_gtm601
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -87,7 +89,8 @@ am_modem_option_gtm601_la_OBJECTS = modem_option_gtm601_la-plugin.lo \
 	modem_option_gtm601_la-commands.lo \
 	modem_option_gtm601_la-mediators.lo \
 	modem_option_gtm601_la-unsolicited.lo \
-	modem_option_gtm601_la-pdphandler.lo $(am__objects_1)
+	modem_option_gtm601_la-pdphandler.lo \
+	modem_option_gtm601_la-smshandler.lo $(am__objects_1)
 modem_option_gtm601_la_OBJECTS = $(am_modem_option_gtm601_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -188,6 +191,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBPI_CFLAGS = @MBPI_CFLAGS@
+MBPI_DATABASE = @MBPI_DATABASE@
+MBPI_LIBS = @MBPI_LIBS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -202,8 +208,6 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PALM_CFLAGS = @PALM_CFLAGS@
-PALM_LIBS = @PALM_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
@@ -217,6 +221,8 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VALAC = @VALAC@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -275,6 +281,10 @@ GTESTER_REPORT = gtester-report
 # initialize variables for unconditional += appending
 EXTRA_DIST = 
 TEST_PROGS = 
+
+# debug flags for vala and gcc
+DEBUG_VALAFLAGS = $(am__append_1)
+DEBUG_CFLAGS = $(am__append_2)
 NULL = 
 AM_CFLAGS = \
 	-DG_LOG_DOMAIN=\"fsogsm.modem_option_gtm601\" \
@@ -289,6 +299,7 @@ modem_option_gtm601_la_SOURCES = \
 	mediators.vala \
 	unsolicited.vala \
 	pdphandler.vala \
+	smshandler.vala \
 	$(NULL)
 
 modem_option_gtm601_la_VALAFLAGS = \
@@ -302,6 +313,7 @@ modem_option_gtm601_la_VALAFLAGS = \
 	--pkg fsoframework-2.0 \
 	--pkg fsotransport-2.0 \
 	--pkg fsogsm-2.0 \
+	$(DEBUG_VALAFLAGS) \
 	$(NULL)
 
 modem_option_gtm601_la_CFLAGS = \
@@ -310,6 +322,7 @@ modem_option_gtm601_la_CFLAGS = \
 	$(FSO_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(GEE_CFLAGS) \
+	$(DEBUG_CFLAGS) \
 	$(NULL)
 
 modem_option_gtm601_la_LIBADD = \
@@ -402,6 +415,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modem_option_gtm601_la-mediators.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modem_option_gtm601_la-pdphandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modem_option_gtm601_la-plugin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modem_option_gtm601_la-smshandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modem_option_gtm601_la-unsolicited.Plo@am__quote@
 
 .c.o:
@@ -459,6 +473,13 @@ modem_option_gtm601_la-pdphandler.lo: pdphandler.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pdphandler.c' object='modem_option_gtm601_la-pdphandler.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_option_gtm601_la_CFLAGS) $(CFLAGS) -c -o modem_option_gtm601_la-pdphandler.lo `test -f 'pdphandler.c' || echo '$(srcdir)/'`pdphandler.c
+
+modem_option_gtm601_la-smshandler.lo: smshandler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_option_gtm601_la_CFLAGS) $(CFLAGS) -MT modem_option_gtm601_la-smshandler.lo -MD -MP -MF $(DEPDIR)/modem_option_gtm601_la-smshandler.Tpo -c -o modem_option_gtm601_la-smshandler.lo `test -f 'smshandler.c' || echo '$(srcdir)/'`smshandler.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modem_option_gtm601_la-smshandler.Tpo $(DEPDIR)/modem_option_gtm601_la-smshandler.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='smshandler.c' object='modem_option_gtm601_la-smshandler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modem_option_gtm601_la_CFLAGS) $(CFLAGS) -c -o modem_option_gtm601_la-smshandler.lo `test -f 'smshandler.c' || echo '$(srcdir)/'`smshandler.c
 $(srcdir)/plugin.c: $(srcdir)/modem_option_gtm601_la_vala.stamp
 	@if test -f $@; then :; else rm -f $(srcdir)/modem_option_gtm601_la_vala.stamp; fi
 	@if test -f $@; then :; else \
@@ -480,6 +501,11 @@ $(srcdir)/unsolicited.c: $(srcdir)/modem_option_gtm601_la_vala.stamp
 	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_option_gtm601_la_vala.stamp; \
 	fi
 $(srcdir)/pdphandler.c: $(srcdir)/modem_option_gtm601_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/modem_option_gtm601_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_option_gtm601_la_vala.stamp; \
+	fi
+$(srcdir)/smshandler.c: $(srcdir)/modem_option_gtm601_la_vala.stamp
 	@if test -f $@; then :; else rm -f $(srcdir)/modem_option_gtm601_la_vala.stamp; fi
 	@if test -f $@; then :; else \
 	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/modem_option_gtm601_la_vala.stamp; \
@@ -621,6 +647,7 @@ maintainer-clean-generic:
 	-rm -f modem_option_gtm601_la_vala.stamp
 	-rm -f pdphandler.c
 	-rm -f plugin.c
+	-rm -f smshandler.c
 	-rm -f unsolicited.c
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am

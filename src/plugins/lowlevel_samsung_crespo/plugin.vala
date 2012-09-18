@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Simon Busch <morphis@gravedo.de>
+ * Copyright (C) 2011-2012 Simon Busch <morphis@gravedo.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,14 +26,12 @@ class LowLevel.SamsungCrespo : FsoGsm.LowLevel, FsoFramework.AbstractObject
 {
     public const string MODULE_NAME = "fsogsm.lowlevel_samsung_crespo";
 
-    private FsoGsm.AbstractModem modem; // for access to modem properties
     private SamsungIpc.Client client;
     private bool powered = false;
     private string power_mode_node;
 
     construct
     {
-        modem = FsoGsm.theModem as FsoGsm.AbstractModem;
         client = new SamsungIpc.Client(SamsungIpc.ClientType.FMT);
         client.set_log_handler( ( message ) => { logger.debug( message ); } );
 

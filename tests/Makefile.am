@@ -2,15 +2,20 @@ include $(top_srcdir)/Makefile.decl
 
 NULL =
 
+SUBDIRS = integration
+
 AM_CFLAGS = \
 	-I$(top_srcdir)/src/lib \
 	-I$(top_srcdir)/src/3rdparty \
 	$(GLIB_CFLAGS) \
 	$(GEE_CFLAGS) \
 	$(FSO_CFLAGS) \
+	-g -DDEBUG \
 	$(NULL)
 
-noinst_PROGRAMS = $(TEST_PROGS)
+noinst_PROGRAMS = \
+	$(TEST_PROGS) \
+	$(NULL)
 
 LDADD = \
 	$(GLIB_LIBS) \
@@ -29,7 +34,10 @@ AM_VALAFLAGS = \
 	--pkg fsobasics-2.0 \
 	--pkg fsotransport-2.0 \
 	--pkg fsogsm-2.0 \
-	--pkg fsogsm3rdparty
+	--pkg fsotest-2.0 \
+	--pkg fsogsm3rdparty \
+	-g \
+	$(NULL)
 
 TEST_PROGS += testatcommand
 testatcommand_SOURCES = testatcommand.vala
@@ -51,6 +59,9 @@ testsms_SOURCES = testsms.vala smsdata.vala
 
 TEST_PROGS += testsmsstorage
 testsmsstorage_SOURCES = testsmsstorage.vala smsdata.vala
+
+TEST_PROGS += testatresultiter
+testatresultiter_SOURCES = testatresultiter.vala
 
 # TEST_PROGS += testoptiongtm601
 # FIXME adding the sources from the modem plugin itself to the list of sources for

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Simon Busch <morphis@gravedo.de>
+ * Copyright (C) 2011-2012 Simon Busch <morphis@gravedo.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ public class SamsungCallActivate : CallActivate
 {
     public override async void run( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        yield theModem.callhandler.activate( id );
+        yield modem.callhandler.activate( id );
     }
 }
 
@@ -33,7 +33,7 @@ public class SamsungCallHoldActive : CallHoldActive
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        yield theModem.callhandler.hold();
+        yield modem.callhandler.hold();
     }
 }
 
@@ -42,7 +42,7 @@ public class SamsungCallInitiate : CallInitiate
     public override async void run( string number, string ctype ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         validatePhoneNumber( number );
-        id = yield theModem.callhandler.initiate( number, ctype );
+        id = yield modem.callhandler.initiate( number, ctype );
     }
 }
 
@@ -50,7 +50,7 @@ public class SamsungCallListCalls : CallListCalls
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var channel = theModem.channel( "main" ) as Samsung.IpcChannel;
+        var channel = modem.channel( "main" ) as Samsung.IpcChannel;
         unowned SamsungIpc.Response? response = null;
         var _calls = new FreeSmartphone.GSM.CallDetail[] { };
 
@@ -72,7 +72,7 @@ public class SamsungCallListCalls : CallListCalls
                 continue;
 
             var ci = FreeSmartphone.GSM.CallDetail((int) currentCallEntry.idx,
-                Constants.instance().callStatusToEnum( (int) currentCallEntry.state - 1 ), new GLib.HashTable<string,Variant>( str_hash, str_equal ) );
+                Constants.callStatusToEnum( (int) currentCallEntry.state - 1 ), new GLib.HashTable<string,Variant>( str_hash, str_equal ) );
 
             assert( theLogger.debug( @"Retrieved call with id = $(ci.id) from modem" ) );
 
@@ -103,7 +103,7 @@ public class SamsungCallRelease : CallRelease
 {
     public override async void run( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        yield theModem.callhandler.release( id );
+        yield modem.callhandler.release( id );
     }
 }
 
@@ -111,7 +111,7 @@ public class SamsungCallReleaseAll : CallReleaseAll
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        yield theModem.callhandler.releaseAll();
+        yield modem.callhandler.releaseAll();
     }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -146,7 +146,7 @@ public class FsoGsm.AtCommandQueue : FsoFramework.AbstractCommandQueue
 
     protected void onParserCompletedUnsolicited( string[] response )
     {
-        transport.logger.info( "URC: %s".printf( FsoFramework.StringHandling.stringListToString( response ) ) );
+        assert( transport.logger.debug( "URC: %s".printf( FsoFramework.StringHandling.stringListToString( response ) ) ) );
 
         if ( ! ( ":" in response[0] ) ) // test for free-form URC
         {

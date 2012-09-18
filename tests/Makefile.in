@@ -39,11 +39,14 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.decl smsdata.c testatcommand.c \
 	testatcommand_vala.stamp testatparser.c \
-	testatparser_vala.stamp testcb.c testcb_vala.stamp testconst.c \
-	testconst_vala.stamp testconversions.c \
+	testatparser_vala.stamp testatresultiter.c \
+	testatresultiter_vala.stamp testcb.c testcb_vala.stamp \
+	testconst.c testconst_vala.stamp testconversions.c \
 	testconversions_vala.stamp testsms.c testsms_vala.stamp \
 	testsmsstorage.c testsmsstorage_vala.stamp
-noinst_PROGRAMS = $(am__EXEEXT_1)
+@WANT_DEBUG_TRUE@am__append_1 = --debug -D DEBUG
+@WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
+noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2)
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -55,7 +58,9 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = testatcommand$(EXEEXT) testatparser$(EXEEXT) \
 	testcb$(EXEEXT) testconversions$(EXEEXT) testconst$(EXEEXT) \
-	testsms$(EXEEXT) testsmsstorage$(EXEEXT)
+	testsms$(EXEEXT) testsmsstorage$(EXEEXT) \
+	testatresultiter$(EXEEXT)
+am__EXEEXT_2 =
 PROGRAMS = $(noinst_PROGRAMS)
 am_testatcommand_OBJECTS = testatcommand.$(OBJEXT)
 testatcommand_OBJECTS = $(am_testatcommand_OBJECTS)
@@ -71,6 +76,12 @@ am_testatparser_OBJECTS = testatparser.$(OBJEXT)
 testatparser_OBJECTS = $(am_testatparser_OBJECTS)
 testatparser_LDADD = $(LDADD)
 testatparser_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(top_builddir)/src/lib/libfsogsm.la
+am_testatresultiter_OBJECTS = testatresultiter.$(OBJEXT)
+testatresultiter_OBJECTS = $(am_testatresultiter_OBJECTS)
+testatresultiter_LDADD = $(LDADD)
+testatresultiter_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(top_builddir)/src/lib/libfsogsm.la
 am_testcb_OBJECTS = testcb.$(OBJEXT)
@@ -134,16 +145,54 @@ AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(testatcommand_SOURCES) $(testatparser_SOURCES) \
-	$(testcb_SOURCES) $(testconst_SOURCES) \
-	$(testconversions_SOURCES) $(testsms_SOURCES) \
-	$(testsmsstorage_SOURCES)
+	$(testatresultiter_SOURCES) $(testcb_SOURCES) \
+	$(testconst_SOURCES) $(testconversions_SOURCES) \
+	$(testsms_SOURCES) $(testsmsstorage_SOURCES)
 DIST_SOURCES = $(testatcommand_SOURCES) $(testatparser_SOURCES) \
-	$(testcb_SOURCES) $(testconst_SOURCES) \
-	$(testconversions_SOURCES) $(testsms_SOURCES) \
-	$(testsmsstorage_SOURCES)
+	$(testatresultiter_SOURCES) $(testcb_SOURCES) \
+	$(testconst_SOURCES) $(testconversions_SOURCES) \
+	$(testsms_SOURCES) $(testsmsstorage_SOURCES)
+RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
+	html-recursive info-recursive install-data-recursive \
+	install-dvi-recursive install-exec-recursive \
+	install-html-recursive install-info-recursive \
+	install-pdf-recursive install-ps-recursive install-recursive \
+	installcheck-recursive installdirs-recursive pdf-recursive \
+	ps-recursive uninstall-recursive
+RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
+  distclean-recursive maintainer-clean-recursive
+AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
+	$(RECURSIVE_CLEAN_TARGETS:-recursive=) tags TAGS ctags CTAGS \
+	distdir
 ETAGS = etags
 CTAGS = ctags
+DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+am__relativize = \
+  dir0=`pwd`; \
+  sed_first='s,^\([^/]*\)/.*$$,\1,'; \
+  sed_rest='s,^[^/]*/*,,'; \
+  sed_last='s,^.*/\([^/]*\)$$,\1,'; \
+  sed_butlast='s,/*[^/]*$$,,'; \
+  while test -n "$$dir1"; do \
+    first=`echo "$$dir1" | sed -e "$$sed_first"`; \
+    if test "$$first" != "."; then \
+      if test "$$first" = ".."; then \
+        dir2=`echo "$$dir0" | sed -e "$$sed_last"`/"$$dir2"; \
+        dir0=`echo "$$dir0" | sed -e "$$sed_butlast"`; \
+      else \
+        first2=`echo "$$dir2" | sed -e "$$sed_first"`; \
+        if test "$$first2" = "$$first"; then \
+          dir2=`echo "$$dir2" | sed -e "$$sed_rest"`; \
+        else \
+          dir2="../$$dir2"; \
+        fi; \
+        dir0="$$dir0"/"$$first"; \
+      fi; \
+    fi; \
+    dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
+  done; \
+  reldir="$$dir2"
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
@@ -198,6 +247,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBPI_CFLAGS = @MBPI_CFLAGS@
+MBPI_DATABASE = @MBPI_DATABASE@
+MBPI_LIBS = @MBPI_LIBS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -212,8 +264,6 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PALM_CFLAGS = @PALM_CFLAGS@
-PALM_LIBS = @PALM_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
@@ -227,6 +277,8 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VALAC = @VALAC@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -285,14 +337,20 @@ GTESTER_REPORT = gtester-report
 # initialize variables for unconditional += appending
 EXTRA_DIST = 
 TEST_PROGS = testatcommand testatparser testcb testconversions \
-	testconst testsms testsmsstorage
+	testconst testsms testsmsstorage testatresultiter
+
+# debug flags for vala and gcc
+DEBUG_VALAFLAGS = $(am__append_1)
+DEBUG_CFLAGS = $(am__append_2)
 NULL = 
+SUBDIRS = integration
 AM_CFLAGS = \
 	-I$(top_srcdir)/src/lib \
 	-I$(top_srcdir)/src/3rdparty \
 	$(GLIB_CFLAGS) \
 	$(GEE_CFLAGS) \
 	$(FSO_CFLAGS) \
+	-g -DDEBUG \
 	$(NULL)
 
 LDADD = \
@@ -312,7 +370,10 @@ AM_VALAFLAGS = \
 	--pkg fsobasics-2.0 \
 	--pkg fsotransport-2.0 \
 	--pkg fsogsm-2.0 \
-	--pkg fsogsm3rdparty
+	--pkg fsotest-2.0 \
+	--pkg fsogsm3rdparty \
+	-g \
+	$(NULL)
 
 testatcommand_SOURCES = testatcommand.vala
 testatparser_SOURCES = testatparser.vala
@@ -321,6 +382,7 @@ testconversions_SOURCES = testconversions.vala
 testconst_SOURCES = testconst.vala
 testsms_SOURCES = testsms.vala smsdata.vala
 testsmsstorage_SOURCES = testsmsstorage.vala smsdata.vala
+testatresultiter_SOURCES = testatresultiter.vala
 
 # TEST_PROGS += testoptiongtm601
 # FIXME adding the sources from the modem plugin itself to the list of sources for
@@ -335,7 +397,7 @@ MAINTAINERCLEANFILES = \
 	Makefile.in \
 	$(NULL)
 
-all: all-am
+all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -385,6 +447,9 @@ testatcommand$(EXEEXT): $(testatcommand_OBJECTS) $(testatcommand_DEPENDENCIES) $
 testatparser$(EXEEXT): $(testatparser_OBJECTS) $(testatparser_DEPENDENCIES) $(EXTRA_testatparser_DEPENDENCIES) 
 	@rm -f testatparser$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(testatparser_OBJECTS) $(testatparser_LDADD) $(LIBS)
+testatresultiter$(EXEEXT): $(testatresultiter_OBJECTS) $(testatresultiter_DEPENDENCIES) $(EXTRA_testatresultiter_DEPENDENCIES) 
+	@rm -f testatresultiter$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(testatresultiter_OBJECTS) $(testatresultiter_LDADD) $(LIBS)
 testcb$(EXEEXT): $(testcb_OBJECTS) $(testcb_DEPENDENCIES) $(EXTRA_testcb_DEPENDENCIES) 
 	@rm -f testcb$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(testcb_OBJECTS) $(testcb_LDADD) $(LIBS)
@@ -410,6 +475,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smsdata.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testatcommand.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testatparser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testatresultiter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testcb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testconst.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testconversions.Po@am__quote@
@@ -436,15 +502,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
-$(srcdir)/testcb.c: $(srcdir)/testcb_vala.stamp
-	@if test -f $@; then :; else rm -f $(srcdir)/testcb_vala.stamp; fi
-	@if test -f $@; then :; else \
-	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testcb_vala.stamp; \
-	fi
-$(srcdir)/testcb_vala.stamp: $(testcb_SOURCES)
-	$(AM_V_at)rm -f $@ && echo stamp > $@-t
-	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testcb_SOURCES)
-	$(AM_V_at)mv -f $@-t $@
 $(srcdir)/testatparser.c: $(srcdir)/testatparser_vala.stamp
 	@if test -f $@; then :; else rm -f $(srcdir)/testatparser_vala.stamp; fi
 	@if test -f $@; then :; else \
@@ -491,15 +548,6 @@ $(srcdir)/testconversions_vala.stamp: $(testconversions_SOURCES)
 	$(AM_V_at)rm -f $@ && echo stamp > $@-t
 	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testconversions_SOURCES)
 	$(AM_V_at)mv -f $@-t $@
-$(srcdir)/testconst.c: $(srcdir)/testconst_vala.stamp
-	@if test -f $@; then :; else rm -f $(srcdir)/testconst_vala.stamp; fi
-	@if test -f $@; then :; else \
-	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testconst_vala.stamp; \
-	fi
-$(srcdir)/testconst_vala.stamp: $(testconst_SOURCES)
-	$(AM_V_at)rm -f $@ && echo stamp > $@-t
-	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testconst_SOURCES)
-	$(AM_V_at)mv -f $@-t $@
 $(srcdir)/testatcommand.c: $(srcdir)/testatcommand_vala.stamp
 	@if test -f $@; then :; else rm -f $(srcdir)/testatcommand_vala.stamp; fi
 	@if test -f $@; then :; else \
@@ -509,12 +557,109 @@ $(srcdir)/testatcommand_vala.stamp: $(testatcommand_SOURCES)
 	$(AM_V_at)rm -f $@ && echo stamp > $@-t
 	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testatcommand_SOURCES)
 	$(AM_V_at)mv -f $@-t $@
+$(srcdir)/testatresultiter.c: $(srcdir)/testatresultiter_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testatresultiter_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testatresultiter_vala.stamp; \
+	fi
+$(srcdir)/testatresultiter_vala.stamp: $(testatresultiter_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testatresultiter_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
+$(srcdir)/testcb.c: $(srcdir)/testcb_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testcb_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testcb_vala.stamp; \
+	fi
+$(srcdir)/testcb_vala.stamp: $(testcb_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testcb_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
+$(srcdir)/testconst.c: $(srcdir)/testconst_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/testconst_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/testconst_vala.stamp; \
+	fi
+$(srcdir)/testconst_vala.stamp: $(testconst_SOURCES)
+	$(AM_V_at)rm -f $@ && echo stamp > $@-t
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(AM_VALAFLAGS) $(VALAFLAGS) -C $(testconst_SOURCES)
+	$(AM_V_at)mv -f $@-t $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+$(RECURSIVE_TARGETS):
+	@fail= failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+	  case $$f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	  || eval $$failcom; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+$(RECURSIVE_CLEAN_TARGETS):
+	@fail= failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+	  case $$f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	dot_seen=no; \
+	case "$@" in \
+	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
+	  *) list='$(SUBDIRS)' ;; \
+	esac; \
+	rev=''; for subdir in $$list; do \
+	  if test "$$subdir" = "."; then :; else \
+	    rev="$$subdir $$rev"; \
+	  fi; \
+	done; \
+	rev="$$rev ."; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	  || eval $$failcom; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
+ctags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) ctags); \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -526,10 +671,23 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	set x; \
 	here=`pwd`; \
+	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
+	  include_option=--etags-include; \
+	  empty_fix=.; \
+	else \
+	  include_option=--include; \
+	  empty_fix=; \
+	fi; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test ! -f $$subdir/TAGS || \
+	      set "$$@" "$$include_option=$$here/$$subdir/TAGS"; \
+	  fi; \
+	done; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -548,7 +706,7 @@ TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 	  fi; \
 	fi
 ctags: CTAGS
-CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+CTAGS: ctags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
@@ -598,20 +756,49 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d "$(distdir)/$$subdir" \
+	    || $(MKDIR_P) "$(distdir)/$$subdir" \
+	    || exit 1; \
+	  fi; \
+	done
+	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    dir1=$$subdir; dir2="$(distdir)/$$subdir"; \
+	    $(am__relativize); \
+	    new_distdir=$$reldir; \
+	    dir1=$$subdir; dir2="$(top_distdir)"; \
+	    $(am__relativize); \
+	    new_top_distdir=$$reldir; \
+	    echo " (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir="$$new_top_distdir" distdir="$$new_distdir" \\"; \
+	    echo "     am__remove_distdir=: am__skip_length_check=: am__skip_mode_fix=: distdir)"; \
+	    ($(am__cd) $$subdir && \
+	      $(MAKE) $(AM_MAKEFLAGS) \
+	        top_distdir="$$new_top_distdir" \
+	        distdir="$$new_distdir" \
+		am__remove_distdir=: \
+		am__skip_length_check=: \
+		am__skip_mode_fix=: \
+	        distdir) \
+	      || exit 1; \
+	  fi; \
+	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-local
-check: check-am
+check: check-recursive
 all-am: Makefile $(PROGRAMS)
-installdirs:
-install: install-am
-install-exec: install-exec-am
-install-data: install-data-am
-uninstall: uninstall-am
+installdirs: installdirs-recursive
+installdirs-am:
+install: install-recursive
+install-exec: install-exec-recursive
+install-data: install-data-recursive
+uninstall: uninstall-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-am
+installcheck: installcheck-recursive
 install-strip:
 	if test -z '$(STRIP)'; then \
 	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
@@ -639,6 +826,8 @@ maintainer-clean-generic:
 	-rm -f testatcommand_vala.stamp
 	-rm -f testatparser.c
 	-rm -f testatparser_vala.stamp
+	-rm -f testatresultiter.c
+	-rm -f testatresultiter_vala.stamp
 	-rm -f testcb.c
 	-rm -f testcb_vala.stamp
 	-rm -f testconst.c
@@ -650,81 +839,83 @@ maintainer-clean-generic:
 	-rm -f testsmsstorage.c
 	-rm -f testsmsstorage_vala.stamp
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
-clean: clean-am
+clean: clean-recursive
 
 clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
 	mostlyclean-am
 
-distclean: distclean-am
+distclean: distclean-recursive
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
 
-dvi: dvi-am
+dvi: dvi-recursive
 
 dvi-am:
 
-html: html-am
+html: html-recursive
 
 html-am:
 
-info: info-am
+info: info-recursive
 
 info-am:
 
 install-data-am:
 
-install-dvi: install-dvi-am
+install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
 install-exec-am:
 
-install-html: install-html-am
+install-html: install-html-recursive
 
 install-html-am:
 
-install-info: install-info-am
+install-info: install-info-recursive
 
 install-info-am:
 
 install-man:
 
-install-pdf: install-pdf-am
+install-pdf: install-pdf-recursive
 
 install-pdf-am:
 
-install-ps: install-ps-am
+install-ps: install-ps-recursive
 
 install-ps-am:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-am
+maintainer-clean: maintainer-clean-recursive
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-am
+mostlyclean: mostlyclean-recursive
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool
 
-pdf: pdf-am
+pdf: pdf-recursive
 
 pdf-am:
 
-ps: ps-am
+ps: ps-recursive
 
 ps-am:
 
 uninstall-am:
 
-.MAKE: check-am install-am install-strip
+.MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) check-am \
+	ctags-recursive install-am install-strip tags-recursive
 
-.PHONY: CTAGS GTAGS all all-am check check-am check-local clean \
-	clean-generic clean-libtool clean-noinstPROGRAMS ctags \
+.PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
+	all all-am check check-am check-local clean clean-generic \
+	clean-libtool clean-noinstPROGRAMS ctags ctags-recursive \
 	distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
@@ -732,10 +923,10 @@ uninstall-am:
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	installcheck-am installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am
+	tags tags-recursive uninstall uninstall-am
 
 
 ### testing rules

@@ -38,6 +38,8 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.decl fsogsmd_vala.stamp main.c
+@WANT_DEBUG_TRUE@am__append_1 = --debug -D DEBUG
+@WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
 sbin_PROGRAMS = fsogsmd$(EXEEXT)
 subdir = src/bin
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -153,6 +155,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBPI_CFLAGS = @MBPI_CFLAGS@
+MBPI_DATABASE = @MBPI_DATABASE@
+MBPI_LIBS = @MBPI_LIBS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -167,8 +172,6 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PALM_CFLAGS = @PALM_CFLAGS@
-PALM_LIBS = @PALM_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
@@ -182,6 +185,8 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VALAC = @VALAC@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -240,6 +245,10 @@ GTESTER_REPORT = gtester-report
 # initialize variables for unconditional += appending
 EXTRA_DIST = 
 TEST_PROGS = 
+
+# debug flags for vala and gcc
+DEBUG_VALAFLAGS = $(am__append_1)
+DEBUG_CFLAGS = $(am__append_2)
 NULL = 
 AM_CFLAGS = \
 	-include $(CONFIG_HEADER) \
@@ -250,16 +259,19 @@ AM_VALAFLAGS =
 fsogsmd_SOURCES = main.vala
 fsogsmd_VALAFLAGS = \
 	--vapidir $(top_srcdir)/vapi \
+	--pkg config \
 	--pkg posix \
 	--pkg gio-2.0 \
 	--pkg fsoframework-2.0 \
 	--save-temps \
 	--basedir $(top_srcdir) \
+	$(DEBUG_VALAFLAGS) \
 	$(NULL)
 
 fsogsmd_CFLAGS = \
 	$(FSO_CFLAGS) \
 	$(GLIB_CFLAGS) \
+	$(DEBUG_CFLAGS) \
 	$(NULL)
 
 fsogsmd_LDADD = \

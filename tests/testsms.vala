@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -209,7 +209,7 @@ void test_sms_encode_submit_single_default_alphabet()
 void test_sms_encode_submit_concatenated_default_alphabet()
 //===========================================================================
 {
-    SmsHandler handler = new AtSmsHandler();
+    SmsHandler handler = new AtSmsHandler( null );
     var pdu = handler.formatTextMessage( PHONE_NUMBER, LONG_TEXT, false );
     assert( pdu.size == 4 );
 

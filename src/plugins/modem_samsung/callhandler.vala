@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Simon Busch <morphis@gravedo.de>
+ * Copyright (C) 2011-2012 Simon Busch <morphis@gravedo.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,29 +28,21 @@ internal const int CALL_STATUS_REFRESH_TIMEOUT = 3; // in seconds
 
 public class Samsung.CallHandler : FsoGsm.AbstractCallHandler
 {
-    private bool inSyncCallStatus;
-    protected uint timeout;
-    protected FsoGsm.Call[] calls;
-
-    protected FsoFramework.Pair<string,string> supplementary;
     private Samsung.SoundHandler _soundhandler;
-
-    construct
-    {
-        calls = new FsoGsm.Call[Constants.CALL_INDEX_MAX+1] {};
-        for ( int i = Constants.CALL_INDEX_MIN; i != Constants.CALL_INDEX_MAX; ++i )
-            calls[i] = new Call.newFromId( i );
-
-        _soundhandler = new Samsung.SoundHandler();
-    }
 
     //
     // public API
     //
 
+    public CallHandler( FsoGsm.Modem modem )
+    {
+        base( modem );
+        _soundhandler = new Samsung.SoundHandler( modem );
+    }
+
     public override async int initiate( string number, string ctype ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var channel = theModem.channel( "main" ) as Samsung.IpcChannel;
+        var channel = modem.channel( "main" ) as Samsung.IpcChannel;
         var num = lowestOfCallsWithStatus( FreeSmartphone.GSM.CallStatus.RELEASE );
         unowned SamsungIpc.Response? response = null;
 
@@ -79,6 +71,7 @@ public class Samsung.CallHandler : FsoGsm.AbstractCallHandler
         yield _soundhandler.mute_microphone( false );
         yield _soundhandler.set_speaker_volume( SamsungIpc.Sound.VolumeType.SPEAKER, 0x4 );
         yield _soundhandler.set_audio_path( SamsungIpc.Sound.AudioPath.HANDSET );
+        yield _soundhandler.execute_clock_control();
 
         startTimeoutIfNecessary();
 
@@ -92,7 +85,7 @@ public class Samsung.CallHandler : FsoGsm.AbstractCallHandler
 
     public override async void activate( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var channel = theModem.channel( "main" ) as Samsung.IpcChannel;
+        var channel = modem.channel( "main" ) as Samsung.IpcChannel;
         unowned SamsungIpc.Response? response = null;
 
         if ( id < 1 || id > Constants.CALL_INDEX_MAX )
@@ -135,7 +128,7 @@ public class Samsung.CallHandler : FsoGsm.AbstractCallHandler
 
     public override async void release( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var channel = theModem.channel( "main" ) as Samsung.IpcChannel;
+        var channel = modem.channel( "main" ) as Samsung.IpcChannel;
         unowned SamsungIpc.Response? response = null;
 
         if ( id < 1 || id > Constants.CALL_INDEX_MAX )
@@ -168,6 +161,22 @@ public class Samsung.CallHandler : FsoGsm.AbstractCallHandler
         }
     }
 
+    public override async void transfer() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
+    public override async void deflect( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
+    public override async void conference( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
+    public override async void join() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
     public override string repr()
     {
         return @"<>";
@@ -182,14 +191,14 @@ public class Samsung.CallHandler : FsoGsm.AbstractCallHandler
     // protected
     //
 
-    protected async void syncCallStatus()
+    protected override async void syncCallStatus()
     {
         inSyncCallStatus = true;
 
         try
         {
             assert( logger.debug( "Synchronizing call status" ) );
-            var m = theModem.createMediator<FsoGsm.CallListCalls>();
+            var m = modem.createMediator<FsoGsm.CallListCalls>();
             yield m.run();
 
             // workaround for https://bugzilla.gnome.org/show_bug.cgi?id=585847
@@ -252,8 +261,8 @@ public class Samsung.CallHandler : FsoGsm.AbstractCallHandler
                     );
 
                     /*
-                    var ceer = theModem.createAtCommand<PlusCEER>( "+CEER" );
-                    var result = yield theModem.processAtCommandAsync( ceer, ceer.execute() );
+                    var ceer = modem.createAtCommand<PlusCEER>( "+CEER" );
+                    var result = yield modem.processAtCommandAsync( ceer, ceer.execute() );
                     if ( ceer.validate( result ) == Constants.AtResponse.VALID )
                     {
                         detail.properties.insert( "cause", ceer.reason );
@@ -272,28 +281,6 @@ public class Samsung.CallHandler : FsoGsm.AbstractCallHandler
         inSyncCallStatus = false;
     }
 
-    protected override void startTimeoutIfNecessary()
-    {
-        onTimeout();
-        if ( timeout == 0 )
-        {
-            timeout = GLib.Timeout.add_seconds( CALL_STATUS_REFRESH_TIMEOUT, onTimeout );
-        }
-    }
-
-    protected bool onTimeout()
-    {
-        if ( inSyncCallStatus )
-        {
-            assert( logger.debug( "Synchronizing call status not done yet... ignoring" ) );
-        }
-        else
-        {
-            syncCallStatus.begin();
-        }
-        return true;
-    }
-
     protected override async void cancelOutgoingWithId( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         assert( logger.debug( @"Cancelling outgoing call with ID $id" ) );
@@ -304,50 +291,6 @@ public class Samsung.CallHandler : FsoGsm.AbstractCallHandler
     {
         assert( logger.debug( @"Rejecting incoming call with ID $id" ) );
         throw new FreeSmartphone.Error.UNSUPPORTED( "Not yet implemented!" );
-    }
-
-
-    //
-    // private
-    //
-
-    private int numberOfBusyCalls()
-    {
-        var num = 0;
-        for ( int i = Constants.CALL_INDEX_MIN; i != Constants.CALL_INDEX_MAX; ++i )
-        {
-            if ( calls[i].detail.status != FreeSmartphone.GSM.CallStatus.RELEASE &&
-                 calls[i].detail.status != FreeSmartphone.GSM.CallStatus.INCOMING )
-            {
-                num++;
-            }
-        }
-        return num;
-    }
-
-    private int numberOfCallsWithStatus( FreeSmartphone.GSM.CallStatus status )
-    {
-        var num = 0;
-        for ( int i = Constants.CALL_INDEX_MIN; i != Constants.CALL_INDEX_MAX; ++i )
-        {
-            if ( calls[i].detail.status == status )
-            {
-                num++;
-            }
-        }
-        return num;
-    }
-
-    private int lowestOfCallsWithStatus( FreeSmartphone.GSM.CallStatus status )
-    {
-        for ( int i = Constants.CALL_INDEX_MIN; i != Constants.CALL_INDEX_MAX; ++i )
-        {
-            if ( calls[i].detail.status == status )
-            {
-                return i;
-            }
-        }
-        return 0;
     }
 }
 

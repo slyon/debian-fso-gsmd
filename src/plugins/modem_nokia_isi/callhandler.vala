@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2011-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,13 +25,16 @@ using GIsiComm;
 /**
  * @class IsiCallHandler
  **/
-public class FsoGsm.IsiCallHandler : FsoGsm.AbstractCallHandler
+public class FsoGsm.IsiCallHandler : FsoGsm.CallHandler, FsoFramework.AbstractObject
 {
     protected HashMap<int, FsoGsm.Call> calls;
 
-    public IsiCallHandler()
+    private FsoGsm.Modem modem;
+
+    public IsiCallHandler( FsoGsm.Modem modem )
     {
-        calls = new HashMap<int, FsoGsm.Call>();
+        this.modem = modem;
+        this.calls = new HashMap<int, FsoGsm.Call>();
     }
 
     public override string repr()
@@ -52,6 +55,10 @@ public class FsoGsm.IsiCallHandler : FsoGsm.AbstractCallHandler
         {
             assert( logger.debug( @"new call with id $(istatus.id)" ) );
             call = new FsoGsm.Call.newFromId( istatus.id );
+            call.status_changed.connect( ( id, status, properties ) => {
+                var obj = modem.theDevice<FreeSmartphone.GSM.Call>();
+                obj.call_status( id, status, properties );
+            } );
             calls.set( istatus.id, call );
         }
 
@@ -60,14 +67,14 @@ public class FsoGsm.IsiCallHandler : FsoGsm.AbstractCallHandler
             case GIsiClient.Call.Status.COMING:
                 assert( logger.debug( @"incoming call with id $(istatus.id) from $(istatus.number)" ) );
                 call.detail.properties.insert( "direction", "incoming" );
-                call.detail.properties.insert( "peer", Constants.instance().phonenumberTupleToString( istatus.number, istatus.ntype ) );
+                call.detail.properties.insert( "peer", Constants.phonenumberTupleToString( istatus.number, istatus.ntype ) );
                 call.update_status( FreeSmartphone.GSM.CallStatus.INCOMING );
                 break;
 
             case GIsiClient.Call.Status.CREATE:
                 assert( logger.debug( @"outgoing call with id $(istatus.id) to $(istatus.number)" ) );
                 call.detail.properties.insert( "direction", "outgoing" );
-                call.detail.properties.insert( "peer", Constants.instance().phonenumberTupleToString( istatus.number, istatus.ntype ) );
+                call.detail.properties.insert( "peer", Constants.phonenumberTupleToString( istatus.number, istatus.ntype ) );
                 call.update_status( FreeSmartphone.GSM.CallStatus.OUTGOING );
                 break;
 
@@ -92,38 +99,26 @@ public class FsoGsm.IsiCallHandler : FsoGsm.AbstractCallHandler
         }
     }
 
-    public override void handleIncomingCall( FsoGsm.CallInfo call_info )
+    public void handleIncomingCall( FsoGsm.CallInfo call_info )
     {
     }
 
-    public override void handleConnectingCall( FsoGsm.CallInfo call_info )
+    public void handleConnectingCall( FsoGsm.CallInfo call_info )
     {
     }
 
-    public override void handleEndingCall( FsoGsm.CallInfo call_info )
+    public void handleEndingCall( FsoGsm.CallInfo call_info )
     {
     }
 
-    public override void addSupplementaryInformation( string direction, string info )
-    {
-    }
-
-    protected override async void cancelOutgoingWithId( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
-    {
-    }
-
-    protected override async void rejectIncomingWithId( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
-    {
-    }
-
-    protected override void startTimeoutIfNecessary()
+    public void addSupplementaryInformation( string direction, string info )
     {
     }
 
     //
     // User Actions (forwarded through the generic mediators)
     //
-    public override async void activate( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    public async void activate( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         NokiaIsi.isimodem.call.answerVoiceCall( (uint8) id, (error) => {
             if ( error == ErrorCode.OK )
@@ -138,7 +133,7 @@ public class FsoGsm.IsiCallHandler : FsoGsm.AbstractCallHandler
         yield;
     }
 
-    public override async int initiate( string number, string ctype ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    public async int initiate( string number, string ctype ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         if ( ctype != "voice" )
         {
@@ -146,7 +141,7 @@ public class FsoGsm.IsiCallHandler : FsoGsm.AbstractCallHandler
         }
 
         uint8 ntype;
-        var gsmnumber = Constants.instance().phonenumberStringToRealTuple( number, out ntype );
+        var gsmnumber = Constants.phonenumberStringToRealTuple( number, out ntype );
 
         NokiaIsi.isimodem.call.initiateVoiceCall( gsmnumber, ntype, GIsiClient.Call.PresentationType.GSM_DEFAULT, (error, id) => {
             if ( error == ErrorCode.OK )
@@ -163,12 +158,12 @@ public class FsoGsm.IsiCallHandler : FsoGsm.AbstractCallHandler
         return 0;
     }
 
-    public override async void hold() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    public async void hold() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         throw new FreeSmartphone.Error.INTERNAL_ERROR( "Not yet implemented" );
     }
 
-    public override async void release( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    public async void release( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         if ( !calls.has_key( id ) )
         {
@@ -179,7 +174,7 @@ public class FsoGsm.IsiCallHandler : FsoGsm.AbstractCallHandler
         {
             throw new FreeSmartphone.GSM.Error.CALL_NOT_FOUND( "No active call with that id found" );
         }
-        
+
         NokiaIsi.isimodem.call.releaseVoiceCall( (uint8) id, GIsiClient.Call.CauseType.CLIENT, GIsiClient.Call.IsiCause.RELEASE_BY_USER, (error) => {
             if ( error == ErrorCode.OK )
             {
@@ -193,7 +188,7 @@ public class FsoGsm.IsiCallHandler : FsoGsm.AbstractCallHandler
         yield;
     }
 
-    public override async void releaseAll() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    public async void releaseAll() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         foreach ( var call in calls.values )
         {
@@ -225,6 +220,21 @@ public class FsoGsm.IsiCallHandler : FsoGsm.AbstractCallHandler
         return ret;
     }
 
+    public async void transfer() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
+    public async void deflect( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
+    public async void conference( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
+    public async void join() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
 }
 
 // vim:ts=4:sw=4:expandtab

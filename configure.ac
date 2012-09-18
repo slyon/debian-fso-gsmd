@@ -1,5 +1,5 @@
 m4_define([fsogsmd_released], [1])
-m4_define([fsogsmd_base_version], [0.11.3])
+m4_define([fsogsmd_base_version], [0.12.0-rc2])
 m4_define([fsogsmd_maybe_gitrev], m4_if(fsogsmd_released, [1], [], [m4_esyscmd([git show-ref --hash=5 HEAD | tr -d '\n\r'])]))
 m4_define([fsogsmd_version], m4_if(fsogsmd_released, [1], [fsogsmd_base_version], [fsogsmd_base_version-fsogsmd_maybe_gitrev]))
 
@@ -28,7 +28,7 @@ AC_SUBST(LDFLAGS)
 # Vala building options -- allows tarball builds without installing vala
 #########################################################################################
 
-VALA_REQUIRED=0.14.2
+VALA_REQUIRED=0.16.0
 
 AC_ARG_ENABLE([vala], AS_HELP_STRING([--enable-vala],[Enable building from Vala sources]),
               [enable_vala=$enableval], [enable_vala=no])
@@ -53,16 +53,16 @@ AM_CONDITIONAL([HAVE_VALA], [test "x$enable_vala" = "xyes"])
 # Check for various dependencies
 #########################################################################################
 
-VALA_REQUIRED=0.14.2
+VALA_REQUIRED=0.16.0
 GLIB_REQUIRED=2.26.0
 GEE_REQUIRED=0.5.0
 XML_REQUIRED=2.7.3
 GSMMUX_REQUIRED=0.3.4
 GISICOMM_REQUIRED=0.1.0
-MSMCOMM_SPECS_REQUIRED=0.10.0
-FSO_GLIB_REQUIRED=2012.05.24.1
+FSO_GLIB_REQUIRED=2012.07.27.1
 FSO_REQUIRED=0.11.0
 SAMSUNG_IPC_REQUIRED=0.1
+MBPI_REQUIRED=20090918
 
 PKG_CHECK_MODULES(GLIB,
   glib-2.0 >= $GLIB_REQUIRED
@@ -70,6 +70,11 @@ PKG_CHECK_MODULES(GLIB,
   gio-2.0 >= $GLIB_REQUIRED)
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
+
+PKG_CHECK_MODULES(XML,
+  libxml-2.0 >= $XML_REQUIRED)
+AC_SUBST(XML_CFLAGS)
+AC_SUBST(XML_LIBS)
 
 PKG_CHECK_MODULES(GEE,
   gee-1.0 >= $GEE_REQUIRED)
@@ -81,9 +86,19 @@ PKG_CHECK_MODULES(FSO,
   fsosystem-2.0 >= $FSO_REQUIRED
   fsoframework-2.0 >= $FSO_REQUIRED
   fsotransport-2.0 >= $FSO_REQUIRED
-  fsoresource-2.0 >= $FSO_REQUIRED)
+  fsoresource-2.0 >= $FSO_REQUIRED
+  fsotest-2.0 >= $FSO_REQUIRED)
 AC_SUBST(FSO_CFLAGS)
 AC_SUBST(FSO_LIBS)
+
+PKG_CHECK_MODULES(MBPI,
+  mobile-broadband-provider-info >= $MBPI_REQUIRED)
+MBPI_DATABASE="`$PKG_CONFIG --variable=database mobile-broadband-provider-info`"
+if (test -z "{MPBI_DATABASE}"); then
+  AC_ERROR([Can not find mobile broadband provider info database file])
+fi
+AC_SUBST(MBPI_DATABASE)
+AC_DEFINE_UNQUOTED([MBPI_DATABASE_PATH], ["${MBPI_DATABASE}"], [Path to xml service provider file])
 
 #########################################################################################
 # dbus conf directory
@@ -145,24 +160,6 @@ AC_SUBST(GSMMUX_LIBS)
 
 fi
 AM_CONDITIONAL( [WANT_MUX], [test x"$mux" = x"yes"])
-
-#########################################################################################
-# optional feature: Qualcomm modem support as found in Palm WebOS devices
-#########################################################################################
-
-AC_ARG_ENABLE(modem-qualcomm-palm,
-  [  --enable-modem-qualcomm-palm  Enable building the modem_qualcomm_palm plugin (default=disabled)],
-  [palm=$enableval],
-  [palm="no"])
-
-if test x$palm = "xyes"; then
-    PKG_CHECK_MODULES(PALM,
-      msmcomm-specs-2.0 >= $MSMCOMM_SPECS_REQUIRED)
-AC_SUBST(PALM_CFLAGS)
-AC_SUBST(PALM_LIBS)
-
-fi
-AM_CONDITIONAL( [WANT_PALM], [test x"$palm" = x"yes"])
 
 #########################################################################################
 # optional feature: Nokia ISI modem support as found in Nokia N900
@@ -257,7 +254,6 @@ AC_CONFIG_FILES([
   conf/htcleo/Makefile
   conf/motorola_ezx/Makefile
   conf/openmoko_gta/Makefile
-  conf/palm_pre/Makefile
   conf/nexusone/Makefile
   conf/nokia_n900/Makefile
   conf/herring/Makefile
@@ -275,7 +271,6 @@ AC_CONFIG_FILES([
   src/plugins/lowlevel_motorola_ezx/Makefile
   src/plugins/lowlevel_openmoko/Makefile
   src/plugins/lowlevel_gta04/Makefile
-  src/plugins/lowlevel_palmpre/Makefile
   src/plugins/lowlevel_samsung_crespo/Makefile
   src/plugins/modem_cinterion_mc75/Makefile
   src/plugins/modem_dummy/Makefile
@@ -284,7 +279,6 @@ AC_CONFIG_FILES([
   src/plugins/modem_singleline/Makefile
   src/plugins/modem_ti_calypso/Makefile
   src/plugins/modem_qualcomm_htc/Makefile
-  src/plugins/modem_qualcomm_palm/Makefile
   src/plugins/modem_samsung/Makefile
   src/plugins/modem_option_gtm601/Makefile
   src/plugins/modem_phonesim/Makefile
@@ -295,6 +289,7 @@ AC_CONFIG_FILES([
   src/plugins/pdp_nokia_isi/Makefile
   src/ppp/Makefile
   tests/Makefile
+  tests/integration/Makefile
   vapi/Makefile
 ])
 AC_OUTPUT
@@ -314,7 +309,6 @@ echo "  ppp support.............: $ppp"
 echo "  pdp_mux.................: $mux"
 echo "  modem_ti_calypso........: $mux"
 echo "  modem_cinterion_mc75....: $mux"
-echo "  modem_qualcomm_palm.....: $palm"
 echo "  modem_nokia_isi.........: $isi"
 echo "  modem_samsung...........: $samsung"
 echo

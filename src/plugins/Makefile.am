@@ -1,4 +1,3 @@
-
 include $(top_srcdir)/Makefile.decl
 
 NULL =
@@ -33,12 +32,6 @@ if WANT_MUX
 SUBDIRS += \
 	modem_ti_calypso \
 	modem_cinterion_mc75
-endif
-
-if WANT_PALM
-SUBDIRS += \
-	modem_qualcomm_palm \
-	lowlevel_palmpre
 endif
 
 if WANT_ISI

@@ -37,9 +37,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(dist_dbusconf_DATA) $(dist_dbusservice_DATA) \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(dist_worldcodes_DATA) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in \
 	$(srcdir)/org.freesmartphone.ogsmd.service.in \
 	$(top_srcdir)/Makefile.decl
+@WANT_DEBUG_TRUE@am__append_1 = --debug -D DEBUG
+@WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
 subdir = data
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -85,8 +88,9 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(dbusconfdir)" \
-	"$(DESTDIR)$(dbusservicedir)"
-DATA = $(dist_dbusconf_DATA) $(dist_dbusservice_DATA)
+	"$(DESTDIR)$(dbusservicedir)" "$(DESTDIR)$(worldcodesdir)"
+DATA = $(dist_dbusconf_DATA) $(dist_dbusservice_DATA) \
+	$(dist_worldcodes_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -142,6 +146,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBPI_CFLAGS = @MBPI_CFLAGS@
+MBPI_DATABASE = @MBPI_DATABASE@
+MBPI_LIBS = @MBPI_LIBS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -156,8 +163,6 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PALM_CFLAGS = @PALM_CFLAGS@
-PALM_LIBS = @PALM_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
@@ -171,6 +176,8 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VALAC = @VALAC@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -229,12 +236,18 @@ GTESTER_REPORT = gtester-report
 # initialize variables for unconditional += appending
 EXTRA_DIST = 
 TEST_PROGS = 
+
+# debug flags for vala and gcc
+DEBUG_VALAFLAGS = $(am__append_1)
+DEBUG_CFLAGS = $(am__append_2)
 NULL = 
 dbusconfdir = @DBUS_DIR@/system.d
 dist_dbusconf_DATA = fsogsmd.conf
 dbusservicedir = @DBUS_SERVICE_DIR@/../system-services
 dbusservice_in_file = org.freesmartphone.ogsmd.service.in
 dist_dbusservice_DATA = $(dbusservice_in_file:.service.in=.service)
+worldcodesdir = $(datadir)/fsogsmd
+dist_worldcodes_DATA = iso3361+dialcode.txt zone.tab
 CLEANFILES = $(dist_dbusservice_DATA)
 MAINTAINERCLEANFILES = Makefile.in
 all: all-am
@@ -315,6 +328,24 @@ uninstall-dist_dbusserviceDATA:
 	@list='$(dist_dbusservice_DATA)'; test -n "$(dbusservicedir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(dbusservicedir)'; $(am__uninstall_files_from_dir)
+install-dist_worldcodesDATA: $(dist_worldcodes_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(worldcodesdir)" || $(MKDIR_P) "$(DESTDIR)$(worldcodesdir)"
+	@list='$(dist_worldcodes_DATA)'; test -n "$(worldcodesdir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(worldcodesdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(worldcodesdir)" || exit $$?; \
+	done
+
+uninstall-dist_worldcodesDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_worldcodes_DATA)'; test -n "$(worldcodesdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(worldcodesdir)'; $(am__uninstall_files_from_dir)
 tags: TAGS
 TAGS:
 
@@ -357,7 +388,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(dbusconfdir)" "$(DESTDIR)$(dbusservicedir)"; do \
+	for dir in "$(DESTDIR)$(dbusconfdir)" "$(DESTDIR)$(dbusservicedir)" "$(DESTDIR)$(worldcodesdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -413,7 +444,7 @@ info: info-am
 info-am:
 
 install-data-am: install-dist_dbusconfDATA \
-	install-dist_dbusserviceDATA
+	install-dist_dbusserviceDATA install-dist_worldcodesDATA
 
 install-dvi: install-dvi-am
 
@@ -458,7 +489,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-dist_dbusconfDATA \
-	uninstall-dist_dbusserviceDATA
+	uninstall-dist_dbusserviceDATA uninstall-dist_worldcodesDATA
 
 .MAKE: check-am install-am install-strip
 
@@ -467,14 +498,15 @@ uninstall-am: uninstall-dist_dbusconfDATA \
 	distdir dvi dvi-am html html-am info info-am install \
 	install-am install-data install-data-am \
 	install-dist_dbusconfDATA install-dist_dbusserviceDATA \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am uninstall uninstall-am uninstall-dist_dbusconfDATA \
-	uninstall-dist_dbusserviceDATA
+	install-dist_worldcodesDATA install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
+	uninstall-dist_dbusconfDATA uninstall-dist_dbusserviceDATA \
+	uninstall-dist_worldcodesDATA
 
 
 ### testing rules

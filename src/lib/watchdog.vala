@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,18 +51,17 @@ public class FsoGsm.GenericWatchDog : FsoGsm.WatchDog, FsoFramework.AbstractObje
     private Modem.Status lastStatus;
     private bool inCampNetwork = false;
 
+    private FsoGsm.Modem modem;
+
     public override string repr()
     {
-        var data = theModem.data();
-        var pin = data.simPin;
-        var keep = data.keepRegistration;
-        return @"<P:$pin|KR:$keep>";
+        return @"<>";
     }
 
     private void onModemStatusChange( Modem.Status status )
     {
         assert( logger.debug( @"onModemStatusChange $lastStatus -> $status" ) );
-        var data = theModem.data();
+        var data = modem.data();
 
         switch ( status )
         {
@@ -76,7 +75,7 @@ public class FsoGsm.GenericWatchDog : FsoGsm.WatchDog, FsoFramework.AbstractObje
                 break;
 
             case Modem.Status.ALIVE_SIM_READY:
-                if ( theModem.data().keepRegistration )
+                if ( modem.data().keepRegistration )
                 {
                     campNetwork();
                 }
@@ -85,7 +84,7 @@ public class FsoGsm.GenericWatchDog : FsoGsm.WatchDog, FsoFramework.AbstractObje
             case Modem.Status.ALIVE_REGISTERED:
                 if ( lastStatus == Modem.Status.RESUMING )
                 {
-                    triggerUpdateNetworkStatus();
+                    triggerUpdateNetworkStatus( modem );
                 }
                 break;
 
@@ -100,8 +99,8 @@ public class FsoGsm.GenericWatchDog : FsoGsm.WatchDog, FsoFramework.AbstractObje
     {
         try
         {
-            var m = theModem.createMediator<FsoGsm.SimSendAuthCode>();
-            yield m.run( theModem.data().simPin );
+            var m = modem.createMediator<FsoGsm.SimSendAuthCode>();
+            yield m.run( modem.data().simPin );
         }
         catch ( GLib.Error e1 )
         {
@@ -110,7 +109,7 @@ public class FsoGsm.GenericWatchDog : FsoGsm.WatchDog, FsoFramework.AbstractObje
             // resend query to give us a proper PIN
             try
             {
-                yield gatherSimStatusAndUpdate();
+                yield gatherSimStatusAndUpdate( modem );
             }
             catch ( GLib.Error e2 )
             {
@@ -128,7 +127,7 @@ public class FsoGsm.GenericWatchDog : FsoGsm.WatchDog, FsoFramework.AbstractObje
 
         try
         {
-            var m = theModem.createMediator<FsoGsm.NetworkRegister>();
+            var m = modem.createMediator<FsoGsm.NetworkRegister>();
             yield m.run();
         }
         catch ( GLib.Error e )
@@ -136,7 +135,7 @@ public class FsoGsm.GenericWatchDog : FsoGsm.WatchDog, FsoFramework.AbstractObje
             logger.error( @"Could not register: $(e.message)" );
         }
 
-        triggerUpdateNetworkStatus();
+        triggerUpdateNetworkStatus( modem );
 
         inCampNetwork = false;
     }
@@ -144,15 +143,17 @@ public class FsoGsm.GenericWatchDog : FsoGsm.WatchDog, FsoFramework.AbstractObje
     //
     // public API
     //
-    public GenericWatchDog()
+
+    public GenericWatchDog( FsoGsm.Modem modem )
     {
-        lastStatus = theModem.status();
-        theModem.signalStatusChanged.connect( onModemStatusChange );
+        this.modem = modem;
+        lastStatus = modem.status();
+        modem.signalStatusChanged.connect( onModemStatusChange );
     }
 
     public void check()
     {
-        onModemStatusChange( theModem.status() );
+        onModemStatusChange( modem.status() );
     }
 
     public void resetUnlockMarker()

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Simon Busch <morphis@gravedo.de>
+ * Copyright (C) 2011-2012 Simon Busch <morphis@gravedo.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@ public class Samsung.SmsHandler : FsoGsm.AbstractSmsHandler
 
     protected override async string retrieveImsiFromSIM()
     {
-        var channel = theModem.channel( "main" ) as Samsung.IpcChannel;
+        var channel = modem.channel( "main" ) as Samsung.IpcChannel;
         unowned SamsungIpc.Response? response = null;
 
         // first we retrieve the IMSI from SIM card to create a unique storage for all SMS
@@ -39,16 +39,16 @@ public class Samsung.SmsHandler : FsoGsm.AbstractSmsHandler
         // SMS messages
         var rsimreq = SamsungIpc.Security.RSimAccessRequestMessage();
         rsimreq.command = SamsungIpc.Security.RSimCommandType.READ_BINARY;
-        rsimreq.fileid = (uint16) Constants.instance().simFilesystemEntryNameToCode( "EFimsi" );
+        rsimreq.fileid = (uint16) Constants.simFilesystemEntryNameToCode( "EFimsi" );
 
         response = yield channel.enqueue_async( SamsungIpc.RequestType.GET, SamsungIpc.MessageType.SEC_RSIM_ACCESS, rsimreq.data );
 
         return ( response != null ? SamsungIpc.Security.RSimAccessResponseMessage.get_file_data( response ) : "unknown" );
     }
 
-    protected override async bool acknowledgeSmsMessage( int id )
+    protected override async bool acknowledgeSmsMessage()
     {
-        var channel = theModem.channel( "main" ) as Samsung.IpcChannel;
+        var channel = modem.channel( "main" ) as Samsung.IpcChannel;
         unowned SamsungIpc.Response? response = null;
 
         var ackmsg = SamsungIpc.Sms.DeliverReportMessage();
@@ -83,6 +83,11 @@ public class Samsung.SmsHandler : FsoGsm.AbstractSmsHandler
     //
     // public API
     //
+
+    public SmsHandler( FsoGsm.Modem modem )
+    {
+        base( modem );
+    }
 
     public override string repr()
     {

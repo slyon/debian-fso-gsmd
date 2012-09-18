@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Simon Busch <morphis@gravedo.de>
+ * Copyright (C) 2011-2012 Simon Busch <morphis@gravedo.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ public class SamsungNetworkRegister : NetworkRegister
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var channel = theModem.channel( "main" ) as Samsung.IpcChannel;
+        var channel = modem.channel( "main" ) as Samsung.IpcChannel;
         SamsungIpc.Response? response = null;
 
         // register with default network by setting PLMN selection to automatic
@@ -41,7 +41,7 @@ public class SamsungNetworkRegisterWithProvider : NetworkRegisterWithProvider
 {
     public override async void run( string operator_code ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var channel = theModem.channel( "main" ) as Samsung.IpcChannel;
+        var channel = modem.channel( "main" ) as Samsung.IpcChannel;
         var succeeded = false;
         SamsungIpc.Response? response = null;
 
@@ -84,12 +84,12 @@ public class SamsungNetworkGetStatus : NetworkGetStatus
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         unowned SamsungIpc.Response? response;
-        var channel = theModem.channel( "main" ) as Samsung.IpcChannel;
+        var channel = modem.channel( "main" ) as Samsung.IpcChannel;
 
         status = new GLib.HashTable<string, Variant>( str_hash, str_equal );
 
         // query signal strength from modem
-        var m = theModem.createMediator<NetworkGetSignalStrength>();
+        var m = modem.createMediator<NetworkGetSignalStrength>();
         yield m.run();
         status.insert( "strength", m.signal );
 
@@ -153,7 +153,7 @@ public class SamsungNetworkListProviders : NetworkListProviders
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         unowned SamsungIpc.Response? response;
-        var channel = theModem.channel( "main" ) as Samsung.IpcChannel;
+        var channel = modem.channel( "main" ) as Samsung.IpcChannel;
         FreeSmartphone.GSM.NetworkProvider[] _providers = { };
 
         response = yield channel.enqueue_async( SamsungIpc.RequestType.GET, SamsungIpc.MessageType.NET_PLMN_LIST, new uint8[] { }, 0, -1 );
@@ -176,7 +176,7 @@ public class SamsungNetworkListProviders : NetworkListProviders
             var provider = yield findProviderNameForMccMnc( mccmnc );
 
             var p = FreeSmartphone.GSM.NetworkProvider(
-                Constants.instance().networkProviderStatusToString( (int) currentNetwork.status - 1 ),
+                Constants.networkProviderStatusToString( (int) currentNetwork.status - 1 ),
                 provider, provider, mccmnc, "GSM");
 
             _providers += p;

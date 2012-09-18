@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Simon Busch <morphis@gravedo.de>
+ * Copyright (C) 2011-2012 Simon Busch <morphis@gravedo.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@ public class SamsungPdpSetCredentials : PdpSetCredentials
 {
     public override async void run( string apn, string username, string password ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var data = theModem.data();
+        var data = modem.data();
         data.contextParams = new ContextParams( apn, username, password );
     }
 }

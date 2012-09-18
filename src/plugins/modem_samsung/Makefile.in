@@ -43,7 +43,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	mediators_sms.c modem_samsung_la_vala.stamp modemstate.c \
 	pdphandler.c plugin.c rfs.c samsungtransport.c smshandler.c \
 	soundhandler.c unsolicited.c utils.c
-@WANT_DEBUG_TRUE@am__append_1 = -g -D DEBUG
+@WANT_DEBUG_TRUE@am__append_1 = --debug -D DEBUG
 @WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
 subdir = src/plugins/modem_samsung
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -203,6 +203,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBPI_CFLAGS = @MBPI_CFLAGS@
+MBPI_DATABASE = @MBPI_DATABASE@
+MBPI_LIBS = @MBPI_LIBS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -217,8 +220,6 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PALM_CFLAGS = @PALM_CFLAGS@
-PALM_LIBS = @PALM_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
@@ -232,6 +233,8 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VALAC = @VALAC@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -291,10 +294,16 @@ GTESTER_REPORT = gtester-report
 # modem_samsung_la_LIBTOOLFLAGS = --tag=disable-static
 EXTRA_DIST = include/samsung_modem_ctl.h
 TEST_PROGS = 
+
+# debug flags for vala and gcc
+DEBUG_VALAFLAGS = $(am__append_1)
+DEBUG_CFLAGS = $(am__append_2)
 NULL = 
-AM_CFLAGS = -DG_LOG_DOMAIN=\"fsogsm.modem_samsung\" $(NULL) \
-	$(am__append_2)
-AM_VALAFLAGS = $(am__append_1)
+AM_CFLAGS = \
+	-DG_LOG_DOMAIN=\"fsogsm.modem_samsung\" \
+	$(NULL)
+
+AM_VALAFLAGS = 
 modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
 modlibexec_LTLIBRARIES = modem_samsung.la
 modem_samsung_la_SOURCES = \
@@ -333,6 +342,7 @@ modem_samsung_la_VALAFLAGS = \
 	--pkg fsogsm-2.0 \
 	--pkg samsung-ipc-1.0 \
 	--pkg samsung-modemctl \
+	$(DEBUG_VALAFLAGS) \
 	$(NULL)
 
 modem_samsung_la_CFLAGS = \
@@ -343,6 +353,7 @@ modem_samsung_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
 	$(GEE_CFLAGS) \
 	$(SAMSUNG_CFLAGS) \
+	$(DEBUG_CFLAGS) \
 	$(NULL)
 
 modem_samsung_la_LIBADD = \

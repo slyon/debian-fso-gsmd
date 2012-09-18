@@ -39,6 +39,8 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.decl pdp_ppp_internal_la_vala.stamp \
 	plugin.c
+@WANT_DEBUG_TRUE@am__append_1 = --debug -D DEBUG
+@WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
 subdir = src/plugins/pdp_ppp_internal
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -182,6 +184,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBPI_CFLAGS = @MBPI_CFLAGS@
+MBPI_DATABASE = @MBPI_DATABASE@
+MBPI_LIBS = @MBPI_LIBS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -196,8 +201,6 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PALM_CFLAGS = @PALM_CFLAGS@
-PALM_LIBS = @PALM_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
@@ -211,6 +214,8 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VALAC = @VALAC@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -269,6 +274,10 @@ GTESTER_REPORT = gtester-report
 # initialize variables for unconditional += appending
 EXTRA_DIST = 
 TEST_PROGS = 
+
+# debug flags for vala and gcc
+DEBUG_VALAFLAGS = $(am__append_1)
+DEBUG_CFLAGS = $(am__append_2)
 NULL = 
 AM_CFLAGS = \
 	-DG_LOG_DOMAIN=\"fsogsm.pdp_ppp_internal\" \
@@ -287,6 +296,7 @@ pdp_ppp_internal_la_VALAFLAGS = \
 	--pkg glib-2.0 \
 	--pkg fsoframework-2.0 \
 	--pkg fsogsm-2.0 \
+	$(DEBUG_VALAFLAGS) \
 	$(NULL)
 
 pdp_ppp_internal_la_CFLAGS = \
@@ -294,6 +304,7 @@ pdp_ppp_internal_la_CFLAGS = \
 	-I$(top_srcdir)/src/3rdparty \
 	-I$(top_srcdir)/src/3rdparty/ppp \
 	$(FSO_CFLAGS) \
+	$(DEBUG_CFLAGS) \
 	$(NULL)
 
 pdp_ppp_internal_la_LIBADD = \

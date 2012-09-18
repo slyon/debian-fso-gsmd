@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@
 /**
  * Constant functions etc.
  **/
-public class FsoGsm.Constants
+namespace FsoGsm.Constants
 {
     public const string PHONE_DIGITS = """0123456789ABCD*#+pw""";
     public const string PHONE_DIGITS_RE = """[0-9A-D\*#\+pw]""";
@@ -356,17 +356,6 @@ public class FsoGsm.Constants
         EXT_ERROR_0_INVALID_PARAMETERR = 3000,
     }
 
-    internal static FsoGsm.Constants _instance;
-
-    public static FsoGsm.Constants instance()
-    {
-        if ( _instance == null )
-        {
-            _instance = new FsoGsm.Constants();
-        }
-        return _instance;
-    }
-
     //
     // public API
     //
@@ -394,6 +383,9 @@ public class FsoGsm.Constants
             case AtResponse.CME_ERROR_047_CORPORATE_PERSONALIZATION_PUK_REQUIRED:
             case AtResponse.CME_ERROR_048_PH_SIM_PUK_REQUIRED:
                 return new FreeSmartphone.GSM.Error.AUTHORIZATION_REQUIRED( detail );
+
+            case AtResponse.CME_ERROR_021_INVALID_INDEX:
+                return new FreeSmartphone.GSM.Error.SIM_INVALID_INDEX( "Accessed invalid SIM index" );
 
             default:
                 return new FreeSmartphone.GSM.Error.DEVICE_FAILED( detail );
@@ -699,6 +691,11 @@ public class FsoGsm.Constants
         return number;
     }
 
+    public uint8 determinePhoneNumberType( string number )
+    {
+        return ( number[0] == '+' ) ? 145 : 129;
+    }
+
     public FreeSmartphone.GSM.SIMAuthStatus simAuthStatusToEnum( string status )
     {
         switch ( status )
@@ -999,6 +996,51 @@ public class FsoGsm.Constants
         var sign = ( ctzv & 0x08 ) == 8;
 
         return sign ? -zone * 15 : zone * 15;
+    }
+
+    /* 27.007 Section 7.11 */
+    public enum BearerClass
+    {
+        UNKNOWN = 0,
+        VOICE = 1,
+        DATA = 2,
+        FAX = 4,
+        DEFAULT = 7,
+        SMS = 8,
+        DATA_SYNC = 16,
+        DATA_ASYNC = 32,
+        /* According to 22.030, types 1-12 */
+        SS_DEFAULT = 61,
+        PACKET = 64,
+        PAD = 128,
+    }
+
+    /* 27.007 Section 7.11 */
+    public enum CallForwardingType
+    {
+        UNCONDITIONAL = 0,
+        BUSY = 1,
+        NO_REPLY = 2,
+        NOT_REACHABLE = 3,
+        ALL = 4,
+        ALL_CONDITIONAL = 5,
+    }
+
+    /* 27.007 Section 7.11 */
+    public enum CallForwardingMode
+    {
+        DISABLE = 0,
+        ENABLE = 1,
+        QUERY_STATUS = 2,
+        REGISTRATION = 3,
+        ERASURE = 4,
+    }
+
+    /* 27.007 Section 7.11 */
+    public enum CallForwardingStatus
+    {
+        NOT_ACTIVE = 0,
+        ACTIVE = 1,
     }
 }
 

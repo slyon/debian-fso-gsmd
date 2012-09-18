@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,7 +21,6 @@ using Gee;
 
 namespace FsoGsm
 {
-    public FsoGsm.Modem theModem;
     public const string CONFIG_SECTION = "fsogsm";
     internal const string PPPD_DEFAULT_COMMAND = "/usr/sbin/pppd";
 
@@ -79,14 +78,16 @@ public class FsoGsm.NetworkTimeReport
     {
         this.time = time;
         this.timestamp = (int) TimeVal().tv_sec;
-        sendUpdateSignal();
+
+        status_changed( this.time, this.zone );
     }
 
     public void setZone( int zone )
     {
         this.zone = zone;
         this.zonestamp = (int) TimeVal().tv_sec;
-        sendUpdateSignal();
+
+        status_changed( this.time, this. zone );
     }
 
     public void setTimeAndZone( int time, int zone )
@@ -95,14 +96,11 @@ public class FsoGsm.NetworkTimeReport
         this.zone = zone;
         this.timestamp = (int) TimeVal().tv_sec;
         this.zonestamp = (int) TimeVal().tv_sec;
-        sendUpdateSignal();
+
+        status_changed( this.time, this.zone );
     }
 
-    private void sendUpdateSignal()
-    {
-        var obj = theModem.theDevice<FreeSmartphone.GSM.Network>();
-        obj.time_report( time, zone );
-    }
+    public signal void status_changed( int time, int zone );
 }
 
 public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
@@ -126,6 +124,7 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
         public string functionality;
         public string simPin;
         public bool keepRegistration;
+        public string[] emergencyNumbers;
 
         // Device Capabilities
         public bool supportsGSM;
@@ -230,7 +229,7 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
     public abstract T createMediator<T>() throws FreeSmartphone.Error;
     public abstract T createAtCommand<T>( string command );
     public abstract T theDevice<T>();
-    public abstract Object parent { get; set; } // the DBus object
+    public abstract IServiceProvider parent { get; set; } // the DBus object
     public abstract CallHandler callhandler { get; set; } // the Call handler
     public abstract SmsHandler smshandler { get; set; } // the Sms handler
     public abstract PhonebookHandler pbhandler { get; set; } // the Phonebook handler
@@ -242,7 +241,7 @@ public abstract interface FsoGsm.Modem : FsoFramework.AbstractObject
     public abstract void releaseDataPort();
 
     // Command Queue API
-    public abstract async string[] processAtCommandAsync( AtCommand command, string request, int retries = DEFAULT_RETRIES );
+    public abstract async string[] processAtCommandAsync( AtCommand command, string request, int retries = DEFAULT_RETRIES, int timeout = 0 );
     public abstract async string[] processAtPduCommandAsync( AtCommand command, string request, int retries = DEFAULT_RETRIES );
 
     /**
@@ -282,7 +281,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
 
     protected UnsolicitedResponseHandler urc;
 
-    public Object parent { get; set; } // the DBus object
+    public IServiceProvider parent { get; set; } // the DBus object
     public CallHandler callhandler { get; set; } // the Call handler
     public SmsHandler smshandler { get; set; } // the SMS handler
     public PhonebookHandler pbhandler { get; set; } // the Phonebook handler
@@ -297,10 +296,6 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
 
     construct
     {
-        // only one modem allowed per process
-        assert( FsoGsm.theModem == null );
-        FsoGsm.theModem = this;
-
         // channel map
         channels = new HashMap<string,FsoGsm.Channel>();
 
@@ -346,9 +341,6 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
                 break;
             case "openmoko":
                 typename = "LowLevelOpenmoko";
-                break;
-            case "palmpre":
-                typename = "LowLevelPalmPre";
                 break;
             case "nokia900":
                 typename = "LowLevelNokia900";
@@ -426,6 +418,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
             }
 
             pdphandler = Object.new( pdphandlerclass ) as FsoGsm.PdpHandler;
+            pdphandler.assign_modem( this );
             logger.info( @"Ready. Using pdp plugin $pdphandlertype to handle data connectivity" );
         }
     }
@@ -458,6 +451,10 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         modem_data.cmdSequences = new HashMap<string,AtCommandSequence>();
 
         modem_data.networkTimeReport = new NetworkTimeReport();
+        modem_data.networkTimeReport.status_changed.connect( ( time, zone ) => {
+            var obj = theDevice<FreeSmartphone.GSM.Network>();
+            obj.time_report( time, zone );
+        } );
 
         modem_data.simPin = config.stringValue( CONFIG_SECTION, "auto_unlock", "" );
         modem_data.keepRegistration = config.boolValue( CONFIG_SECTION, "auto_register", false );
@@ -488,6 +485,12 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
             "usepeerdns" } );
         modem_data.roamingAllowed = false;
 
+        // default emergency numbers as per TS 22.101 section 10.1.1
+        modem_data.emergencyNumbers = new string[] {
+            "911", "112",                            /* default emergency numbers */
+            "119", "118", "999", "110", "08", "000"  /* when SIM is not available */
+        };
+
         // add some basic init/exit/suspend/resume sequences
         var seq = modem_data.cmdSequences;
 
@@ -498,12 +501,10 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
             "+CMEE=1",      /* report mobile equipment errors = numerical format */
             "+CRC=1",       /* extended cellular result codes = enable */
             "+CSNS=0",      /* single numbering scheme = voice */
-            "+CMGF=0",      /* sms mode = PDU */
             "+CLIP=0",      /* calling line id present = disable */
             "+CLIR=0",      /* calling line id restrict = disable */
             "+COLP=0",      /* connected line id present = disable */
-            "+CCWA=0",      /* call waiting = disable */
-            "+CSMS=1"       /* gsm phase 2+ commands = enable */
+            "+CCWA=0"      /* call waiting = disable */
         } );
         initsequence.append( config.stringListValue( CONFIG_SECTION, "modem_init", { } ) );
         registerAtCommandSequence( "MODEM", "init", initsequence );
@@ -532,8 +533,16 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
     private void registerAtCommands()
     {
         commands = new HashMap<string,FsoGsm.AtCommand>();
+
         registerGenericAtCommands( commands );
         registerCustomAtCommands( commands );
+
+        foreach ( var command in commands.values )
+        {
+            var cmd = command as AbstractAtCommand;
+            if ( cmd != null )
+                cmd.assign_modem( this );
+        }
     }
 
     private void registerAtCommandSequence( string channel, string purpose, AtCommandSequence sequence )
@@ -616,7 +625,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
      **/
     protected virtual UnsolicitedResponseHandler createUnsolicitedHandler()
     {
-        return new AtUnsolicitedResponseHandler();
+        return new AtUnsolicitedResponseHandler( this );
     }
 
     /**
@@ -624,7 +633,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
      **/
     protected virtual CallHandler createCallHandler()
     {
-        return new GenericAtCallHandler();
+        return new GenericAtCallHandler( this );
     }
 
     /**
@@ -632,7 +641,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
      **/
     protected virtual SmsHandler createSmsHandler()
     {
-        return new AtSmsHandler();
+        return new AtSmsHandler( this );
     }
 
     /**
@@ -640,7 +649,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
      **/
     protected virtual PhonebookHandler createPhonebookHandler()
     {
-        return new AtPhonebookHandler();
+        return new AtPhonebookHandler( this );
     }
 
     /**
@@ -648,7 +657,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
      **/
     protected virtual WatchDog createWatchDog()
     {
-        return new GenericWatchDog();
+        return new GenericWatchDog( this );
     }
 
     /**
@@ -841,7 +850,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
     public T theDevice<T>()
     {
         assert( parent != null );
-        return (T) parent;
+        return parent.retrieveService<T>();
     }
 
     public Modem.Status status()
@@ -894,6 +903,10 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
 
         assert( logger.debug( @"Created mediator $(typeof(T).name())" ) );
 
+        var m = obj as FsoGsm.Mediator;
+        if ( m != null )
+            m.assign_modem( this );
+
         return obj;
     }
 
@@ -924,11 +937,11 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
     {
     }
 
-    public async string[] processAtCommandAsync( AtCommand command, string request, int retries = DEFAULT_RETRIES )
+    public async string[] processAtCommandAsync( AtCommand command, string request, int retries = DEFAULT_RETRIES, int timeout = 0 )
     {
         AtChannel channel = channelForCommand( command, request ) as AtChannel;
         // FIXME: assert channel is really an At channel
-        var response = yield channel.enqueueAsync( command, request, retries );
+        var response = yield channel.enqueueAsync( command, request, retries, timeout );
         return response;
     }
 
@@ -1054,7 +1067,7 @@ public abstract class FsoGsm.AbstractModem : FsoGsm.Modem, FsoFramework.Abstract
         // update for external listeners
         if ( parent != null )
         {
-            var obj = parent as FreeSmartphone.GSM.Device;
+            var obj = theDevice<FreeSmartphone.GSM.Device>();
             obj.device_status( externalStatus() );
         }
         logger.info( @"Modem Status changed to $modem_status" );

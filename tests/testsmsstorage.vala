@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -67,7 +67,7 @@ void test_fso_sms_storage_add_concatenated()
 void test_fso_sms_storage_store_transaction_index()
 //===========================================================================
 {
-    var handler = new AtSmsHandler();
+    var handler = new AtSmsHandler( new NullModem() );
     handler.storage = SmsStorageFactory.create( "default", IMSI );
     //handler.storage.clean();
     var pdus = handler.formatTextMessage( PHONE_NUMBER, LONG_TEXT, true );
@@ -83,7 +83,7 @@ void test_fso_sms_storage_store_transaction_index()
 void test_fso_sms_storage_confirm_ack()
 //===========================================================================
 {
-    var handler = new AtSmsHandler();
+    var handler = new AtSmsHandler( new NullModem() );
     handler.storage = SmsStorageFactory.create( "default", IMSI );
     //handler.storage.clean();
     assert( handler.storage.confirmReceivedMessage( 2 ) == -1 );

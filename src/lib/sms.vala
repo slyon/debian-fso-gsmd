@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -82,6 +82,9 @@ public class WrapHexPdu
 public interface FsoGsm.SmsHandler : FsoFramework.AbstractObject
 {
     public abstract ISmsStorage storage { get; set; }
+    public abstract bool supported { get; protected set; }
+
+    public abstract async void configure();
 
     public abstract async void handleIncomingSmsOnSim( uint index );
     public abstract async void handleIncomingSms( string hexpdu, int tpdulen );
@@ -100,10 +103,15 @@ public interface FsoGsm.SmsHandler : FsoFramework.AbstractObject
 public class FsoGsm.NullSmsHandler : FsoFramework.AbstractObject, FsoGsm.SmsHandler
 {
     public ISmsStorage storage { get; set; }
+    public bool supported { get; protected set; }
 
     public NullSmsHandler()
     {
         storage = SmsStorageFactory.create( "null", "" );
+    }
+
+    public async void configure()
+    {
     }
 
     public async void handleIncomingSmsOnSim( uint index )
@@ -152,11 +160,14 @@ public class FsoGsm.NullSmsHandler : FsoFramework.AbstractObject, FsoGsm.SmsHand
 public abstract class FsoGsm.AbstractSmsHandler : FsoGsm.SmsHandler, FsoFramework.AbstractObject
 {
     public ISmsStorage storage { get; set; }
+    public bool supported { get; protected set; }
+
+    protected FsoGsm.Modem modem { get; private set; }
 
     protected abstract async string retrieveImsiFromSIM();
     protected abstract async void fillStorageWithMessageFromSIM();
     protected abstract async bool readSmsMessageFromSIM( uint index, out string hexpdu, out int tpdulen );
-    protected abstract async bool acknowledgeSmsMessage( int id );
+    protected abstract async bool acknowledgeSmsMessage();
 
     //
     // private
@@ -212,7 +223,7 @@ public abstract class FsoGsm.AbstractSmsHandler : FsoGsm.SmsHandler, FsoFramewor
         {
             logger.info( @"Got new SMS from $(sms.number())" );
             var msg = storage.message( sms.hash() );
-            var obj = theModem.theDevice<FreeSmartphone.GSM.SMS>();
+            var obj = modem.theDevice<FreeSmartphone.GSM.SMS>();
             obj.incoming_text_message( msg.number, msg.timestamp, msg.contents );
         }
     }
@@ -232,7 +243,7 @@ public abstract class FsoGsm.AbstractSmsHandler : FsoGsm.SmsHandler, FsoFramewor
         var transaction_index = storage.confirmReceivedMessage( reference );
         if ( transaction_index >= 0 )
         {
-            var obj = theModem.theDevice<FreeSmartphone.GSM.SMS>();
+            var obj = modem.theDevice<FreeSmartphone.GSM.SMS>();
             obj.incoming_message_report( transaction_index, status.to_string(), number, text );
         }
     }
@@ -241,17 +252,20 @@ public abstract class FsoGsm.AbstractSmsHandler : FsoGsm.SmsHandler, FsoFramewor
     // protected
     //
 
-    protected AbstractSmsHandler()
+    protected AbstractSmsHandler( FsoGsm.Modem modem )
     {
-        //FIXME: Use random init or read from file, so that this is increasing even during relaunches
-        if ( theModem == null )
-            logger.warning( "SMS Handler created before modem" );
-        else theModem.signalStatusChanged.connect( onModemStatusChanged );
+        this.modem = modem;
+        this.modem.signalStatusChanged.connect( onModemStatusChanged );
     }
 
     //
     // public API
     //
+
+    public virtual async void configure()
+    {
+        assert( logger.debug( @"Initializing SMS handler ..." ) );
+    }
 
     public uint16 lastReferenceNumber()
     {
@@ -315,12 +329,12 @@ public abstract class FsoGsm.AbstractSmsHandler : FsoGsm.SmsHandler, FsoFramewor
 
     public async void handleIncomingSms( string hexpdu, int tpdulen )
     {
-        var result = yield acknowledgeSmsMessage( 0 );
+        var result = yield acknowledgeSmsMessage();
         if ( !result )
         {
             logger.warning( @"Could not acknowledge incoming message" );
             // FIXME should we revert here without processing the message anymore so it
-            // gets lost (the modem has to resend it anyway and it should be saved within
+            // get lost (the modem has to resend it anyway and it should be saved within
             // the SMS storage center until we can successfully acknowledge it?)
         }
 
