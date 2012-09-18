@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2011 Klaus 'mrmoku' Kurzmann   <mok@fluxnetz.de>
- *               2011 Lukas 'slyon' Märdian     <lukasmaerdian@gmail.com>
+ * Copyright (C) 2011-2012 Klaus 'mrmoku' Kurzmann   <mok@fluxnetz.de>
+ *               2011-2012 Lukas 'slyon' Märdian     <lukasmaerdian@gmail.com>
  *               2012 Simon Busch               <morphis@gravedo.de>
  *
  * This program is free software; you can redistribute it and/or
@@ -60,7 +60,7 @@ public class UnderscoreOWANDATA : AbstractAtCommand
     public UnderscoreOWANDATA()
     {
         // some modems strip the leading zero for one-digit chars
-        var str = """_OWANDATA: "(?P<connected>[01]), (?P<ip>[0-9.]+), (?P<gw>[0-9.]+), (?P<dns1>[0-9.]+), (?P<dns2>[0-9.]+), (?P<nbns1>[0-9.]+), (?P<nbns2>[0-9.]+), (?P<speed>\d+)""";
+        var str = """_OWANDATA: (?P<connected>[01]), (?P<ip>[0-9.]+), (?P<gw>[0-9.]+), (?P<dns1>[0-9.]+), (?P<dns2>[0-9.]+), (?P<nbns1>[0-9.]+), (?P<nbns2>[0-9.]+),(?P<speed>\d+)""";
         try
         {
             re = new Regex( str );

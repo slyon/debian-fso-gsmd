@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,16 +17,25 @@
  *
  */
 
+using FsoGsm.Constants;
+
 /**
  * Mediator Interfaces and Base Class
  **/
 
-public abstract interface FsoGsm.Mediator
+public interface FsoGsm.Mediator : GLib.Object
 {
+    public abstract void assign_modem( FsoGsm.Modem modem );
 }
 
 public abstract class FsoGsm.AbstractMediator : FsoGsm.Mediator, GLib.Object
 {
+    protected FsoGsm.Modem modem { get; private set; }
+
+    public void assign_modem( FsoGsm.Modem modem )
+    {
+        this.modem = modem;
+    }
 }
 
 //
@@ -349,6 +358,52 @@ public abstract class FsoGsm.CallSendDtmf : FsoGsm.AbstractMediator
     public abstract async void run( string tones ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
 }
 
+public abstract class FsoGsm.CallTransfer : FsoGsm.AbstractMediator
+{
+    public abstract async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+public abstract class FsoGsm.CallDeflect : FsoGsm.AbstractMediator
+{
+    public abstract async void run( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+public abstract class FsoGsm.CallJoin : FsoGsm.AbstractMediator
+{
+    public abstract async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+public abstract class FsoGsm.CallActivateConference : FsoGsm.AbstractMediator
+{
+    public abstract async void run( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+public abstract class FsoGsm.CallEmergency : FsoGsm.AbstractMediator
+{
+    public abstract async void run( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+//
+// org.freesmartphone.GSM.CallForwarding.*
+//
+
+public abstract class FsoGsm.CallForwardingEnable : FsoGsm.AbstractMediator
+{
+    public abstract async void run( BearerClass cls, CallForwardingType reason, string number, int time ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+public abstract class FsoGsm.CallForwardingDisable : FsoGsm.AbstractMediator
+{
+    public abstract async void run( BearerClass cls, CallForwardingType reason ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+public abstract class FsoGsm.CallForwardingQuery : FsoGsm.AbstractMediator
+{
+    public GLib.HashTable<string,Variant> status { get; protected set; }
+
+    public abstract async void run( BearerClass cls, CallForwardingType reason ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
 //
 // org.freesmartphone.GSM.PDP.*
 //
@@ -410,6 +465,7 @@ public abstract class FsoGsm.MonitorGetNeighbourCellInformation : FsoGsm.Abstrac
 //
 // org.freesmartphone.GSM.VoiceMail.*
 //
+
 public abstract class FsoGsm.VoiceMailboxGetNumber : FsoGsm.AbstractMediator
 {
     public string number;
@@ -420,6 +476,13 @@ public abstract class FsoGsm.VoiceMailboxGetNumber : FsoGsm.AbstractMediator
 public abstract class FsoGsm.VoiceMailboxSetNumber : FsoGsm.AbstractMediator
 {
     public abstract async void run( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+}
+
+public abstract class FsoGsm.VoiceMailboxGetRecordings : FsoGsm.AbstractMediator
+{
+    public string[] stored_mails;
+
+    public abstract async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
 }
 
 // vim:ts=4:sw=4:expandtab

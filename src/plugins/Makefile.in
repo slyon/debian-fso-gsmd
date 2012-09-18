@@ -37,21 +37,19 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.decl
-@WANT_PPP_TRUE@am__append_1 = pdp_ppp pdp_ppp_internal
-@WANT_MUX_TRUE@@WANT_PPP_TRUE@am__append_2 = pdp_ppp_mux
-@WANT_MUX_TRUE@am__append_3 = \
+@WANT_DEBUG_TRUE@am__append_1 = --debug -D DEBUG
+@WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
+@WANT_PPP_TRUE@am__append_3 = pdp_ppp pdp_ppp_internal
+@WANT_MUX_TRUE@@WANT_PPP_TRUE@am__append_4 = pdp_ppp_mux
+@WANT_MUX_TRUE@am__append_5 = \
 @WANT_MUX_TRUE@	modem_ti_calypso \
 @WANT_MUX_TRUE@	modem_cinterion_mc75
 
-@WANT_PALM_TRUE@am__append_4 = \
-@WANT_PALM_TRUE@	modem_qualcomm_palm \
-@WANT_PALM_TRUE@	lowlevel_palmpre
-
-@WANT_ISI_TRUE@am__append_5 = \
+@WANT_ISI_TRUE@am__append_6 = \
 @WANT_ISI_TRUE@	modem_nokia_isi \
 @WANT_ISI_TRUE@	pdp_nokia_isi
 
-@WANT_SAMSUNG_TRUE@am__append_6 = \
+@WANT_SAMSUNG_TRUE@am__append_7 = \
 @WANT_SAMSUNG_TRUE@	lowlevel_samsung_crespo \
 @WANT_SAMSUNG_TRUE@	modem_samsung
 
@@ -90,9 +88,8 @@ DIST_SUBDIRS = dbus_service lowlevel_openmoko lowlevel_gta04 \
 	lowlevel_motorola_ezx modem_dummy modem_singleline \
 	modem_qualcomm_htc modem_option_gtm601 modem_freescale_neptune \
 	modem_phonesim pdp_qmi pdp_ppp pdp_ppp_internal pdp_ppp_mux \
-	modem_ti_calypso modem_cinterion_mc75 modem_qualcomm_palm \
-	lowlevel_palmpre modem_nokia_isi pdp_nokia_isi \
-	lowlevel_samsung_crespo modem_samsung
+	modem_ti_calypso modem_cinterion_mc75 modem_nokia_isi \
+	pdp_nokia_isi lowlevel_samsung_crespo modem_samsung
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -173,6 +170,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBPI_CFLAGS = @MBPI_CFLAGS@
+MBPI_DATABASE = @MBPI_DATABASE@
+MBPI_LIBS = @MBPI_LIBS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -187,8 +187,6 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PALM_CFLAGS = @PALM_CFLAGS@
-PALM_LIBS = @PALM_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
@@ -202,6 +200,8 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VALAC = @VALAC@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -260,14 +260,17 @@ GTESTER_REPORT = gtester-report
 # initialize variables for unconditional += appending
 EXTRA_DIST = 
 TEST_PROGS = 
+
+# debug flags for vala and gcc
+DEBUG_VALAFLAGS = $(am__append_1)
+DEBUG_CFLAGS = $(am__append_2)
 NULL = 
 AUTOMAKE_OPTIONS = subdir-objects
 SUBDIRS = dbus_service lowlevel_openmoko lowlevel_gta04 \
 	lowlevel_motorola_ezx modem_dummy modem_singleline \
 	modem_qualcomm_htc modem_option_gtm601 modem_freescale_neptune \
-	modem_phonesim pdp_qmi $(NULL) $(am__append_1) $(am__append_2) \
-	$(am__append_3) $(am__append_4) $(am__append_5) \
-	$(am__append_6)
+	modem_phonesim pdp_qmi $(NULL) $(am__append_3) $(am__append_4) \
+	$(am__append_5) $(am__append_6) $(am__append_7)
 all: all-recursive
 
 .SUFFIXES:

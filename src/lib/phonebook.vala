@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ using Gee;
 
 namespace FsoGsm
 {
-    public const string PB_STORAGE_DEFAULT_STORAGE_DIR = "/tmp/fsogsmd/pb";
+    public const string PB_STORAGE_DEFAULT_STORAGE_DIR = "/var/tmp/fsogsmd/pb";
     public const int PB_STORAGE_DIRECTORY_PERMISSIONS = (int)Posix.S_IRUSR|Posix.S_IWUSR|Posix.S_IXUSR|Posix.S_IRGRP|Posix.S_IXGRP|Posix.S_IROTH|Posix.S_IXOTH;
 } /* namespace FsoGsm */
 
@@ -154,11 +154,25 @@ public class FsoGsm.PhonebookStorage : FsoFramework.AbstractObject
 /**
  * @interface PhonebookHandler
  */
-public interface FsoGsm.PhonebookHandler : FsoFramework.AbstractObject
+public interface FsoGsm.PhonebookHandler : GLib.Object
 {
     public abstract PhonebookStorage storage { get; set; }
 
     public abstract async void syncWithSim();
+}
+
+public abstract class FsoGsm.AbstractPhonebookHandler : FsoGsm.PhonebookHandler, FsoFramework.AbstractObject
+{
+    protected FsoGsm.Modem modem { get; private set; }
+
+    public abstract PhonebookStorage storage { get; set; }
+
+    public abstract async void syncWithSim();
+
+    public AbstractPhonebookHandler( FsoGsm.Modem modem )
+    {
+        this.modem = modem;
+    }
 }
 
 // vim:ts=4:sw=4:expandtab

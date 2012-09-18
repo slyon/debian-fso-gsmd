@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,8 +38,8 @@ public class AtCbSetCellBroadcastSubscriptions : CbSetCellBroadcastSubscriptions
         {
             throw new FreeSmartphone.Error.INVALID_PARAMETER( "Must use 'none' or 'all' as parameter." );
         }
-        var cmd = theModem.createAtCommand<PlusCSCB>( "+CSCB" );
-        var response = yield theModem.processAtCommandAsync( cmd, cmd.issue( subscriptions == "all" ? PlusCSCB.Mode.ALL : PlusCSCB.Mode.NONE ) );
+        var cmd = modem.createAtCommand<PlusCSCB>( "+CSCB" );
+        var response = yield modem.processAtCommandAsync( cmd, cmd.issue( subscriptions == "all" ? PlusCSCB.Mode.ALL : PlusCSCB.Mode.NONE ) );
         checkResponseOk( cmd, response );
     }
 }
@@ -48,8 +48,8 @@ public class AtCbGetCellBroadcastSubscriptions : CbGetCellBroadcastSubscriptions
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var cmd = theModem.createAtCommand<PlusCSCB>( "+CSCB" );
-        var response = yield theModem.processAtCommandAsync( cmd, cmd.query() );
+        var cmd = modem.createAtCommand<PlusCSCB>( "+CSCB" );
+        var response = yield modem.processAtCommandAsync( cmd, cmd.query() );
         checkResponseValid( cmd, response );
         if ( cmd.mode == PlusCSCB.Mode.ALL )
         {

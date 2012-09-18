@@ -40,7 +40,9 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(top_srcdir)/Makefile.decl $(top_srcdir)/configure AUTHORS \
 	COPYING ChangeLog INSTALL NEWS compile config.guess config.sub \
 	depcomp install-sh ltmain.sh missing
-@WANT_DATAFILES_TRUE@am__append_1 = \
+@WANT_DEBUG_TRUE@am__append_1 = --debug -D DEBUG
+@WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
+@WANT_DATAFILES_TRUE@am__append_3 = \
 @WANT_DATAFILES_TRUE@	conf \
 @WANT_DATAFILES_TRUE@	data \
 @WANT_DATAFILES_TRUE@	$(NULL)
@@ -173,6 +175,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBPI_CFLAGS = @MBPI_CFLAGS@
+MBPI_DATABASE = @MBPI_DATABASE@
+MBPI_LIBS = @MBPI_LIBS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -187,8 +192,6 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PALM_CFLAGS = @PALM_CFLAGS@
-PALM_LIBS = @PALM_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
@@ -202,6 +205,8 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VALAC = @VALAC@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -260,10 +265,17 @@ GTESTER_REPORT = gtester-report
 # initialize variables for unconditional += appending
 EXTRA_DIST = 
 TEST_PROGS = 
+
+# debug flags for vala and gcc
+DEBUG_VALAFLAGS = $(am__append_1)
+DEBUG_CFLAGS = $(am__append_2)
 NULL = 
-SUBDIRS = src tests vapi $(NULL) $(am__append_1)
+SUBDIRS = src tests vapi $(NULL) $(am__append_3)
 DISTCHECK_CONFIGURE_FLAGS = \
 	--disable-datafiles \
+	--enable-libgsm0710mux \
+	--enable-modem-nokia-isi \
+	--enable-modem-samsung \
 	$(NULL)
 
 MAINTAINERCLEANFILES = \

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ class Singleline.Modem : FsoGsm.AbstractModem
     {
         var transport = modem_transport_spec.create();
         var parser = new FsoGsm.StateBasedAtParser();
-        new AtChannel( CHANNEL_NAME, transport, parser );
+        new AtChannel( this, CHANNEL_NAME, transport, parser );
     }
 
     protected override FsoGsm.Channel channelForCommand( FsoGsm.AtCommand command, string query )

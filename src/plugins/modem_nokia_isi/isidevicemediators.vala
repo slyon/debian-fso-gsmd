@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2010-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -67,7 +67,7 @@ public class IsiDeviceSetFunctionality : DeviceSetFunctionality
 {
     public override async void run( string level, bool autoregister, string pin ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var value = Constants.instance().deviceFunctionalityStringToStatus( level );
+        var value = Constants.deviceFunctionalityStringToStatus( level );
 
         if ( value == -1 )
         {
@@ -79,7 +79,7 @@ public class IsiDeviceSetFunctionality : DeviceSetFunctionality
             if ( err == ErrorCode.OK )
             {
                 curlevel = NokiaIsi.modem.deviceFunctionalityModemStateToString( cur );
-                theModem.logger.debug( @"current level is $curlevel" );
+                modem.logger.debug( @"current level is $curlevel" );
             }
             run.callback();
         } );
@@ -87,7 +87,7 @@ public class IsiDeviceSetFunctionality : DeviceSetFunctionality
 
         if ( curlevel != level )
         {
-            assert( theModem.logger.debug( @"setting Functionality to $level") );
+            assert( modem.logger.debug( @"setting Functionality to $level") );
             bool on = false;
             bool online = false;
 
@@ -112,12 +112,12 @@ public class IsiDeviceSetFunctionality : DeviceSetFunctionality
             yield;
         }
 
-        var data = theModem.data();
+        var data = modem.data();
         data.keepRegistration = autoregister;
         if ( pin != "" )
         {
             data.simPin = pin;
-            theModem.watchdog.resetUnlockMarker();
+            modem.watchdog.resetUnlockMarker();
         }
         yield gatherSimStatusAndUpdate();
     }

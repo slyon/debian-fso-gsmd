@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Klaus 'MrMoku' Kurzmann <mok@fluxnetz.de>
+ * Copyright (C) 2011-2012 Klaus 'MrMoku' Kurzmann <mok@fluxnetz.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@ public class IsiPdpSetCredentials : PdpSetCredentials
 {
     public override async void run( string apn, string username, string password ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var data = theModem.data();
+        var data = modem.data();
         data.contextParams = new ContextParams( apn, username, password );
     }
 }

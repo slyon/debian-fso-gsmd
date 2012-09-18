@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -86,12 +86,13 @@ public class FsoGsm.Call
         return result; 
     }
 
-    public void notify( FreeSmartphone.GSM.CallDetail detail )
+    private void notify( FreeSmartphone.GSM.CallDetail detail )
     {
-        var obj = theModem.theDevice<FreeSmartphone.GSM.Call>();
-        obj.call_status( detail.id, detail.status, detail.properties );
+        status_changed( detail.id, detail.status, detail.properties );
         this.detail = detail;
     }
+
+    public signal void status_changed( int id, FreeSmartphone.GSM.CallStatus status, GLib.HashTable<string,Variant> properties );
 }
 
 /**
@@ -151,10 +152,10 @@ public abstract interface FsoGsm.CallHandler : FsoFramework.AbstractObject
     public abstract async void hold() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
     public abstract async void release( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
     public abstract async void releaseAll() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
-    /*
-    public abstract async void conference() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+    public abstract async void transfer() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+    public abstract async void deflect( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+    public abstract async void conference( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
     public abstract async void join() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
-    */
 }
 
 /**
@@ -199,6 +200,22 @@ public class FsoGsm.NullCallHandler : FsoGsm.CallHandler, FsoFramework.AbstractO
     {
     }
 
+    public async void transfer() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
+    public async void deflect( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
+    public async void conference( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
+    public async void join() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+    {
+    }
+
     public override string repr()
     {
         return @"<>";
@@ -208,8 +225,123 @@ public class FsoGsm.NullCallHandler : FsoGsm.CallHandler, FsoFramework.AbstractO
 /**
  * @class FsoGsm.AbstractCallHandler
  **/
-public abstract class FsoGsm.AbstractCallHandler : FsoGsm.Mediator, FsoGsm.CallHandler, FsoFramework.AbstractObject
+public abstract class FsoGsm.AbstractCallHandler : FsoGsm.CallHandler, FsoFramework.AbstractObject
 {
+    protected bool inSyncCallStatus;
+    protected uint timeout;
+    protected FsoGsm.Call[] calls;
+
+    protected FsoFramework.Pair<string,string> supplementary;
+
+    protected FsoGsm.Modem modem { get; private set; }
+
+    construct
+    {
+        calls = new FsoGsm.Call[Constants.CALL_INDEX_MAX+1] {};
+        for ( int i = Constants.CALL_INDEX_MIN; i != Constants.CALL_INDEX_MAX; ++i )
+        {
+            calls[i] = new Call.newFromId( i );
+            calls[i].status_changed.connect( ( id, status, properties ) => {
+                var obj = modem.theDevice<FreeSmartphone.GSM.Call>();
+                obj.call_status( id, status, properties );
+            } );
+        }
+    }
+
+    //
+    // protected
+    //
+
+    protected void validateCallId( int id ) throws FreeSmartphone.Error
+    {
+        if ( id < 1 || id > Constants.CALL_INDEX_MAX )
+            throw new FreeSmartphone.Error.INVALID_PARAMETER( "Call index needs to be within [ 1, %d ]".printf( (int)Constants.CALL_INDEX_MAX) );
+    }
+
+    protected int numberOfBusyCalls()
+    {
+        var num = 0;
+        for ( int i = Constants.CALL_INDEX_MIN; i != Constants.CALL_INDEX_MAX; ++i )
+        {
+            if ( calls[i].detail.status != FreeSmartphone.GSM.CallStatus.RELEASE && calls[i].detail.status != FreeSmartphone.GSM.CallStatus.INCOMING )
+            {
+                num++;
+            }
+        }
+        return num;
+    }
+
+    protected int numberOfCallsWithStatus( FreeSmartphone.GSM.CallStatus status )
+    {
+        var num = 0;
+        for ( int i = Constants.CALL_INDEX_MIN; i != Constants.CALL_INDEX_MAX; ++i )
+        {
+            if ( calls[i].detail.status == status )
+            {
+                num++;
+            }
+        }
+        return num;
+    }
+
+    protected int numberOfCallsWithSpecificStatus( FreeSmartphone.GSM.CallStatus[] status )
+    {
+        var num = 0;
+        for ( int i = Constants.CALL_INDEX_MIN; i != Constants.CALL_INDEX_MAX; ++i )
+        {
+            if ( calls[i].detail.status in status )
+                num++;
+        }
+        return num;
+    }
+
+    protected int lowestOfCallsWithStatus( FreeSmartphone.GSM.CallStatus status )
+    {
+        for ( int i = Constants.CALL_INDEX_MIN; i != Constants.CALL_INDEX_MAX; ++i )
+        {
+            if ( calls[i].detail.status == status )
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    protected void startTimeoutIfNecessary()
+    {
+        onTimeout();
+        if ( timeout == 0 )
+        {
+            timeout = GLib.Timeout.add_seconds( CALL_STATUS_REFRESH_TIMEOUT, onTimeout );
+        }
+    }
+
+    protected bool onTimeout()
+    {
+        if ( inSyncCallStatus )
+        {
+            assert( logger.debug( "Synchronizing call status not done yet... ignoring" ) );
+        }
+        else
+        {
+            syncCallStatus.begin();
+        }
+        return true;
+    }
+
+    protected abstract async void syncCallStatus();
+    protected abstract async void cancelOutgoingWithId( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+    protected abstract async void rejectIncomingWithId( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+
+    //
+    // public API
+    //
+
+    public AbstractCallHandler( FsoGsm.Modem modem )
+    {
+        this.modem = modem;
+    }
+
     public virtual void handleIncomingCall( FsoGsm.CallInfo call_info )
     {
         startTimeoutIfNecessary();
@@ -225,22 +357,15 @@ public abstract class FsoGsm.AbstractCallHandler : FsoGsm.Mediator, FsoGsm.CallH
 
     public abstract void addSupplementaryInformation( string direction, string info );
 
-    protected abstract void startTimeoutIfNecessary();
-
     public abstract async void activate( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
     public abstract async int  initiate( string number, string ctype ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
     public abstract async void hold() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
     public abstract async void release( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
     public abstract async void releaseAll() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
-
-    /**
-     * Override this to implement modem-specific cancelling of an outgoing call
-     **/
-    protected abstract async void cancelOutgoingWithId( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
-    /**
-     * Override this to implement modem-specific rejecting of an incoming call
-     **/
-    protected abstract async void rejectIncomingWithId( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+    public abstract async void transfer() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+    public abstract async void deflect( string number ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+    public abstract async void conference( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
+    public abstract async void join() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error;
 }
 
 // vim:ts=4:sw=4:expandtab

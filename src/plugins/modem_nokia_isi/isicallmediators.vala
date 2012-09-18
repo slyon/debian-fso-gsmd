@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2010-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@ public class IsiCallActivate : CallActivate
 {
     public override async void run( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        yield theModem.callhandler.activate( id );
+        yield modem.callhandler.activate( id );
     }
 }
 
@@ -40,7 +40,7 @@ public class IsiCallHoldActive : CallHoldActive
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        yield theModem.callhandler.hold();
+        yield modem.callhandler.hold();
     }
 }
 
@@ -49,7 +49,7 @@ public class IsiCallInitiate : CallInitiate
     public override async void run( string number, string ctype ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
         validatePhoneNumber( number );
-        id = yield theModem.callhandler.initiate( number, ctype );
+        id = yield modem.callhandler.initiate( number, ctype );
     }
 }
 
@@ -57,7 +57,7 @@ public class IsiCallRelease : CallRelease
 {
     public override async void run( int id ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        yield theModem.callhandler.release( id );
+        yield modem.callhandler.release( id );
     }
 }
 
@@ -65,7 +65,7 @@ public class IsiCallReleaseAll : CallReleaseAll
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        yield theModem.callhandler.releaseAll();
+        yield modem.callhandler.releaseAll();
     }
 }
 
@@ -73,7 +73,7 @@ public class IsiCallListCalls : CallListCalls
 {
     public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var callhandler = theModem.callhandler as FsoGsm.IsiCallHandler;
+        var callhandler = modem.callhandler as FsoGsm.IsiCallHandler;
         calls = yield callhandler.listCalls();
     }
 }

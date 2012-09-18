@@ -38,7 +38,15 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.decl dbus_service_la_vala.stamp \
-	plugin.c
+	device_powersupply_service.c device_rtc_service.c \
+	device_servicemanager.c gsm_call_forwarding_service.c \
+	gsm_call_service.c gsm_cb_service.c gsm_debug_service.c \
+	gsm_device_service.c gsm_hz_service.c gsm_monitor_service.c \
+	gsm_network_service.c gsm_pdp_service.c gsm_sim_service.c \
+	gsm_sms_service.c gsm_voicemail_service.c info_service.c \
+	modemfactory.c plugin.c resource.c service.c servicemanager.c
+@WANT_DEBUG_TRUE@am__append_1 = --debug -D DEBUG
+@WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
 subdir = src/plugins/dbus_service
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -80,16 +88,35 @@ LTLIBRARIES = $(modlibexec_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 dbus_service_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/lib/libfsogsm.la
-am_dbus_service_la_OBJECTS = dbus_service_la-plugin.lo
+	$(top_builddir)/src/lib/libfsogsm.la $(am__DEPENDENCIES_1)
+am__objects_1 =
+am_dbus_service_la_OBJECTS = dbus_service_la-plugin.lo \
+	dbus_service_la-service.lo dbus_service_la-servicemanager.lo \
+	dbus_service_la-device_servicemanager.lo \
+	dbus_service_la-modemfactory.lo dbus_service_la-resource.lo \
+	dbus_service_la-info_service.lo \
+	dbus_service_la-device_powersupply_service.lo \
+	dbus_service_la-device_rtc_service.lo \
+	dbus_service_la-gsm_debug_service.lo \
+	dbus_service_la-gsm_device_service.lo \
+	dbus_service_la-gsm_sim_service.lo \
+	dbus_service_la-gsm_sms_service.lo \
+	dbus_service_la-gsm_network_service.lo \
+	dbus_service_la-gsm_call_service.lo \
+	dbus_service_la-gsm_call_forwarding_service.lo \
+	dbus_service_la-gsm_hz_service.lo \
+	dbus_service_la-gsm_cb_service.lo \
+	dbus_service_la-gsm_voicemail_service.lo \
+	dbus_service_la-gsm_monitor_service.lo \
+	dbus_service_la-gsm_pdp_service.lo $(am__objects_1)
 dbus_service_la_OBJECTS = $(am_dbus_service_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 dbus_service_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(AM_CFLAGS) $(CFLAGS) $(dbus_service_la_LDFLAGS) $(LDFLAGS) \
-	-o $@
+	$(dbus_service_la_CFLAGS) $(CFLAGS) $(dbus_service_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -182,6 +209,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBPI_CFLAGS = @MBPI_CFLAGS@
+MBPI_DATABASE = @MBPI_DATABASE@
+MBPI_LIBS = @MBPI_LIBS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -196,8 +226,6 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PALM_CFLAGS = @PALM_CFLAGS@
-PALM_LIBS = @PALM_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
@@ -211,6 +239,8 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VALAC = @VALAC@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -269,6 +299,10 @@ GTESTER_REPORT = gtester-report
 # initialize variables for unconditional += appending
 EXTRA_DIST = 
 TEST_PROGS = 
+
+# debug flags for vala and gcc
+DEBUG_VALAFLAGS = $(am__append_1)
+DEBUG_CFLAGS = $(am__append_2)
 NULL = 
 AM_CFLAGS = \
 	-DG_LOG_DOMAIN=\"fsogsm.dbus_service\" \
@@ -277,7 +311,30 @@ AM_CFLAGS = \
 AM_VALAFLAGS = 
 modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
 modlibexec_LTLIBRARIES = dbus_service.la
-dbus_service_la_SOURCES = plugin.vala
+dbus_service_la_SOURCES = \
+	plugin.vala \
+	service.vala \
+	servicemanager.vala \
+	device_servicemanager.vala \
+	modemfactory.vala \
+	resource.vala \
+	info_service.vala \
+	device_powersupply_service.vala \
+	device_rtc_service.vala \
+	gsm_debug_service.vala \
+	gsm_device_service.vala \
+	gsm_sim_service.vala \
+	gsm_sms_service.vala \
+	gsm_network_service.vala \
+	gsm_call_service.vala \
+	gsm_call_forwarding_service.vala \
+	gsm_hz_service.vala \
+	gsm_cb_service.vala \
+	gsm_voicemail_service.vala \
+	gsm_monitor_service.vala \
+	gsm_pdp_service.vala \
+	$(NULL)
+
 dbus_service_la_VALAFLAGS = \
 	--basedir $(top_srcdir) \
 	--vapidir $(top_srcdir)/src/lib \
@@ -290,21 +347,24 @@ dbus_service_la_VALAFLAGS = \
 	--pkg fsotransport-2.0 \
 	--pkg fsoresource-2.0 \
 	--pkg fsogsm-2.0 \
+	$(DEBUG_VALAFLAGS) \
 	$(NULL)
 
-dbus_service_la_CPPFLAGS = \
+dbus_service_la_CFLAGS = \
 	-I$(top_srcdir)/src/lib \
 	-I$(top_srcdir)/src/3rdparty \
 	$(FSO_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(GEE_CFLAGS) \
+	$(DEBUG_CFLAGS) \
 	$(NULL)
 
 dbus_service_la_LIBADD = \
 	$(FSO_LIBS) \
 	$(GLIB_LIBS) \
 	$(GEE_LIBS) \
-	$(top_builddir)/src/lib/libfsogsm.la
+	$(top_builddir)/src/lib/libfsogsm.la \
+	$(NULL)
 
 dbus_service_la_LDFLAGS = -no-undefined -module -avoid-version
 # dbus_service_la_LIBTOOLFLAGS = --tag=disable-static
@@ -385,7 +445,27 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-device_powersupply_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-device_rtc_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-device_servicemanager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_call_forwarding_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_call_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_cb_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_debug_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_device_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_hz_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_monitor_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_network_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_pdp_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_sim_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_sms_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-gsm_voicemail_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-info_service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-modemfactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-plugin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-resource.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_service_la-servicemanager.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -409,12 +489,252 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 dbus_service_la-plugin.lo: plugin.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dbus_service_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dbus_service_la-plugin.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-plugin.Tpo -c -o dbus_service_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-plugin.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-plugin.Tpo -c -o dbus_service_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-plugin.Tpo $(DEPDIR)/dbus_service_la-plugin.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='plugin.c' object='dbus_service_la-plugin.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dbus_service_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dbus_service_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
+
+dbus_service_la-service.lo: service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-service.Tpo -c -o dbus_service_la-service.lo `test -f 'service.c' || echo '$(srcdir)/'`service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-service.Tpo $(DEPDIR)/dbus_service_la-service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='service.c' object='dbus_service_la-service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-service.lo `test -f 'service.c' || echo '$(srcdir)/'`service.c
+
+dbus_service_la-servicemanager.lo: servicemanager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-servicemanager.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-servicemanager.Tpo -c -o dbus_service_la-servicemanager.lo `test -f 'servicemanager.c' || echo '$(srcdir)/'`servicemanager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-servicemanager.Tpo $(DEPDIR)/dbus_service_la-servicemanager.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='servicemanager.c' object='dbus_service_la-servicemanager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-servicemanager.lo `test -f 'servicemanager.c' || echo '$(srcdir)/'`servicemanager.c
+
+dbus_service_la-device_servicemanager.lo: device_servicemanager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-device_servicemanager.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-device_servicemanager.Tpo -c -o dbus_service_la-device_servicemanager.lo `test -f 'device_servicemanager.c' || echo '$(srcdir)/'`device_servicemanager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-device_servicemanager.Tpo $(DEPDIR)/dbus_service_la-device_servicemanager.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='device_servicemanager.c' object='dbus_service_la-device_servicemanager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-device_servicemanager.lo `test -f 'device_servicemanager.c' || echo '$(srcdir)/'`device_servicemanager.c
+
+dbus_service_la-modemfactory.lo: modemfactory.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-modemfactory.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-modemfactory.Tpo -c -o dbus_service_la-modemfactory.lo `test -f 'modemfactory.c' || echo '$(srcdir)/'`modemfactory.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-modemfactory.Tpo $(DEPDIR)/dbus_service_la-modemfactory.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='modemfactory.c' object='dbus_service_la-modemfactory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-modemfactory.lo `test -f 'modemfactory.c' || echo '$(srcdir)/'`modemfactory.c
+
+dbus_service_la-resource.lo: resource.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-resource.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-resource.Tpo -c -o dbus_service_la-resource.lo `test -f 'resource.c' || echo '$(srcdir)/'`resource.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-resource.Tpo $(DEPDIR)/dbus_service_la-resource.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='resource.c' object='dbus_service_la-resource.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-resource.lo `test -f 'resource.c' || echo '$(srcdir)/'`resource.c
+
+dbus_service_la-info_service.lo: info_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-info_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-info_service.Tpo -c -o dbus_service_la-info_service.lo `test -f 'info_service.c' || echo '$(srcdir)/'`info_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-info_service.Tpo $(DEPDIR)/dbus_service_la-info_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='info_service.c' object='dbus_service_la-info_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-info_service.lo `test -f 'info_service.c' || echo '$(srcdir)/'`info_service.c
+
+dbus_service_la-device_powersupply_service.lo: device_powersupply_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-device_powersupply_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-device_powersupply_service.Tpo -c -o dbus_service_la-device_powersupply_service.lo `test -f 'device_powersupply_service.c' || echo '$(srcdir)/'`device_powersupply_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-device_powersupply_service.Tpo $(DEPDIR)/dbus_service_la-device_powersupply_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='device_powersupply_service.c' object='dbus_service_la-device_powersupply_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-device_powersupply_service.lo `test -f 'device_powersupply_service.c' || echo '$(srcdir)/'`device_powersupply_service.c
+
+dbus_service_la-device_rtc_service.lo: device_rtc_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-device_rtc_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-device_rtc_service.Tpo -c -o dbus_service_la-device_rtc_service.lo `test -f 'device_rtc_service.c' || echo '$(srcdir)/'`device_rtc_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-device_rtc_service.Tpo $(DEPDIR)/dbus_service_la-device_rtc_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='device_rtc_service.c' object='dbus_service_la-device_rtc_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-device_rtc_service.lo `test -f 'device_rtc_service.c' || echo '$(srcdir)/'`device_rtc_service.c
+
+dbus_service_la-gsm_debug_service.lo: gsm_debug_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_debug_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_debug_service.Tpo -c -o dbus_service_la-gsm_debug_service.lo `test -f 'gsm_debug_service.c' || echo '$(srcdir)/'`gsm_debug_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_debug_service.Tpo $(DEPDIR)/dbus_service_la-gsm_debug_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_debug_service.c' object='dbus_service_la-gsm_debug_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_debug_service.lo `test -f 'gsm_debug_service.c' || echo '$(srcdir)/'`gsm_debug_service.c
+
+dbus_service_la-gsm_device_service.lo: gsm_device_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_device_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_device_service.Tpo -c -o dbus_service_la-gsm_device_service.lo `test -f 'gsm_device_service.c' || echo '$(srcdir)/'`gsm_device_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_device_service.Tpo $(DEPDIR)/dbus_service_la-gsm_device_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_device_service.c' object='dbus_service_la-gsm_device_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_device_service.lo `test -f 'gsm_device_service.c' || echo '$(srcdir)/'`gsm_device_service.c
+
+dbus_service_la-gsm_sim_service.lo: gsm_sim_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_sim_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_sim_service.Tpo -c -o dbus_service_la-gsm_sim_service.lo `test -f 'gsm_sim_service.c' || echo '$(srcdir)/'`gsm_sim_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_sim_service.Tpo $(DEPDIR)/dbus_service_la-gsm_sim_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_sim_service.c' object='dbus_service_la-gsm_sim_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_sim_service.lo `test -f 'gsm_sim_service.c' || echo '$(srcdir)/'`gsm_sim_service.c
+
+dbus_service_la-gsm_sms_service.lo: gsm_sms_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_sms_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_sms_service.Tpo -c -o dbus_service_la-gsm_sms_service.lo `test -f 'gsm_sms_service.c' || echo '$(srcdir)/'`gsm_sms_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_sms_service.Tpo $(DEPDIR)/dbus_service_la-gsm_sms_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_sms_service.c' object='dbus_service_la-gsm_sms_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_sms_service.lo `test -f 'gsm_sms_service.c' || echo '$(srcdir)/'`gsm_sms_service.c
+
+dbus_service_la-gsm_network_service.lo: gsm_network_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_network_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_network_service.Tpo -c -o dbus_service_la-gsm_network_service.lo `test -f 'gsm_network_service.c' || echo '$(srcdir)/'`gsm_network_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_network_service.Tpo $(DEPDIR)/dbus_service_la-gsm_network_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_network_service.c' object='dbus_service_la-gsm_network_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_network_service.lo `test -f 'gsm_network_service.c' || echo '$(srcdir)/'`gsm_network_service.c
+
+dbus_service_la-gsm_call_service.lo: gsm_call_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_call_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_call_service.Tpo -c -o dbus_service_la-gsm_call_service.lo `test -f 'gsm_call_service.c' || echo '$(srcdir)/'`gsm_call_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_call_service.Tpo $(DEPDIR)/dbus_service_la-gsm_call_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_call_service.c' object='dbus_service_la-gsm_call_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_call_service.lo `test -f 'gsm_call_service.c' || echo '$(srcdir)/'`gsm_call_service.c
+
+dbus_service_la-gsm_call_forwarding_service.lo: gsm_call_forwarding_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_call_forwarding_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_call_forwarding_service.Tpo -c -o dbus_service_la-gsm_call_forwarding_service.lo `test -f 'gsm_call_forwarding_service.c' || echo '$(srcdir)/'`gsm_call_forwarding_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_call_forwarding_service.Tpo $(DEPDIR)/dbus_service_la-gsm_call_forwarding_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_call_forwarding_service.c' object='dbus_service_la-gsm_call_forwarding_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_call_forwarding_service.lo `test -f 'gsm_call_forwarding_service.c' || echo '$(srcdir)/'`gsm_call_forwarding_service.c
+
+dbus_service_la-gsm_hz_service.lo: gsm_hz_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_hz_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_hz_service.Tpo -c -o dbus_service_la-gsm_hz_service.lo `test -f 'gsm_hz_service.c' || echo '$(srcdir)/'`gsm_hz_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_hz_service.Tpo $(DEPDIR)/dbus_service_la-gsm_hz_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_hz_service.c' object='dbus_service_la-gsm_hz_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_hz_service.lo `test -f 'gsm_hz_service.c' || echo '$(srcdir)/'`gsm_hz_service.c
+
+dbus_service_la-gsm_cb_service.lo: gsm_cb_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_cb_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_cb_service.Tpo -c -o dbus_service_la-gsm_cb_service.lo `test -f 'gsm_cb_service.c' || echo '$(srcdir)/'`gsm_cb_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_cb_service.Tpo $(DEPDIR)/dbus_service_la-gsm_cb_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_cb_service.c' object='dbus_service_la-gsm_cb_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_cb_service.lo `test -f 'gsm_cb_service.c' || echo '$(srcdir)/'`gsm_cb_service.c
+
+dbus_service_la-gsm_voicemail_service.lo: gsm_voicemail_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_voicemail_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_voicemail_service.Tpo -c -o dbus_service_la-gsm_voicemail_service.lo `test -f 'gsm_voicemail_service.c' || echo '$(srcdir)/'`gsm_voicemail_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_voicemail_service.Tpo $(DEPDIR)/dbus_service_la-gsm_voicemail_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_voicemail_service.c' object='dbus_service_la-gsm_voicemail_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_voicemail_service.lo `test -f 'gsm_voicemail_service.c' || echo '$(srcdir)/'`gsm_voicemail_service.c
+
+dbus_service_la-gsm_monitor_service.lo: gsm_monitor_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_monitor_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_monitor_service.Tpo -c -o dbus_service_la-gsm_monitor_service.lo `test -f 'gsm_monitor_service.c' || echo '$(srcdir)/'`gsm_monitor_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_monitor_service.Tpo $(DEPDIR)/dbus_service_la-gsm_monitor_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_monitor_service.c' object='dbus_service_la-gsm_monitor_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_monitor_service.lo `test -f 'gsm_monitor_service.c' || echo '$(srcdir)/'`gsm_monitor_service.c
+
+dbus_service_la-gsm_pdp_service.lo: gsm_pdp_service.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -MT dbus_service_la-gsm_pdp_service.lo -MD -MP -MF $(DEPDIR)/dbus_service_la-gsm_pdp_service.Tpo -c -o dbus_service_la-gsm_pdp_service.lo `test -f 'gsm_pdp_service.c' || echo '$(srcdir)/'`gsm_pdp_service.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dbus_service_la-gsm_pdp_service.Tpo $(DEPDIR)/dbus_service_la-gsm_pdp_service.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gsm_pdp_service.c' object='dbus_service_la-gsm_pdp_service.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dbus_service_la_CFLAGS) $(CFLAGS) -c -o dbus_service_la-gsm_pdp_service.lo `test -f 'gsm_pdp_service.c' || echo '$(srcdir)/'`gsm_pdp_service.c
 $(srcdir)/plugin.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/servicemanager.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/device_servicemanager.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/modemfactory.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/resource.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/info_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/device_powersupply_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/device_rtc_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_debug_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_device_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_sim_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_sms_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_network_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_call_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_call_forwarding_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_hz_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_cb_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_voicemail_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_monitor_service.c: $(srcdir)/dbus_service_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
+	fi
+$(srcdir)/gsm_pdp_service.c: $(srcdir)/dbus_service_la_vala.stamp
 	@if test -f $@; then :; else rm -f $(srcdir)/dbus_service_la_vala.stamp; fi
 	@if test -f $@; then :; else \
 	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/dbus_service_la_vala.stamp; \
@@ -552,7 +872,27 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f dbus_service_la_vala.stamp
+	-rm -f device_powersupply_service.c
+	-rm -f device_rtc_service.c
+	-rm -f device_servicemanager.c
+	-rm -f gsm_call_forwarding_service.c
+	-rm -f gsm_call_service.c
+	-rm -f gsm_cb_service.c
+	-rm -f gsm_debug_service.c
+	-rm -f gsm_device_service.c
+	-rm -f gsm_hz_service.c
+	-rm -f gsm_monitor_service.c
+	-rm -f gsm_network_service.c
+	-rm -f gsm_pdp_service.c
+	-rm -f gsm_sim_service.c
+	-rm -f gsm_sms_service.c
+	-rm -f gsm_voicemail_service.c
+	-rm -f info_service.c
+	-rm -f modemfactory.c
 	-rm -f plugin.c
+	-rm -f resource.c
+	-rm -f service.c
+	-rm -f servicemanager.c
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
@@ -691,7 +1031,6 @@ test-report perf-report full-report:	${TEST_PROGS}
 .PHONY: test test-report perf-report full-report
 # run make test as part of make check
 check-local: test
-	$(NULL)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

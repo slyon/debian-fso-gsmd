@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Klaus 'mrmoku' Kurzmann <mok@fluxnetz.de>
+ * Copyright (C) 2011-2012 Klaus 'mrmoku' Kurzmann <mok@fluxnetz.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,16 +37,16 @@ public class IsiSmsSendTextMessage : SmsSendTextMessage
     {
         validatePhoneNumber( recipient_number );
 
-        var hexpdus = theModem.smshandler.formatTextMessage( recipient_number, contents, want_report );
+        var hexpdus = modem.smshandler.formatTextMessage( recipient_number, contents, want_report );
 
-        transaction_index = theModem.smshandler.lastReferenceNumber();
+        transaction_index = modem.smshandler.lastReferenceNumber();
         //FIXME: What about ACK PDUs?
         timestamp = "now";
 
         // remember transaction indizes for later
         if ( want_report )
         {
-            theModem.smshandler.storeTransactionIndizesForSentMessage( hexpdus );
+            modem.smshandler.storeTransactionIndizesForSentMessage( hexpdus );
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -88,7 +88,7 @@ class QualcommHtc.Modem : FsoGsm.AbstractModem
     {
         var transport = modem_transport_spec.create();
         var parser = new FsoGsm.HtcAtParser();
-        new AtChannel( CHANNEL_NAME, transport, parser );
+        new AtChannel( this, CHANNEL_NAME, transport, parser );
     }
 
     protected override FsoGsm.Channel channelForCommand( FsoGsm.AtCommand command, string query )
@@ -99,7 +99,7 @@ class QualcommHtc.Modem : FsoGsm.AbstractModem
 
     protected override FsoGsm.UnsolicitedResponseHandler createUnsolicitedHandler()
     {
-        return new QualcommHtc.UnsolicitedResponseHandler();
+        return new QualcommHtc.UnsolicitedResponseHandler( this );
     }
 
     protected override void registerCustomAtCommands( Gee.HashMap<string,FsoGsm.AtCommand> commands )

@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2011 Klaus 'mrmoku' Kurzmann   <mok@fluxnetz.de>
- *               2011 Lukas 'slyon' Märdian     <lukasmaerdian@gmail.com>
+ * Copyright (C) 2011-2012 Klaus 'mrmoku' Kurzmann   <mok@fluxnetz.de>
+ *               2011-2012 Lukas 'slyon' Märdian     <lukasmaerdian@gmail.com>
  *               2012 Simon Busch               <morphis@gravedo.de>
  *
  * This program is free software; you can redistribute it and/or
@@ -28,8 +28,8 @@ namespace Gtm601
     {
         public override async void run( string tones ) throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
         {
-            var cmd = theModem.createAtCommand<PlusVTS>( "+VTS" );
-            theModem.sendAtCommand( cmd, cmd.issue( tones ) );
+            var cmd = modem.createAtCommand<PlusVTS>( "+VTS" );
+            modem.sendAtCommand( cmd, cmd.issue( tones ) );
         }
     }
 
@@ -45,8 +45,8 @@ namespace Gtm601
         {
             var providers_tmp = new FreeSmartphone.GSM.NetworkProvider[] { };
 
-            var cmd = theModem.createAtCommand<PlusCOPS>( "+COPS" );
-            var response = yield theModem.processAtCommandAsync( cmd, cmd.test() );
+            var cmd = modem.createAtCommand<PlusCOPS>( "+COPS" );
+            var response = yield modem.processAtCommandAsync( cmd, cmd.test() );
             checkTestResponseValid( cmd, response );
 
             foreach ( var p in cmd.providers )
@@ -67,13 +67,36 @@ namespace Gtm601
     {
         public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
         {
-            var cmd = theModem.createAtCommand<PlusCSCA>( "+CSCA" );
-            var response = yield theModem.processAtCommandAsync( cmd, cmd.query() );
+            var cmd = modem.createAtCommand<PlusCSCA>( "+CSCA" );
+            var response = yield modem.processAtCommandAsync( cmd, cmd.query() );
             checkResponseValid( cmd, response );
             number = Codec.hexToString( cmd.number );
         }
     }
 
+    public class AtCallListCalls : CallListCalls
+    {
+        public override async void run() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
+        {
+            var poll_again = false;
+
+            do
+            {
+                poll_again = false;
+
+                var cmd = modem.createAtCommand<PlusCLCC>( "+CLCC" );
+                var response = yield modem.processAtCommandAsync( cmd, cmd.execute() );
+
+                var code = cmd.validateMulti( response );
+                if ( code == Constants.AtResponse.VALID )
+                    calls = cmd.calls;
+                else if ( code == Constants.AtResponse.CME_ERROR_100_UNKNOWN_ERROR )
+                    poll_again = true;
+                else throw Constants.atResponseCodeToError( code, response[response.length-1] );
+            }
+            while ( poll_again );
+        }
+    }
 
     /* register all mediators */
     public void registerCustomMediators( HashMap<Type,Type> mediators )
@@ -81,6 +104,7 @@ namespace Gtm601
         mediators[ typeof(CallSendDtmf) ] = typeof( Gtm601.AtCallSendDtmf );
         mediators[ typeof(NetworkListProviders) ] = typeof( Gtm601.AtNetworkListProviders );
         mediators[ typeof(SimGetServiceCenterNumber) ] = typeof( Gtm601.AtSimGetServiceCenterNumber );
+        mediators[ typeof(CallListCalls) ] = typeof( Gtm601.AtCallListCalls );
     }
 
 } // namespace Gtm601

@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2010-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
- *               2011 Klaus 'mrmoku' Kurzmann <mok@fluxnetz.de>
+ * Copyright (C) 2010-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ *               2011-2012 Klaus 'mrmoku' Kurzmann <mok@fluxnetz.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -68,7 +68,7 @@ public class IsiSimGetAuthStatus : SimGetAuthStatus
 
 
             default:
-                theModem.logger.warning( @"Unhandled ISI SIMAuth.Status $isicode" );
+                modem.logger.warning( @"Unhandled ISI SIMAuth.Status $isicode" );
                 status = FreeSmartphone.GSM.SIMAuthStatus.UNKNOWN;
                 break;
         }
@@ -121,7 +121,7 @@ public class IsiSimSendAuthCode : SimSendAuthCode
         switch ( isicode )
         {
             case GIsiClient.SIMAuth.IndicationType.OK:
-                theModem.advanceToState( FsoGsm.Modem.Status.ALIVE_SIM_UNLOCKED );
+                modem.advanceToState( FsoGsm.Modem.Status.ALIVE_SIM_UNLOCKED );
                 break;
             case GIsiClient.SIMAuth.IndicationType.PUK:
                 throw new FreeSmartphone.GSM.Error.SIM_BLOCKED( @"ISI Code = $isicode" );

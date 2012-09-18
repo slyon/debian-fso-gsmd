@@ -43,12 +43,13 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	at/atdevicemediators.c at/atmediatorhelpers.c \
 	at/atmonitormediators.c at/atnetworkmediators.c at/atparser.c \
 	at/atpdp.c at/atpdpmediators.c at/atphonebook.c \
-	at/atsimmediators.c at/atsms.c at/atsmsmediators.c \
-	at/atunsolicited.c at/atvmmediators.c call.c channel.c codes.c \
-	consts.c fsogsm.h libfsogsm_la_vala.stamp lowlevel.c \
-	mediator.c mediatorhelpers.c modem.c muxtransport.c pdp.c \
-	phonebook.c sms.c smsstorage.c watchdog.c
-@WANT_DEBUG_TRUE@am__append_1 = -g -D DEBUG
+	at/atresultiter.c at/atsimmediators.c at/atsms.c \
+	at/atsmsmediators.c at/atunsolicited.c at/atvmmediators.c \
+	call.c channel.c codes.c consts.c fsogsm.h \
+	libfsogsm_la_vala.stamp lowlevel.c mbpi.c mediator.c \
+	mediatorhelpers.c modem.c muxtransport.c pdp.c phonebook.c \
+	serviceprovider.c sms.c smsstorage.c watchdog.c
+@WANT_DEBUG_TRUE@am__append_1 = --debug -D DEBUG
 @WANT_DEBUG_TRUE@am__append_2 = -ggdb -O0
 @WANT_MUX_TRUE@am__append_3 = --pkg gsm0710mux-1.0
 @WANT_MUX_TRUE@am__append_4 = muxtransport.vala
@@ -93,7 +94,8 @@ LTLIBRARIES = $(modlibexec_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libfsogsm_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am__libfsogsm_la_SOURCES_DIST = at/atcall.vala at/atchannel.vala \
 	at/atcommand.vala at/atcommands.vala at/atcommandqueue.vala \
 	at/atcallmediators.vala at/atcbmediators.vala \
@@ -103,9 +105,10 @@ am__libfsogsm_la_SOURCES_DIST = at/atcall.vala at/atchannel.vala \
 	at/atsimmediators.vala at/atsmsmediators.vala \
 	at/atvmmediators.vala at/atparser.vala at/atpdp.vala \
 	at/atsms.vala at/atunsolicited.vala at/atphonebook.vala \
-	call.vala codes.vala consts.vala channel.vala lowlevel.vala \
-	mediator.vala mediatorhelpers.vala modem.vala phonebook.vala \
-	pdp.vala sms.vala smsstorage.vala watchdog.vala \
+	at/atresultiter.vala call.vala codes.vala consts.vala \
+	channel.vala lowlevel.vala mediator.vala mediatorhelpers.vala \
+	modem.vala phonebook.vala pdp.vala sms.vala smsstorage.vala \
+	watchdog.vala serviceprovider.vala mbpi.vala \
 	$(top_srcdir)/src/3rdparty/conversions.c \
 	$(top_srcdir)/src/3rdparty/smsutil.c \
 	$(top_srcdir)/src/3rdparty/storage.c \
@@ -136,21 +139,23 @@ am_libfsogsm_la_OBJECTS = libfsogsm_la-atcall.lo \
 	libfsogsm_la-atsmsmediators.lo libfsogsm_la-atvmmediators.lo \
 	libfsogsm_la-atparser.lo libfsogsm_la-atpdp.lo \
 	libfsogsm_la-atsms.lo libfsogsm_la-atunsolicited.lo \
-	libfsogsm_la-atphonebook.lo libfsogsm_la-call.lo \
-	libfsogsm_la-codes.lo libfsogsm_la-consts.lo \
-	libfsogsm_la-channel.lo libfsogsm_la-lowlevel.lo \
-	libfsogsm_la-mediator.lo libfsogsm_la-mediatorhelpers.lo \
-	libfsogsm_la-modem.lo libfsogsm_la-phonebook.lo \
-	libfsogsm_la-pdp.lo libfsogsm_la-sms.lo \
-	libfsogsm_la-smsstorage.lo libfsogsm_la-watchdog.lo \
-	libfsogsm_la-conversions.lo libfsogsm_la-smsutil.lo \
-	libfsogsm_la-storage.lo libfsogsm_la-util.lo \
-	libfsogsm_la-crc-ccitt.lo libfsogsm_la-gathdlc.lo \
-	libfsogsm_la-gatio.lo libfsogsm_la-gatppp.lo \
-	libfsogsm_la-gatutil.lo libfsogsm_la-ppp_auth.lo \
-	libfsogsm_la-ppp_cp.lo libfsogsm_la-ppp_ipcp.lo \
-	libfsogsm_la-ppp_lcp.lo libfsogsm_la-ppp_net.lo \
-	libfsogsm_la-ringbuffer.lo $(am__objects_1) $(am__objects_2)
+	libfsogsm_la-atphonebook.lo libfsogsm_la-atresultiter.lo \
+	libfsogsm_la-call.lo libfsogsm_la-codes.lo \
+	libfsogsm_la-consts.lo libfsogsm_la-channel.lo \
+	libfsogsm_la-lowlevel.lo libfsogsm_la-mediator.lo \
+	libfsogsm_la-mediatorhelpers.lo libfsogsm_la-modem.lo \
+	libfsogsm_la-phonebook.lo libfsogsm_la-pdp.lo \
+	libfsogsm_la-sms.lo libfsogsm_la-smsstorage.lo \
+	libfsogsm_la-watchdog.lo libfsogsm_la-serviceprovider.lo \
+	libfsogsm_la-mbpi.lo libfsogsm_la-conversions.lo \
+	libfsogsm_la-smsutil.lo libfsogsm_la-storage.lo \
+	libfsogsm_la-util.lo libfsogsm_la-crc-ccitt.lo \
+	libfsogsm_la-gathdlc.lo libfsogsm_la-gatio.lo \
+	libfsogsm_la-gatppp.lo libfsogsm_la-gatutil.lo \
+	libfsogsm_la-ppp_auth.lo libfsogsm_la-ppp_cp.lo \
+	libfsogsm_la-ppp_ipcp.lo libfsogsm_la-ppp_lcp.lo \
+	libfsogsm_la-ppp_net.lo libfsogsm_la-ringbuffer.lo \
+	$(am__objects_1) $(am__objects_2)
 libfsogsm_la_OBJECTS = $(am_libfsogsm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -250,6 +255,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBPI_CFLAGS = @MBPI_CFLAGS@
+MBPI_DATABASE = @MBPI_DATABASE@
+MBPI_LIBS = @MBPI_LIBS@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
@@ -264,8 +272,6 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
-PALM_CFLAGS = @PALM_CFLAGS@
-PALM_LIBS = @PALM_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
@@ -279,6 +285,8 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 VALAC = @VALAC@
 VERSION = @VERSION@
+XML_CFLAGS = @XML_CFLAGS@
+XML_LIBS = @XML_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -338,9 +346,16 @@ GTESTER_REPORT = gtester-report
 EXTRA_DIST = fsogsm3rdparty.deps fsogsm3rdparty.vapi fsogsm-2.0.deps \
 	$(NULL)
 TEST_PROGS = 
+
+# debug flags for vala and gcc
+DEBUG_VALAFLAGS = $(am__append_1)
+DEBUG_CFLAGS = $(am__append_2)
 NULL = 
-AM_CFLAGS = -DG_LOG_DOMAIN=\"fsogsm.lib\" $(NULL) $(am__append_2)
-AM_VALAFLAGS = $(am__append_1)
+AM_CFLAGS = \
+	-DG_LOG_DOMAIN=\"fsogsm.lib\" \
+	$(NULL)
+
+AM_VALAFLAGS = 
 modlibexecdir = $(libdir)/cornucopia/modules/fsogsm
 modlibexec_LTLIBRARIES = libfsogsm.la
 libfsogsm_la_SOURCES = at/atcall.vala at/atchannel.vala \
@@ -352,9 +367,10 @@ libfsogsm_la_SOURCES = at/atcall.vala at/atchannel.vala \
 	at/atsimmediators.vala at/atsmsmediators.vala \
 	at/atvmmediators.vala at/atparser.vala at/atpdp.vala \
 	at/atsms.vala at/atunsolicited.vala at/atphonebook.vala \
-	call.vala codes.vala consts.vala channel.vala lowlevel.vala \
-	mediator.vala mediatorhelpers.vala modem.vala phonebook.vala \
-	pdp.vala sms.vala smsstorage.vala watchdog.vala \
+	at/atresultiter.vala call.vala codes.vala consts.vala \
+	channel.vala lowlevel.vala mediator.vala mediatorhelpers.vala \
+	modem.vala phonebook.vala pdp.vala sms.vala smsstorage.vala \
+	watchdog.vala serviceprovider.vala mbpi.vala \
 	$(top_srcdir)/src/3rdparty/conversions.c \
 	$(top_srcdir)/src/3rdparty/smsutil.c \
 	$(top_srcdir)/src/3rdparty/storage.c \
@@ -375,8 +391,9 @@ libfsogsm_la_VALAFLAGS = --basedir $(top_srcdir) --vapidir \
 	$(top_srcdir)/vapi --vapidir $(top_srcdir)/src/lib --pkg \
 	glib-2.0 --pkg gio-2.0 --pkg gee-1.0 --pkg fso-glib-1.0 --pkg \
 	fsosystem-2.0 --pkg fsoframework-2.0 --pkg fsotransport-2.0 \
-	--pkg fsogsm3rdparty --pkg config --header fsogsm.h --library \
-	fsogsm-2.0 $(NULL) $(am__append_3)
+	--pkg fsogsm3rdparty --pkg libxml-2.0 --pkg config --header \
+	fsogsm.h --library fsogsm-2.0 $(DEBUG_VALAFLAGS) $(NULL) \
+	$(am__append_3)
 libfsogsm_la_CFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/src/3rdparty \
@@ -385,6 +402,8 @@ libfsogsm_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
 	$(GEE_CFLAGS) \
 	$(GSMMUX_CFLAGS) \
+	$(XML_CFLAGS) \
+	$(DEBUG_CFLAGS) \
 	$(NULL)
 
 libfsogsm_la_LIBADD = \
@@ -393,6 +412,7 @@ libfsogsm_la_LIBADD = \
 	$(GEE_LIBS) \
 	$(GSMMUX_LIBS) \
 	$(THIRDPARTY_LIBS) \
+	$(XML_LIBS) \
 	$(NULL)
 
 libfsogsm_la_LDFLAGS = -no-undefined -avoid-version
@@ -493,6 +513,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atpdp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atpdpmediators.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atphonebook.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atresultiter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atsimmediators.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atsms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-atsmsmediators.Plo@am__quote@
@@ -509,6 +530,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-gatppp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-gatutil.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-lowlevel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-mbpi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-mediator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-mediatorhelpers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-modem.Plo@am__quote@
@@ -521,6 +543,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-ppp_lcp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-ppp_net.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-ringbuffer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-serviceprovider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-sms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-smsstorage.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfsogsm_la-smsutil.Plo@am__quote@
@@ -696,6 +719,13 @@ libfsogsm_la-atphonebook.lo: at/atphonebook.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atphonebook.lo `test -f 'at/atphonebook.c' || echo '$(srcdir)/'`at/atphonebook.c
 
+libfsogsm_la-atresultiter.lo: at/atresultiter.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-atresultiter.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-atresultiter.Tpo -c -o libfsogsm_la-atresultiter.lo `test -f 'at/atresultiter.c' || echo '$(srcdir)/'`at/atresultiter.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-atresultiter.Tpo $(DEPDIR)/libfsogsm_la-atresultiter.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='at/atresultiter.c' object='libfsogsm_la-atresultiter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-atresultiter.lo `test -f 'at/atresultiter.c' || echo '$(srcdir)/'`at/atresultiter.c
+
 libfsogsm_la-call.lo: call.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-call.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-call.Tpo -c -o libfsogsm_la-call.lo `test -f 'call.c' || echo '$(srcdir)/'`call.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-call.Tpo $(DEPDIR)/libfsogsm_la-call.Plo
@@ -786,6 +816,20 @@ libfsogsm_la-watchdog.lo: watchdog.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='watchdog.c' object='libfsogsm_la-watchdog.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-watchdog.lo `test -f 'watchdog.c' || echo '$(srcdir)/'`watchdog.c
+
+libfsogsm_la-serviceprovider.lo: serviceprovider.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-serviceprovider.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-serviceprovider.Tpo -c -o libfsogsm_la-serviceprovider.lo `test -f 'serviceprovider.c' || echo '$(srcdir)/'`serviceprovider.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-serviceprovider.Tpo $(DEPDIR)/libfsogsm_la-serviceprovider.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='serviceprovider.c' object='libfsogsm_la-serviceprovider.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-serviceprovider.lo `test -f 'serviceprovider.c' || echo '$(srcdir)/'`serviceprovider.c
+
+libfsogsm_la-mbpi.lo: mbpi.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-mbpi.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-mbpi.Tpo -c -o libfsogsm_la-mbpi.lo `test -f 'mbpi.c' || echo '$(srcdir)/'`mbpi.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfsogsm_la-mbpi.Tpo $(DEPDIR)/libfsogsm_la-mbpi.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mbpi.c' object='libfsogsm_la-mbpi.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -c -o libfsogsm_la-mbpi.lo `test -f 'mbpi.c' || echo '$(srcdir)/'`mbpi.c
 
 libfsogsm_la-conversions.lo: $(top_srcdir)/src/3rdparty/conversions.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfsogsm_la_CFLAGS) $(CFLAGS) -MT libfsogsm_la-conversions.lo -MD -MP -MF $(DEPDIR)/libfsogsm_la-conversions.Tpo -c -o libfsogsm_la-conversions.lo `test -f '$(top_srcdir)/src/3rdparty/conversions.c' || echo '$(srcdir)/'`$(top_srcdir)/src/3rdparty/conversions.c
@@ -1003,6 +1047,11 @@ $(srcdir)/at/atphonebook.c: $(srcdir)/libfsogsm_la_vala.stamp
 	@if test -f $@; then :; else \
 	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
 	fi
+$(srcdir)/at/atresultiter.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
 $(srcdir)/call.c: $(srcdir)/libfsogsm_la_vala.stamp
 	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
 	@if test -f $@; then :; else \
@@ -1064,6 +1113,16 @@ $(srcdir)/smsstorage.c: $(srcdir)/libfsogsm_la_vala.stamp
 	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
 	fi
 $(srcdir)/watchdog.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/serviceprovider.c: $(srcdir)/libfsogsm_la_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
+	fi
+$(srcdir)/mbpi.c: $(srcdir)/libfsogsm_la_vala.stamp
 	@if test -f $@; then :; else rm -f $(srcdir)/libfsogsm_la_vala.stamp; fi
 	@if test -f $@; then :; else \
 	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/libfsogsm_la_vala.stamp; \
@@ -1226,6 +1285,7 @@ maintainer-clean-generic:
 	-rm -f at/atpdp.c
 	-rm -f at/atpdpmediators.c
 	-rm -f at/atphonebook.c
+	-rm -f at/atresultiter.c
 	-rm -f at/atsimmediators.c
 	-rm -f at/atsms.c
 	-rm -f at/atsmsmediators.c
@@ -1238,12 +1298,14 @@ maintainer-clean-generic:
 	-rm -f fsogsm.h
 	-rm -f libfsogsm_la_vala.stamp
 	-rm -f lowlevel.c
+	-rm -f mbpi.c
 	-rm -f mediator.c
 	-rm -f mediatorhelpers.c
 	-rm -f modem.c
 	-rm -f muxtransport.c
 	-rm -f pdp.c
 	-rm -f phonebook.c
+	-rm -f serviceprovider.c
 	-rm -f sms.c
 	-rm -f smsstorage.c
 	-rm -f watchdog.c

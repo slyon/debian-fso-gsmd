@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +25,8 @@
  **/
 
 using Gee;
+using FsoGsm.Constants;
+using FsoFramework;
 
 namespace FsoGsm {
 
@@ -258,11 +260,11 @@ public class PlusCEER : AbstractAtCommand
 
         if ( v0 == 0 && v1 == 0 && v2 != 0 && v3 != 0 )
         {
-            reason = Constants.instance().ceerCauseToString( v1, v2, v3 );
+            reason = Constants.ceerCauseToString( v1, v2, v3 );
         }
         else
         {
-            reason = Constants.instance().ceerCauseToString( v0, v1, v3 );
+            reason = Constants.ceerCauseToString( v0, v1, v3 );
         }
     }
 
@@ -464,18 +466,18 @@ public class PlusCLCC : AbstractAtCommand
             base.parse( line );
             var entry = FreeSmartphone.GSM.CallDetail(
                 to_int( "id" ),
-                Constants.instance().callStatusToEnum( to_int( "stat" ) ),
+                Constants.callStatusToEnum( to_int( "stat" ) ),
                 new GLib.HashTable<string,Variant>( str_hash, str_equal )
             );
 
             Variant strvalue;
-            strvalue = Constants.instance().callDirectionToString( to_int( "dir" ) );
+            strvalue = Constants.callDirectionToString( to_int( "dir" ) );
             entry.properties.insert( "direction", strvalue );
 
-            strvalue = Constants.instance().phonenumberTupleToString( to_string( "number" ), to_int( "typ" ) );
+            strvalue = Constants.phonenumberTupleToString( to_string( "number" ), to_int( "typ" ) );
             entry.properties.insert( "peer", strvalue );
 
-            strvalue = Constants.instance().callTypeToString( to_int( "mode" ) );
+            strvalue = Constants.callTypeToString( to_int( "mode" ) );
             entry.properties.insert( "type", strvalue );
 
             c += entry;
@@ -850,11 +852,13 @@ public class PlusCNMA : SimpleAtCommand<int>
 
 public class PlusCNMI : AbstractAtCommand
 {
-    public int mode;
-    public int mt;
-    public int bm;
-    public int ds;
-    public int bfr;
+    public int mode { get; private set; }
+    public int mt { get; private set; }
+    public int bm { get; private set; }
+    public int ds { get; private set; }
+    public int bfr { get; private set; }
+
+    public HashTable<int,ArrayList<int>> supported_opts { get; private set; }
 
     public PlusCNMI()
     {
@@ -879,9 +883,39 @@ public class PlusCNMI : AbstractAtCommand
         bfr = to_int( "bfr" );
     }
 
+    public override void parseTest( string response ) throws AtCommandError
+    {
+        var iter = new AtResultIter( new string[] { response } );
+
+        supported_opts = new HashTable<int,ArrayList<int>>( null, null );
+
+        if ( !iter.next( "+CNMI:" ) )
+            throw new AtCommandError.UNABLE_TO_PARSE( @"Expected prefix +CNMI" );
+
+        for ( int n = 0; n < 5; n++ )
+        {
+            int num = 0;
+
+            if ( !iter.open_list() )
+                return;
+
+            supported_opts[n] = new ArrayList<int>();
+            while ( iter.next_number( out num ) )
+                supported_opts[n].add( num );
+
+            if ( !iter.close_list() )
+                return;
+        }
+    }
+
     public string query()
     {
         return "+CNMI?";
+    }
+
+    public string test()
+    {
+        return "+CNMI=?";
     }
 
     public string issue( int mode, int mt, int bm, int ds, int bfr )
@@ -978,7 +1012,7 @@ public class PlusCOPS : AbstractAtCommand
         {
             oper = decodeString( oper );
         }
-        act = Constants.instance().networkProviderActToString( to_int( "act" ) );
+        act = Constants.networkProviderActToString( to_int( "act" ) );
     }
 
     public override void parseTest( string response ) throws AtCommandError
@@ -990,11 +1024,11 @@ public class PlusCOPS : AbstractAtCommand
             do
             {
                 var p = FreeSmartphone.GSM.NetworkProvider(
-                    Constants.instance().networkProviderStatusToString( to_int( "status" ) ),
+                    Constants.networkProviderStatusToString( to_int( "status" ) ),
                     to_string( "shortname" ),
                     to_string( "longname" ),
                     to_string( "mccmnc" ),
-                    Constants.instance().networkProviderActToString( to_int( "act" ) ) );
+                    Constants.networkProviderActToString( to_int( "act" ) ) );
                 providers += p;
             }
             while ( mi.next() );
@@ -1059,7 +1093,7 @@ public class PlusCPBR : AbstractAtCommand
         foreach ( var line in response )
         {
             base.parse( line );
-            var number = Constants.instance().phonenumberTupleToString( to_string( "number" ), to_int( "typ" ) );
+            var number = Constants.phonenumberTupleToString( to_string( "number" ), to_int( "typ" ) );
             var entry = FreeSmartphone.GSM.SIMEntry( to_int( "id" ), decodeString( to_string( "name" ) ), number );
             phonebook += entry;
         }
@@ -1111,7 +1145,7 @@ public class PlusCPBS : AbstractAtCommand
         {
             do
             {
-                books += /* Constants.instance().simPhonebookNameToString( */ to_string( "book" ) /* ) */;
+                books += /* Constants.simPhonebookNameToString( */ to_string( "book" ) /* ) */;
             }
             while ( mi.next() );
         }
@@ -1161,7 +1195,7 @@ public class PlusCPBW : AbstractAtCommand
         var cmd = @"+CPBS=\"$cat\";+CPBW=$location";
         if ( number != "" )
         {
-            cmd += ",%s,\"%s\"".printf( Constants.instance().phonenumberStringToTuple( number ), encodeString( name ) );
+            cmd += ",%s,\"%s\"".printf( Constants.phonenumberStringToTuple( number ), encodeString( name ) );
         }
         return cmd;
     }
@@ -1192,7 +1226,7 @@ public class PlusCPIN : AbstractAtCommand
     public override void parse( string response ) throws AtCommandError
     {
         base.parse( response );
-        status = Constants.instance().simAuthStatusToEnum( to_string( "status" ) );
+        status = Constants.simAuthStatusToEnum( to_string( "status" ) );
     }
 
     public string issue( string pin, string? new_pin = null )
@@ -1374,7 +1408,7 @@ public class PlusCSCA : AbstractAtCommand
     public override void parse( string response ) throws AtCommandError
     {
         base.parse( response );
-        number = Constants.instance().phonenumberTupleToString( to_string( "number" ), to_int( "ntype" ) );
+        number = Constants.phonenumberTupleToString( to_string( "number" ), to_int( "ntype" ) );
     }
 
     public string query()
@@ -1384,7 +1418,7 @@ public class PlusCSCA : AbstractAtCommand
 
     public string issue( string number )
     {
-        return "+CSCA=" + Constants.instance().phonenumberStringToTuple( number );
+        return "+CSCA=" + Constants.phonenumberStringToTuple( number );
     }
 }
 
@@ -1460,7 +1494,7 @@ public class PlusCSQ : AbstractAtCommand
     public override void parse( string response ) throws AtCommandError
     {
         base.parse( response );
-        signal = Constants.instance().networkSignalToPercentage( to_int( "signal" ) );
+        signal = Constants.networkSignalToPercentage( to_int( "signal" ) );
     }
 
     public string execute()
@@ -1578,7 +1612,7 @@ public class V250D : V250terCommand
     public string issue( string number, bool voice = true )
     {
         var postfix = voice ? ";" : "";
-        var safenumber = Constants.instance().cleanPhoneNumber( number );
+        var safenumber = Constants.cleanPhoneNumber( number );
         return @"D$safenumber$postfix";
     }
 
@@ -1590,6 +1624,214 @@ public class V250H : V250terCommand
     public V250H()
     {
         base( "H" );
+    }
+}
+
+public class PlusCCFC : AbstractAtCommand
+{
+    public bool active { get; private set; }
+    public BearerClass class1 { get; private set; }
+    public string number { get; private set; }
+    public int number_type { get; private set; }
+    public string subaddr { get; private set; }
+    public int satype { get; private set; }
+    public int timeout { get; private set; }
+
+    public PlusCCFC()
+    {
+        try
+        {
+            // +CCFC: <status>,<class1>[,<number>,<type>[,<subaddr>,<satype>[,<time>]]]
+            re = new Regex( """\+CCFC: (?P<status>[01]),(?P<class1>\d)(?:,"(?P<number>[\+0-9*#w]+)",(?P<type>\d+)(?:,"(?P<subaddr>[\+0-9*#w]+)",(?P<satype>\d+)(?:,(?P<time>\d+))?)?)?""");
+        }
+        catch ( GLib.RegexError e )
+        {
+            stdout.printf(@"error: $(e.message)\n");
+            assert_not_reached(); // fail here if Regex is broken
+        }
+
+        prefix = { "+CCFC: " };
+    }
+
+    public override void parse( string response ) throws AtCommandError
+    {
+        base.parse( response );
+        active = ( to_int( "status" ) == 1 );
+        class1 = (BearerClass) to_int( "class1" );
+        number = to_string( "number" );
+        number_type = to_int( "type" );
+        subaddr = to_string( "subaddr" );
+        satype = to_int( "satype" );
+        timeout = to_int( "time" );
+    }
+
+    public string query( CallForwardingType type, BearerClass cls = FsoGsm.Constants.BearerClass.DEFAULT )
+    {
+        if ( cls == BearerClass.DEFAULT )
+            return "+CCFC=%d,2".printf( (int) type );
+        return "+CCFC=%d,2,,,%d".printf( (int) type, (int) cls );
+    }
+
+    public string issue( CallForwardingMode mode,
+        CallForwardingType type, BearerClass cls = FsoGsm.Constants.BearerClass.DEFAULT )
+    {
+        var command = @"+CCFC=%d,%d".printf( (int) type, (int) mode );
+        if ( cls != BearerClass.DEFAULT )
+            command += ",,,%d".printf( (int) cls );
+        return command;
+    }
+
+    public string issue_ext( CallForwardingMode mode, CallForwardingType type,
+        BearerClass cls, string number, int time)
+    {
+        int number_type = determinePhoneNumberType( number );
+        var command = "+CCFC=%d,%d,\"%s\",%d,%d".printf( (int) type,
+            (int) mode, number, number_type, (int) cls );
+
+        if ( type == CallForwardingType.NO_REPLY ||
+             type == CallForwardingType.ALL ||
+             type == CallForwardingType.ALL_CONDITIONAL )
+        {
+            command += ",,,%d".printf( time );
+        }
+
+        return command;
+    }
+}
+
+public class PlusCTFR : AbstractAtCommand
+{
+    public string issue( string number, int number_type = 0 )
+    {
+        if ( number_type == 0 )
+            return @"+CTFR=$number";
+        return @"+CTFR=$number,$number_type";
+    }
+}
+
+public class PlusCSMS : AbstractAtCommand
+{
+    public int mt { get; private set; }
+    public int mo { get; private set; }
+    public int bm { get; private set; }
+
+    public int[] supported_services { get; private set; default = { }; }
+
+    public PlusCSMS()
+    {
+        try
+        {
+            re = new Regex( """\+CSMS: (?P<mt>\d),(?P<mo>\d),(?P<bm>\d)""");
+        }
+        catch ( GLib.RegexError e )
+        {
+            assert_not_reached(); // fail here if Regex is broken
+        }
+
+        prefix = { "+CSMS: " };
+    }
+
+    public override void parse( string response ) throws AtCommandError
+    {
+        base.parse( response );
+        mt = to_int( "mt" );
+        mo = to_int( "mo" );
+        bm = to_int( "bm" );
+    }
+
+    public override void parseTest( string response ) throws AtCommandError
+    {
+        var iter = new AtResultIter( new string[] { response } );
+        int service = 0;
+        int[] services = { };
+
+        supported_services = { };
+
+        if ( !iter.next( "+CSMS:" ) )
+            throw new AtCommandError.UNABLE_TO_PARSE( @"Can't parse $response" );
+
+        if ( !iter.open_list() )
+            throw new AtCommandError.UNABLE_TO_PARSE( @"Can't parse $response" );
+
+        while ( iter.next_number( out service ) )
+            services += service;
+
+        supported_services = services;
+    }
+
+    public string issue( int service )
+    {
+        return @"+CSMS=$service";
+    }
+
+    public string query()
+    {
+        return @"+CSMS?";
+    }
+
+    public string test()
+    {
+        return @"+CSMS=?";
+    }
+}
+
+public class PlusCMGF : AbstractAtCommand
+{
+    public int mode { get; private set; }
+
+    public int[] supported_modes { get; private set; default = { }; }
+
+    public PlusCMGF()
+    {
+        try
+        {
+            re = new Regex( """\+CMGF: (?P<mode>\d)""");
+        }
+        catch ( GLib.RegexError e )
+        {
+            assert_not_reached(); // fail here if Regex is broken
+        }
+
+        prefix = { "+CMGF" };
+    }
+
+    public override void parse( string response ) throws AtCommandError
+    {
+        base.parse( response );
+        mode = to_int( "mode" );
+    }
+
+    public override void parseTest( string response ) throws AtCommandError
+    {
+        var iter = new AtResultIter( new string[] { response } );
+        int mode = 0;
+        int[] modes = { };
+
+        if ( !iter.next( "+CMGF:" ) )
+            throw new AtCommandError.UNABLE_TO_PARSE( @"Wrong prefix: expected +CMGF" );
+
+        if ( !iter.open_list() )
+            return;
+
+        while ( iter.next_number( out mode ) )
+            modes += mode;
+
+        supported_modes = modes;
+    }
+
+    public string issue( int mode )
+    {
+        return @"+CMGF=$mode";
+    }
+
+    public string test()
+    {
+        return @"+CMGF=?";
+    }
+
+    public string query()
+    {
+        return @"+CMGF?";
     }
 }
 
@@ -1638,6 +1880,7 @@ public void registerGenericAtCommands( HashMap<string,AtCommand> table )
     table[ "+CSSI" ]             = new FsoGsm.PlusCSSI();
     table[ "+CSSU" ]             = new FsoGsm.PlusCSSU();
     table[ "+CUSD" ]             = new FsoGsm.PlusCUSD();
+    table[ "+CCFC" ]             = new FsoGsm.PlusCCFC();
 
     // call control
     table[ "A" ]                 = new FsoGsm.V250A();
@@ -1647,6 +1890,7 @@ public void registerGenericAtCommands( HashMap<string,AtCommand> table )
     table[ "+CHLD" ]             = new FsoGsm.PlusCHLD();
     table[ "+CLCC" ]             = new FsoGsm.PlusCLCC();
     table[ "+VTS" ]              = new FsoGsm.PlusVTS();
+    table[ "+CTFR" ]             = new FsoGsm.PlusCTFR();
 
     // phonebook
     table[ "+CPBR" ]             = new FsoGsm.PlusCPBR();
@@ -1667,6 +1911,8 @@ public void registerGenericAtCommands( HashMap<string,AtCommand> table )
     table[ "+CNMA" ]             = new FsoGsm.PlusCNMA();
     table[ "+CPMS" ]             = new FsoGsm.PlusCPMS();
     table[ "+CSCA" ]             = new FsoGsm.PlusCSCA();
+    table[ "+CSMS" ]             = new FsoGsm.PlusCSMS();
+    table[ "+CMGF" ]             = new FsoGsm.PlusCMGF();
 
     // cell broadcast
     table[ "+CBM" ]              = new FsoGsm.PlusCBM();

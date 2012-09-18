@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *                         Klaus 'mrmoku' Kurzmann <mok@fluxnetz.de>
  *
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,8 @@ class Pdp.OptionGtm601 : FsoGsm.PdpHandler
 
     public async override void sc_activate() throws FreeSmartphone.GSM.Error, FreeSmartphone.Error
     {
-        var data = theModem.data();
+        var data = modem.data();
+        var activated = false;
 
         if ( data.contextParams == null )
         {
@@ -50,44 +51,45 @@ class Pdp.OptionGtm601 : FsoGsm.PdpHandler
             throw new FreeSmartphone.Error.INTERNAL_ERROR( "APN not set" );
         }
 
-        try
-        {
-            var cmd = theModem.createAtCommand<Gtm601.UnderscoreOWANCALL>( "_OWANCALL" );
-            var response = yield theModem.processAtCommandAsync( cmd, cmd.issue( true ) );
-            checkResponseOk( cmd, response );
-        }
-        catch ( GLib.Error e )
-        {
-            throw new FreeSmartphone.Error.INTERNAL_ERROR( @"Failed to execute _OWANCALL command to activate PDP context: $(e.message)" );
-        }
+        var cmd_owancall = modem.createAtCommand<Gtm601.UnderscoreOWANCALL>( "_OWANCALL" );
+        var cmd_owandata = modem.createAtCommand<Gtm601.UnderscoreOWANDATA>( "_OWANDATA" );
+        string[] response = { };
 
         try
         {
-            var cmd2 = theModem.createAtCommand<Gtm601.UnderscoreOWANDATA>( "_OWANDATA" );
-            var response2 = yield theModem.processAtCommandAsync( cmd2, cmd2.issue() );
-            checkResponseOk( cmd2, response2 );
+            response = yield modem.processAtCommandAsync( cmd_owancall, cmd_owancall.issue( true ) );
+            checkResponseOk( cmd_owancall, response );
+            activated = true;
 
-            if ( !cmd2.connected )
+            Timeout.add_seconds( 5, () => { sc_activate.callback(); return false; } );
+            yield;
+
+            response = yield modem.processAtCommandAsync( cmd_owandata, cmd_owandata.issue() );
+            checkResponseValid( cmd_owandata, response );
+
+            if ( !cmd_owandata.connected )
                 throw new FreeSmartphone.Error.INTERNAL_ERROR( @"Modem reports that PDP session is not yet established!" );
-
-            assert( logger.debug( @"Got IP configuration from modem:" ) );
-            assert( logger.debug( @"local = $(cmd2.ip)" ) );
-            assert( logger.debug( @"gateway = $(cmd2.gateway), dns1 = $(cmd2.dns1), dns2 = $(cmd2.dns2)" ) );
 
             var route = new FsoGsm.RouteInfo() {
                 iface = HSO_IFACE,
-                ipv4addr = cmd2.ip,
+                ipv4addr = cmd_owandata.ip,
                 ipv4mask = "255.255.255.0",
-                ipv4gateway = cmd2.gateway,
-                dns1 = cmd2.dns1,
-                dns2 = cmd2.dns2
+                ipv4gateway = cmd_owandata.gateway,
+                dns1 = cmd_owandata.dns1,
+                dns2 = cmd_owandata.dns2
             };
 
             connectedWithNewDefaultRoute( route );
         }
-        catch ( GLib.Error e2 )
+        catch ( GLib.Error e )
         {
-            throw new FreeSmartphone.Error.INTERNAL_ERROR( @"Failed to execute _OWANDATA to retrieve PDP context configuration from modem: $(e2.message)" );
+            if ( activated )
+            {
+                response = yield modem.processAtCommandAsync( cmd_owancall, cmd_owancall.issue( false ) );
+                checkResponseOk( cmd_owancall, response );
+            }
+
+            throw new FreeSmartphone.Error.INTERNAL_ERROR( @"Failed to active PDP context: $(e.message)" );
         }
     }
 
@@ -95,8 +97,8 @@ class Pdp.OptionGtm601 : FsoGsm.PdpHandler
     {
         try
         {
-            var cmd = theModem.createAtCommand<Gtm601.UnderscoreOWANCALL>( "_OWANCALL" );
-            var response = yield theModem.processAtCommandAsync( cmd, cmd.issue( false ) );
+            var cmd = modem.createAtCommand<Gtm601.UnderscoreOWANCALL>( "_OWANCALL" );
+            var response = yield modem.processAtCommandAsync( cmd, cmd.issue( false ) );
             checkResponseOk( cmd, response );
         }
         catch ( GLib.Error e )

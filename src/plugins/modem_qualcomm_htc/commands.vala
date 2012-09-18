@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2012 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -100,7 +100,7 @@ public class MyPlusCEER : FsoGsm.PlusCEER
         }
         else
         {
-            theModem.logger.info( @"Unknown +CEER cause '$r'; please report to Mickey <smartphones-userland@linuxtogo.org>" );
+            FsoFramework.theLogger.info( @"Unknown +CEER cause '$r'; please report to Mickey <smartphones-userland@linuxtogo.org>" );
         }
     }
 }
