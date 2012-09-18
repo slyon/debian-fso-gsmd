@@ -8,20 +8,17 @@ Uploaders: Sebastian Reichel <sre@debian.org>,
 DM-Upload-Allowed: yes
 Build-Depends: debhelper (>= 9),
                dh-autoreconf,
-               libfso-glib-dev (>= 2012.04.18.1),
-               libfsoframework-dev (>= 0.11.0),
-               libfsoresource-dev (>= 0.11.0),
-               libfsosystem-dev (>= 0.11.0),
-               libfsotransport-dev (>= 0.11.0),
+               libfso-glib-dev (>= 2012.07.27.2),
+               libfsoframework-dev (>= 0.12.0~rc2),
                libgee-dev (>= 0.5.0),
                libglib2.0-dev (>= 2.26.0),
+               mobile-broadband-provider-info (>= 20090918),
                libgsm0710-dev,
-               libgsm0710mux-dev (>= 0.11.2),
-               libvala-0.14-dev,
+               libvala-0.16-dev,
                pkg-config,
                ppp-dev,
                quilt,
-               valac-0.14
+               valac-0.16
 Standards-Version: 3.9.3
 Homepage: http://freesmartphone.org/
 Vcs-Git: git://git.debian.org/git/pkg-fso/fso-gsmd.git
@@ -31,7 +28,8 @@ Package: fso-gsmd
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends},
-         ${shlibs:Depends}
+         ${shlibs:Depends},
+         mobile-broadband-provider-info (>= 20090918)
 Recommends: fso-gsmd-platform
 Description: freesmartphone.org GSM daemon
  fsogsmd implements the freesmartphone.org GSM API. It takes care
@@ -148,24 +146,6 @@ Description: freesmartphone.org GSM daemon for the GTA04 device
 # .
 # This package contains configuration files and plugins needed by 
 # the Nokia N900.
-# .
-# This package is part of the freesmartphone.org software stack
-# and is targeted for smartphones.
-
-#Package: fso-gsmd-palmpre
-#Architecture: any
-#Pre-Depends: ${misc:Pre-Depends}
-#Depends: ${misc:Depends},
-#         ${shlibs:Depends},
-#         fso-deviced-palmpre,
-#         fso-gsmd
-#Provides: fso-gsmd-platform
-#Description: freesmartphone.org GSM daemon for Palm Pre
-# fsogsmd implements the freesmartphone.org GSM API. It takes care
-# of all GSM related functions.
-# .
-# This package contains configuration files and plugins needed by 
-# the Palm Pre.
 # .
 # This package is part of the freesmartphone.org software stack
 # and is targeted for smartphones.
