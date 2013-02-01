@@ -1,5 +1,5 @@
 [D-BUS Service]
 Name=org.freesmartphone.ogsmd
-Exec=/usr/local/sbin/fsogsmd
+Exec=/home/morphis/Workspace/fso-new/buildroot/install/sbin/fsogsmd
 User=root
 FSO-provides-resource=GSM
